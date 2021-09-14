@@ -1,0 +1,91 @@
+﻿<Window x:Name="SourceWindow" x:Class="TerminalProgram.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TerminalProgram"
+        mc:Ignorable="d"
+        Title="Терминальная программа" Height="400" Width="800" Background="Silver" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="SourceWindow_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Width="1000" VerticalAlignment="Top" HorizontalAlignment="Left" Background="Silver" OpacityMask="White">
+            <Menu DockPanel.Dock="Top" BorderBrush="White" Width="1000" HorizontalAlignment="Left" Background="#FFE0DCDC">
+                <MenuItem Header="Пресет" Name="MenuPreset">
+                    <MenuItem Header="Сохранить" Name="MenuPreset_Save" Click="MenuPreset_Save_Click"/>
+                    <MenuItem Header="Загрузить" Name="MenuPreset_Load" Click="MenuPreset_LoadMenuHelp_Click"/>
+                </MenuItem>
+                <MenuItem Header="Помощь" Name="MenuHelp" Click="MenuHelp_Click"/>
+            </Menu>
+        </DockPanel>
+
+        <DockPanel Grid.Row="1" LastChildFill="True">
+
+            <Grid DockPanel.Dock="Left" x:Name="Grid_Settings" Width="300">
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock  Grid.Row="0" Text="Настройки подключения" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"/>
+
+                <StackPanel Grid.Row="1" Height="30" Width="225" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <RadioButton x:Name="RadioButton_SerialPort" Content="USB (RS-232)" Margin="20,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="RadioButton_SerialPort_Checked"/>
+                    <RadioButton x:Name="RadioButton_Ethernet" Content="Ethernet" Margin="30,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="RadioButton_Ethernet_Checked"/>
+                </StackPanel>
+
+                <TextBlock x:Name="TextBlock_COMPort" Grid.Row="2" Margin="0,12,170,0" Text="COM - Port" TextWrapping="Wrap" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                <ComboBox x:Name="ComboBox_COMPort" Grid.Row="2" Margin="145,10,0,0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="ComboBox_COMPort_SelectionChanged"/>
+
+                <TextBlock x:Name="TextBlock_IP" Grid.Row="2" Margin="0,12,200,0" Text="IP" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <TextBox x:Name="TextBox_IP" Grid.Row="2" Margin="115,10,0,0" Height="22" Width="107" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_IP_TextChanged"/>
+
+                <TextBlock x:Name="TextBlock_BaudRate" Grid.Row="3" Margin="0,12,170,0" Text="BaudRate" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <ComboBox x:Name="ComboBox_BaudRate" Grid.Row="3" Margin="145,10,0,0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="ComboBox_BaudRate_SelectionChanged"/>
+
+                <TextBlock x:Name="TextBlock_Port" Grid.Row="3" Margin="0,12,200,0" Text="Port" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <TextBox x:Name="TextBox_Port" Grid.Row="3" Margin="115,10,0,0" Height="22" Width="50" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_Port_TextChanged"/>
+
+                <TextBlock x:Name="TextBlock_Parity" Grid.Row="4" Margin="0,12,170,0" Text="Parity" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <ComboBox x:Name="ComboBox_Parity" Grid.Row="4" Margin="145,10,0,0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="ComboBox_Parity_SelectionChanged"/>
+
+                <TextBlock x:Name="TextBlock_DataBits" Grid.Row="5" Margin="0,12,170,0" Text="DataBits" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <ComboBox x:Name="ComboBox_DataBits" Grid.Row="5" Margin="145,10,0,0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="ComboBox_DataBits_SelectionChanged"/>
+
+                <TextBlock x:Name="TextBlock_StopBits" Grid.Row="6" Margin="0,12,170,0" Text="StopBits" TextWrapping="Wrap" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+                <ComboBox x:Name="ComboBox_StopBits" Grid.Row="6" Margin="145,10,0,0" Width="70" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionChanged="ComboBox_StopBits_SelectionChanged"/>
+
+                <Button x:Name="Button_Connect" Grid.Row="7" Height="25" Width="80" Margin="0,0,150,0" Content="Подключить" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Connect_Click"/>
+                <Button x:Name="Button_Disconnect" Grid.Row="7" Height="25" Width="80" Margin="150,0,0,0" Content="Отключить" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Disconnect_Click"/>
+            </Grid>
+
+            <Grid DockPanel.Dock="Right" x:Name="Grid_Action">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <GroupBox Header="TX" Grid.Row="0" BorderBrush="Black">
+                    <TextBox x:Name="TextBox_TX" Background="#FFD6D6D6" TextChanged="TextBox_TX_TextChanged"/>
+                </GroupBox>
+
+                <GroupBox Header="RX" Grid.Row="1" Background="#FFD6D6D6" BorderBrush="Black">
+                    <TextBlock x:Name="TextBlock_RX"/>
+                </GroupBox>
+            </Grid>
+            
+        </DockPanel>
+        
+
+    </Grid>
+</Window>
