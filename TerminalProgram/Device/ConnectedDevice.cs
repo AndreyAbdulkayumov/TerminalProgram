@@ -47,16 +47,32 @@ namespace TerminalProgram.Device
 
         public void Connect(string COM_Port, int BaudRate, string parity, int DataBits, string stopBits)
         {
-            SerialPort_Connect(COM_Port, BaudRate, parity, DataBits, stopBits);
-            IsConnected = true;
-            SelectedConnection = TypeOfConnection.SerialPort;
+            try
+            {
+                SerialPort_Connect(COM_Port, BaudRate, parity, DataBits, stopBits);
+                IsConnected = true;
+                SelectedConnection = TypeOfConnection.SerialPort;
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception(error.Message);
+            }
         }
 
         public void Connect(string IPstr, int Port)
         {
-            Ethernet_Connect(IPstr, Port);
-            IsConnected = true;
-            SelectedConnection = TypeOfConnection.Ethernet;
+            try
+            {
+                Ethernet_Connect(IPstr, Port);
+                IsConnected = true;
+                SelectedConnection = TypeOfConnection.Ethernet;
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception(error.Message);
+            }
         }
         
 
@@ -196,25 +212,34 @@ namespace TerminalProgram.Device
 
         private void Ethernet_Connect(string IPstr, int Port)
         {
-            IPAddress IP = IPAddress.Parse(IPstr);
-            DeviceLAN = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-            IAsyncResult result = DeviceLAN.BeginConnect(IP, Port, null, null);
-
-            bool SuccessConnect = result.AsyncWaitHandle.WaitOne(TimeoutLANConnection, true);
-
-            if (SuccessConnect == true)
+            try
             {
-                DeviceLAN.EndConnect(result);
+                IPAddress IP = IPAddress.Parse(IPstr);
+                DeviceLAN = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+                IAsyncResult result = DeviceLAN.BeginConnect(IP, Port, null, null);
+
+                bool SuccessConnect = result.AsyncWaitHandle.WaitOne(TimeoutLANConnection, true);
+
+                if (SuccessConnect == true)
+                {
+                    DeviceLAN.EndConnect(result);
+                }
+
+                else
+                {
+                    Ethernet_Disconnect();
+                    throw new Exception("Не удалось подключиться к устройству по Ethernet" +
+                        "\nЗаданный IP: " + IPstr +
+                        "\nЗаданный порт: " + Port.ToString());
+                }
             }
 
-            else
+            catch (Exception error)
             {
-                Ethernet_Disconnect();
-                throw new Exception("Не удалось подключиться к устройству по Ethernet" +
-                    "\nЗаданный IP: " + IPstr +
-                    "\nЗаданный порт: " + Port.ToString());
+                throw new Exception(error.Message);
             }
+
         }
 
         private void Ethernet_Disconnect()
@@ -246,7 +271,16 @@ namespace TerminalProgram.Device
 
         private void SerialPort_Send(ref char[] Data)
         {
-            DeviceSerialPort.Write(Data, 0, Data.Length);
+            try
+            {
+                DeviceSerialPort.Write(Data, 0, Data.Length);
+            }
+
+            catch(Exception error)
+            {
+                throw new Exception(error.Message);
+            }
+            
         }
 
         private void Ethernet_Send(ref char[] Data)

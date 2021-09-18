@@ -76,7 +76,16 @@
                 </Grid.RowDefinitions>
 
                 <GroupBox Header="TX" Grid.Row="0" BorderBrush="Black">
-                    <TextBox x:Name="TextBox_TX" Background="#FFD6D6D6" TextChanged="TextBox_TX_TextChanged"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBox x:Name="TextBox_TX" Grid.Row="0" Background="#FFD6D6D6" TextChanged="TextBox_TX_TextChanged"/>
+                        <Button x:Name="Button_Send" Grid.Row="1" Height="25" Width="80" Margin="0,0,20,0" Content="Отправить" HorizontalAlignment="Right" VerticalAlignment="Center" Click="Button_Send_Click"/>
+                    </Grid>
+                    
                 </GroupBox>
 
                 <GroupBox Header="RX" Grid.Row="1" Background="#FFD6D6D6" BorderBrush="Black">

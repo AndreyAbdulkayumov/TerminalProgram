@@ -40,6 +40,8 @@ namespace TerminalProgram
         readonly string[] ArrayDataBits = { "8", "9" };
         readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
 
+        private char[] BytesToSend;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -159,30 +161,88 @@ namespace TerminalProgram
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
-            Device.Connect(DeviceSettings.COMPort,
-                Convert.ToInt32(DeviceSettings.BaudRate),
-                DeviceSettings.Parity,
-                Convert.ToInt32(DeviceSettings.DataBits),
-                DeviceSettings.StopBits);
+            try
+            {
+                Device.Connect(DeviceSettings.COMPort,
+                                Convert.ToInt32(DeviceSettings.BaudRate),
+                                DeviceSettings.Parity,
+                                Convert.ToInt32(DeviceSettings.DataBits),
+                                DeviceSettings.StopBits);
 
-            Device.SerialPortReceived += Device_SerialPortReceived;
+                Device.SerialPortReceived += Device_SerialPortReceived;
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при подключении к устройству:\n" + error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
+                    MessageBoxOptions.ServiceNotification);
+            }
         }
 
         private void Device_SerialPortReceived(object sender, DataFromDevice e)
         {
-            TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                new Action(delegate () { TextBlock_RX.Text += e.RX; }));
+            try
+            {
+                TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                    new Action(delegate () { TextBlock_RX.Text += e.RX; }));
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
+                    MessageBoxOptions.ServiceNotification);
+            }
         }
 
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
-            Device.Disconnect();
+            try
+            {
+                Device.Disconnect();
+            }
+
+            catch(Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при попытке отключения от устройства:\n" + error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
+                    MessageBoxOptions.ServiceNotification);
+            }
         }
 
         private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
         {
-            char[] Bytes = TextBox_TX.Text.ToCharArray();
-            Device.Send(ref Bytes);
+            if (TextBox_TX.Text != String.Empty)
+            {
+                BytesToSend = TextBox_TX.Text.ToCharArray();
+            }
+            
+        }
+
+        private void Button_Send_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (BytesToSend == null)
+                {
+                    MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", "Предупреждение",
+                        MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK,
+                        MessageBoxOptions.ServiceNotification);
+                    return;
+                }
+
+                Device.Send(ref BytesToSend);
+                TextBox_TX.Text = String.Empty;
+                BytesToSend = null;
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
+                    MessageBoxOptions.ServiceNotification);
+            }
         }
 
         private void ComboBox_COMPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -192,22 +252,22 @@ namespace TerminalProgram
 
         private void ComboBox_BaudRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DeviceSettings.BaudRate = ComboBox_BaudRate.SelectedItem.ToString();
+            DeviceSettings.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
         }
 
         private void ComboBox_Parity_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DeviceSettings.Parity = ComboBox_Parity.SelectedItem.ToString();
+            DeviceSettings.Parity = ComboBox_Parity.SelectedItem?.ToString();
         }
 
         private void ComboBox_DataBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DeviceSettings.DataBits = ComboBox_DataBits.SelectedItem.ToString();
+            DeviceSettings.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
         }
 
         private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            DeviceSettings.StopBits = ComboBox_StopBits.SelectedItem.ToString();
+            DeviceSettings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
         }
 
         
