@@ -26,19 +26,21 @@ namespace TerminalProgram
         public string StopBits;
     }
 
-
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        ConnectedDevice Device = new ConnectedDevice();
-        ConnectionData DeviceSettings = new ConnectionData();
+        private ConnectedDevice Device = new ConnectedDevice();
+        private ConnectionData DeviceSettings = new ConnectionData();
 
-        readonly string[] ArrayBaudRate = { "4800", "9600", "19200", "38400", "57600", "115200" };
-        readonly string[] ArrayParity = { "None", "Even", "Odd" };
-        readonly string[] ArrayDataBits = { "8", "9" };
-        readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
+        private readonly string[] ArrayBaudRate = { "4800", "9600", "19200", "38400", "57600", "115200" };
+        private readonly string[] ArrayParity = { "None", "Even", "Odd" };
+        private readonly string[] ArrayDataBits = { "8", "9" };
+        private readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
+
+        private const string StatusMessage_Connected = "Устройство подключено";
+        private const string StatusMessage_Disconnected = "Нет подключенных устройств";
 
         private char[] BytesToSend;
 
@@ -48,34 +50,37 @@ namespace TerminalProgram
 
             RadioButton_SerialPort.IsChecked = true;
 
-            ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent, new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
+            ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent, 
+                new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
+
             ComboBoxFilling(ComboBox_BaudRate, ref ArrayBaudRate);
             ComboBoxFilling(ComboBox_Parity, ref ArrayParity);
             ComboBoxFilling(ComboBox_DataBits, ref ArrayDataBits);
             ComboBoxFilling(ComboBox_StopBits, ref ArrayStopBits);
+
         }
 
         private void ComboBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            SearchSerialPorts();
+            SearchSerialPorts(ComboBox_COMPort);
         }
 
-        private void SearchSerialPorts()
+        private void SearchSerialPorts(ComboBox Box)
         {
             string[] ports = SerialPort.GetPortNames();
 
-            if (ports.Length != ComboBox_COMPort.Items.Count)
+            if (ports.Length != Box.Items.Count)
             {
-                int CountItems = ComboBox_COMPort.Items.Count;
+                int CountItems = Box.Items.Count;
 
                 for (int i = 0; i < CountItems; i++)
                 {
-                    ComboBox_COMPort.Items.RemoveAt(0);
+                    Box.Items.RemoveAt(0);
                 }
 
                 foreach (string port in ports)
                 {
-                    ComboBox_COMPort.Items.Add(port);
+                    Box.Items.Add(port);
                 }
             }
         }
@@ -90,7 +95,7 @@ namespace TerminalProgram
 
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SearchSerialPorts();
+            SearchSerialPorts(ComboBox_COMPort);
         }
              
 
@@ -170,6 +175,8 @@ namespace TerminalProgram
                                 DeviceSettings.StopBits);
 
                 Device.SerialPortReceived += Device_SerialPortReceived;
+
+                TextBlock_DeviceStatus.Text = StatusMessage_Connected;
             }
             
             catch(Exception error)
@@ -185,7 +192,10 @@ namespace TerminalProgram
             try
             {
                 TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                    new Action(delegate () { TextBlock_RX.Text += e.RX; }));
+                    new Action(delegate () 
+                    { 
+                        TextBlock_RX.Text += e.RX; 
+                    }));
             }
 
             catch (Exception error)
@@ -201,6 +211,8 @@ namespace TerminalProgram
             try
             {
                 Device.Disconnect();
+
+                TextBlock_DeviceStatus.Text = StatusMessage_Disconnected;
             }
 
             catch(Exception error)
@@ -229,6 +241,7 @@ namespace TerminalProgram
                     MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", "Предупреждение",
                         MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK,
                         MessageBoxOptions.ServiceNotification);
+
                     return;
                 }
 
@@ -270,6 +283,15 @@ namespace TerminalProgram
             DeviceSettings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
         }
 
-        
+        private void SourceWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch(e.Key)
+            {
+                case Key.Enter:
+                    Button_Send_Click(Button_Send, new RoutedEventArgs());
+                    break;
+            }
+
+        }
     }
 }
