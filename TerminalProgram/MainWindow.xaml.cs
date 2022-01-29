@@ -12,18 +12,39 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 using System.IO.Ports;
-using TerminalProgram.Device;
+using SystemOfSaving;
+using Communication;
 
 namespace TerminalProgram
 {
-    public struct ConnectionData
+    public enum TypeOfMessage
     {
-        public string COMPort;
-        public string BaudRate;
-        public string Parity;
-        public string DataBits;
-        public string StopBits;
+        Char,
+        String
+    };
+
+    public enum ProgramDirectory
+    {
+        Settings
+    }
+
+    public static class UsedDirectories
+    {
+        private readonly static string Path_Settings = "Settings/";
+
+        public static string GetPath(ProgramDirectory Type)
+        {
+            switch (Type)
+            {
+                case ProgramDirectory.Settings:
+                    return Path_Settings;
+
+                default:
+                    throw new Exception("Выбрана неизвестный тип директории.");
+            }
+        }
     }
 
     /// <summary>
@@ -31,77 +52,210 @@ namespace TerminalProgram
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ConnectedDevice Device = new ConnectedDevice();
-        private ConnectionData DeviceSettings = new ConnectionData();
-
-        private readonly string[] ArrayBaudRate = { "4800", "9600", "19200", "38400", "57600", "115200" };
-        private readonly string[] ArrayParity = { "None", "Even", "Odd" };
-        private readonly string[] ArrayDataBits = { "8", "9" };
-        private readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
-
-        private const string StatusMessage_Connected = "Устройство подключено";
-        private const string StatusMessage_Disconnected = "Нет подключенных устройств";
+        private Connection Device = new Connection();
 
         private char[] BytesToSend;
+
+        private readonly SettingsMediator SettingsManager = new SettingsMediator();
+        private DeviceData Settings = new DeviceData();
+
+        string[] PresetFiles;
+
+        private string SettingsDocument
+        {
+            get
+            {
+                Properties.Settings.Default.Reload();
+                return Properties.Settings.Default.SettingsDocument;
+            }
+
+            set
+            {
+                Properties.Settings.Default.SettingsDocument = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private TypeOfMessage MessageType;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            RadioButton_SerialPort.IsChecked = true;
-
-            ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent, 
-                new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
-
-            ComboBoxFilling(ComboBox_BaudRate, ref ArrayBaudRate);
-            ComboBoxFilling(ComboBox_Parity, ref ArrayParity);
-            ComboBoxFilling(ComboBox_DataBits, ref ArrayDataBits);
-            ComboBoxFilling(ComboBox_StopBits, ref ArrayStopBits);
-
-        }
-
-        private void ComboBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            SearchSerialPorts(ComboBox_COMPort);
-        }
-
-        private void SearchSerialPorts(ComboBox Box)
-        {
-            string[] ports = SerialPort.GetPortNames();
-
-            if (ports.Length != Box.Items.Count)
-            {
-                int CountItems = Box.Items.Count;
-
-                for (int i = 0; i < CountItems; i++)
-                {
-                    Box.Items.RemoveAt(0);
-                }
-
-                foreach (string port in ports)
-                {
-                    Box.Items.Add(port);
-                }
-            }
-        }
-
-        private void ComboBoxFilling(ComboBox Box, ref string[] Items)
-        {
-            for (int i = 0; i < Items.Length; i++)
-            {
-                Box.Items.Add(Items[i]);
-            }
         }
 
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SearchSerialPorts(ComboBox_COMPort);
+            SetUI_Disconnected();
+
+            RadioButton_Char.IsChecked = true;
+
+            bool Error_SettingsDocument = false;
+            
+
+            try
+            {
+                if (Directory.Exists(UsedDirectories.GetPath(ProgramDirectory.Settings)) == false)
+                {
+                    MessageBox.Show("Не найдена директория для хранения пресетов ( " +
+                        UsedDirectories.GetPath(ProgramDirectory.Settings) + " ).\n\n" +
+                        "Данная директория будет создана рядом с исполняемым файлом.\n\n" +
+                        "Нажмите ОК для продолжения.",
+                        "Ошибка", MessageBoxButton.OK,
+                        MessageBoxImage.Error, MessageBoxResult.OK);
+
+                    Directory.CreateDirectory(UsedDirectories.GetPath(ProgramDirectory.Settings));
+                }
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Не удалось создать папку для хранения пресетов.\n\n" + error.Message,
+                    "Ошибка", MessageBoxButton.OK,
+                    MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+
+            try
+            {
+                SystemOfPresets.FindFilesOfPresets(ref PresetFiles);
+
+                for (int i = 0; i < PresetFiles.Length; i++)
+                {
+                    ComboBox_SelectedPreset.Items.Add(PresetFiles[i]);
+                }
+                
+                if (SettingsDocument == String.Empty)
+                {
+                    Error_SettingsDocument = true;
+
+                    MessageBox.Show("Файл настроек не определен.\n" +
+                        "Нажмите ОК и выберите один из доступных пресетов в появившемся окне.",
+                        "Ошибка", MessageBoxButton.OK,
+                        MessageBoxImage.Error, MessageBoxResult.OK);
+
+                    Select window = new Select(ref PresetFiles, "Выберите пресет");
+                    window.ShowDialog();
+
+                    if (window.SelectedDocumentPath != String.Empty)
+                    {
+                        SettingsDocument = window.SelectedDocumentPath;
+                        Error_SettingsDocument = false;
+                    }
+
+                    else
+                    {
+                        MessageBox.Show("Пресет не выбран, программа будет закрыта.",
+                            "Предупреждение", MessageBoxButton.OK,
+                            MessageBoxImage.Warning, MessageBoxResult.OK);
+                    }
+                }
+
+                else
+                {
+                    bool FileIsExisting = false;
+
+                    foreach (string Path in PresetFiles)
+                    {
+                        if (Path == SettingsDocument)
+                        {
+                            FileIsExisting = true;
+                            break;
+                        }
+                    }
+
+                    if (FileIsExisting == false)
+                    {
+                        Error_SettingsDocument = true;
+
+                        MessageBox.Show("Файл настроек \"" + SettingsDocument +
+                            "\" не найден в папке " + UsedDirectories.GetPath(ProgramDirectory.Settings) + ".\n" +
+                            "Нажмите ОК и выберите один из доступных пресетов в появившемся окне.",
+                            "Ошибка", MessageBoxButton.OK,
+                            MessageBoxImage.Error, MessageBoxResult.OK);
+
+                        Select window = new Select(ref PresetFiles, "Выберите пресет");
+                        window.ShowDialog();
+
+                        if (window.SelectedDocumentPath != String.Empty)
+                        {
+                            SettingsDocument = window.SelectedDocumentPath;
+                            Error_SettingsDocument = false;
+                        }
+
+                        else
+                        {
+                            MessageBox.Show("Пресет не выбран, программа будет закрыта.",
+                                "Предупреждение", MessageBoxButton.OK,
+                                MessageBoxImage.Warning, MessageBoxResult.OK);
+                        }
+                    }
+                }
+
+                if (Error_SettingsDocument)
+                {
+                    Application.Current.Shutdown();
+                    return;
+                }
+            }
+            catch(Exception error)
+            {
+                MessageBox.Show("Ошибка инициализации, программа будет закрыта.\n\n" + error.Message,
+                   "Ошибка", MessageBoxButton.OK,
+                   MessageBoxImage.Error, MessageBoxResult.OK);
+
+                Application.Current.Shutdown();
+                return;
+            }
+
+            UpdateDeviceData(SettingsDocument);
         }
-             
+        
+        private void UpdateDeviceData(string DocumentName)
+        {
+            try
+            {
+                SettingsManager.LoadSettingsFrom(UsedDirectories.GetPath(ProgramDirectory.Settings) + DocumentName + ".xml");
+
+                List<string> Devices = SettingsManager.GetAllDevicesNames();
+
+                if (Devices.Count > 0)
+                {
+                    Settings = SettingsManager.GetDeviceData(Devices[0]);
+
+                    ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
+                }
+
+                else
+                {
+                    MessageBox.Show("В документе " + UsedDirectories.GetPath(ProgramDirectory.Settings) + DocumentName +
+                        ".xml" + " нет настроек устройства. Создайте их в меню Настройки.", "Предупреждение", MessageBoxButton.OK,
+                        MessageBoxImage.Error, MessageBoxResult.OK);
+
+                    ComboBox_SelectedPreset.SelectedIndex = -1;
+                }
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Ошибка чтения данных из документа. Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                return;
+            }
+        }
+
+        private void SetUI_Connected()
+        {
+            Button_Connect.IsEnabled = false;
+            Button_Disconnect.IsEnabled = true;
+        }
+
+        private void SetUI_Disconnected()
+        {
+            Button_Connect.IsEnabled = true;
+            Button_Disconnect.IsEnabled = false;
+        }
 
         private void MenuPreset_Save_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void MenuPreset_LoadMenuHelp_Click(object sender, RoutedEventArgs e)
@@ -114,87 +268,58 @@ namespace TerminalProgram
 
         }
 
-        private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)
+        private void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            TextBlock_COMPort.Visibility = Visibility.Visible;
-            ComboBox_COMPort.Visibility = Visibility.Visible;
-            TextBlock_BaudRate.Visibility = Visibility.Visible;
-            ComboBox_BaudRate.Visibility = Visibility.Visible;
-            TextBlock_Parity.Visibility = Visibility.Visible;
-            ComboBox_Parity.Visibility = Visibility.Visible;
-            TextBlock_DataBits.Visibility = Visibility.Visible;
-            ComboBox_DataBits.Visibility = Visibility.Visible;
-            TextBlock_StopBits.Visibility = Visibility.Visible;
-            ComboBox_StopBits.Visibility = Visibility.Visible;
-
-            TextBlock_IP.Visibility = Visibility.Hidden;
-            TextBox_IP.Visibility = Visibility.Hidden;
-            TextBlock_Port.Visibility = Visibility.Hidden;
-            TextBox_Port.Visibility = Visibility.Hidden;
-
-        }
-
-        private void RadioButton_Ethernet_Checked(object sender, RoutedEventArgs e)
-        {
-            TextBlock_COMPort.Visibility = Visibility.Hidden;
-            ComboBox_COMPort.Visibility = Visibility.Hidden;
-            TextBlock_BaudRate.Visibility = Visibility.Hidden;
-            ComboBox_BaudRate.Visibility = Visibility.Hidden;
-            TextBlock_Parity.Visibility = Visibility.Hidden;
-            ComboBox_Parity.Visibility = Visibility.Hidden;
-            TextBlock_DataBits.Visibility = Visibility.Hidden;
-            ComboBox_DataBits.Visibility = Visibility.Hidden;
-            TextBlock_StopBits.Visibility = Visibility.Hidden;
-            ComboBox_StopBits.Visibility = Visibility.Hidden;
-
-            TextBlock_IP.Visibility = Visibility.Visible;
-            TextBox_IP.Visibility = Visibility.Visible;
-            TextBlock_Port.Visibility = Visibility.Visible;
-            TextBox_Port.Visibility = Visibility.Visible;
-
-        }
-
-        private void TextBox_IP_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void TextBox_Port_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
+            if (ComboBox_SelectedPreset.SelectedItem != null)
+            {
+                UpdateDeviceData(ComboBox_SelectedPreset.SelectedItem.ToString());
+            }
         }
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                Device.Connect(DeviceSettings.COMPort,
-                                Convert.ToInt32(DeviceSettings.BaudRate),
-                                DeviceSettings.Parity,
-                                Convert.ToInt32(DeviceSettings.DataBits),
-                                DeviceSettings.StopBits);
+                switch (Settings.TypeOfConnection)
+                {
+                    case "SerialPort":
+                        Device.Connect(Settings.COMPort,
+                                Convert.ToInt32(Settings.BaudRate),
+                                Settings.Parity,
+                                Convert.ToInt32(Settings.DataBits),
+                                Settings.StopBits);
+                        break;
 
-                Device.SerialPortReceived += Device_SerialPortReceived;
+                    case "Ethernet":
+                        Device.Connect(Settings.IP, 
+                            Convert.ToInt32(Settings.Port));
+                        break;
 
-                TextBlock_DeviceStatus.Text = StatusMessage_Connected;
+                    default:
+                        throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
+                }
+
+                Device.AsyncDataReceived += Device_AsyncDataReceived;
+
+                SetUI_Connected();
             }
             
             catch(Exception error)
             {
-                MessageBox.Show("Возникла ошибка при подключении к устройству:\n" + error.Message, "Ошибка",
+                MessageBox.Show("Возникла ошибка при подключении к устройству:\n\n" + error.Message, "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
                     MessageBoxOptions.ServiceNotification);
             }
         }
 
-        private void Device_SerialPortReceived(object sender, DataFromDevice e)
+        private void Device_AsyncDataReceived(object sender, DataFromDevice e)
         {
             try
             {
                 TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                    new Action(delegate () 
-                    { 
-                        TextBlock_RX.Text += e.RX; 
+                    new Action(delegate
+                    {
+                        TextBlock_RX.Text += e.RX;
                     }));
             }
 
@@ -206,13 +331,14 @@ namespace TerminalProgram
             }
         }
 
+
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 Device.Disconnect();
 
-                TextBlock_DeviceStatus.Text = StatusMessage_Disconnected;
+                SetUI_Disconnected();
             }
 
             catch(Exception error)
@@ -229,13 +355,17 @@ namespace TerminalProgram
             {
                 BytesToSend = TextBox_TX.Text.ToCharArray();
             }
-            
         }
 
         private void Button_Send_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                if (MessageType == TypeOfMessage.Char)
+                {
+                    return;
+                }
+
                 if (BytesToSend == null)
                 {
                     MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", "Предупреждение",
@@ -245,7 +375,7 @@ namespace TerminalProgram
                     return;
                 }
 
-                Device.Send(ref BytesToSend);
+                Device.Send(new string(BytesToSend));
                 TextBox_TX.Text = String.Empty;
                 BytesToSend = null;
             }
@@ -258,31 +388,6 @@ namespace TerminalProgram
             }
         }
 
-        private void ComboBox_COMPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DeviceSettings.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_BaudRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DeviceSettings.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_Parity_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DeviceSettings.Parity = ComboBox_Parity.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_DataBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DeviceSettings.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            DeviceSettings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
-        }
-
         private void SourceWindow_KeyDown(object sender, KeyEventArgs e)
         {
             switch(e.Key)
@@ -293,5 +398,36 @@ namespace TerminalProgram
             }
 
         }
+
+        private void MenuSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (PresetFiles == null || PresetFiles.Length == 0)
+            {
+                MessageBox.Show("Не найдено ни одно файла настроек.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            SettingsWindow Window = new SettingsWindow(UsedDirectories.GetPath(ProgramDirectory.Settings), ref PresetFiles)
+            {
+                Owner = this
+            };
+
+            Window.ShowDialog();
+        }
+
+        private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
+        {
+            Button_Send.IsEnabled = false;
+            MessageType = TypeOfMessage.Char;
+        }
+
+        private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
+        {
+            Button_Send.IsEnabled = true;
+            MessageType = TypeOfMessage.String;
+        }
+
+        
     }
 }
