@@ -59,7 +59,7 @@ namespace TerminalProgram
         private readonly SettingsMediator SettingsManager = new SettingsMediator();
         private DeviceData Settings = new DeviceData();
 
-        string[] PresetFiles;
+        string[] PresetFileNames;
 
         private string SettingsDocument
         {
@@ -85,127 +85,53 @@ namespace TerminalProgram
 
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SetUI_Disconnected();
-
-            RadioButton_Char.IsChecked = true;
-
-            bool Error_SettingsDocument = false;
-            
-
             try
             {
-                if (Directory.Exists(UsedDirectories.GetPath(ProgramDirectory.Settings)) == false)
+                Check.FilesDirectory();
+
+                SystemOfPresets.FindFilesOfPresets(ref PresetFileNames);
+
+                for (int i = 0; i < PresetFileNames.Length; i++)
                 {
-                    MessageBox.Show("Не найдена директория для хранения пресетов ( " +
-                        UsedDirectories.GetPath(ProgramDirectory.Settings) + " ).\n\n" +
-                        "Данная директория будет создана рядом с исполняемым файлом.\n\n" +
-                        "Нажмите ОК для продолжения.",
+                    ComboBox_SelectedPreset.Items.Add(PresetFileNames[i]);
+                }
+
+                if (Check.SettingsFile(ref PresetFileNames, SettingsDocument) == false)
+                {
+                    MessageBox.Show("Файл настроек не существует в папке " + UsedDirectories.GetPath(ProgramDirectory.Settings) +
+                        "\n\nНажмите ОК и выберите один из доступных пресетов в появившемся окне.",
                         "Ошибка", MessageBoxButton.OK,
                         MessageBoxImage.Error, MessageBoxResult.OK);
 
-                    Directory.CreateDirectory(UsedDirectories.GetPath(ProgramDirectory.Settings));
-                }
-            }
-            catch (Exception error)
-            {
-                MessageBox.Show("Не удалось создать папку для хранения пресетов.\n\n" + error.Message,
-                    "Ошибка", MessageBoxButton.OK,
-                    MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-
-            try
-            {
-                SystemOfPresets.FindFilesOfPresets(ref PresetFiles);
-
-                for (int i = 0; i < PresetFiles.Length; i++)
-                {
-                    ComboBox_SelectedPreset.Items.Add(PresetFiles[i]);
-                }
-                
-                if (SettingsDocument == String.Empty)
-                {
-                    Error_SettingsDocument = true;
-
-                    MessageBox.Show("Файл настроек не определен.\n" +
-                        "Нажмите ОК и выберите один из доступных пресетов в появившемся окне.",
-                        "Ошибка", MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.OK);
-
-                    Select window = new Select(ref PresetFiles, "Выберите пресет");
+                    Select window = new Select(ref PresetFileNames, "Выберите пресет");
                     window.ShowDialog();
 
                     if (window.SelectedDocumentPath != String.Empty)
                     {
                         SettingsDocument = window.SelectedDocumentPath;
-                        Error_SettingsDocument = false;
                     }
 
                     else
                     {
-                        MessageBox.Show("Пресет не выбран, программа будет закрыта.",
-                            "Предупреждение", MessageBoxButton.OK,
-                            MessageBoxImage.Warning, MessageBoxResult.OK);
+                        Application.Current.Shutdown();
+                        return;
                     }
                 }
 
-                else
-                {
-                    bool FileIsExisting = false;
+                SetUI_Disconnected();
 
-                    foreach (string Path in PresetFiles)
-                    {
-                        if (Path == SettingsDocument)
-                        {
-                            FileIsExisting = true;
-                            break;
-                        }
-                    }
+                RadioButton_Char.IsChecked = true;
 
-                    if (FileIsExisting == false)
-                    {
-                        Error_SettingsDocument = true;
-
-                        MessageBox.Show("Файл настроек \"" + SettingsDocument +
-                            "\" не найден в папке " + UsedDirectories.GetPath(ProgramDirectory.Settings) + ".\n" +
-                            "Нажмите ОК и выберите один из доступных пресетов в появившемся окне.",
-                            "Ошибка", MessageBoxButton.OK,
-                            MessageBoxImage.Error, MessageBoxResult.OK);
-
-                        Select window = new Select(ref PresetFiles, "Выберите пресет");
-                        window.ShowDialog();
-
-                        if (window.SelectedDocumentPath != String.Empty)
-                        {
-                            SettingsDocument = window.SelectedDocumentPath;
-                            Error_SettingsDocument = false;
-                        }
-
-                        else
-                        {
-                            MessageBox.Show("Пресет не выбран, программа будет закрыта.",
-                                "Предупреждение", MessageBoxButton.OK,
-                                MessageBoxImage.Warning, MessageBoxResult.OK);
-                        }
-                    }
-                }
-
-                if (Error_SettingsDocument)
-                {
-                    Application.Current.Shutdown();
-                    return;
-                }
+                UpdateDeviceData(SettingsDocument);
             }
-            catch(Exception error)
+
+            catch (Exception error)
             {
-                MessageBox.Show("Ошибка инициализации, программа будет закрыта.\n\n" + error.Message,
-                   "Ошибка", MessageBoxButton.OK,
-                   MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageBox.Show("Ошибка инициализации: \n\n" + error.Message + "\n\nПриложение будет закрыто.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 Application.Current.Shutdown();
-                return;
             }
-
-            UpdateDeviceData(SettingsDocument);
         }
         
         private void UpdateDeviceData(string DocumentName)
@@ -245,12 +171,43 @@ namespace TerminalProgram
         {
             Button_Connect.IsEnabled = false;
             Button_Disconnect.IsEnabled = true;
+
+            TextBox_TX.IsEnabled = true;
+
+            RadioButton_Char.IsEnabled = true;
+            RadioButton_String.IsEnabled = true;
+            Button_Send.IsEnabled = true;
+
+            TextBox_TX.Focus();
         }
 
         private void SetUI_Disconnected()
         {
             Button_Connect.IsEnabled = true;
             Button_Disconnect.IsEnabled = false;
+
+            TextBox_TX.IsEnabled = false;
+
+            RadioButton_Char.IsEnabled = false;
+            RadioButton_String.IsEnabled = false;
+            Button_Send.IsEnabled = false;
+        }
+
+        private void MenuSettings_Click(object sender, RoutedEventArgs e)
+        {
+            if (PresetFileNames == null || PresetFileNames.Length == 0)
+            {
+                MessageBox.Show("Не найдено ни одно файла настроек.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                return;
+            }
+
+            SettingsWindow Window = new SettingsWindow(UsedDirectories.GetPath(ProgramDirectory.Settings), ref PresetFileNames)
+            {
+                Owner = this
+            };
+
+            Window.ShowDialog();
         }
 
         private void MenuPreset_Save_Click(object sender, RoutedEventArgs e)
@@ -331,7 +288,6 @@ namespace TerminalProgram
             }
         }
 
-
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -351,9 +307,18 @@ namespace TerminalProgram
 
         private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (TextBox_TX.Text != String.Empty)
+            try
             {
-                BytesToSend = TextBox_TX.Text.ToCharArray();
+                if (TextBox_TX.Text != String.Empty && MessageType == TypeOfMessage.Char)
+                {
+                    Device.Send(TextBox_TX.Text.Substring(TextBox_TX.Text.Length - 1));
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
 
@@ -366,31 +331,45 @@ namespace TerminalProgram
                     return;
                 }
 
-                if (BytesToSend == null)
+                if (TextBox_TX.Text == String.Empty)
                 {
                     MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK,
-                        MessageBoxOptions.ServiceNotification);
+                        MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
 
                     return;
                 }
 
-                Device.Send(new string(BytesToSend));
-                TextBox_TX.Text = String.Empty;
-                BytesToSend = null;
+                Device.Send(TextBox_TX.Text);
             }
             
             catch(Exception error)
             {
                 MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
-                    MessageBoxOptions.ServiceNotification);
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
+        }
+
+        private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
+        {
+            Button_Send.IsEnabled = false;
+            MessageType = TypeOfMessage.Char; 
+            TextBox_TX.Text = String.Empty;
+
+            TextBox_TX.Focus();
+        }
+
+        private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
+        {
+            Button_Send.IsEnabled = true;
+            MessageType = TypeOfMessage.String;
+            TextBox_TX.Text = String.Empty;
+
+            TextBox_TX.Focus();
         }
 
         private void SourceWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            switch(e.Key)
+            switch (e.Key)
             {
                 case Key.Enter:
                     Button_Send_Click(Button_Send, new RoutedEventArgs());
@@ -398,36 +377,5 @@ namespace TerminalProgram
             }
 
         }
-
-        private void MenuSettings_Click(object sender, RoutedEventArgs e)
-        {
-            if (PresetFiles == null || PresetFiles.Length == 0)
-            {
-                MessageBox.Show("Не найдено ни одно файла настроек.", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                return;
-            }
-
-            SettingsWindow Window = new SettingsWindow(UsedDirectories.GetPath(ProgramDirectory.Settings), ref PresetFiles)
-            {
-                Owner = this
-            };
-
-            Window.ShowDialog();
-        }
-
-        private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
-        {
-            Button_Send.IsEnabled = false;
-            MessageType = TypeOfMessage.Char;
-        }
-
-        private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
-        {
-            Button_Send.IsEnabled = true;
-            MessageType = TypeOfMessage.String;
-        }
-
-        
     }
 }

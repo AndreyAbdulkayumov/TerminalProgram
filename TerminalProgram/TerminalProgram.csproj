@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Check.cs" />
     <Compile Include="Connection.cs" />
     <Compile Include="Select.xaml.cs">
       <DependentUpon>Select.xaml</DependentUpon>
