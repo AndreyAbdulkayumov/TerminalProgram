@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
         Title="Терминальная программа" 
-        Height="600" Width="780"
+        Height="640" Width="780"
         Background="#FF323232" 
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -34,47 +34,66 @@
             <Setter Property="ItemsControl.Background" Value="Aqua"/>
             <Setter Property="ItemsControl.BorderThickness" Value="0"/>
         </Style>
-        
+
+        <Style TargetType="RadioButton">
+            <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="Menu">
+
+            <Style.Setters>
+                <Setter Property="MenuItem.Foreground" Value="#FFE6E6E6"/>
+                <Setter Property="MenuItem.FontSize" Value="12"/>
+                <Setter Property="MenuItem.Background" Value="#FF323232"/>
+                <Setter Property="MenuItem.BorderBrush" Value="{x:Null}"/>
+                <Setter Property="MenuItem.BorderThickness" Value="0"/>
+                <Setter Property="MenuItem.Height" Value="20"/>
+            </Style.Setters>
+
+            <Style.Triggers>
+                <Trigger Property="MenuItem.IsMouseOver" Value="True">
+                    <Setter Property="MenuItem.Foreground" Value="Red"/>
+                    <Setter Property="MenuItem.Background" Value="Green"/>
+                </Trigger>
+            </Style.Triggers>
+
+        </Style>
+
     </Window.Resources>
-    
+
     <Grid>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Height="20" Width="774" Background="Silver" OpacityMask="White"
-                   VerticalAlignment="Top" HorizontalAlignment="Left">
-            
-            <Menu DockPanel.Dock="Top" BorderBrush="White" Width="1000" 
-                  HorizontalAlignment="Left" Background="#FFE0DCDC">
+        <Menu Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top">
 
-                <MenuItem Header="Настройки" Name="MenuSettings" Click="MenuSettings_Click"/>
-                
-                <MenuItem Header="Пресет" Name="MenuPreset">
-                    <MenuItem Header="Сохранить" Name="MenuPreset_Save" Click="MenuPreset_Save_Click"/>
-                    <MenuItem Header="Загрузить" Name="MenuPreset_Load" Click="MenuPreset_LoadMenuHelp_Click"/>
-                </MenuItem>
+            <MenuItem Header="Настройки" Name="MenuSettings" Click="MenuSettings_Click" Style="{StaticResource Menu}"/>
 
-                <MenuItem Header="Помощь" Name="MenuHelp" Click="MenuHelp_Click"/>
+            <MenuItem Header="Пресет" Name="MenuPreset">
+                <MenuItem Header="Сохранить" Name="MenuPreset_Save" Click="MenuPreset_Save_Click" Style="{StaticResource Menu}"/>
+                <MenuItem Header="Загрузить" Name="MenuPreset_Load" Click="MenuPreset_LoadMenuHelp_Click"/>
+            </MenuItem>
 
-            </Menu>
+            <MenuItem Header="Помощь" Name="MenuHelp" Click="MenuHelp_Click"/>
 
-        </DockPanel>
+        </Menu>
 
         <Grid Grid.Row="1">
-        
+
             <TextBlock Text="Выбранный пресет:" 
                        Margin="20,0,0,0" FontSize="16"
-                       HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FF9541F0"/>
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFD2C25A"/>
 
             <ComboBox x:Name="ComboBox_SelectedPreset"
                       Height="22" Width="160" Margin="175,0,0,0"
                       HorizontalAlignment="Left" VerticalAlignment="Center" 
                       SelectionChanged="ComboBox_SelectedPreset_SelectionChanged">
-                
+
             </ComboBox>
 
             <Button x:Name="Button_Connect"
@@ -98,73 +117,75 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <GroupBox Header="TX" Grid.Row="0" BorderBrush="Black">
-                
-                <Grid>
-                    
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="40"/>
-                    </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
 
-                    <TextBox x:Name="TextBox_TX" Grid.Row="0" 
-                             Style="{StaticResource TX_RX_Field}"
-                             TextChanged="TextBox_TX_TextChanged"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
 
-                    <CheckBox x:Name="CheckBox_CRCF" Grid.Row="1"
-                              Margin="60,0,0,0"
-                              Content="Окончание строки CR + LF"
-                              HorizontalAlignment="Left" VerticalAlignment="Center" Click="CheckBox_CRCF_Click"/>
+                <TextBox x:Name="TextBox_TX" Grid.Row="0" 
+                         Margin="10,0,10,0"
+                         Style="{StaticResource TX_RX_Field}"
+                         TextWrapping="Wrap"
+                         TextChanged="TextBox_TX_TextChanged"/>
 
-                    <RadioButton x:Name="RadioButton_Char" Grid.Row="1"
-                                 Margin="0,0,200,0" 
-                                 Content="Символ" 
-                                 HorizontalAlignment="Right" VerticalAlignment="Center" 
-                                 Checked="RadioButton_Char_Checked"/>
+                <CheckBox x:Name="CheckBox_CRCF" Grid.Row="1"
+                          Foreground="#FFD2C25A"
+                          FontSize="14"
+                          Margin="60,0,0,0"
+                          Content="Окончание строки CR + LF"
+                          HorizontalAlignment="Left" VerticalAlignment="Center"
+                          Click="CheckBox_CRCF_Click"/>
 
-                    <RadioButton x:Name="RadioButton_String" Grid.Row="1" 
-                                 Margin="0,0,130,0" 
-                                 Content="Строка"
-                                 HorizontalAlignment="Right" VerticalAlignment="Center" 
-                                 Checked="RadioButton_String_Checked"/>
-                    
-                    <Button x:Name="Button_Send" Grid.Row="1"
-                            Margin="0,0,20,0" Height="25" Width="80" 
-                            Content="Отправить"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Click="Button_Send_Click"/>
-                    
-                </Grid>
+                <RadioButton x:Name="RadioButton_Char" Grid.Row="1"
+                             Margin="0,0,200,0" 
+                             Content="Символ" 
+                             HorizontalAlignment="Right" VerticalAlignment="Center" 
+                             Checked="RadioButton_Char_Checked"/>
 
-            </GroupBox>
+                <RadioButton x:Name="RadioButton_String" Grid.Row="1" 
+                             Margin="0,0,130,0" 
+                             Content="Строка"
+                             HorizontalAlignment="Right" VerticalAlignment="Center" 
+                             Checked="RadioButton_String_Checked"/>
 
-            <GroupBox Header="RX" Grid.Row="1" BorderBrush="Black">
+                <Button x:Name="Button_Send" Grid.Row="1"
+                        Margin="0,0,20,0" Height="25" Width="80" 
+                        Content="Отправить"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="Button_Send_Click"/>
 
-                <Grid>
-                    
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="40"/>
-                    </Grid.RowDefinitions>
+            </Grid>
 
-                    <ScrollViewer x:Name="ScrollViewer_RX" Grid.Row="0" VerticalContentAlignment="Stretch" Style="{StaticResource TX_RX_Field}">
+            <Grid Grid.Row="1">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0" Margin="10,0,10,0" Style="{StaticResource TX_RX_Field}">
+
+                    <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
 
                         <TextBlock x:Name="TextBlock_RX"/>
 
                     </ScrollViewer>
 
-                    <Button x:Name="Button_ClearFieldRX" Grid.Row="1"
-                            Margin="0,0,20,0" Height="25" Width="100" 
-                            Content="Очистить поле"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Click="Button_ClearFieldRX_Click"/>
+                </Border>
 
-                </Grid>
-                
-            </GroupBox>
+
+                <Button x:Name="Button_ClearFieldRX" Grid.Row="1"
+                        Margin="0,0,20,0" Height="25" Width="100" 
+                        Content="Очистить поле"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Click="Button_ClearFieldRX_Click"/>
+
+            </Grid>
 
         </Grid>
-        
+
     </Grid>
-    
+
 </Window>
