@@ -5,8 +5,37 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Title="Терминальная программа" Height="500" Width="780" Background="Silver" 
-        ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="SourceWindow_Loaded" KeyDown="SourceWindow_KeyDown">
+        Title="Терминальная программа" 
+        Height="600" Width="780"
+        Background="#FF323232" 
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Loaded="SourceWindow_Loaded"
+        KeyDown="SourceWindow_KeyDown">
+
+    <Window.Resources>
+
+        <Style x:Key="TX_RX_Field">
+            <Setter Property="ItemsControl.Background" Value="#FF464646"/>
+            <Setter Property="ItemsControl.Foreground" Value="WhiteSmoke"/>
+            <Setter Property="ItemsControl.BorderBrush" Value="#FFABABAB"/>
+            <Setter Property="ItemsControl.BorderThickness" Value="1"/>
+            <Setter Property="ItemsControl.FontSize" Value="16"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="ItemsControl.Background" Value="#FFB0B0B9"/>
+            <Setter Property="ItemsControl.BorderBrush" Value="{x:Null}"/>
+            <Setter Property="ItemsControl.BorderThickness" Value="0"/>
+            <Setter Property="ItemsControl.Foreground" Value="Black"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="ItemsControl.Background" Value="Aqua"/>
+            <Setter Property="ItemsControl.BorderThickness" Value="0"/>
+        </Style>
+        
+    </Window.Resources>
     
     <Grid>
         
@@ -39,11 +68,14 @@
         
             <TextBlock Text="Выбранный пресет:" 
                        Margin="20,0,0,0" FontSize="16"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                       HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FF9541F0"/>
 
-            <ComboBox x:Name="ComboBox_SelectedPreset" 
+            <ComboBox x:Name="ComboBox_SelectedPreset"
                       Height="22" Width="160" Margin="175,0,0,0"
-                      HorizontalAlignment="Left" VerticalAlignment="Center" SelectionChanged="ComboBox_SelectedPreset_SelectionChanged"/>
+                      HorizontalAlignment="Left" VerticalAlignment="Center" 
+                      SelectionChanged="ComboBox_SelectedPreset_SelectionChanged">
+                
+            </ComboBox>
 
             <Button x:Name="Button_Connect"
                     Margin="380,0,0,0" Height="25" Width="80" 
@@ -67,21 +99,22 @@
             </Grid.RowDefinitions>
 
             <GroupBox Header="TX" Grid.Row="0" BorderBrush="Black">
+                
                 <Grid>
+                    
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
-                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
 
                     <TextBox x:Name="TextBox_TX" Grid.Row="0" 
-                             Background="#FFD6D6D6"
+                             Style="{StaticResource TX_RX_Field}"
                              TextChanged="TextBox_TX_TextChanged"/>
-                    
-                    <Button x:Name="Button_Send" Grid.Row="1"
-                            Margin="0,0,20,0" Height="25" Width="80" 
-                            Content="Отправить"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Click="Button_Send_Click"/>
+
+                    <CheckBox x:Name="CheckBox_CRCF" Grid.Row="1"
+                              Margin="60,0,0,0"
+                              Content="Окончание строки CR + LF"
+                              HorizontalAlignment="Left" VerticalAlignment="Center" Click="CheckBox_CRCF_Click"/>
 
                     <RadioButton x:Name="RadioButton_Char" Grid.Row="1"
                                  Margin="0,0,200,0" 
@@ -94,18 +127,44 @@
                                  Content="Строка"
                                  HorizontalAlignment="Right" VerticalAlignment="Center" 
                                  Checked="RadioButton_String_Checked"/>
+                    
+                    <Button x:Name="Button_Send" Grid.Row="1"
+                            Margin="0,0,20,0" Height="25" Width="80" 
+                            Content="Отправить"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Click="Button_Send_Click"/>
+                    
                 </Grid>
 
             </GroupBox>
 
-            <GroupBox Header="RX" Grid.Row="1" Background="#FFD6D6D6" BorderBrush="Black">
-                <TextBlock x:Name="TextBlock_RX"/>
+            <GroupBox Header="RX" Grid.Row="1" BorderBrush="Black">
+
+                <Grid>
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer x:Name="ScrollViewer_RX" Grid.Row="0" VerticalContentAlignment="Stretch" Style="{StaticResource TX_RX_Field}">
+
+                        <TextBlock x:Name="TextBlock_RX"/>
+
+                    </ScrollViewer>
+
+                    <Button x:Name="Button_ClearFieldRX" Grid.Row="1"
+                            Margin="0,0,20,0" Height="25" Width="100" 
+                            Content="Очистить поле"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Click="Button_ClearFieldRX_Click"/>
+
+                </Grid>
+                
             </GroupBox>
 
         </Grid>
         
-        
-        
-
     </Grid>
+    
 </Window>

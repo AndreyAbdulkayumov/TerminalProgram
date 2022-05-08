@@ -54,12 +54,10 @@ namespace TerminalProgram
     {
         private Connection Device = new Connection();
 
-        private char[] BytesToSend;
-
         private readonly SettingsMediator SettingsManager = new SettingsMediator();
         private DeviceData Settings = new DeviceData();
 
-        string[] PresetFileNames;
+        private string[] PresetFileNames;
 
         private string SettingsDocument
         {
@@ -174,9 +172,19 @@ namespace TerminalProgram
 
             TextBox_TX.IsEnabled = true;
 
+            CheckBox_CRCF.IsEnabled = true;
             RadioButton_Char.IsEnabled = true;
             RadioButton_String.IsEnabled = true;
-            Button_Send.IsEnabled = true;
+
+            if (RadioButton_String.IsChecked == true)
+            {
+                Button_Send.IsEnabled = true;
+            }
+            
+            else
+            {
+                Button_Send.IsEnabled = false;
+            }
 
             TextBox_TX.Focus();
         }
@@ -188,6 +196,7 @@ namespace TerminalProgram
 
             TextBox_TX.IsEnabled = false;
 
+            CheckBox_CRCF.IsEnabled = false;
             RadioButton_Char.IsEnabled = false;
             RadioButton_String.IsEnabled = false;
             Button_Send.IsEnabled = false;
@@ -277,6 +286,7 @@ namespace TerminalProgram
                     new Action(delegate
                     {
                         TextBlock_RX.Text += e.RX;
+                        ScrollViewer_RX.ScrollToEnd();
                     }));
             }
 
@@ -322,6 +332,31 @@ namespace TerminalProgram
             }
         }
 
+        private void CheckBox_CRCF_Click(object sender, RoutedEventArgs e)
+        {
+            TextBox_TX.Focus();
+        }
+
+        private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
+        {
+            Button_Send.IsEnabled = false;
+
+            MessageType = TypeOfMessage.Char; 
+            TextBox_TX.Text = String.Empty;
+            
+            TextBox_TX.Focus();
+        }
+
+        private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
+        {
+            Button_Send.IsEnabled = true;
+
+            MessageType = TypeOfMessage.String;
+            TextBox_TX.Text = String.Empty;
+
+            TextBox_TX.Focus();
+        }
+
         private void Button_Send_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -339,32 +374,22 @@ namespace TerminalProgram
                     return;
                 }
 
-                Device.Send(TextBox_TX.Text);
+                if (CheckBox_CRCF.IsChecked == true)
+                {
+                    Device.Send(TextBox_TX.Text + "\r\n");
+                }
+
+                else
+                {
+                    Device.Send(TextBox_TX.Text);
+                }
             }
-            
-            catch(Exception error)
+
+            catch (Exception error)
             {
                 MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
-        }
-
-        private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
-        {
-            Button_Send.IsEnabled = false;
-            MessageType = TypeOfMessage.Char; 
-            TextBox_TX.Text = String.Empty;
-
-            TextBox_TX.Focus();
-        }
-
-        private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
-        {
-            Button_Send.IsEnabled = true;
-            MessageType = TypeOfMessage.String;
-            TextBox_TX.Text = String.Empty;
-
-            TextBox_TX.Focus();
         }
 
         private void SourceWindow_KeyDown(object sender, KeyEventArgs e)
@@ -375,7 +400,13 @@ namespace TerminalProgram
                     Button_Send_Click(Button_Send, new RoutedEventArgs());
                     break;
             }
+        }
 
+        private void Button_ClearFieldRX_Click(object sender, RoutedEventArgs e)
+        {
+            TextBlock_RX.Text = String.Empty;
+
+            TextBox_TX.Focus();
         }
     }
 }
