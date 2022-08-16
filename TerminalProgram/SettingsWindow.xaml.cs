@@ -21,6 +21,9 @@ namespace TerminalProgram
     /// </summary>
     public partial class SettingsWindow : Window
     {
+        public bool SettingsIsChanged { get; private set; } = false;
+        public string SettingsDocument { get; private set; }
+
         private readonly string[] ArrayBaudRate = { "4800", "9600", "19200", "38400", "57600", "115200" };
         private readonly string[] ArrayParity = { "None", "Even", "Odd" };
         private readonly string[] ArrayDataBits = { "8", "9" };
@@ -40,6 +43,7 @@ namespace TerminalProgram
             ComboBox_SelectedDevice.SelectedIndex = 0;
 
             SettingsDocumentPath = Directory + PresetFiles[0] + ".xml";
+            SettingsDocument = PresetFiles[0];
 
             ComboBoxFilling(ComboBox_BaudRate, ref ArrayBaudRate);
             ComboBoxFilling(ComboBox_Parity, ref ArrayParity);
@@ -267,6 +271,8 @@ namespace TerminalProgram
         {
             SettingsManager.Save(Settings);
 
+            SettingsIsChanged = true;
+
             MessageBox.Show("Настройки успешно сохранены!", "",
                     MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
         }
@@ -292,7 +298,7 @@ namespace TerminalProgram
 
         private void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            SettingsDocument = ComboBox_SelectedDevice.SelectedItem.ToString();
         }
     }
 }

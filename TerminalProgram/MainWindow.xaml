@@ -5,23 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Title="Терминальная программа" 
-        Height="640" Width="780"
+        Title="Терминальная программа (версия 1.0.0)" 
+        Height="680" Width="780"
         Background="#FF323232" 
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Loaded="SourceWindow_Loaded"
-        KeyDown="SourceWindow_KeyDown">
+        Loaded="SourceWindow_Loaded">
 
     <Window.Resources>
-
-        <Style x:Key="TX_RX_Field">
-            <Setter Property="ItemsControl.Background" Value="#FF464646"/>
-            <Setter Property="ItemsControl.Foreground" Value="WhiteSmoke"/>
-            <Setter Property="ItemsControl.BorderBrush" Value="#FFABABAB"/>
-            <Setter Property="ItemsControl.BorderThickness" Value="1"/>
-            <Setter Property="ItemsControl.FontSize" Value="16"/>
-        </Style>
 
         <Style TargetType="Button">
             <Setter Property="ItemsControl.Background" Value="#FFB0B0B9"/>
@@ -66,7 +57,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
@@ -74,115 +65,54 @@
 
             <MenuItem Header="Настройки" Name="MenuSettings" Click="MenuSettings_Click" Style="{StaticResource Menu}"/>
 
-            <MenuItem Header="Пресет" Name="MenuPreset">
-                <MenuItem Header="Сохранить" Name="MenuPreset_Save" Click="MenuPreset_Save_Click" Style="{StaticResource Menu}"/>
+            <MenuItem Header="Пресет" Name="MenuPreset" Style="{StaticResource Menu}">
+                <MenuItem Header="Сохранить" Name="MenuPreset_Save" Click="MenuPreset_Save_Click"/>
                 <MenuItem Header="Загрузить" Name="MenuPreset_Load" Click="MenuPreset_LoadMenuHelp_Click"/>
             </MenuItem>
-
-            <MenuItem Header="Помощь" Name="MenuHelp" Click="MenuHelp_Click"/>
 
         </Menu>
 
         <Grid Grid.Row="1">
 
             <TextBlock Text="Выбранный пресет:" 
-                       Margin="20,0,0,0" FontSize="16"
+                       Margin="20,0,0,40" FontSize="16"
                        HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFD2C25A"/>
 
             <ComboBox x:Name="ComboBox_SelectedPreset"
-                      Height="22" Width="160" Margin="175,0,0,0"
+                      Height="22" Width="160" Margin="175,0,0,40"
                       HorizontalAlignment="Left" VerticalAlignment="Center" 
                       SelectionChanged="ComboBox_SelectedPreset_SelectionChanged">
 
             </ComboBox>
 
             <Button x:Name="Button_Connect"
-                    Margin="380,0,0,0" Height="25" Width="80" 
+                    Margin="380,0,0,40" Height="25" Width="80" 
                     Content="Подключить"
                     HorizontalAlignment="Left" VerticalAlignment="Center"
                     Click="Button_Connect_Click"/>
 
             <Button x:Name="Button_Disconnect"
-                    Margin="480,0,0,0" Height="25" Width="80" 
+                    Margin="480,0,0,40" Height="25" Width="80" 
                     Content="Отключить"
                     HorizontalAlignment="Left" VerticalAlignment="Center"
                     Click="Button_Disconnect_Click"/>
+
+            <RadioButton x:Name="RadioButton_NoProtocol"
+                         Content="Без протокола"
+                         Margin="20,40,0,0"
+                         HorizontalAlignment="Left" VerticalAlignment="Center" Checked="RadioButton_NoProtocol_Checked"/>
+
+            <RadioButton x:Name="RadioButton_Protocol_Modbus"
+                         Content="Modbus"
+                         Margin="150,40,0,0"
+                         HorizontalAlignment="Left" VerticalAlignment="Center" Checked="RadioButton_Protocol_Modbus_Checked"/>
 
         </Grid>
 
         <Grid x:Name="Grid_Action" Grid.Row="2">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
-
-            <Grid Grid.Row="0">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
-
-                <TextBox x:Name="TextBox_TX" Grid.Row="0" 
-                         Margin="10,0,10,0"
-                         Style="{StaticResource TX_RX_Field}"
-                         TextWrapping="Wrap"
-                         TextChanged="TextBox_TX_TextChanged"/>
-
-                <CheckBox x:Name="CheckBox_CRCF" Grid.Row="1"
-                          Foreground="#FFD2C25A"
-                          FontSize="14"
-                          Margin="60,0,0,0"
-                          Content="Окончание строки CR + LF"
-                          HorizontalAlignment="Left" VerticalAlignment="Center"
-                          Click="CheckBox_CRCF_Click"/>
-
-                <RadioButton x:Name="RadioButton_Char" Grid.Row="1"
-                             Margin="0,0,200,0" 
-                             Content="Символ" 
-                             HorizontalAlignment="Right" VerticalAlignment="Center" 
-                             Checked="RadioButton_Char_Checked"/>
-
-                <RadioButton x:Name="RadioButton_String" Grid.Row="1" 
-                             Margin="0,0,130,0" 
-                             Content="Строка"
-                             HorizontalAlignment="Right" VerticalAlignment="Center" 
-                             Checked="RadioButton_String_Checked"/>
-
-                <Button x:Name="Button_Send" Grid.Row="1"
-                        Margin="0,0,20,0" Height="25" Width="80" 
-                        Content="Отправить"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Click="Button_Send_Click"/>
-
-            </Grid>
-
-            <Grid Grid.Row="1">
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"/>
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
-
-                <Border Grid.Row="0" Margin="10,0,10,0" Style="{StaticResource TX_RX_Field}">
-
-                    <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
-
-                        <TextBlock x:Name="TextBlock_RX"/>
-
-                    </ScrollViewer>
-
-                </Border>
-
-
-                <Button x:Name="Button_ClearFieldRX" Grid.Row="1"
-                        Margin="0,0,20,0" Height="25" Width="100" 
-                        Content="Очистить поле"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Click="Button_ClearFieldRX_Click"/>
-
-            </Grid>
+            <Frame x:Name="Frame_ActionUI" NavigationUIVisibility="Hidden"/>
+            
 
         </Grid>
 

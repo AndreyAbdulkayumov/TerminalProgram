@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 
-namespace Communication
+namespace TerminalProgram.Protocols
 {
     public enum CommunicationInterface
     {
@@ -23,7 +23,7 @@ namespace Communication
 
     public class Connection
     {
-        public string DeviceName { get; protected set; }
+        public string DeviceName { get; set; }
 
         /// <summary>
         /// Переменная, показывающая открыто ли соединение с устройством.
@@ -33,11 +33,11 @@ namespace Communication
         /// <summary>
         /// Переменная, показывающая была ли ошибка соединения с устройством. true - была ошибка.
         /// </summary>
-        public bool ErrorConnection { get; protected set; } = false;
+        public bool ErrorConnection { get; private set; } = false;
         /// <summary>
         /// Переменная, показывающая тип подключения. Известные типы находятся в перечислении CommunicationInterface в базовом классе.
         /// </summary>
-        protected CommunicationInterface TypeOfConnection { get; private set; }
+        public CommunicationInterface TypeOfConnection { get; private set; }
 
         private SerialPort DeviceSerialPort = null;
         private Socket DeviceLAN = null;
@@ -63,7 +63,7 @@ namespace Communication
             }
         }
 
-        protected void WaitResponse()
+        private void WaitResponse()
         {
             TimeoutCounter = 0;
             ErrorConnection = false;
@@ -416,7 +416,6 @@ namespace Communication
                 {
                     throw new Exception("Попытка обратиться к соединению по неизвестному или неопределенному интерфейсу");
                 }
-
             }
 
             catch (Exception error)

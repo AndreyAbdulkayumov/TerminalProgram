@@ -56,7 +56,15 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Check.cs" />
-    <Compile Include="Connection.cs" />
+    <Compile Include="Protocols\Connection.cs" />
+    <Compile Include="Protocols\Modbus\CRC_16.cs" />
+    <Compile Include="Protocols\Modbus\Modbus.cs" />
+    <Compile Include="Protocols\Modbus\UI_Modbus.xaml.cs">
+      <DependentUpon>UI_Modbus.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Protocols\NoProtocol\UI_NoProtocol.xaml.cs">
+      <DependentUpon>UI_NoProtocol.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Select.xaml.cs">
       <DependentUpon>Select.xaml</DependentUpon>
     </Compile>
@@ -76,6 +84,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Protocols\Modbus\UI_Modbus.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Protocols\NoProtocol\UI_NoProtocol.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Select.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace TerminalProgram.Protocols.Modbus
+{
+    public struct ModbusData
+    {
+        public int Register;
+        public int Data;
+
+        public ModbusData(int Register, int Data)
+        {
+            this.Register = Register;
+            this.Data = Data;
+        }
+    }
+
+    /// <summary>
+    /// Логика взаимодействия для Modbus.xaml
+    /// </summary>
+    public partial class UI_Modbus : Page
+    {
+        public DEVICE_RESPONSE CommonResponse = new DEVICE_RESPONSE();
+
+        private List<ModbusData> DataList = new List<ModbusData>();
+
+        private Modbus ModbusDevice = null;
+
+        private TypeOfModbus ModbusType;
+
+        private UInt16 PackageNumber = 0;
+
+        public UI_Modbus(MainWindow window, Connection ConnectedDevice)
+        {
+            InitializeComponent();
+
+            window.DeviceIsConnect += MainWindow_DeviceIsConnect;
+            window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
+
+            ModbusDevice = new Modbus(ConnectedDevice);
+
+            SetUI_Disconnected();
+        }
+
+        private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
+        {
+            if (e.ConnectedDevice.IsConnected)
+            {
+                if (e.ConnectedDevice.TypeOfConnection == CommunicationInterface.Ethernet)
+                {
+                    ModbusType = TypeOfModbus.TCP;
+                }
+
+                else
+                {
+                    ModbusType = TypeOfModbus.RTU;
+                }
+
+                SetUI_Connected();
+            }            
+        }
+
+        private void MainWindow_DeviceIsDisconnected(object sender, ConnectArgs e)
+        {
+            SetUI_Disconnected();
+        }
+
+        private void SetUI_Connected()
+        {
+            TextBlock_ModbusMode.Text = "Modbus " + ModbusType.ToString();
+
+            TextBox_Address.IsEnabled = true;
+            TextBox_Data.IsEnabled = true;
+
+            Button_Write.IsEnabled = true;
+            Button_Read.IsEnabled = true;
+        }
+
+        private void SetUI_Disconnected()
+        {
+            TextBlock_ModbusMode.Text = "не определено";
+
+            TextBox_Address.IsEnabled = false;
+            TextBox_Data.IsEnabled = false;
+
+            TextBox_Address.Text = "";
+            TextBox_Data.Text = "";
+
+            Button_Write.IsEnabled = false;
+            Button_Read.IsEnabled = false;
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            DataList.Add(new ModbusData(1, 0));
+            DataList.Add(new ModbusData(2, 43));
+            DataList.Add(new ModbusData(1, 43));
+            DataList.Add(new ModbusData(4, 0));
+
+            //DataGrid_History.ItemsSource = DataList;
+        }
+
+        private void Button_Read_Click(object sender, RoutedEventArgs e)
+        {
+            UInt16 Data = ModbusDevice.ReadRegister(
+                PackageNumber, 
+                Convert.ToUInt16(TextBox_Address.Text), 
+                out CommonResponse, 
+                2, 
+                false);
+
+            PackageNumber++;
+
+            TextBlock_RX.Text = Data.ToString();
+        }
+
+        private void Button_Write_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                TextBlock_RX.Text = "";
+
+                ModbusDevice.WriteRegister(
+                    PackageNumber,
+                    Convert.ToUInt16(TextBox_Address.Text),
+                    Convert.ToUInt16(TextBox_Data.Text),
+                    out CommonResponse,
+                    2,
+                    ModbusType,
+                    false);
+
+                PackageNumber++;
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Ошибка при нажатии на кнопку \"Записать\".\n\n" + error.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+    }
+}

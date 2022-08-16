@@ -1,0 +1,95 @@
+﻿<Page x:Class="TerminalProgram.Protocols.Modbus.UI_Modbus"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TerminalProgram.Protocols.Modbus"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800" Background="#FF323232"
+      Title="Modbus" Loaded="Page_Loaded">
+
+    <Grid>
+        
+        <TextBlock Text="Режим обмена данными:"
+                   Margin="20,10,0,0"
+                   FontSize="16"
+                   Foreground="#FFD2C25A"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        
+        <TextBlock x:Name="TextBlock_ModbusMode"
+                   Text="не определено"
+                   Margin="220,10,0,0"
+                   FontSize="16"
+                   Foreground="#FFFFAD1B"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        
+        <TextBlock Text="Адрес"
+                   Margin="220,60,0,0"
+                   FontSize="16"
+                   Foreground="#FFD2C25A"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <TextBox x:Name="TextBox_Address"
+                 Height="20" Width="60"
+                 Margin="290,62,0,0"
+                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <TextBlock Text="Значение"
+                   Margin="410,60,0,0"
+                   FontSize="16"
+                   Foreground="#FFD2C25A"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <TextBox x:Name="TextBox_Data"
+                 Height="20" Width="60"
+                 Margin="500,62,0,0"
+                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <Button x:Name="Button_Read"
+                Content="Прочитать"
+                Width="80" Height="25"
+                Margin="0,110,180,0"
+                HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_Read_Click"/>
+
+        <Button x:Name="Button_Write"
+                Content="Записать"
+                Width="80" Height="25"
+                Margin="180,110,0,0"
+                HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_Write_Click"/>
+
+        <TextBlock Text="Прочитанные данные:"
+                   FontSize="18"
+                   Foreground="#FFD2C25A"
+                   Margin="180,200,0,0"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        
+        <TextBlock x:Name="TextBlock_RX"
+                   FontSize="18"
+                   Foreground="#FFFFAD1B"
+                   Margin="380,200,0,0"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <!--
+        <DataGrid x:Name="DataGrid_History" AutoGenerateColumns="False"
+                  Background="#FF464646"
+                  BorderBrush="#FFABABAB"
+                  BorderThickness="1"
+                  RowBackground="#FF464646"
+                  AlternatingRowBackground="#FFBBBBBB"
+                  HorizontalGridLinesBrush="#FFABABAB"
+                  VerticalGridLinesBrush="#FFABABAB"
+                  ColumnHeaderHeight="30"
+                  Width="600" Height="300"
+                  Margin="0,100,0,0"
+                  HorizontalAlignment="Center" VerticalAlignment="Top">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Адрес" Binding="{Binding Path=Address}" Width="150"/>
+                <DataGridTextColumn Header="Значение" Binding="{Binding Path=Data}" Width="300"/>
+            </DataGrid.Columns>
+
+
+        </DataGrid>
+        -->
+    </Grid>
+</Page>

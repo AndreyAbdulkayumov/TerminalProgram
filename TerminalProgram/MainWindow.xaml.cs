@@ -15,16 +15,12 @@ using System.Windows.Shapes;
 using System.IO;
 using System.IO.Ports;
 using SystemOfSaving;
-using Communication;
+using TerminalProgram.Protocols;
+using TerminalProgram.Protocols.NoProtocol;
+using TerminalProgram.Protocols.Modbus;
 
 namespace TerminalProgram
 {
-    public enum TypeOfMessage
-    {
-        Char,
-        String
-    };
-
     public enum ProgramDirectory
     {
         Settings
@@ -47,17 +43,33 @@ namespace TerminalProgram
         }
     }
 
+    public class ConnectArgs : EventArgs
+    {
+        public Connection ConnectedDevice;
+
+        public ConnectArgs(Connection ConnectedDevice)
+        {
+            this.ConnectedDevice = ConnectedDevice;
+        }
+    }
+
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        public event EventHandler<ConnectArgs> DeviceIsConnect;
+        public event EventHandler<ConnectArgs> DeviceIsDisconnected;
+
         private Connection Device = new Connection();
 
         private readonly SettingsMediator SettingsManager = new SettingsMediator();
         private DeviceData Settings = new DeviceData();
 
         private string[] PresetFileNames;
+
+        private UI_NoProtocol NoProtocolPage = null;
+        private UI_Modbus ModbusPage = null;
 
         private string SettingsDocument
         {
@@ -73,8 +85,6 @@ namespace TerminalProgram
                 Properties.Settings.Default.Save();
             }
         }
-
-        private TypeOfMessage MessageType;
 
         public MainWindow()
         {
@@ -118,7 +128,25 @@ namespace TerminalProgram
 
                 SetUI_Disconnected();
 
-                RadioButton_Char.IsChecked = true;
+                NoProtocolPage = new UI_NoProtocol(this, Device)
+                {
+                    Height = Grid_Action.ActualHeight,
+                    Width = Grid_Action.ActualWidth,
+
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+
+                ModbusPage = new UI_Modbus(this, Device)
+                {
+                    Height = Grid_Action.ActualHeight,
+                    Width = Grid_Action.ActualWidth,
+
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+
+                RadioButton_NoProtocol.IsChecked = true;
 
                 UpdateDeviceData(SettingsDocument);
             }
@@ -156,6 +184,7 @@ namespace TerminalProgram
                     ComboBox_SelectedPreset.SelectedIndex = -1;
                 }
             }
+
             catch (Exception error)
             {
                 MessageBox.Show("Ошибка чтения данных из документа. Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message, "Ошибка",
@@ -163,43 +192,6 @@ namespace TerminalProgram
 
                 return;
             }
-        }
-
-        private void SetUI_Connected()
-        {
-            Button_Connect.IsEnabled = false;
-            Button_Disconnect.IsEnabled = true;
-
-            TextBox_TX.IsEnabled = true;
-
-            CheckBox_CRCF.IsEnabled = true;
-            RadioButton_Char.IsEnabled = true;
-            RadioButton_String.IsEnabled = true;
-
-            if (RadioButton_String.IsChecked == true)
-            {
-                Button_Send.IsEnabled = true;
-            }
-            
-            else
-            {
-                Button_Send.IsEnabled = false;
-            }
-
-            TextBox_TX.Focus();
-        }
-
-        private void SetUI_Disconnected()
-        {
-            Button_Connect.IsEnabled = true;
-            Button_Disconnect.IsEnabled = false;
-
-            TextBox_TX.IsEnabled = false;
-
-            CheckBox_CRCF.IsEnabled = false;
-            RadioButton_Char.IsEnabled = false;
-            RadioButton_String.IsEnabled = false;
-            Button_Send.IsEnabled = false;
         }
 
         private void MenuSettings_Click(object sender, RoutedEventArgs e)
@@ -217,6 +209,12 @@ namespace TerminalProgram
             };
 
             Window.ShowDialog();
+
+            if (Window.SettingsIsChanged)
+            {
+                SettingsDocument = Window.SettingsDocument;
+                UpdateDeviceData(SettingsDocument);
+            }
         }
 
         private void MenuPreset_Save_Click(object sender, RoutedEventArgs e)
@@ -225,11 +223,6 @@ namespace TerminalProgram
         }
 
         private void MenuPreset_LoadMenuHelp_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MenuHelp_Click(object sender, RoutedEventArgs e)
         {
 
         }
@@ -265,9 +258,14 @@ namespace TerminalProgram
                         throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
                 }
 
-                Device.AsyncDataReceived += Device_AsyncDataReceived;
+                Device.DeviceName = Settings.DeviceName;
 
                 SetUI_Connected();
+
+                if (DeviceIsConnect != null)
+                {
+                    DeviceIsConnect(this, new ConnectArgs(Device));
+                }
             }
             
             catch(Exception error)
@@ -277,26 +275,7 @@ namespace TerminalProgram
                     MessageBoxOptions.ServiceNotification);
             }
         }
-
-        private void Device_AsyncDataReceived(object sender, DataFromDevice e)
-        {
-            try
-            {
-                TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
-                    new Action(delegate
-                    {
-                        TextBlock_RX.Text += e.RX;
-                        ScrollViewer_RX.ScrollToEnd();
-                    }));
-            }
-
-            catch (Exception error)
-            {
-                MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
-                    MessageBoxOptions.ServiceNotification);
-            }
-        }
+         
 
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
@@ -305,6 +284,11 @@ namespace TerminalProgram
                 Device.Disconnect();
 
                 SetUI_Disconnected();
+
+                if (DeviceIsDisconnected != null)
+                {
+                    DeviceIsDisconnected(this, new ConnectArgs(Device));
+                }
             }
 
             catch(Exception error)
@@ -315,98 +299,38 @@ namespace TerminalProgram
             }
         }
 
-        private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
+        private void SetUI_Connected()
         {
-            try
-            {
-                if (TextBox_TX.Text != String.Empty && MessageType == TypeOfMessage.Char)
-                {
-                    Device.Send(TextBox_TX.Text.Substring(TextBox_TX.Text.Length - 1));
-                }
-            }
+            Button_Connect.IsEnabled = false;
+            Button_Disconnect.IsEnabled = true;
 
-            catch (Exception error)
-            {
-                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
+            MenuSettings.IsEnabled = false;
+            MenuPreset.IsEnabled = false;
         }
 
-        private void CheckBox_CRCF_Click(object sender, RoutedEventArgs e)
+        private void SetUI_Disconnected()
         {
-            TextBox_TX.Focus();
+            Button_Connect.IsEnabled = true;
+            Button_Disconnect.IsEnabled = false;
+
+            MenuSettings.IsEnabled = true;
+            MenuPreset.IsEnabled = true;
         }
 
-        private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
+        private void RadioButton_NoProtocol_Checked(object sender, RoutedEventArgs e)
         {
-            Button_Send.IsEnabled = false;
-
-            MessageType = TypeOfMessage.Char; 
-            TextBox_TX.Text = String.Empty;
-            
-            TextBox_TX.Focus();
-        }
-
-        private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
-        {
-            Button_Send.IsEnabled = true;
-
-            MessageType = TypeOfMessage.String;
-            TextBox_TX.Text = String.Empty;
-
-            TextBox_TX.Focus();
-        }
-
-        private void Button_Send_Click(object sender, RoutedEventArgs e)
-        {
-            try
+            if (Frame_ActionUI.Navigate(NoProtocolPage) == false)
             {
-                if (MessageType == TypeOfMessage.Char)
-                {
-                    return;
-                }
-
-                if (TextBox_TX.Text == String.Empty)
-                {
-                    MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
-
-                    return;
-                }
-
-                if (CheckBox_CRCF.IsChecked == true)
-                {
-                    Device.Send(TextBox_TX.Text + "\r\n");
-                }
-
-                else
-                {
-                    Device.Send(TextBox_TX.Text);
-                }
-            }
-
-            catch (Exception error)
-            {
-                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                throw new Exception("Не удалось перейти на страницу " + NoProtocolPage.Name);
             }
         }
 
-        private void SourceWindow_KeyDown(object sender, KeyEventArgs e)
+        private void RadioButton_Protocol_Modbus_Checked(object sender, RoutedEventArgs e)
         {
-            switch (e.Key)
+            if (Frame_ActionUI.Navigate(ModbusPage) == false)
             {
-                case Key.Enter:
-                    Button_Send_Click(Button_Send, new RoutedEventArgs());
-                    break;
+                throw new Exception("Не удалось перейти на страницу " + ModbusPage.Name);
             }
-        }
-
-        private void Button_ClearFieldRX_Click(object sender, RoutedEventArgs e)
-        {
-            TextBlock_RX.Text = String.Empty;
-
-            TextBox_TX.Focus();
         }
     }
 }
