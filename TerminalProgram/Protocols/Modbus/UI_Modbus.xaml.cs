@@ -81,6 +81,8 @@ namespace TerminalProgram.Protocols.Modbus
         {
             TextBlock_ModbusMode.Text = "Modbus " + ModbusType.ToString();
 
+            TextBox_SlaveID.IsEnabled = true;
+
             TextBox_Address.IsEnabled = true;
             TextBox_Data.IsEnabled = true;
 
@@ -91,6 +93,8 @@ namespace TerminalProgram.Protocols.Modbus
         private void SetUI_Disconnected()
         {
             TextBlock_ModbusMode.Text = "не определено";
+
+            TextBox_SlaveID.IsEnabled = false;
 
             TextBox_Address.IsEnabled = false;
             TextBox_Data.IsEnabled = false;
@@ -114,22 +118,47 @@ namespace TerminalProgram.Protocols.Modbus
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
         {
-            UInt16 Data = ModbusDevice.ReadRegister(
-                PackageNumber, 
-                Convert.ToUInt16(TextBox_Address.Text), 
-                out CommonResponse, 
-                2, 
-                false);
+            try
+            {
+                if (TextBox_SlaveID.Text == String.Empty)
+                {
+                    MessageBox.Show("Укажите Slave ID.",
+                        "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-            PackageNumber++;
+                    return;
+                }
 
-            TextBlock_RX.Text = Data.ToString();
+                UInt16 Data = ModbusDevice.ReadRegister(
+                                PackageNumber,
+                                Convert.ToUInt16(TextBox_Address.Text),
+                                out CommonResponse,
+                                2,
+                                false);
+
+                PackageNumber++;
+
+                TextBlock_RX.Text = Data.ToString();
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
+                    error.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Button_Write_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                if (TextBox_SlaveID.Text == String.Empty)
+                {
+                    MessageBox.Show("Укажите Slave ID.",
+                        "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
                 TextBlock_RX.Text = "";
 
                 ModbusDevice.WriteRegister(
@@ -146,7 +175,32 @@ namespace TerminalProgram.Protocols.Modbus
             
             catch(Exception error)
             {
-                MessageBox.Show("Ошибка при нажатии на кнопку \"Записать\".\n\n" + error.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Ошибка при нажатии на кнопку \"Записать\".\n\n" + error.Message,
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void TextBox_SlaveID_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckNumber(TextBox_SlaveID);
+        }
+
+        private void CheckNumber(TextBox SelectedTextBox)
+        {
+            string TextData = SelectedTextBox.Text;
+
+            if (TextData == "")
+            {
+                return;
+            }
+
+            if (UInt16.TryParse(TextData, out _) == false)
+            {
+                SelectedTextBox.Text = SelectedTextBox.Text.Remove(SelectedTextBox.Text.Length - 1);
+                SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
+                
+                MessageBox.Show("Ввод букв и знаков не допустим",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

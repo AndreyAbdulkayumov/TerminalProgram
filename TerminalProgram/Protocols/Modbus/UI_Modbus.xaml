@@ -22,6 +22,17 @@
                    FontSize="16"
                    Foreground="#FFFFAD1B"
                    HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <TextBlock Text="Slave ID"
+                   Margin="480,10,0,0"
+                   FontSize="16"
+                   Foreground="#FFD2C25A"
+                   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        <TextBox x:Name="TextBox_SlaveID"
+                 Height="20" Width="40"
+                 Margin="550,12,0,0"
+                 HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_SlaveID_TextChanged"/>
         
         <TextBlock Text="Адрес"
                    Margin="220,60,0,0"

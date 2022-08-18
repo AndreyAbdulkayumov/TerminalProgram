@@ -35,7 +35,7 @@ namespace TerminalProgram.Protocols.Modbus
         /// <summary>
         /// Номер Slave устройства, с которым будет происходить обмен данными. По умолчанию равно 0, значит вызов широковещательный.
         /// </summary>
-        public byte SlaveID { get; set; } = 1;
+        public byte SlaveID { get; set; } = 0;
 
         private static bool IsBusy = false;
 
@@ -49,47 +49,141 @@ namespace TerminalProgram.Protocols.Modbus
         public void WriteRegister(UInt16 PackageNumber, UInt16 Address, UInt16 Data, 
             out DEVICE_RESPONSE Response, int NumberOfBytes, TypeOfModbus ModbusType, bool CRC_IsEnable)
         {
-            while (IsBusy) ;
-
-            IsBusy = true;
-
-            byte[] TX;
-            byte TX_Bytes = 5;  // PDU Length
-
-            switch (ModbusType)
+            try
             {
-                case TypeOfModbus.ASCII:
-                    TX_Bytes += 5;    // Префикс (1 Б) + SlaveID (2 Б) + Суффикс (2 Б)
-                    break;
+                while (IsBusy) ;
 
-                case TypeOfModbus.RTU:
-                    TX_Bytes += 1;    // SlaveID (1 Б)
-                    break;
+                IsBusy = true;
 
-                case TypeOfModbus.TCP:
-                    TX_Bytes += 7;    // ID транзакции (2 Б) + ID протокола (2 Б, равно 0) + Длина остатка пакета (2 Б) + SlaveID (1 Б)
-                    break;
+                byte[] TX;
+                byte TX_Bytes = 5;  // PDU Length
 
-                default:
-                    throw new Exception("Выбрана неизвестная разновидность Modbus.");
-            }
+                switch (ModbusType)
+                {
+                    case TypeOfModbus.ASCII:
+                        TX_Bytes += 5;    // Префикс (1 Б) + SlaveID (2 Б) + Суффикс (2 Б)
+                        break;
 
-            if (CRC_IsEnable)
-            {
-                TX_Bytes += 2;
+                    case TypeOfModbus.RTU:
+                        TX_Bytes += 1;    // SlaveID (1 Б)
+                        break;
+
+                    case TypeOfModbus.TCP:
+                        TX_Bytes += 7;    // ID транзакции (2 Б) + ID протокола (2 Б, равно 0) + Длина остатка пакета (2 Б) + SlaveID (1 Б)
+                        break;
+
+                    default:
+                        throw new Exception("Выбрана неизвестная разновидность Modbus.");
+                }
+
+                if (CRC_IsEnable)
+                {
+                    TX_Bytes += 2;
+                }
+
+
+                TX = new byte[TX_Bytes];
+
+                byte[] RX = new byte[20];
+
+                byte[] AddressArray = BitConverter.GetBytes(Address);
+                byte[] DataArray = BitConverter.GetBytes(Data);
+                byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
+
+                if (ModbusType == TypeOfModbus.TCP)
+                {
+                    // Номер транзакции
+                    TX[0] = PackageNumberArray[1];
+                    TX[1] = PackageNumberArray[0];
+                    // Modbus ID
+                    TX[2] = 0x00;
+                    TX[3] = 0x00;
+                    // Длина PDU
+                    TX[4] = 0x00;
+                    TX[5] = 0x06;
+                    // Slave ID
+                    TX[6] = SlaveID;
+                    // Write 1 register
+                    TX[7] = 0x06;
+                    // address 
+                    TX[8] = AddressArray[1];
+                    TX[9] = AddressArray[0];
+                    // value
+                    TX[10] = DataArray[1];
+                    TX[11] = DataArray[0];
+                    // CRC
+                    if (CRC_IsEnable)
+                    {
+                        byte[] CRC = CRC_16.Calculate(TX, Polynom);
+                        TX[12] = CRC[1];
+                        TX[13] = CRC[0];
+                    }
+                }
+
+                else if (ModbusType == TypeOfModbus.RTU)
+                {
+                    // Slave ID
+                    TX[0] = SlaveID;
+                    // Write 1 register
+                    TX[1] = 0x06;
+                    // address 
+                    TX[2] = AddressArray[1];
+                    TX[3] = AddressArray[0];
+                    // value
+                    TX[4] = DataArray[1];
+                    TX[5] = DataArray[0];
+                    // CRC
+                    if (CRC_IsEnable)
+                    {
+                        byte[] CRC = CRC_16.Calculate(TX, Polynom);
+                        TX[6] = CRC[1];
+                        TX[7] = CRC[0];
+                    }
+                }
+
+                Device.Send(TX);
+
+                Device.Receive(RX);
+
+                Response = DecodingOfArray(0x06, RX, NumberOfBytes);
+
+                IsBusy = false;
             }
             
-            
-            TX = new byte[TX_Bytes];
-
-            byte[] RX = new byte[20];
-
-            byte[] AddressArray = BitConverter.GetBytes(Address);
-            byte[] DataArray = BitConverter.GetBytes(Data);
-            byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
-
-            if (ModbusType == TypeOfModbus.TCP)
+            catch(Exception error)
             {
+                IsBusy = false;
+                throw new Exception(error.Message);
+            }
+        }
+
+        public UInt16 ReadRegister(UInt16 PackageNumber, UInt16 Address,
+            out DEVICE_RESPONSE Response, int NumberOfBytes, bool CRC_IsEnable)
+        {
+            try
+            {
+                while (IsBusy) ;
+
+                IsBusy = true;
+
+                byte[] TX;
+
+                if (CRC_IsEnable)
+                {
+                    TX = new byte[14];
+                }
+
+                else
+                {
+                    TX = new byte[12];
+                }
+
+                byte[] RX = new byte[20];
+
+                byte[] AddressArray = BitConverter.GetBytes(Address);
+                byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
+                byte[] NumberOfBytesArray = BitConverter.GetBytes(NumberOfBytes);
+
                 // Номер транзакции
                 TX[0] = PackageNumberArray[1];
                 TX[1] = PackageNumberArray[0];
@@ -101,14 +195,14 @@ namespace TerminalProgram.Protocols.Modbus
                 TX[5] = 0x06;
                 // Slave ID
                 TX[6] = SlaveID;
-                // Write 1 register
-                TX[7] = 0x06;
+                // Read 1 register
+                TX[7] = 0x04;
                 // address 
                 TX[8] = AddressArray[1];
                 TX[9] = AddressArray[0];
                 // value
-                TX[10] = DataArray[1];
-                TX[11] = DataArray[0];
+                TX[10] = NumberOfBytesArray[1];
+                TX[11] = NumberOfBytesArray[0];
                 // CRC
                 if (CRC_IsEnable)
                 {
@@ -116,101 +210,25 @@ namespace TerminalProgram.Protocols.Modbus
                     TX[12] = CRC[1];
                     TX[13] = CRC[0];
                 }
+
+                Device.Send(TX);
+
+                Device.Receive(RX);
+
+                Response = DecodingOfArray(0x04, RX, NumberOfBytes);
+
+                UInt16 result = (UInt16)BitConverter.ToInt16(Response.Data, 0);
+
+                IsBusy = false;
+
+                return result;
             }
 
-            else if (ModbusType == TypeOfModbus.RTU)
+            catch (Exception error)
             {
-                // Slave ID
-                TX[0] = SlaveID;
-                // Write 1 register
-                TX[1] = 0x06;
-                // address 
-                TX[2] = AddressArray[1];
-                TX[3] = AddressArray[0];
-                // value
-                TX[4] = DataArray[1];
-                TX[5] = DataArray[0];
-                // CRC
-                if (CRC_IsEnable)
-                {
-                    byte[] CRC = CRC_16.Calculate(TX, Polynom);
-                    TX[6] = CRC[1];
-                    TX[7] = CRC[0];
-                }
+                IsBusy = false;
+                throw new Exception(error.Message);
             }
-            
-            Device.Send(TX);
-
-            Device.Receive(RX);
-
-            Response = DecodingOfArray(0x06, RX, NumberOfBytes);
-
-            IsBusy = false;
-        }
-
-        public UInt16 ReadRegister(UInt16 PackageNumber, UInt16 Address,
-            out DEVICE_RESPONSE Response, int NumberOfBytes, bool CRC_IsEnable)
-        {
-            while (IsBusy) ;
-
-            IsBusy = true;
-
-            byte[] TX;
-
-            if (CRC_IsEnable)
-            {
-                TX = new byte[14];
-            }
-
-            else
-            {
-                TX = new byte[12];
-            }
-
-            byte[] RX = new byte[20];
-
-            byte[] AddressArray = BitConverter.GetBytes(Address);
-            byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
-            byte[] NumberOfBytesArray = BitConverter.GetBytes(NumberOfBytes);
-
-            // Номер транзакции
-            TX[0] = PackageNumberArray[1];
-            TX[1] = PackageNumberArray[0];
-            // Modbus ID
-            TX[2] = 0x00;
-            TX[3] = 0x00;
-            // Длина PDU
-            TX[4] = 0x00;
-            TX[5] = 0x06;
-            // Slave ID
-            TX[6] = SlaveID;
-            // Read 1 register
-            TX[7] = 0x04;
-            // address 
-            TX[8] = AddressArray[1];
-            TX[9] = AddressArray[0];
-            // value
-            TX[10] = NumberOfBytesArray[1];
-            TX[11] = NumberOfBytesArray[0];
-            // CRC
-            if (CRC_IsEnable)
-            {
-                byte[] CRC = CRC_16.Calculate(TX, Polynom);
-                TX[12] = CRC[1];
-                TX[13] = CRC[0];
-            }
-
-            Device.Send(TX);
-
-            Device.Receive(RX);
-
-            Response = DecodingOfArray(0x04, RX, NumberOfBytes);
-
-            UInt16 result = (UInt16)BitConverter.ToInt16(Response.Data, 0);
-
-            IsBusy = false;
-
-            return result;
         }
 
         private DEVICE_RESPONSE DecodingOfArray(int command, byte [] massive, int NumberOfBytes)
