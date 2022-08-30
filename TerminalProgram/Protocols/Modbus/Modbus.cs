@@ -39,9 +39,9 @@ namespace TerminalProgram.Protocols.Modbus
 
         private static bool IsBusy = false;
 
-        private Connection Device = null;
+        private IConnection Device = null;
 
-        public Modbus(Connection ConnectedDevice)
+        public Modbus(IConnection ConnectedDevice)
         {
             Device = ConnectedDevice;
         }
@@ -158,7 +158,7 @@ namespace TerminalProgram.Protocols.Modbus
         }
 
         public UInt16 ReadRegister(UInt16 PackageNumber, UInt16 Address,
-            out DEVICE_RESPONSE Response, int NumberOfBytes, bool CRC_IsEnable)
+            out DEVICE_RESPONSE Response, int NumberOfBytes, TypeOfModbus ModbusType, bool CRC_IsEnable)
         {
             try
             {
@@ -184,31 +184,55 @@ namespace TerminalProgram.Protocols.Modbus
                 byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
                 byte[] NumberOfBytesArray = BitConverter.GetBytes(NumberOfBytes);
 
-                // Номер транзакции
-                TX[0] = PackageNumberArray[1];
-                TX[1] = PackageNumberArray[0];
-                // Modbus ID
-                TX[2] = 0x00;
-                TX[3] = 0x00;
-                // Длина PDU
-                TX[4] = 0x00;
-                TX[5] = 0x06;
-                // Slave ID
-                TX[6] = SlaveID;
-                // Read 1 register
-                TX[7] = 0x04;
-                // address 
-                TX[8] = AddressArray[1];
-                TX[9] = AddressArray[0];
-                // value
-                TX[10] = NumberOfBytesArray[1];
-                TX[11] = NumberOfBytesArray[0];
-                // CRC
-                if (CRC_IsEnable)
+                if (ModbusType == TypeOfModbus.TCP)
                 {
-                    byte[] CRC = CRC_16.Calculate(TX, Polynom);
-                    TX[12] = CRC[1];
-                    TX[13] = CRC[0];
+                    // Номер транзакции
+                    TX[0] = PackageNumberArray[1];
+                    TX[1] = PackageNumberArray[0];
+                    // Modbus ID
+                    TX[2] = 0x00;
+                    TX[3] = 0x00;
+                    // Длина PDU
+                    TX[4] = 0x00;
+                    TX[5] = 0x06;
+                    // Slave ID
+                    TX[6] = SlaveID;
+                    // Read 1 register
+                    TX[7] = 0x04;
+                    // address 
+                    TX[8] = AddressArray[1];
+                    TX[9] = AddressArray[0];
+                    // value
+                    TX[10] = NumberOfBytesArray[1];
+                    TX[11] = NumberOfBytesArray[0];
+                    // CRC
+                    if (CRC_IsEnable)
+                    {
+                        byte[] CRC = CRC_16.Calculate(TX, Polynom);
+                        TX[12] = CRC[1];
+                        TX[13] = CRC[0];
+                    }
+                }
+                
+                else if (ModbusType == TypeOfModbus.RTU)
+                {
+                    // Slave ID
+                    TX[0] = SlaveID;
+                    // Read 1 register
+                    TX[1] = 0x04;
+                    // address 
+                    TX[2] = AddressArray[1];
+                    TX[3] = AddressArray[0];
+                    // value
+                    TX[4] = NumberOfBytesArray[1];
+                    TX[5] = NumberOfBytesArray[0];
+                    // CRC
+                    if (CRC_IsEnable)
+                    {
+                        byte[] CRC = CRC_16.Calculate(TX, Polynom);
+                        TX[6] = CRC[1];
+                        TX[7] = CRC[0];
+                    }
                 }
 
                 Device.Send(TX);

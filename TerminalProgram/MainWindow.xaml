@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Title="Терминальная программа (версия 1.1.0)" 
+        Title="Терминальная программа (версия 1.2.0)" 
         Height="680" Width="780"
         Background="#FF323232" 
-        ResizeMode="NoResize"
+        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Loaded="SourceWindow_Loaded">
 
@@ -64,11 +64,7 @@
         <Menu Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top">
 
             <MenuItem Header="Настройки" Name="MenuSettings" Click="MenuSettings_Click" Style="{StaticResource Menu}"/>
-
-            <MenuItem Header="Пресет" Name="MenuPreset" Style="{StaticResource Menu}">
-                <MenuItem Header="Сохранить" Name="MenuPreset_Save" Click="MenuPreset_Save_Click"/>
-                <MenuItem Header="Загрузить" Name="MenuPreset_Load" Click="MenuPreset_LoadMenuHelp_Click"/>
-            </MenuItem>
+            <MenuItem Header="О программе" Name="MenuAbout" Click="MenuAbout_Click" Style="{StaticResource Menu}"/>
 
         </Menu>
 

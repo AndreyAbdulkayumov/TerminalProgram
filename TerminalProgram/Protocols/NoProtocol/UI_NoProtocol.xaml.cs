@@ -26,28 +26,30 @@ namespace TerminalProgram.Protocols.NoProtocol
     /// </summary>
     public partial class UI_NoProtocol : Page
     {
-        private Connection Device = null;
+        private IConnection Client = null;
 
         private TypeOfMessage MessageType;
 
-        public UI_NoProtocol(MainWindow window, Connection ConnectedDevice)
+        public UI_NoProtocol(MainWindow window)
         {
             InitializeComponent();
 
             window.DeviceIsConnect += MainWindow_DeviceIsConnect;
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
 
-            Device = ConnectedDevice;
-
-            Device.AsyncDataReceived += Device_AsyncDataReceived;
+            SetUI_Disconnected();
         }
 
         private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
         {
             if (e.ConnectedDevice.IsConnected)
             {
+                Client = e.ConnectedDevice;
+
+                Client.DataReceived += Client_DataReceived;
+
                 SetUI_Connected();
-            }
+            }            
         }
 
         private void MainWindow_DeviceIsDisconnected(object sender, ConnectArgs e)
@@ -76,6 +78,8 @@ namespace TerminalProgram.Protocols.NoProtocol
                 Button_Send.IsEnabled = false;
             }
 
+            CheckBox_NextLine.IsEnabled = true;
+
             TextBox_TX.Focus();
         }
 
@@ -87,6 +91,8 @@ namespace TerminalProgram.Protocols.NoProtocol
             RadioButton_Char.IsEnabled = false;
             RadioButton_String.IsEnabled = false;
             Button_Send.IsEnabled = false;
+
+            CheckBox_NextLine.IsEnabled = false;
         }
 
         private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
@@ -95,7 +101,7 @@ namespace TerminalProgram.Protocols.NoProtocol
             {
                 if (TextBox_TX.Text != String.Empty && MessageType == TypeOfMessage.Char)
                 {
-                    Device.Send(TextBox_TX.Text.Substring(TextBox_TX.Text.Length - 1));
+                    Client.Send(TextBox_TX.Text.Substring(TextBox_TX.Text.Length - 1));
                 }
             }
 
@@ -131,7 +137,7 @@ namespace TerminalProgram.Protocols.NoProtocol
             TextBox_TX.Focus();
         }
 
-        private void Device_AsyncDataReceived(object sender, DataFromDevice e)
+        private void Client_DataReceived(object sender, DataFromDevice e)
         {
             try
             {
@@ -139,6 +145,12 @@ namespace TerminalProgram.Protocols.NoProtocol
                     new Action(delegate
                     {
                         TextBlock_RX.Text += e.RX;
+
+                        if (CheckBox_NextLine.IsChecked == true)
+                        {
+                            TextBlock_RX.Text += "\n";
+                        }
+
                         ScrollViewer_RX.ScrollToEnd();
                     }));
             }
@@ -170,12 +182,12 @@ namespace TerminalProgram.Protocols.NoProtocol
 
                 if (CheckBox_CRCF.IsChecked == true)
                 {
-                    Device.Send(TextBox_TX.Text + "\r\n");
+                    Client.Send(TextBox_TX.Text + "\r\n");
                 }
 
                 else
                 {
-                    Device.Send(TextBox_TX.Text);
+                    Client.Send(TextBox_TX.Text);
                 }
             }
 

@@ -42,14 +42,12 @@ namespace TerminalProgram.Protocols.Modbus
 
         private UInt16 PackageNumber = 0;
 
-        public UI_Modbus(MainWindow window, Connection ConnectedDevice)
+        public UI_Modbus(MainWindow window)
         {
             InitializeComponent();
 
             window.DeviceIsConnect += MainWindow_DeviceIsConnect;
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
-
-            ModbusDevice = new Modbus(ConnectedDevice);
 
             SetUI_Disconnected();
         }
@@ -58,14 +56,21 @@ namespace TerminalProgram.Protocols.Modbus
         {
             if (e.ConnectedDevice.IsConnected)
             {
-                if (e.ConnectedDevice.TypeOfConnection == CommunicationInterface.Ethernet)
+                ModbusDevice = new Modbus(e.ConnectedDevice);
+
+                if (e.ConnectedDevice is IPClient)
                 {
                     ModbusType = TypeOfModbus.TCP;
                 }
 
-                else
+                else if (e.ConnectedDevice is SerialPortClient)
                 {
                     ModbusType = TypeOfModbus.RTU;
+                }
+
+                else
+                {
+                    throw new Exception("Задан неизвестный тип подключения: " + e.ConnectedDevice.ToString());
                 }
 
                 SetUI_Connected();
@@ -104,6 +109,8 @@ namespace TerminalProgram.Protocols.Modbus
 
             Button_Write.IsEnabled = false;
             Button_Read.IsEnabled = false;
+
+            TextBlock_RX.Text = "";
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -128,12 +135,15 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
+                TextBlock_RX.Text = "";
+
                 UInt16 Data = ModbusDevice.ReadRegister(
                                 PackageNumber,
                                 Convert.ToUInt16(TextBox_Address.Text),
                                 out CommonResponse,
                                 2,
-                                false);
+                                ModbusType,
+                                ModbusType == TypeOfModbus.TCP ? false : true);
 
                 PackageNumber++;
 
@@ -185,6 +195,16 @@ namespace TerminalProgram.Protocols.Modbus
             CheckNumber(TextBox_SlaveID);
         }
 
+        private void TextBox_Address_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckNumber(TextBox_Address);
+        }
+
+        private void TextBox_Data_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckNumber(TextBox_Data);
+        }
+
         private void CheckNumber(TextBox SelectedTextBox)
         {
             string TextData = SelectedTextBox.Text;
@@ -203,5 +223,7 @@ namespace TerminalProgram.Protocols.Modbus
                     "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        
     }
 }

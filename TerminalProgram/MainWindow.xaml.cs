@@ -45,9 +45,9 @@ namespace TerminalProgram
 
     public class ConnectArgs : EventArgs
     {
-        public Connection ConnectedDevice;
+        public IConnection ConnectedDevice;
 
-        public ConnectArgs(Connection ConnectedDevice)
+        public ConnectArgs(IConnection ConnectedDevice)
         {
             this.ConnectedDevice = ConnectedDevice;
         }
@@ -61,7 +61,7 @@ namespace TerminalProgram
         public event EventHandler<ConnectArgs> DeviceIsConnect;
         public event EventHandler<ConnectArgs> DeviceIsDisconnected;
 
-        private Connection Device = new Connection();
+        private IConnection Client = null;
 
         private readonly SettingsMediator SettingsManager = new SettingsMediator();
         private DeviceData Settings = new DeviceData();
@@ -128,7 +128,7 @@ namespace TerminalProgram
 
                 SetUI_Disconnected();
 
-                NoProtocolPage = new UI_NoProtocol(this, Device)
+                NoProtocolPage = new UI_NoProtocol(this)
                 {
                     Height = Grid_Action.ActualHeight,
                     Width = Grid_Action.ActualWidth,
@@ -137,7 +137,7 @@ namespace TerminalProgram
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
-                ModbusPage = new UI_Modbus(this, Device)
+                ModbusPage = new UI_Modbus(this)
                 {
                     Height = Grid_Action.ActualHeight,
                     Width = Grid_Action.ActualWidth,
@@ -217,16 +217,6 @@ namespace TerminalProgram
             }
         }
 
-        private void MenuPreset_Save_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void MenuPreset_LoadMenuHelp_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ComboBox_SelectedPreset.SelectedItem != null)
@@ -242,35 +232,45 @@ namespace TerminalProgram
                 switch (Settings.TypeOfConnection)
                 {
                     case "SerialPort":
-                        Device.Connect(Settings.COMPort,
-                                Convert.ToInt32(Settings.BaudRate),
-                                Settings.Parity,
-                                Convert.ToInt32(Settings.DataBits),
-                                Settings.StopBits);
+
+                        Client = new SerialPortClient();
+
+                        Client.Connect(new ConnectionInfo(new SerialPortInfo(
+                            Settings.COMPort,
+                            Settings.BaudRate,
+                            Settings.Parity,
+                            Settings.DataBits,
+                            Settings.StopBits
+                            )));
+
                         break;
 
                     case "Ethernet":
-                        Device.Connect(Settings.IP, 
-                            Convert.ToInt32(Settings.Port));
+
+                        Client = new IPClient();
+
+                        Client.Connect(new ConnectionInfo(new SocketInfo(
+                            Settings.IP,
+                            Settings.Port
+                            )));
+
                         break;
 
                     default:
                         throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
                 }
 
-                Device.DeviceName = Settings.DeviceName;
-
                 SetUI_Connected();
 
                 if (DeviceIsConnect != null)
                 {
-                    DeviceIsConnect(this, new ConnectArgs(Device));
+                    DeviceIsConnect(this, new ConnectArgs(Client));
                 }
             }
             
             catch(Exception error)
             {
-                MessageBox.Show("Возникла ошибка при подключении к устройству:\n\n" + error.Message, "Ошибка",
+                MessageBox.Show("Возникла ошибка при подключении к устройству.\n\n" + error.Message, "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
                     MessageBoxOptions.ServiceNotification);
             }
@@ -281,13 +281,13 @@ namespace TerminalProgram
         {
             try
             {
-                Device.Disconnect();
+                Client.Disconnect();
 
                 SetUI_Disconnected();
 
                 if (DeviceIsDisconnected != null)
                 {
-                    DeviceIsDisconnected(this, new ConnectArgs(Device));
+                    DeviceIsDisconnected(this, new ConnectArgs(Client));
                 }
             }
 
@@ -305,7 +305,6 @@ namespace TerminalProgram
             Button_Disconnect.IsEnabled = true;
 
             MenuSettings.IsEnabled = false;
-            MenuPreset.IsEnabled = false;
         }
 
         private void SetUI_Disconnected()
@@ -314,7 +313,6 @@ namespace TerminalProgram
             Button_Disconnect.IsEnabled = false;
 
             MenuSettings.IsEnabled = true;
-            MenuPreset.IsEnabled = true;
         }
 
         private void RadioButton_NoProtocol_Checked(object sender, RoutedEventArgs e)
@@ -331,6 +329,16 @@ namespace TerminalProgram
             {
                 throw new Exception("Не удалось перейти на страницу " + ModbusPage.Name);
             }
+        }
+
+        private void MenuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            AboutWindow window = new AboutWindow()
+            {
+                Owner = this
+            };
+
+            window.ShowDialog();
         }
     }
 }

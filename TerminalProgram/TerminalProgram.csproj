@@ -55,8 +55,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Check.cs" />
-    <Compile Include="Protocols\Connection.cs" />
+    <Compile Include="Protocols\IConnection.cs" />
+    <Compile Include="Protocols\IPClient.cs" />
     <Compile Include="Protocols\Modbus\CRC_16.cs" />
     <Compile Include="Protocols\Modbus\Modbus.cs" />
     <Compile Include="Protocols\Modbus\UI_Modbus.xaml.cs">
@@ -65,6 +69,7 @@
     <Compile Include="Protocols\NoProtocol\UI_NoProtocol.xaml.cs">
       <DependentUpon>UI_NoProtocol.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Protocols\SerialPortClient.cs" />
     <Compile Include="Select.xaml.cs">
       <DependentUpon>Select.xaml</DependentUpon>
     </Compile>
@@ -72,6 +77,10 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SystemOfPresets.cs" />
+    <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

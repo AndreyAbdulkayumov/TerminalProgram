@@ -43,7 +43,7 @@
         <TextBox x:Name="TextBox_Address"
                  Height="20" Width="60"
                  Margin="290,62,0,0"
-                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                 HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_Address_TextChanged"/>
 
         <TextBlock Text="Значение"
                    Margin="410,60,0,0"
@@ -54,7 +54,7 @@
         <TextBox x:Name="TextBox_Data"
                  Height="20" Width="60"
                  Margin="500,62,0,0"
-                 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                 HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_Data_TextChanged"/>
 
         <Button x:Name="Button_Read"
                 Content="Прочитать"
