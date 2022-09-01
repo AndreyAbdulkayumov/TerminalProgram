@@ -21,7 +21,7 @@ namespace TerminalProgram.Protocols
 
     public class DataFromDevice : EventArgs
     {
-        public string RX;
+        public byte[] RX;
     }
 
     public class SocketInfo

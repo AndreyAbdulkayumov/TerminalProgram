@@ -30,9 +30,13 @@ namespace TerminalProgram.Protocols.NoProtocol
 
         private TypeOfMessage MessageType;
 
+        private readonly string MainWindowTitle;
+
         public UI_NoProtocol(MainWindow window)
         {
             InitializeComponent();
+
+            MainWindowTitle = window.Title;
 
             window.DeviceIsConnect += MainWindow_DeviceIsConnect;
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
@@ -107,7 +111,7 @@ namespace TerminalProgram.Protocols.NoProtocol
 
             catch (Exception error)
             {
-                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
+                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, MainWindowTitle,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
@@ -144,20 +148,29 @@ namespace TerminalProgram.Protocols.NoProtocol
                 TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
                     new Action(delegate
                     {
-                        TextBlock_RX.Text += e.RX;
-
-                        if (CheckBox_NextLine.IsChecked == true)
+                        try
                         {
-                            TextBlock_RX.Text += "\n";
-                        }
+                            TextBlock_RX.Text += Encoding.UTF8.GetString(e.RX);
 
-                        ScrollViewer_RX.ScrollToEnd();
+                            if (CheckBox_NextLine.IsChecked == true)
+                            {
+                                TextBlock_RX.Text += "\n";
+                            }
+
+                            ScrollViewer_RX.ScrollToEnd();
+                        }
+                        catch (Exception error)
+                        {
+                            MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, MainWindowTitle,
+                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
+                                MessageBoxOptions.ServiceNotification);
+                        }
                     }));
             }
 
             catch (Exception error)
             {
-                MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, "Ошибка",
+                MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, MainWindowTitle,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
                     MessageBoxOptions.ServiceNotification);
             }
@@ -174,7 +187,7 @@ namespace TerminalProgram.Protocols.NoProtocol
 
                 if (TextBox_TX.Text == String.Empty)
                 {
-                    MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", "Предупреждение",
+                    MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", MainWindowTitle,
                         MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
 
                     return;
@@ -193,7 +206,7 @@ namespace TerminalProgram.Protocols.NoProtocol
 
             catch (Exception error)
             {
-                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, "Ошибка",
+                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, MainWindowTitle,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }

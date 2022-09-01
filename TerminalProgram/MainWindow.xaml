@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Title="Терминальная программа (версия 1.2.0)" 
+        Title="Терминальная программа (версия 1.2.1)" 
         Height="680" Width="780"
         Background="#FF323232" 
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        Loaded="SourceWindow_Loaded">
+        Loaded="SourceWindow_Loaded" Closing="SourceWindow_Closing">
 
     <Window.Resources>
 

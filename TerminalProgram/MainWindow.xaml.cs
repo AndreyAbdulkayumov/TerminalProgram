@@ -108,7 +108,7 @@ namespace TerminalProgram
                 {
                     MessageBox.Show("Файл настроек не существует в папке " + UsedDirectories.GetPath(ProgramDirectory.Settings) +
                         "\n\nНажмите ОК и выберите один из доступных пресетов в появившемся окне.",
-                        "Ошибка", MessageBoxButton.OK,
+                        this.Title, MessageBoxButton.OK,
                         MessageBoxImage.Error, MessageBoxResult.OK);
 
                     Select window = new Select(ref PresetFileNames, "Выберите пресет");
@@ -153,13 +153,37 @@ namespace TerminalProgram
 
             catch (Exception error)
             {
-                MessageBox.Show("Ошибка инициализации: \n\n" + error.Message + "\n\nПриложение будет закрыто.", "Ошибка",
+                MessageBox.Show("Ошибка инициализации: \n\n" + error.Message + "\n\nПриложение будет закрыто.", this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 Application.Current.Shutdown();
             }
         }
-        
+
+        private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                if (Client != null && Client.IsConnected)
+                {
+                    if (MessageBox.Show("Клиент ещё подключен к хосту.\nЗакрыть программу?", this.Title,
+                        MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+
+                    Client.Disconnect();
+                }
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Возникла ошибка во время закрытия программы.\n\n" + error.Message, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void UpdateDeviceData(string DocumentName)
         {
             try
@@ -178,7 +202,7 @@ namespace TerminalProgram
                 else
                 {
                     MessageBox.Show("В документе " + UsedDirectories.GetPath(ProgramDirectory.Settings) + DocumentName +
-                        ".xml" + " нет настроек устройства. Создайте их в меню Настройки.", "Предупреждение", MessageBoxButton.OK,
+                        ".xml" + " нет настроек устройства. Создайте их в меню Настройки.", this.Title, MessageBoxButton.OK,
                         MessageBoxImage.Error, MessageBoxResult.OK);
 
                     ComboBox_SelectedPreset.SelectedIndex = -1;
@@ -187,8 +211,9 @@ namespace TerminalProgram
 
             catch (Exception error)
             {
-                MessageBox.Show("Ошибка чтения данных из документа. Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageBox.Show("Ошибка чтения данных из документа." +
+                    " Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message,
+                    this.Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 return;
             }
@@ -198,7 +223,7 @@ namespace TerminalProgram
         {
             if (PresetFileNames == null || PresetFileNames.Length == 0)
             {
-                MessageBox.Show("Не найдено ни одно файла настроек.", "Ошибка",
+                MessageBox.Show("Не найдено ни одно файла настроек.", this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 return;
             }
@@ -270,9 +295,8 @@ namespace TerminalProgram
             
             catch(Exception error)
             {
-                MessageBox.Show("Возникла ошибка при подключении к устройству.\n\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
-                    MessageBoxOptions.ServiceNotification);
+                MessageBox.Show("Возникла ошибка при подключении к устройству.\n\n" + error.Message, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
          
@@ -281,7 +305,16 @@ namespace TerminalProgram
         {
             try
             {
-                Client.Disconnect();
+                try
+                {
+                    Client.Disconnect();
+                }
+
+                catch (Exception error)
+                {
+                    MessageBox.Show("Возникла ошибка при попытке отключения от устройства:\n" + error.Message, this.Title,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
 
                 SetUI_Disconnected();
 
@@ -293,9 +326,8 @@ namespace TerminalProgram
 
             catch(Exception error)
             {
-                MessageBox.Show("Возникла ошибка при попытке отключения от устройства:\n" + error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
-                    MessageBoxOptions.ServiceNotification);
+                MessageBox.Show("Возникла ошибка при нажатии на кнопку \"Отключить\":\n" + error.Message, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
 
@@ -319,7 +351,8 @@ namespace TerminalProgram
         {
             if (Frame_ActionUI.Navigate(NoProtocolPage) == false)
             {
-                throw new Exception("Не удалось перейти на страницу " + NoProtocolPage.Name);
+                MessageBox.Show("Не удалось перейти на страницу " + NoProtocolPage.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
 
@@ -327,7 +360,8 @@ namespace TerminalProgram
         {
             if (Frame_ActionUI.Navigate(ModbusPage) == false)
             {
-                throw new Exception("Не удалось перейти на страницу " + ModbusPage.Name);
+                MessageBox.Show("Не удалось перейти на страницу " + ModbusPage.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
 
@@ -340,5 +374,7 @@ namespace TerminalProgram
 
             window.ShowDialog();
         }
+
+        
     }
 }

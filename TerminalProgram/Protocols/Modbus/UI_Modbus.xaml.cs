@@ -42,9 +42,13 @@ namespace TerminalProgram.Protocols.Modbus
 
         private UInt16 PackageNumber = 0;
 
+        private readonly string MainWindowTitle;
+
         public UI_Modbus(MainWindow window)
         {
             InitializeComponent();
+
+            MainWindowTitle = window.Title;
 
             window.DeviceIsConnect += MainWindow_DeviceIsConnect;
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
@@ -129,8 +133,7 @@ namespace TerminalProgram.Protocols.Modbus
             {
                 if (TextBox_SlaveID.Text == String.Empty)
                 {
-                    MessageBox.Show("Укажите Slave ID.",
-                        "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Укажите Slave ID.", MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
 
                     return;
                 }
@@ -153,7 +156,7 @@ namespace TerminalProgram.Protocols.Modbus
             catch(Exception error)
             {
                 MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
-                    error.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -163,8 +166,7 @@ namespace TerminalProgram.Protocols.Modbus
             {
                 if (TextBox_SlaveID.Text == String.Empty)
                 {
-                    MessageBox.Show("Укажите Slave ID.",
-                        "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Укажите Slave ID.", MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
 
                     return;
                 }
@@ -186,7 +188,7 @@ namespace TerminalProgram.Protocols.Modbus
             catch(Exception error)
             {
                 MessageBox.Show("Ошибка при нажатии на кнопку \"Записать\".\n\n" + error.Message,
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -220,7 +222,7 @@ namespace TerminalProgram.Protocols.Modbus
                 SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
                 
                 MessageBox.Show("Ввод букв и знаков не допустим",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

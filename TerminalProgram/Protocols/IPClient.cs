@@ -128,22 +128,26 @@ namespace TerminalProgram.Protocols
         {
             try
             {
-                byte[] RX = new byte[50]; 
+                byte[] BufferRX = new byte[50]; 
                 
                 while(true)
                 {
                     if (DataReceived != null && Stream != null)
                     {
-                        Stream.Read(RX, 0, RX.Length);
+                        Stream.Read(BufferRX, 0, BufferRX.Length);
 
-                        DataFromDevice Data = new DataFromDevice
+                        DataFromDevice Data = new DataFromDevice();
+
+                        Data.RX = new byte[BufferRX.Length];
+
+                        for(int i = 0; i < BufferRX.Length; i++)
                         {
-                            RX = Encoding.ASCII.GetString(RX)
-                        };
+                            Data.RX[i] = BufferRX[i];
+                        }
 
                         DataReceived(this, Data);
 
-                        Array.Clear(RX, 0, RX.Length);
+                        Array.Clear(BufferRX, 0, BufferRX.Length);
                     }
                 }
             }

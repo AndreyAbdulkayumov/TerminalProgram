@@ -160,10 +160,12 @@ namespace TerminalProgram.Protocols
         {
             if (DataReceived != null)
             {
-                DataFromDevice Data = new DataFromDevice
+                DataFromDevice Data = new DataFromDevice()
                 {
-                    RX = DeviceSerialPort.ReadExisting()
+                    RX = new byte[DeviceSerialPort.BytesToRead]
                 };
+
+                DeviceSerialPort.Read(Data.RX, 0, Data.RX.Length);
 
                 DataReceived(this, Data);
             }
