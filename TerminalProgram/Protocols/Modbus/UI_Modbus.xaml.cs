@@ -32,6 +32,8 @@ namespace TerminalProgram.Protocols.Modbus
     /// </summary>
     public partial class UI_Modbus : Page
     {
+        public event EventHandler<EventArgs> ErrorHandler;
+
         public DEVICE_RESPONSE CommonResponse = new DEVICE_RESPONSE();
 
         private List<ModbusData> DataList = new List<ModbusData>();
@@ -155,8 +157,21 @@ namespace TerminalProgram.Protocols.Modbus
             
             catch(Exception error)
             {
-                MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
-                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                if (ErrorHandler != null)
+                {
+                    ErrorHandler(this, new EventArgs());
+
+                    MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
+                        error.Message + "\n\nКлиент был отключен.", 
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                else
+                {
+                    MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
+                        error.Message + "\n\nКлиент не был отключен.",
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -187,8 +202,21 @@ namespace TerminalProgram.Protocols.Modbus
             
             catch(Exception error)
             {
-                MessageBox.Show("Ошибка при нажатии на кнопку \"Записать\".\n\n" + error.Message,
-                    MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                if (ErrorHandler != null)
+                {
+                    ErrorHandler(this, new EventArgs());
+
+                    MessageBox.Show("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" +
+                        error.Message + "\n\nКлиент был отключен.",
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                else
+                {
+                    MessageBox.Show("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" +
+                        error.Message + "\n\nКлиент не был отключен.",
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

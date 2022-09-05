@@ -26,6 +26,8 @@ namespace TerminalProgram.Protocols.NoProtocol
     /// </summary>
     public partial class UI_NoProtocol : Page
     {
+        public event EventHandler<EventArgs> ErrorHandler;
+
         private IConnection Client = null;
 
         private TypeOfMessage MessageType;
@@ -42,6 +44,11 @@ namespace TerminalProgram.Protocols.NoProtocol
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
 
             SetUI_Disconnected();
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            RadioButton_String.IsChecked = true;
         }
 
         private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
@@ -170,9 +177,21 @@ namespace TerminalProgram.Protocols.NoProtocol
 
             catch (Exception error)
             {
-                MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, MainWindowTitle,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
-                    MessageBoxOptions.ServiceNotification);
+                if (ErrorHandler != null)
+                {
+                    ErrorHandler(this, new EventArgs());
+
+                    MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
+                        "\n\nКлиент был отключен.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
+
+                else
+                {
+                    MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
+                        "\n\nКлиент не был отключен.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
             }
         }
 
@@ -206,8 +225,21 @@ namespace TerminalProgram.Protocols.NoProtocol
 
             catch (Exception error)
             {
-                MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, MainWindowTitle,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                if (ErrorHandler != null)
+                {
+                    ErrorHandler(this, new EventArgs());
+
+                    MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
+                        "\n\nКлиент был отключен.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
+
+                else
+                {
+                    MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
+                        "\n\nКлиент не был отключен.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
             }
         }
 
@@ -226,11 +258,6 @@ namespace TerminalProgram.Protocols.NoProtocol
                     Button_Send_Click(Button_Send, new RoutedEventArgs());
                     break;
             }
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            RadioButton_Char.IsChecked = true;
         }
     }
 }

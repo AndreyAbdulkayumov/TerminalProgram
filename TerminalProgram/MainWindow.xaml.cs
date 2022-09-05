@@ -137,6 +137,8 @@ namespace TerminalProgram
                     VerticalAlignment = VerticalAlignment.Top
                 };
 
+                NoProtocolPage.ErrorHandler += CommonErrorHandler;
+
                 ModbusPage = new UI_Modbus(this)
                 {
                     Height = Grid_Action.ActualHeight,
@@ -145,6 +147,8 @@ namespace TerminalProgram
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top
                 };
+
+                ModbusPage.ErrorHandler += CommonErrorHandler;
 
                 RadioButton_NoProtocol.IsChecked = true;
 
@@ -158,6 +162,11 @@ namespace TerminalProgram
 
                 Application.Current.Shutdown();
             }
+        }
+
+        private void CommonErrorHandler(object sender, EventArgs e)
+        {
+            Button_Disconnect_Click(this, new RoutedEventArgs());
         }
 
         private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
