@@ -18,6 +18,7 @@ using SystemOfSaving;
 using TerminalProgram.Protocols;
 using TerminalProgram.Protocols.NoProtocol;
 using TerminalProgram.Protocols.Modbus;
+using TerminalProgram.Protocols.Http;
 
 namespace TerminalProgram
 {
@@ -70,6 +71,7 @@ namespace TerminalProgram
 
         private UI_NoProtocol NoProtocolPage = null;
         private UI_Modbus ModbusPage = null;
+        private UI_Http HttpPage = null;
 
         private string SettingsDocument
         {
@@ -149,6 +151,15 @@ namespace TerminalProgram
                 };
 
                 ModbusPage.ErrorHandler += CommonErrorHandler;
+
+                HttpPage = new UI_Http(this)
+                {
+                    Height = Grid_Action.ActualHeight,
+                    Width = Grid_Action.ActualWidth,
+
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
 
                 RadioButton_NoProtocol.IsChecked = true;
 
@@ -363,6 +374,12 @@ namespace TerminalProgram
                 MessageBox.Show("Не удалось перейти на страницу " + NoProtocolPage.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
+
+            GridRow_Header.Height = new GridLength(100);
+            TextBlock_SelectedPreset.Visibility = Visibility.Visible;
+            ComboBox_SelectedPreset.Visibility = Visibility.Visible;
+            Button_Connect.Visibility = Visibility.Visible;
+            Button_Disconnect.Visibility = Visibility.Visible;
         }
 
         private void RadioButton_Protocol_Modbus_Checked(object sender, RoutedEventArgs e)
@@ -371,6 +388,30 @@ namespace TerminalProgram
             {
                 MessageBox.Show("Не удалось перейти на страницу " + ModbusPage.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+
+            GridRow_Header.Height = new GridLength(100);
+            TextBlock_SelectedPreset.Visibility = Visibility.Visible;
+            ComboBox_SelectedPreset.Visibility = Visibility.Visible;
+            Button_Connect.Visibility = Visibility.Visible;
+            Button_Disconnect.Visibility = Visibility.Visible;
+        }
+
+        private void RadioButton_Protocol_Http_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Frame_ActionUI.Navigate(HttpPage) == false)
+            {
+                MessageBox.Show("Не удалось перейти на страницу " + HttpPage.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+
+            else
+            {
+                GridRow_Header.Height = new GridLength(50);
+                TextBlock_SelectedPreset.Visibility = Visibility.Hidden;
+                ComboBox_SelectedPreset.Visibility = Visibility.Hidden;
+                Button_Connect.Visibility = Visibility.Hidden;
+                Button_Disconnect.Visibility = Visibility.Hidden;
             }
         }
 

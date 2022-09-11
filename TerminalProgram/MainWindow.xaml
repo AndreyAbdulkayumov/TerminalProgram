@@ -5,12 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Title="Терминальная программа (версия 1.2.2)" 
+        Title="Терминальная программа (версия 1.3.0)" 
         Height="680" Width="780"
         Background="#FF323232" 
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
-        Loaded="SourceWindow_Loaded" Closing="SourceWindow_Closing">
+        Loaded="SourceWindow_Loaded"
+        Closing="SourceWindow_Closing">
 
     <Window.Resources>
 
@@ -57,7 +58,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition x:Name="GridRow_Header" Height="100"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
@@ -70,46 +71,56 @@
 
         <Grid Grid.Row="1">
 
-            <TextBlock Text="Выбранный пресет:" 
-                       Margin="20,0,0,40" FontSize="16"
-                       HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="#FFD2C25A"/>
-
-            <ComboBox x:Name="ComboBox_SelectedPreset"
-                      Height="22" Width="160" Margin="175,0,0,40"
-                      HorizontalAlignment="Left" VerticalAlignment="Center" 
-                      SelectionChanged="ComboBox_SelectedPreset_SelectionChanged">
-
-            </ComboBox>
-
-            <Button x:Name="Button_Connect"
-                    Margin="380,0,0,40" Height="25" Width="80" 
-                    Content="Подключить"
-                    HorizontalAlignment="Left" VerticalAlignment="Center"
-                    Click="Button_Connect_Click"/>
-
-            <Button x:Name="Button_Disconnect"
-                    Margin="480,0,0,40" Height="25" Width="80" 
-                    Content="Отключить"
-                    HorizontalAlignment="Left" VerticalAlignment="Center"
-                    Click="Button_Disconnect_Click"/>
-
             <RadioButton x:Name="RadioButton_NoProtocol"
                          Content="Без протокола"
-                         Margin="20,40,0,0"
-                         HorizontalAlignment="Left" VerticalAlignment="Center" Checked="RadioButton_NoProtocol_Checked"/>
+                         Margin="20,20,0,0"
+                         HorizontalAlignment="Left" VerticalAlignment="Top"
+                         Checked="RadioButton_NoProtocol_Checked"/>
 
             <RadioButton x:Name="RadioButton_Protocol_Modbus"
                          Content="Modbus"
-                         Margin="150,40,0,0"
-                         HorizontalAlignment="Left" VerticalAlignment="Center" Checked="RadioButton_Protocol_Modbus_Checked"/>
+                         Margin="150,20,0,0"
+                         HorizontalAlignment="Left" VerticalAlignment="Top"
+                         Checked="RadioButton_Protocol_Modbus_Checked"/>
 
+            <RadioButton x:Name="RadioButton_Protocol_Http"
+                         Content="Http"
+                         Margin="250,20,0,0"
+                         HorizontalAlignment="Left" VerticalAlignment="Top"
+                         Checked="RadioButton_Protocol_Http_Checked"/>
+            
+            <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
+                       Margin="20,60,0,0" 
+                       FontSize="16"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"
+                       Foreground="#FFD2C25A"/>
+
+            <ComboBox x:Name="ComboBox_SelectedPreset"
+                      Height="22" Width="160"
+                      Margin="175,60,0,0"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" 
+                      SelectionChanged="ComboBox_SelectedPreset_SelectionChanged"/>
+
+            <Button x:Name="Button_Connect"
+                    Margin="380,60,0,0"
+                    Height="25" Width="80" 
+                    Content="Подключить"
+                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Click="Button_Connect_Click"/>
+
+            <Button x:Name="Button_Disconnect"
+                    Margin="480,60,0,0"
+                    Height="25" Width="80" 
+                    Content="Отключить"
+                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Click="Button_Disconnect_Click"/>
+            
         </Grid>
 
         <Grid x:Name="Grid_Action" Grid.Row="2">
 
             <Frame x:Name="Frame_ActionUI" NavigationUIVisibility="Hidden"/>
             
-
         </Grid>
 
     </Grid>

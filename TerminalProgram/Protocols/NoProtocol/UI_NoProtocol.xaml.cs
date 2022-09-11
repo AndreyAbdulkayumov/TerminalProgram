@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,7 +90,9 @@ namespace TerminalProgram.Protocols.NoProtocol
                 Button_Send.IsEnabled = false;
             }
 
+            Button_SaveAs.IsEnabled = true;
             CheckBox_NextLine.IsEnabled = true;
+            Button_ClearFieldRX.IsEnabled = true;
 
             TextBox_TX.Focus();
         }
@@ -103,7 +106,9 @@ namespace TerminalProgram.Protocols.NoProtocol
             RadioButton_String.IsEnabled = false;
             Button_Send.IsEnabled = false;
 
+            Button_SaveAs.IsEnabled = false;
             CheckBox_NextLine.IsEnabled = false;
+            Button_ClearFieldRX.IsEnabled = false;
         }
 
         private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
@@ -243,6 +248,48 @@ namespace TerminalProgram.Protocols.NoProtocol
             }
         }
 
+        private void Button_SaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (TextBlock_RX.Text == "")
+                {
+                    MessageBox.Show("Поле приема не содержит данных.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    TextBox_TX.Focus();
+
+                    return;
+                }
+
+                Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = "HostResponse", // Default file name
+                    DefaultExt = ".txt", // Default file extension
+                    Filter = "Text documents (.txt)|*.txt" // Filter files by extension
+                };
+
+                Nullable<bool> result = dialog.ShowDialog();
+
+                if (result == true)
+                {
+                    using (FileStream Stream = new FileStream(dialog.FileName, FileMode.OpenOrCreate))
+                    {
+                        byte[] Data = Encoding.UTF8.GetBytes(TextBlock_RX.Text);
+                        Stream.Write(Data, 0, Data.Length);
+                    }
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Ошибка при попытке сохранить данные поля приема в файл:\n\n" + error.Message, MainWindowTitle,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+
+                TextBox_TX.Focus();
+            }
+        }
+
         private void Button_ClearFieldRX_Click(object sender, RoutedEventArgs e)
         {
             TextBlock_RX.Text = String.Empty;
@@ -259,5 +306,7 @@ namespace TerminalProgram.Protocols.NoProtocol
                     break;
             }
         }
+
+        
     }
 }

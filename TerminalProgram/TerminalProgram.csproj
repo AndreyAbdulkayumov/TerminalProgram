@@ -59,6 +59,9 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Check.cs" />
+    <Compile Include="Protocols\Http\UI_Http.xaml.cs">
+      <DependentUpon>UI_Http.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Protocols\IConnection.cs" />
     <Compile Include="Protocols\IPClient.cs" />
     <Compile Include="Protocols\Modbus\CRC_16.cs" />
@@ -93,6 +96,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Protocols\Http\UI_Http.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Protocols\Modbus\UI_Modbus.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
