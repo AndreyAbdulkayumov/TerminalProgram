@@ -73,6 +73,9 @@ namespace TerminalProgram.Protocols
                 ReadThread.Start();
             }
 
+            Stream.WriteTimeout = Info.TimeoutWrite;
+            Stream.ReadTimeout = Info.TimeoutRead;
+
             IsConnected = true;
         }
 
@@ -98,29 +101,60 @@ namespace TerminalProgram.Protocols
 
         public void Send(string Message)
         {
-            if (IsConnected)
+            try
             {
-                byte[] Data = Encoding.ASCII.GetBytes(Message);
+                if (IsConnected)
+                {
+                    byte[] Data = Encoding.ASCII.GetBytes(Message);
 
-                Stream.WriteAsync(Data, 0, Data.Length);
+                    Stream.WriteAsync(Data, 0, Data.Length);
+                }
+            }
+            
+            catch(Exception error)
+            {
+                throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" + 
+                    "Таймаут передачи: " + 
+                    (Stream.WriteTimeout == Timeout.Infinite ?
+                    "бесконечно" : (Stream.WriteTimeout.ToString() + " мс.")));
             }
         }
 
         public void Send(byte[] Message)
         {
-            if (IsConnected)
+            try
             {
-                Stream.WriteAsync(Message, 0, Message.Length);
+                if (IsConnected)
+                {
+                    Stream.WriteAsync(Message, 0, Message.Length);
+                }
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут передачи: " +
+                    (Stream.WriteTimeout == Timeout.Infinite ? 
+                    "бесконечно" : (Stream.WriteTimeout.ToString() + " мс.")));
             }
         }
 
         public void Receive(byte[] RX)
         {
-            if (IsConnected)
+            try
             {
-                Stream.ReadTimeout = 1000;
-                Stream.Read(RX, 0, RX.Length);
-                Stream.ReadTimeout = Timeout.Infinite;
+                if (IsConnected)
+                {
+                    Stream.Read(RX, 0, RX.Length);
+                }
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут приема: " +
+                    (Stream.ReadTimeout == Timeout.Infinite ?
+                    "бесконечно" : (Stream.ReadTimeout.ToString() + " мс.")));
             }
         }
 

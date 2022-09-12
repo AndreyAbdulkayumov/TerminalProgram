@@ -286,7 +286,10 @@ namespace TerminalProgram
                             Settings.Parity,
                             Settings.DataBits,
                             Settings.StopBits
-                            )));
+                            ),
+                            Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite),
+                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead)
+                            ));
 
                         break;
 
@@ -297,7 +300,10 @@ namespace TerminalProgram
                         Client.Connect(new ConnectionInfo(new SocketInfo(
                             Settings.IP,
                             Settings.Port
-                            )));
+                            ),
+                            Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite),
+                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead)
+                            ));
 
                         break;
 

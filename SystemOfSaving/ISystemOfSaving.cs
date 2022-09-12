@@ -8,6 +8,11 @@ namespace SystemOfSaving
 {
     public enum TypeOfDeviceData
     {
+        TimeoutWrite,
+        TimeoutWrite_IsInfinite,
+        TimeoutRead,
+        TimeoutRead_IsInfinite,
+
         TypeOfConnection,
 
         COMPort,
@@ -23,6 +28,11 @@ namespace SystemOfSaving
     public struct DeviceData
     {
         public string DeviceName;
+
+        public string TimeoutWrite;
+        public string TimeoutWrite_IsInfinite;
+        public string TimeoutRead;
+        public string TimeoutRead_IsInfinite;
 
         public string TypeOfConnection;
 

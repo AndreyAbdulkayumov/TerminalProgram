@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Title="Терминальная программа (версия 1.3.0)" 
+        Title="Терминальная программа (версия 1.3.1)" 
         Height="680" Width="780"
         Background="#FF323232" 
         ResizeMode="CanMinimize"

@@ -59,14 +59,36 @@ namespace TerminalProgram.Protocols
         public SocketInfo Socket;
         public SerialPortInfo SerialPort;
 
+        //  Значение -1 обознает бесконечный таймаут
+        public readonly int TimeoutWrite;
+        public readonly int TimeoutRead;
+
         public ConnectionInfo(SocketInfo Info)
         {
             Socket = Info;
+            TimeoutWrite = -1;
+            TimeoutRead = -1;
+        }
+
+        public ConnectionInfo(SocketInfo Info, int TimeoutWrite, int TimeoutRead)
+        {
+            Socket = Info;
+            this.TimeoutWrite = TimeoutWrite;
+            this.TimeoutRead = TimeoutRead;
         }
 
         public ConnectionInfo(SerialPortInfo Info) 
         { 
-            SerialPort = Info; 
+            SerialPort = Info;
+            TimeoutWrite = -1;
+            TimeoutRead = -1;
+        }
+
+        public ConnectionInfo(SerialPortInfo Info, int TimeoutWrite, int TimeoutRead)
+        {
+            SerialPort = Info;
+            this.TimeoutWrite = TimeoutWrite;
+            this.TimeoutRead = TimeoutRead;
         }
     }
 }

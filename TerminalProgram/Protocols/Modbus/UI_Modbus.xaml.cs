@@ -159,7 +159,7 @@ namespace TerminalProgram.Protocols.Modbus
             {
                 if (ErrorHandler != null)
                 {
-                    ErrorHandler(this, new EventArgs());
+                    //ErrorHandler(this, new EventArgs());
 
                     MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
                         error.Message + "\n\nКлиент был отключен.", 

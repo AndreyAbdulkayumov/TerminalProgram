@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TerminalProgram.Protocols
@@ -112,8 +113,8 @@ namespace TerminalProgram.Protocols
                     DeviceSerialPort.DataBits = DataBits;
                     DeviceSerialPort.StopBits = SelectedStopBits;
 
-                    DeviceSerialPort.WriteTimeout = 500;
-                    DeviceSerialPort.ReadTimeout = 1000;
+                    DeviceSerialPort.WriteTimeout = Info.TimeoutWrite;
+                    DeviceSerialPort.ReadTimeout = Info.TimeoutRead;
 
                     DeviceSerialPort.Open();
                 }
@@ -158,16 +159,27 @@ namespace TerminalProgram.Protocols
 
         private void DeviceSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            if (DataReceived != null)
+            try
             {
-                DataFromDevice Data = new DataFromDevice()
+                if (DataReceived != null)
                 {
-                    RX = new byte[DeviceSerialPort.BytesToRead]
-                };
+                    DataFromDevice Data = new DataFromDevice()
+                    {
+                        RX = new byte[DeviceSerialPort.BytesToRead]
+                    };
 
-                DeviceSerialPort.Read(Data.RX, 0, Data.RX.Length);
+                    DeviceSerialPort.Read(Data.RX, 0, Data.RX.Length);
 
-                DataReceived(this, Data);
+                    DataReceived(this, Data);
+                }
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут приема: " +
+                    (DeviceSerialPort.ReadTimeout == Timeout.Infinite ?
+                    "бесконечно" : (DeviceSerialPort.ReadTimeout.ToString() + " мс.")));
             }
         }
 
@@ -196,7 +208,10 @@ namespace TerminalProgram.Protocols
 
             catch (Exception error)
             {
-                throw new Exception("Ошибка при отправке сообщения: " + Message + "\n\n" + error.Message);
+                throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут передачи: " +
+                    (DeviceSerialPort.WriteTimeout == Timeout.Infinite ?
+                    "бесконечно" : (DeviceSerialPort.WriteTimeout.ToString() + " мс.")));
             }
         }
 
@@ -209,7 +224,10 @@ namespace TerminalProgram.Protocols
 
             catch (Exception error)
             {
-                throw new Exception("Ошибка при отправке сообщения: " + Message + "\n\n" + error.Message);
+                throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут передачи: " +
+                    (DeviceSerialPort.WriteTimeout == Timeout.Infinite ?
+                    "бесконечно" : (DeviceSerialPort.WriteTimeout.ToString() + " мс.")));
             }
         }
 
@@ -221,9 +239,12 @@ namespace TerminalProgram.Protocols
                 DeviceSerialPort.Read(Data, 0, DeviceSerialPort.BytesToRead);
             }
 
-            catch(Exception error)
+            catch (Exception error)
             {
-                throw new Exception("Ошибка при приеме сообщения.\n\n" + error.Message);
+                throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут приема: " +
+                    (DeviceSerialPort.ReadTimeout == Timeout.Infinite ?
+                    "бесконечно" : (DeviceSerialPort.ReadTimeout.ToString() + " мс.")));
             }
         }
 

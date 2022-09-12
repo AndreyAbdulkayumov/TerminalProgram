@@ -95,9 +95,9 @@ namespace TerminalProgram.Protocols.Http
 
                 Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog
                 {
-                    FileName = "HttpResponse", // Default file name
-                    DefaultExt = ".txt", // Default file extension
-                    Filter = "Text documents (.txt)|*.txt" // Filter files by extension
+                    FileName = "HttpResponse", // Имя по умолчанию
+                    DefaultExt = ".txt",       // Расширение файла по умолчанию
+                    Filter = "Text Document|*.txt|Xml|*.xml|JSON|*.json" // Допустимые форматы файла
                 };
 
                 Nullable<bool> result = dialog.ShowDialog();
@@ -106,7 +106,7 @@ namespace TerminalProgram.Protocols.Http
                 {
                     using (FileStream Stream = new FileStream(dialog.FileName, FileMode.OpenOrCreate))
                     {
-                        byte[] Data = Encoding.UTF8.GetBytes(TextBlock_RX.Text);
+                        byte[] Data = Encoding.Default.GetBytes(TextBlock_RX.Text);
                         Stream.Write(Data, 0, Data.Length);
                     }
                 }

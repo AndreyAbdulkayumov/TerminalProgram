@@ -84,6 +84,7 @@ namespace TerminalProgram
                     }
                 }                
             }
+
             catch(Exception error)
             {
                 MessageBox.Show("Ошибка чтения данных из документа. Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message, "Ошибка",
@@ -93,16 +94,50 @@ namespace TerminalProgram
                 return;
             }
 
-            SetValue(ComboBox_COMPort, Settings.COMPort);
-            SetValue(ComboBox_BaudRate, Settings.BaudRate);
-            SetValue(ComboBox_Parity, Settings.Parity);
-            SetValue(ComboBox_DataBits, Settings.DataBits);
-            SetValue(ComboBox_StopBits, Settings.StopBits);
+            UpdateUI(Settings);
+        }
 
-            SetValue(TextBox_IP, Settings.IP);
-            SetValue(TextBox_Port, Settings.Port);
 
-            switch(Settings.TypeOfConnection)
+        private void UpdateUI(DeviceData Data)
+        {
+            SetValue(TextBox_Timeout_Write, Data.TimeoutWrite);
+
+            if (Data.TimeoutWrite_IsInfinite == "Enable")
+            {
+                CheckBox_Timeout_Write_Infinite.IsChecked = true;
+                TextBox_Timeout_Write.IsEnabled = false;
+            }
+
+            else
+            {
+                CheckBox_Timeout_Write_Infinite.IsChecked = false;
+                TextBox_Timeout_Write.IsEnabled = true;
+            }
+
+            SetValue(TextBox_Timeout_Read, Data.TimeoutRead);
+
+            if (Data.TimeoutRead_IsInfinite == "Enable")
+            {
+                CheckBox_Timeout_Read_Infinite.IsChecked = true;
+                TextBox_Timeout_Read.IsEnabled = false;
+            }
+
+            else
+            {
+                CheckBox_Timeout_Read_Infinite.IsChecked = false;
+                TextBox_Timeout_Read.IsEnabled = true;
+            }
+
+            SetValue(ComboBox_COMPort, Data.COMPort);
+            SetValue(ComboBox_BaudRate, Data.BaudRate);
+            SetValue(ComboBox_Parity, Data.Parity);
+            SetValue(ComboBox_DataBits, Data.DataBits);
+            SetValue(ComboBox_StopBits, Data.StopBits);
+
+            SetValue(TextBox_IP, Data.IP);
+            SetValue(TextBox_Port, Data.Port);
+
+            switch (Data.TypeOfConnection)
             {
                 case "SerialPort":
                     RadioButton_SerialPort.IsChecked = true;
@@ -113,15 +148,14 @@ namespace TerminalProgram
                     break;
 
                 default:
-                    MessageBox.Show("В файле настроек задан неизвестный интерфейс связи: " + Settings.TypeOfConnection.ToString() +
+                    MessageBox.Show("В файле настроек задан неизвестный интерфейс связи: " + 
+                        Data.TypeOfConnection.ToString() +
                         ".\n\nПо умолчанию будет выставлен SerialPort", "Предупреждение",
                         MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
 
                     RadioButton_SerialPort.IsChecked = true;
                     break;
-
             }
-            
         }
 
         private void SetValue(ComboBox Box, string Value)
@@ -299,6 +333,67 @@ namespace TerminalProgram
         private void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SettingsDocument = ComboBox_SelectedDevice.SelectedItem.ToString();
+        }
+
+        private void TextBox_Timeout_Write_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckNumber(TextBox_Timeout_Write);
+            Settings.TimeoutWrite = TextBox_Timeout_Write.Text;
+        }
+
+        private void CheckNumber(TextBox Box)
+        {
+            string Text = Box.Text;
+
+            if (Text == "")
+            {
+                return;
+            }
+
+            if (UInt32.TryParse(Text, out _) == false)
+            {
+                Box.Text = Text.Substring(0, Text.Length - 1);
+                Box.SelectionStart = Box.Text.Length;
+
+                MessageBox.Show("Разрешается вводить только неотрицательные целые числа.", "Предупреждение",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void CheckBox_Timeout_Write_Infinite_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBox_Timeout_Write_Infinite.IsChecked == true)
+            {
+                TextBox_Timeout_Write.IsEnabled = false;
+                Settings.TimeoutWrite_IsInfinite = "Enable";
+            }
+
+            else
+            {
+                TextBox_Timeout_Write.IsEnabled = true;
+                Settings.TimeoutWrite_IsInfinite = "Disable";
+            }
+        }
+
+        private void TextBox_Timeout_Read_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            CheckNumber(TextBox_Timeout_Read);
+            Settings.TimeoutRead = TextBox_Timeout_Read.Text;
+        }
+
+        private void CheckBox_Timeout_Read_Infinite_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBox_Timeout_Read_Infinite.IsChecked == true)
+            {
+                TextBox_Timeout_Read.IsEnabled = false;
+                Settings.TimeoutRead_IsInfinite = "Enable";
+            }
+
+            else
+            {
+                TextBox_Timeout_Read.IsEnabled = true;
+                Settings.TimeoutRead_IsInfinite = "Disable";
+            }
         }
     }
 }

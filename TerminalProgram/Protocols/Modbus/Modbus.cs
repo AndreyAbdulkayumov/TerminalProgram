@@ -387,8 +387,6 @@ namespace TerminalProgram.Protocols.Modbus
             }
 
             return temp;
-        }
-
-        
+        }        
     }
 }

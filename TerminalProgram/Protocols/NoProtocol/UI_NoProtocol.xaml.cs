@@ -264,9 +264,9 @@ namespace TerminalProgram.Protocols.NoProtocol
 
                 Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog
                 {
-                    FileName = "HostResponse", // Default file name
-                    DefaultExt = ".txt", // Default file extension
-                    Filter = "Text documents (.txt)|*.txt" // Filter files by extension
+                    FileName = "HostResponse", // Имя по умолчанию
+                    DefaultExt = ".txt",       // Расширение файла по умолчанию
+                    Filter = "Text Document|*.txt" // Допустимые форматы файла
                 };
 
                 Nullable<bool> result = dialog.ShowDialog();

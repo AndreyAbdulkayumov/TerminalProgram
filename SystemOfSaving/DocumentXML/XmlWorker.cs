@@ -67,6 +67,12 @@ namespace SystemOfSaving.DocumentXML
             DeviceData DefaultData = new DeviceData
             {
                 DeviceName = Name,
+
+                TimeoutWrite = DefaultNodeValue,
+                TimeoutWrite_IsInfinite = DefaultNodeValue,
+                TimeoutRead = DefaultNodeValue,
+                TimeoutRead_IsInfinite = DefaultNodeValue,
+
                 TypeOfConnection = DefaultNodeValue,
 
                 COMPort = DefaultNodeValue,
@@ -99,7 +105,12 @@ namespace SystemOfSaving.DocumentXML
             {
                 DeviceName = DeviceNode.Attributes.GetNamedItem("name").Value,
 
-                TypeOfConnection = XML_FindNode.InNode(DeviceNode, "TypeOfConnection").FirstChild.Value,
+                TimeoutWrite = XML_FindNode.InNode(DeviceNode, "TimeoutWrite").FirstChild.Value,
+                TimeoutWrite_IsInfinite = XML_FindNode.InNode(DeviceNode, "TimeoutWrite_IsInfinite").FirstChild.Value,
+                TimeoutRead = XML_FindNode.InNode(DeviceNode, "TimeoutRead").FirstChild.Value,
+                TimeoutRead_IsInfinite = XML_FindNode.InNode(DeviceNode, "TimeoutRead_IsInfinite").FirstChild.Value,
+
+                TypeOfConnection = XML_FindNode.InNode(DeviceNode, "TypeOfConnection").FirstChild.Value,              
 
                 COMPort = XML_FindNode.InNode(DeviceNode, "COMPort").FirstChild.Value,
                 BaudRate = XML_FindNode.InNode(DeviceNode, "BaudRate").FirstChild.Value,
@@ -133,7 +144,6 @@ namespace SystemOfSaving.DocumentXML
                         DevicesNames.Add(attribute.Value);
                     }
                 }
-
             }
 
             return DevicesNames;
@@ -230,6 +240,22 @@ namespace SystemOfSaving.DocumentXML
             {
                 switch (DataNode.LocalName)
                 {
+                    case "TimeoutWrite":
+                        UpdateDataNode(Document, DataNode, Data.TimeoutWrite);
+                        break;
+
+                    case "TimeoutWrite_IsInfinite":
+                        UpdateDataNode(Document, DataNode, Data.TimeoutWrite_IsInfinite);
+                        break;
+
+                    case "TimeoutRead":
+                        UpdateDataNode(Document, DataNode, Data.TimeoutRead);
+                        break;
+
+                    case "TimeoutRead_IsInfinite":
+                        UpdateDataNode(Document, DataNode, Data.TimeoutRead_IsInfinite);
+                        break;
+
                     case "TypeOfConnection":
                         UpdateDataNode(Document, DataNode, Data.TypeOfConnection);
                         break;
@@ -279,6 +305,11 @@ namespace SystemOfSaving.DocumentXML
             DeviceNameAttr.AppendChild(DeviceNameText);
             Device.Attributes.Append(DeviceNameAttr);
 
+            CreateValue(Document, Device, "TimeoutWrite", Data.TimeoutWrite);
+            CreateValue(Document, Device, "TimeoutWrite_IsInfinite", Data.TimeoutWrite_IsInfinite);
+            CreateValue(Document, Device, "TimeoutRead", Data.TimeoutRead);
+            CreateValue(Document, Device, "TimeoutRead_IsInfinite", Data.TimeoutRead_IsInfinite);
+
             CreateValue(Document, Device, "TypeOfConnection", Data.TypeOfConnection);
 
             CreateValue(Document, Device, "COMPort", Data.COMPort);
@@ -305,7 +336,6 @@ namespace SystemOfSaving.DocumentXML
                 }
 
                 DataNode.FirstChild.Value = DefaultNodeValue;
-
             }
 
             else
@@ -316,6 +346,7 @@ namespace SystemOfSaving.DocumentXML
                     DataNode.AppendChild(DefaultText);
 
                 }
+
                 DataNode.FirstChild.Value = Data;
             }
         }
@@ -328,9 +359,5 @@ namespace SystemOfSaving.DocumentXML
             COMPortElem.AppendChild(COMPortText);
             BasicElement.AppendChild(COMPortElem);
         }
-
-
-
-
     }
 }
