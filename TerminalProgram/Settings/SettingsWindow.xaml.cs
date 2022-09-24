@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using System.IO.Ports;
 using SystemOfSaving;
 
-namespace TerminalProgram
+namespace TerminalProgram.Settings
 {
     /// <summary>
     /// Логика взаимодействия для SettingsWindow.xaml
@@ -24,13 +24,11 @@ namespace TerminalProgram
         public bool SettingsIsChanged { get; private set; } = false;
         public string SettingsDocument { get; private set; }
 
-        private readonly string[] ArrayBaudRate = { "4800", "9600", "19200", "38400", "57600", "115200" };
-        private readonly string[] ArrayParity = { "None", "Even", "Odd" };
-        private readonly string[] ArrayDataBits = { "8", "9" };
-        private readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
-
-        private readonly SettingsMediator SettingsManager = new SettingsMediator();
+        private SettingsMediator SettingsManager = new SettingsMediator();
         private DeviceData Settings = new DeviceData();
+
+        private Page_IP Settings_IP = null;
+        private Page_SerialPort Settings_SerialPort = null;
 
         private string SettingsDocumentPath;
 
@@ -38,26 +36,21 @@ namespace TerminalProgram
         {
             InitializeComponent();
 
-            ComboBoxFilling(ComboBox_SelectedDevice, ref PresetFiles);
+            for (int i = 0; i < PresetFiles.Length; i++)
+            {
+                ComboBox_SelectedDevice.Items.Add(PresetFiles[i]);
+            }
 
             ComboBox_SelectedDevice.SelectedIndex = 0;
 
             SettingsDocumentPath = Directory + PresetFiles[0] + ".xml";
-            SettingsDocument = PresetFiles[0];
-
-            ComboBoxFilling(ComboBox_BaudRate, ref ArrayBaudRate);
-            ComboBoxFilling(ComboBox_Parity, ref ArrayParity);
-            ComboBoxFilling(ComboBox_DataBits, ref ArrayDataBits);
-            ComboBoxFilling(ComboBox_StopBits, ref ArrayStopBits);
+            SettingsDocument = PresetFiles[0];            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent,
-                    new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
-
                 SettingsManager.LoadSettingsFrom(SettingsDocumentPath);
 
                 List<string> Devices = SettingsManager.GetAllDevicesNames();
@@ -82,7 +75,25 @@ namespace TerminalProgram
                         Close();
                         return;
                     }
-                }                
+                }
+
+                Settings_SerialPort = new Page_SerialPort(Settings, SettingsManager)
+                {
+                    Height = Frame_Settings.ActualHeight,
+                    Width = Frame_Settings.ActualWidth,
+
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
+
+                Settings_IP = new Page_IP(Settings, SettingsManager)
+                {
+                    Height = Frame_Settings.ActualHeight,
+                    Width = Frame_Settings.ActualWidth,
+
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Top
+                };
             }
 
             catch(Exception error)
@@ -128,15 +139,6 @@ namespace TerminalProgram
                 TextBox_Timeout_Read.IsEnabled = true;
             }
 
-            SetValue(ComboBox_COMPort, Data.COMPort);
-            SetValue(ComboBox_BaudRate, Data.BaudRate);
-            SetValue(ComboBox_Parity, Data.Parity);
-            SetValue(ComboBox_DataBits, Data.DataBits);
-            SetValue(ComboBox_StopBits, Data.StopBits);
-
-            SetValue(TextBox_IP, Data.IP);
-            SetValue(TextBox_Port, Data.Port);
-
             switch (Data.TypeOfConnection)
             {
                 case "SerialPort":
@@ -158,24 +160,6 @@ namespace TerminalProgram
             }
         }
 
-        private void SetValue(ComboBox Box, string Value)
-        {
-            if (Value == SettingsManager.DefaultNodeValue)
-            {
-                Box.SelectedIndex = -1;
-                return;
-            }
-
-            int index = Box.Items.IndexOf(Value);
-
-            if (index < 0)
-            {
-                return;
-            }
-
-            Box.SelectedIndex = index;
-        } 
-
         private void SetValue(TextBox Box, string Value)
         {
             if (Value == SettingsManager.DefaultNodeValue)
@@ -191,114 +175,28 @@ namespace TerminalProgram
         {
             
         }
-
-        private void ComboBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            SearchSerialPorts(ComboBox_COMPort);
-        }
-
-        private void SearchSerialPorts(ComboBox Box)
-        {
-            string[] ports = SerialPort.GetPortNames();
-
-            if (ports.Length != Box.Items.Count)
-            {
-                int CountItems = Box.Items.Count;
-
-                for (int i = 0; i < CountItems; i++)
-                {
-                    Box.Items.RemoveAt(0);
-                }
-
-                foreach (string port in ports)
-                {
-                    Box.Items.Add(port);
-                }
-            }
-        }
-
-        private void ComboBoxFilling(ComboBox Box, ref string[] Items)
-        {
-            for (int i = 0; i < Items.Length; i++)
-            {
-                Box.Items.Add(Items[i]);
-            }
-        }
+        
         private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)
         {
-            TextBlock_COMPort.Visibility = Visibility.Visible;
-            ComboBox_COMPort.Visibility = Visibility.Visible;
-            TextBlock_BaudRate.Visibility = Visibility.Visible;
-            ComboBox_BaudRate.Visibility = Visibility.Visible;
-            TextBlock_Parity.Visibility = Visibility.Visible;
-            ComboBox_Parity.Visibility = Visibility.Visible;
-            TextBlock_DataBits.Visibility = Visibility.Visible;
-            ComboBox_DataBits.Visibility = Visibility.Visible;
-            TextBlock_StopBits.Visibility = Visibility.Visible;
-            ComboBox_StopBits.Visibility = Visibility.Visible;
 
-            TextBlock_IP.Visibility = Visibility.Hidden;
-            TextBox_IP.Visibility = Visibility.Hidden;
-            TextBlock_Port.Visibility = Visibility.Hidden;
-            TextBox_Port.Visibility = Visibility.Hidden;
+            if (Frame_Settings.Navigate(Settings_SerialPort) == false)
+            {
+                MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
 
             Settings.TypeOfConnection = "SerialPort";
         }
 
         private void RadioButton_Ethernet_Checked(object sender, RoutedEventArgs e)
         {
-            TextBlock_COMPort.Visibility = Visibility.Hidden;
-            ComboBox_COMPort.Visibility = Visibility.Hidden;
-            TextBlock_BaudRate.Visibility = Visibility.Hidden;
-            ComboBox_BaudRate.Visibility = Visibility.Hidden;
-            TextBlock_Parity.Visibility = Visibility.Hidden;
-            ComboBox_Parity.Visibility = Visibility.Hidden;
-            TextBlock_DataBits.Visibility = Visibility.Hidden;
-            ComboBox_DataBits.Visibility = Visibility.Hidden;
-            TextBlock_StopBits.Visibility = Visibility.Hidden;
-            ComboBox_StopBits.Visibility = Visibility.Hidden;
-
-            TextBlock_IP.Visibility = Visibility.Visible;
-            TextBox_IP.Visibility = Visibility.Visible;
-            TextBlock_Port.Visibility = Visibility.Visible;
-            TextBox_Port.Visibility = Visibility.Visible;
+            if (Frame_Settings.Navigate(Settings_IP) == false)
+            {
+                MessageBox.Show("Не удалось перейти на страницу " + Settings_IP.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
 
             Settings.TypeOfConnection = "Ethernet";
-        }
-
-        private void TextBox_IP_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Settings.IP = TextBox_IP.Text;
-        }
-
-        private void TextBox_Port_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            Settings.Port = TextBox_Port.Text;
-        }
-
-        private void ComboBox_COMPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Settings.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_BaudRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Settings.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_Parity_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Settings.Parity = ComboBox_Parity.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_DataBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Settings.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
-        }
-
-        private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            Settings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
         }
 
         private void Button_Save_Click(object sender, RoutedEventArgs e)

@@ -1,0 +1,54 @@
+﻿<Page x:Class="TerminalProgram.Settings.Page_IP"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TerminalProgram.Settings"
+      mc:Ignorable="d" 
+      d:DesignHeight="250" d:DesignWidth="300"
+      Title="Settings_IP" 
+      Loaded="Page_Loaded">
+
+    <Page.Resources>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
+        </Style>
+
+    </Page.Resources>
+    
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- IP address -->
+        
+        <TextBlock Grid.Row="0" x:Name="TextBlock_IP"  Text="IP" 
+                   Margin="0,12,190,0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top"/>
+
+        <TextBox Grid.Row="0" x:Name="TextBox_IP" 
+                 Margin="115,10,0,0" Height="22" Width="107" 
+                 TextWrapping="Wrap" 
+                 HorizontalAlignment="Left" VerticalAlignment="Top" 
+                 TextChanged="TextBox_IP_TextChanged"/>
+        
+        <!-- Port -->
+        
+        <TextBlock Grid.Row="1" x:Name="TextBlock_Port" Text="Port"
+                   Margin="0,12,190,0" 
+                   HorizontalAlignment="Right" VerticalAlignment="Top"/>
+
+        <TextBox Grid.Row="1" x:Name="TextBox_Port" 
+                 Margin="115,10,0,0" Height="22" Width="50" 
+                 TextWrapping="Wrap" 
+                 HorizontalAlignment="Left" VerticalAlignment="Top" 
+                 TextChanged="TextBox_Port_TextChanged"/>
+        
+    </Grid>
+    
+</Page>

@@ -25,7 +25,7 @@ namespace SystemOfSaving
         Port,
     }
 
-    public struct DeviceData
+    public class DeviceData
     {
         public string DeviceName;
 

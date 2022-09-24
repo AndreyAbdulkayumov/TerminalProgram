@@ -76,7 +76,13 @@
     <Compile Include="Select.xaml.cs">
       <DependentUpon>Select.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SettingsWindow.xaml.cs">
+    <Compile Include="Settings\Page_IP.xaml.cs">
+      <DependentUpon>Page_IP.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\Page_SerialPort.xaml.cs">
+      <DependentUpon>Page_SerialPort.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="SystemOfPresets.cs" />
@@ -112,7 +118,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SettingsWindow.xaml">
+    <Page Include="Settings\Page_IP.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Settings\Page_SerialPort.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Settings\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

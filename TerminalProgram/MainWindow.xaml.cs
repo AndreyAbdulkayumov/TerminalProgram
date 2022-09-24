@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.IO.Ports;
 using SystemOfSaving;
+using TerminalProgram.Settings;
 using TerminalProgram.Protocols;
 using TerminalProgram.Protocols.NoProtocol;
 using TerminalProgram.Protocols.Modbus;
@@ -325,7 +326,6 @@ namespace TerminalProgram
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
-         
 
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
@@ -430,7 +430,5 @@ namespace TerminalProgram
 
             window.ShowDialog();
         }
-
-        
     }
 }
