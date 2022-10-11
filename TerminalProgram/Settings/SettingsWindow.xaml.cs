@@ -24,27 +24,33 @@ namespace TerminalProgram.Settings
         public bool SettingsIsChanged { get; private set; } = false;
         public string SettingsDocument { get; private set; }
 
-        private SettingsMediator SettingsManager = new SettingsMediator();
+        private readonly SettingsMediator SettingsManager = new SettingsMediator();
         private DeviceData Settings = new DeviceData();
 
         private Page_IP Settings_IP = null;
         private Page_SerialPort Settings_SerialPort = null;
 
-        private string SettingsDocumentPath;
+        private readonly string SettingsDocumentPath;
+
+        private string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "Unicode", "UTF-7", "UTF-32" };
 
         public SettingsWindow(string Directory, ref string[] PresetFiles)
         {
             InitializeComponent();
-
-            for (int i = 0; i < PresetFiles.Length; i++)
-            {
-                ComboBox_SelectedDevice.Items.Add(PresetFiles[i]);
-            }
-
+                        
+            ComboBoxFilling(ComboBox_SelectedDevice, ref PresetFiles);
             ComboBox_SelectedDevice.SelectedIndex = 0;
 
             SettingsDocumentPath = Directory + PresetFiles[0] + ".xml";
             SettingsDocument = PresetFiles[0];            
+        }
+
+        private void ComboBoxFilling(ComboBox Box, ref string[] Items)
+        {
+            for (int i = 0; i < Items.Length; i++)
+            {
+                Box.Items.Add(Items[i]);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -76,6 +82,9 @@ namespace TerminalProgram.Settings
                         return;
                     }
                 }
+
+                ComboBoxFilling(ComboBox_SelectedEncoding, ref ArrayTypeOfEncoding);
+                ComboBox_SelectedEncoding.SelectedValue = ArrayTypeOfEncoding.Single(element => element == Settings.GlobalEncoding);
 
                 Settings_SerialPort = new Page_SerialPort(Settings, SettingsManager)
                 {
@@ -176,44 +185,6 @@ namespace TerminalProgram.Settings
             
         }
         
-        private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)
-        {
-
-            if (Frame_Settings.Navigate(Settings_SerialPort) == false)
-            {
-                MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-
-            Settings.TypeOfConnection = "SerialPort";
-        }
-
-        private void RadioButton_Ethernet_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Frame_Settings.Navigate(Settings_IP) == false)
-            {
-                MessageBox.Show("Не удалось перейти на страницу " + Settings_IP.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-            }
-
-            Settings.TypeOfConnection = "Ethernet";
-        }
-
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsManager.Save(Settings);
-
-            SettingsIsChanged = true;
-
-            MessageBox.Show("Настройки успешно сохранены!", "",
-                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-        }
-
-        private void Button_Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -292,6 +263,52 @@ namespace TerminalProgram.Settings
                 TextBox_Timeout_Read.IsEnabled = true;
                 Settings.TimeoutRead_IsInfinite = "Disable";
             }
+        }
+
+        private void ComboBox_SelectedEncoding_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBox_SelectedEncoding.SelectedItem != null)
+            {
+                Settings.GlobalEncoding = ComboBox_SelectedEncoding.SelectedItem.ToString();
+            }   
+        }
+
+        private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)
+        {
+
+            if (Frame_Settings.Navigate(Settings_SerialPort) == false)
+            {
+                MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+
+            Settings.TypeOfConnection = "SerialPort";
+        }
+
+        private void RadioButton_Ethernet_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Frame_Settings.Navigate(Settings_IP) == false)
+            {
+                MessageBox.Show("Не удалось перейти на страницу " + Settings_IP.Name, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+
+            Settings.TypeOfConnection = "Ethernet";
+        }
+
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsManager.Save(Settings);
+
+            SettingsIsChanged = true;
+
+            MessageBox.Show("Настройки успешно сохранены!", "",
+                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+        }
+
+        private void Button_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

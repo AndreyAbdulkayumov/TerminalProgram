@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:TerminalProgram.Settings"
         mc:Ignorable="d"
         Title="Настройки подключения" 
-        Height="500" Width="300"
+        Height="550" Width="320"
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
         Loaded="Window_Loaded" 
         Closing="Window_Closing" 
         KeyDown="Window_KeyDown">
@@ -44,6 +45,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
@@ -52,6 +54,8 @@
                 Background="#FF3A3A3A"
                 BorderThickness="1"
                 BorderBrush="#FFABABAB"/>
+        
+        <!-- Row 0 -->
         
         <TextBlock Grid.Row="0" Text="Устройство"
                    Margin="65,0,0,0"
@@ -63,6 +67,8 @@
                   HorizontalAlignment="Left" VerticalAlignment="Center" 
                   SelectionChanged="ComboBox_SelectedDevice_SelectionChanged"/>
 
+        <!-- Row 1 -->
+        
         <TextBlock Grid.Row="1" Text="Таймаут записи (мс): "
                    FontSize="12"
                    Margin="10,0,0,0"
@@ -80,6 +86,8 @@
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Click="CheckBox_Timeout_Write_Infinite_Click"/>
 
+        <!-- Row 2 -->
+        
         <TextBlock Grid.Row="2" Text="Таймаут чтения (мс): "
                    FontSize="12"
                    Margin="10,0,0,0"
@@ -96,8 +104,23 @@
                   Margin="190,0,0,0"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Click="CheckBox_Timeout_Read_Infinite_Click"/>
+
+        <!-- Row 3 -->
         
-        <StackPanel Grid.Row="3" 
+        <TextBlock Grid.Row="3" Text="Кодировка (реж. &quot;Без протокола&quot;):"
+                   Margin="10,0,0,0"
+                   FontSize="12"
+                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+        <ComboBox Grid.Row="3" x:Name="ComboBox_SelectedEncoding"
+                  Margin="210,0,0,0" 
+                  Width="80" 
+                  HorizontalAlignment="Left" VerticalAlignment="Center" 
+                  SelectionChanged="ComboBox_SelectedEncoding_SelectionChanged"/>
+
+        <!-- Row 4 -->
+        
+        <StackPanel Grid.Row="4" 
                     Height="30" Width="225" 
                     Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -114,16 +137,20 @@
 
         </StackPanel>
 
-        <Frame x:Name="Frame_Settings" Grid.Row="4"
-               NavigationUIVisibility="Hidden"/>
+        <!-- Row 5 -->
         
-        <Button Grid.Row="5" x:Name="Button_Save" Content="Сохранить"
+        <Frame x:Name="Frame_Settings" Grid.Row="5"
+               NavigationUIVisibility="Hidden"/>
+
+        <!-- Row 6 -->
+        
+        <Button Grid.Row="6" x:Name="Button_Save" Content="Сохранить"
                 Margin="0,0,150,0" 
                 Height="25" Width="80"
                 HorizontalAlignment="Center" VerticalAlignment="Center" 
                 Click="Button_Save_Click"/>
 
-        <Button Grid.Row="5" x:Name="Button_Cancel" Content="Отмена"
+        <Button Grid.Row="6" x:Name="Button_Cancel" Content="Отмена"
                 Margin="150,0,0,0"
                 Height="25" Width="80" 
                 HorizontalAlignment="Center" VerticalAlignment="Center"

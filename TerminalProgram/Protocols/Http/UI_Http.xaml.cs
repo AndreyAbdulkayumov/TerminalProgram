@@ -120,5 +120,6 @@ namespace TerminalProgram.Protocols.Http
                 TextBox_TX.Focus();
             }
         }
+
     }
 }

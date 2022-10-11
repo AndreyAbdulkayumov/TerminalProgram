@@ -5,10 +5,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Height="160" Width="300" Background="Silver" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown" ResizeMode="NoResize" Closing="Window_Closing">
+        Height="160" Width="300"
+        WindowStyle="ToolWindow" 
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="False"
+        KeyDown="Window_KeyDown"         
+        Closing="Window_Closing">
+    
     <Grid>
-        <TextBlock x:Name="TextBlock_Message" HorizontalAlignment="Center" Margin="0,20,0,0" TextWrapping="Wrap" Text="Выберите документ" VerticalAlignment="Top"/>
-        <ComboBox x:Name="ComboBox_SelectedDocument" Margin="0,50,0,0" Width="140" HorizontalAlignment="Center" VerticalAlignment="Top"/>
-        <Button x:Name="Button_Select" Content="Выбрать" HorizontalAlignment="Center" Margin="0,90,0,0" VerticalAlignment="Top" Width="75" Click="Button_Select_Click"/>
+
+        <Border Background="#FF323232"
+                BorderThickness="1"
+                BorderBrush="#FFABABAB"/>
+        
+        <TextBlock Text="Выберите файл настроек" 
+                   Margin="0,20,0,0"
+                   Foreground="#FFD2C25A"
+                   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        
+        <ComboBox x:Name="ComboBox_SelectedDocument" 
+                  Margin="0,50,0,0" 
+                  Width="140" 
+                  HorizontalAlignment="Center" VerticalAlignment="Top"/>
+        
+        <Button x:Name="Button_Select" Content="Выбрать" 
+                Margin="0,90,0,0"
+                Width="75"
+                HorizontalAlignment="Center" VerticalAlignment="Top" 
+                Click="Button_Select_Click"/>
+    
     </Grid>
+    
 </Window>

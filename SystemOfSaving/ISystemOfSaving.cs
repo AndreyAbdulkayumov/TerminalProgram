@@ -13,6 +13,8 @@ namespace SystemOfSaving
         TimeoutRead,
         TimeoutRead_IsInfinite,
 
+        GlobalEncoding,
+
         TypeOfConnection,
 
         COMPort,
@@ -33,6 +35,8 @@ namespace SystemOfSaving
         public string TimeoutWrite_IsInfinite;
         public string TimeoutRead;
         public string TimeoutRead_IsInfinite;
+
+        public string GlobalEncoding;
 
         public string TypeOfConnection;
 

@@ -40,7 +40,7 @@ namespace TerminalProgram.Protocols.NoProtocol
             InitializeComponent();
 
             MainWindowTitle = window.Title;
-
+            
             window.DeviceIsConnect += MainWindow_DeviceIsConnect;
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
 
@@ -49,7 +49,14 @@ namespace TerminalProgram.Protocols.NoProtocol
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            RadioButton_String.Checked -= RadioButton_String_Checked;
             RadioButton_String.IsChecked = true;
+            RadioButton_String.Checked += RadioButton_String_Checked;
+
+            MessageType = TypeOfMessage.String;
+            TextBox_TX.Text = String.Empty;
+
+            TextBox_TX.Focus();
         }
 
         private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
@@ -162,7 +169,8 @@ namespace TerminalProgram.Protocols.NoProtocol
                     {
                         try
                         {
-                            TextBlock_RX.Text += Encoding.UTF8.GetString(e.RX);
+                            //TextBlock_RX.Text += Encoding.UTF8.GetString(e.RX);
+                            TextBlock_RX.Text += MainWindow.GlobalEncoding.GetString(e.RX);
 
                             if (CheckBox_NextLine.IsChecked == true)
                             {
@@ -171,6 +179,7 @@ namespace TerminalProgram.Protocols.NoProtocol
 
                             ScrollViewer_RX.ScrollToEnd();
                         }
+
                         catch (Exception error)
                         {
                             MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, MainWindowTitle,
@@ -217,15 +226,19 @@ namespace TerminalProgram.Protocols.NoProtocol
                     return;
                 }
 
+                byte[] Message;
+
                 if (CheckBox_CRCF.IsChecked == true)
                 {
-                    Client.Send(TextBox_TX.Text + "\r\n");
+                    Message = MainWindow.GlobalEncoding.GetBytes(TextBox_TX.Text + "\r\n");
                 }
 
                 else
                 {
-                    Client.Send(TextBox_TX.Text);
+                    Message = MainWindow.GlobalEncoding.GetBytes(TextBox_TX.Text);
                 }
+
+                Client.Send(Message);
             }
 
             catch (Exception error)

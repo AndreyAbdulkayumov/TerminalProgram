@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="250" d:DesignWidth="300"
+      d:DesignHeight="250" d:DesignWidth="320"
       Title="Settings_IP" 
       Loaded="Page_Loaded">
 
@@ -32,7 +32,7 @@
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <TextBox Grid.Row="0" x:Name="TextBox_IP" 
-                 Margin="115,10,0,0" Height="22" Width="107" 
+                 Margin="135,10,0,0" Height="22" Width="107" 
                  TextWrapping="Wrap" 
                  HorizontalAlignment="Left" VerticalAlignment="Top" 
                  TextChanged="TextBox_IP_TextChanged"/>
@@ -44,7 +44,7 @@
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <TextBox Grid.Row="1" x:Name="TextBox_Port" 
-                 Margin="115,10,0,0" Height="22" Width="50" 
+                 Margin="135,10,0,0" Height="22" Width="50" 
                  TextWrapping="Wrap" 
                  HorizontalAlignment="Left" VerticalAlignment="Top" 
                  TextChanged="TextBox_Port_TextChanged"/>

@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="250" d:DesignWidth="300"
+      d:DesignHeight="250" d:DesignWidth="320"
       Title="Settings_SerialPort" 
       Loaded="Page_Loaded">
 
@@ -30,55 +30,55 @@
         <!-- COM Port-->
         
         <TextBlock Grid.Row="0" x:Name="TextBlock_COMPort" Text="COM - Port" 
-                   Margin="0,12,160,0"
+                   Margin="0,12,170,0"
                    VerticalAlignment="Top" HorizontalAlignment="Right"/>
 
         <ComboBox Grid.Row="0" x:Name="ComboBox_COMPort" 
-                  Margin="145,10,0,0" Width="70" 
+                  Margin="155,10,0,0" Width="70" 
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   SelectionChanged="ComboBox_COMPort_SelectionChanged"/>
 
         <!-- Baud Rate -->
         
         <TextBlock Grid.Row="1" x:Name="TextBlock_BaudRate" Text="BaudRate"
-                   Margin="0,12,160,0" 
+                   Margin="0,12,170,0" 
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <ComboBox Grid.Row="1" x:Name="ComboBox_BaudRate" 
-                  Margin="145,10,0,0" Width="70" 
+                  Margin="155,10,0,0" Width="70" 
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   SelectionChanged="ComboBox_BaudRate_SelectionChanged"/>
 
         <!-- Parity -->
         
         <TextBlock Grid.Row="2" x:Name="TextBlock_Parity" Text="Parity"
-                   Margin="0,12,160,0"
+                   Margin="0,12,170,0"
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <ComboBox Grid.Row="2" x:Name="ComboBox_Parity"
-                  Margin="145,10,0,0" Width="70" 
+                  Margin="155,10,0,0" Width="70" 
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   SelectionChanged="ComboBox_Parity_SelectionChanged"/>
 
         <!-- Data Bits -->
         
         <TextBlock Grid.Row="3" x:Name="TextBlock_DataBits" Text="DataBits"
-                   Margin="0,12,160,0"
+                   Margin="0,12,170,0"
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <ComboBox Grid.Row="3" x:Name="ComboBox_DataBits"
-                  Margin="145,10,0,0" Width="70" 
+                  Margin="155,10,0,0" Width="70" 
                   HorizontalAlignment="Left" VerticalAlignment="Top"
                   SelectionChanged="ComboBox_DataBits_SelectionChanged"/>
 
         <!-- Stop Bits -->
         
         <TextBlock Grid.Row="8" x:Name="TextBlock_StopBits" Text="StopBits"
-                   Margin="0,12,160,0"
+                   Margin="0,12,170,0"
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <ComboBox Grid.Row="8" x:Name="ComboBox_StopBits"
-                  Margin="145,10,0,0" Width="70" 
+                  Margin="155,10,0,0" Width="70" 
                   HorizontalAlignment="Left" VerticalAlignment="Top" 
                   SelectionChanged="ComboBox_StopBits_SelectionChanged"/>
 

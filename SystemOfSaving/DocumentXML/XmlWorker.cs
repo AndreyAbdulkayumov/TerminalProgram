@@ -73,6 +73,8 @@ namespace SystemOfSaving.DocumentXML
                 TimeoutRead = DefaultNodeValue,
                 TimeoutRead_IsInfinite = DefaultNodeValue,
 
+                GlobalEncoding = DefaultNodeValue,
+
                 TypeOfConnection = DefaultNodeValue,
 
                 COMPort = DefaultNodeValue,
@@ -109,6 +111,8 @@ namespace SystemOfSaving.DocumentXML
                 TimeoutWrite_IsInfinite = XML_FindNode.InNode(DeviceNode, "TimeoutWrite_IsInfinite").FirstChild.Value,
                 TimeoutRead = XML_FindNode.InNode(DeviceNode, "TimeoutRead").FirstChild.Value,
                 TimeoutRead_IsInfinite = XML_FindNode.InNode(DeviceNode, "TimeoutRead_IsInfinite").FirstChild.Value,
+
+                GlobalEncoding = XML_FindNode.InNode(DeviceNode, "GlobalEncoding").FirstChild.Value,
 
                 TypeOfConnection = XML_FindNode.InNode(DeviceNode, "TypeOfConnection").FirstChild.Value,              
 
@@ -256,6 +260,12 @@ namespace SystemOfSaving.DocumentXML
                         UpdateDataNode(Document, DataNode, Data.TimeoutRead_IsInfinite);
                         break;
 
+
+                    case "GlobalEncoding":
+                        UpdateDataNode(Document, DataNode, Data.GlobalEncoding);
+                        break;
+
+
                     case "TypeOfConnection":
                         UpdateDataNode(Document, DataNode, Data.TypeOfConnection);
                         break;
@@ -309,6 +319,8 @@ namespace SystemOfSaving.DocumentXML
             CreateValue(Document, Device, "TimeoutWrite_IsInfinite", Data.TimeoutWrite_IsInfinite);
             CreateValue(Document, Device, "TimeoutRead", Data.TimeoutRead);
             CreateValue(Document, Device, "TimeoutRead_IsInfinite", Data.TimeoutRead_IsInfinite);
+
+            CreateValue(Document, Device, "GlobalEncoding", Data.GlobalEncoding);
 
             CreateValue(Document, Device, "TypeOfConnection", Data.TypeOfConnection);
 

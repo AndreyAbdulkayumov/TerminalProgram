@@ -24,11 +24,9 @@ namespace TerminalProgram
         private readonly string[] ArrayOfDocuments;
 
 
-        public Select(ref string[] ArrayOfDocuments, string Message)
+        public Select(ref string[] ArrayOfDocuments)
         {
             InitializeComponent();
-
-            TextBlock_Message.Text = Message;
 
             this.ArrayOfDocuments = ArrayOfDocuments;
 

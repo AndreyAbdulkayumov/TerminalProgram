@@ -63,11 +63,14 @@ namespace TerminalProgram
         public event EventHandler<ConnectArgs> DeviceIsConnect;
         public event EventHandler<ConnectArgs> DeviceIsDisconnected;
 
+        public DeviceData Settings { get; private set; } = new DeviceData();
+
+        public static Encoding GlobalEncoding { get; private set; } = null;
+
         private IConnection Client = null;
 
         private readonly SettingsMediator SettingsManager = new SettingsMediator();
-        private DeviceData Settings = new DeviceData();
-
+        
         private string[] PresetFileNames;
 
         private UI_NoProtocol NoProtocolPage = null;
@@ -114,7 +117,7 @@ namespace TerminalProgram
                         this.Title, MessageBoxButton.OK,
                         MessageBoxImage.Error, MessageBoxResult.OK);
 
-                    Select window = new Select(ref PresetFileNames, "Выберите пресет");
+                    Select window = new Select(ref PresetFileNames);
                     window.ShowDialog();
 
                     if (window.SelectedDocumentPath != String.Empty)
@@ -130,6 +133,8 @@ namespace TerminalProgram
                 }
 
                 SetUI_Disconnected();
+
+                UpdateDeviceData(SettingsDocument);
 
                 NoProtocolPage = new UI_NoProtocol(this)
                 {
@@ -163,8 +168,6 @@ namespace TerminalProgram
                 };
 
                 RadioButton_NoProtocol.IsChecked = true;
-
-                UpdateDeviceData(SettingsDocument);
             }
 
             catch (Exception error)
@@ -218,6 +221,8 @@ namespace TerminalProgram
                     Settings = SettingsManager.GetDeviceData(Devices[0]);
 
                     ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
+
+                    GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
                 }
 
                 else
@@ -237,6 +242,30 @@ namespace TerminalProgram
                     this.Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 return;
+            }
+        }
+
+        private Encoding GetEncoding(string EncodingName)
+        {
+            switch (EncodingName)
+            {
+                case "ASCII":
+                    return Encoding.ASCII;
+
+                case "Unicode":
+                    return Encoding.Unicode;
+
+                case "UTF-32":
+                    return Encoding.UTF32;
+
+                case "UTF-7":
+                    return Encoding.UTF7;
+
+                case "UTF-8":
+                    return Encoding.UTF8;
+
+                default:
+                    throw new Exception("Задан неизвестный тип кодировки: " + EncodingName);
             }
         }
 
@@ -270,6 +299,7 @@ namespace TerminalProgram
                 UpdateDeviceData(ComboBox_SelectedPreset.SelectedItem.ToString());
             }
         }
+         
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {
@@ -289,8 +319,8 @@ namespace TerminalProgram
                             Settings.StopBits
                             ),
                             Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite),
-                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead)
-                            ));
+                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead),
+                            GlobalEncoding));
 
                         break;
 
@@ -303,8 +333,8 @@ namespace TerminalProgram
                             Settings.Port
                             ),
                             Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite),
-                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead)
-                            ));
+                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead),
+                            GlobalEncoding));
 
                         break;
 

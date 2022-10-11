@@ -63,32 +63,38 @@ namespace TerminalProgram.Protocols
         public readonly int TimeoutWrite;
         public readonly int TimeoutRead;
 
-        public ConnectionInfo(SocketInfo Info)
+        public readonly Encoding GlobalEncoding;
+
+        public ConnectionInfo(SocketInfo Info, Encoding GlobalEncoding)
         {
             Socket = Info;
             TimeoutWrite = -1;
             TimeoutRead = -1;
+            this.GlobalEncoding = GlobalEncoding;
         }
 
-        public ConnectionInfo(SocketInfo Info, int TimeoutWrite, int TimeoutRead)
+        public ConnectionInfo(SocketInfo Info, int TimeoutWrite, int TimeoutRead, Encoding GlobalEncoding)
         {
             Socket = Info;
             this.TimeoutWrite = TimeoutWrite;
             this.TimeoutRead = TimeoutRead;
+            this.GlobalEncoding = GlobalEncoding;
         }
 
-        public ConnectionInfo(SerialPortInfo Info) 
+        public ConnectionInfo(SerialPortInfo Info, Encoding GlobalEncoding) 
         { 
             SerialPort = Info;
             TimeoutWrite = -1;
             TimeoutRead = -1;
+            this.GlobalEncoding = GlobalEncoding;
         }
 
-        public ConnectionInfo(SerialPortInfo Info, int TimeoutWrite, int TimeoutRead)
+        public ConnectionInfo(SerialPortInfo Info, int TimeoutWrite, int TimeoutRead, Encoding GlobalEncoding)
         {
             SerialPort = Info;
             this.TimeoutWrite = TimeoutWrite;
             this.TimeoutRead = TimeoutRead;
+            this.GlobalEncoding = GlobalEncoding;
         }
     }
 }
