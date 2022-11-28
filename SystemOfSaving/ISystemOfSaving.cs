@@ -19,6 +19,8 @@ namespace SystemOfSaving
 
         COMPort,
         BaudRate,
+        BaudRate_IsCustom,
+        BaudRate_Custom,
         Parity,
         DataBits,
         StopBits,
@@ -43,6 +45,8 @@ namespace SystemOfSaving
         // Serial Port
         public string COMPort;
         public string BaudRate;
+        public string BaudRate_IsCustom;
+        public string BaudRate_Custom;
         public string Parity;
         public string DataBits;
         public string StopBits;

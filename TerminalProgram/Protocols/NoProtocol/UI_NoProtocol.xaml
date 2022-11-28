@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Protocols.NoProtocol"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800" 
+      d:DesignHeight="620" d:DesignWidth="820" 
       Background="#FF323232"
       Title="NoProtocol"
       KeyDown="Page_KeyDown"
@@ -25,12 +25,17 @@
             <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
             <Setter Property="ItemsControl.FontSize" Value="14"/>
         </Style>
-        
+
+        <Style TargetType="Button">
+            <Setter Property="ItemsControl.Height" Value="30"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+        </Style>
+
     </Page.Resources>
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="0.5*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
@@ -38,7 +43,7 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
             <TextBox x:Name="TextBox_TX" Grid.Row="0" 
@@ -67,8 +72,9 @@
                          HorizontalAlignment="Right" VerticalAlignment="Center" 
                          Checked="RadioButton_String_Checked"/>
 
-            <Button x:Name="Button_Send" Grid.Row="1"
-                    Margin="0,0,20,0" Height="25" Width="80" 
+            <Button x:Name="Button_Send" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
+                    Margin="0,0,20,0" 
+                    Width="90" 
                     Content="Отправить"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
                     Click="Button_Send_Click"/>
@@ -79,7 +85,7 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
             <Border Grid.Row="0" Margin="10,0,10,0" Style="{StaticResource TX_RX_Field}">
@@ -88,16 +94,15 @@
 
                     <TextBlock x:Name="TextBlock_RX"
                                TextAlignment="Left" 
-                               TextWrapping="Wrap"
-                               HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                               TextWrapping="Wrap"/>
 
                 </ScrollViewer>
 
             </Border>
 
-            <Button x:Name="Button_SaveAs" Grid.Row="1"
+            <Button x:Name="Button_SaveAs" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
                     Margin="20,0,0,0" 
-                    Height="25" Width="100" 
+                    Width="120" 
                     Content="Сохранить как..."
                     HorizontalAlignment="Left" VerticalAlignment="Center"
                     Click="Button_SaveAs_Click"/>
@@ -109,9 +114,9 @@
                       Content="Переходить на новую строку в конце полученного сообщения"
                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-            <Button x:Name="Button_ClearFieldRX" Grid.Row="1"
+            <Button x:Name="Button_ClearFieldRX" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
                     Margin="0,0,20,0"
-                    Height="25" Width="100" 
+                    Width="120" 
                     Content="Очистить поле"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
                     Click="Button_ClearFieldRX_Click"/>

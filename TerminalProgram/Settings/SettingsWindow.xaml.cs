@@ -305,10 +305,5 @@ namespace TerminalProgram.Settings
             MessageBox.Show("Настройки успешно сохранены!", "",
                     MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
         }
-
-        private void Button_Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
     }
 }

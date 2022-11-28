@@ -5,11 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
-        Height="160" Width="300"
-        WindowStyle="ToolWindow" 
-        ResizeMode="NoResize"
+        Title="Терминальная программа"
+        Height="190" Width="300" 
+        ResizeMode="NoResize"        
         WindowStartupLocation="CenterScreen"
-        ShowInTaskbar="False"
         KeyDown="Window_KeyDown"         
         Closing="Window_Closing">
     
@@ -20,18 +19,21 @@
                 BorderBrush="#FFABABAB"/>
         
         <TextBlock Text="Выберите файл настроек" 
-                   Margin="0,20,0,0"
+                   Margin="0,25,0,0"
+                   FontSize="14"
                    Foreground="#FFD2C25A"
                    HorizontalAlignment="Center" VerticalAlignment="Top"/>
         
         <ComboBox x:Name="ComboBox_SelectedDocument" 
-                  Margin="0,50,0,0" 
-                  Width="140" 
+                  Margin="0,60,0,0" 
+                  FontSize="14"
+                  Height="25" Width="140" 
                   HorizontalAlignment="Center" VerticalAlignment="Top"/>
-        
-        <Button x:Name="Button_Select" Content="Выбрать" 
-                Margin="0,90,0,0"
-                Width="75"
+
+        <Button x:Name="Button_Select" Content="Выбрать" Template="{DynamicResource ButtonCommon}"
+                Margin="0,105,0,0"
+                Height="25" Width="80"
+                FontSize="14"
                 HorizontalAlignment="Center" VerticalAlignment="Top" 
                 Click="Button_Select_Click"/>
     

@@ -79,6 +79,8 @@ namespace SystemOfSaving.DocumentXML
 
                 COMPort = DefaultNodeValue,
                 BaudRate = DefaultNodeValue,
+                BaudRate_IsCustom = DefaultNodeValue,
+                BaudRate_Custom = DefaultNodeValue,
                 Parity = DefaultNodeValue,
                 DataBits = DefaultNodeValue,
                 StopBits = DefaultNodeValue,
@@ -118,6 +120,8 @@ namespace SystemOfSaving.DocumentXML
 
                 COMPort = XML_FindNode.InNode(DeviceNode, "COMPort").FirstChild.Value,
                 BaudRate = XML_FindNode.InNode(DeviceNode, "BaudRate").FirstChild.Value,
+                BaudRate_IsCustom = XML_FindNode.InNode(DeviceNode, "BaudRate_IsCustom").FirstChild.Value,
+                BaudRate_Custom = XML_FindNode.InNode(DeviceNode, "BaudRate_Custom").FirstChild.Value,
                 Parity = XML_FindNode.InNode(DeviceNode, "Parity").FirstChild.Value,
                 DataBits = XML_FindNode.InNode(DeviceNode, "DataBits").FirstChild.Value,
                 StopBits = XML_FindNode.InNode(DeviceNode, "StopBits").FirstChild.Value,
@@ -280,6 +284,14 @@ namespace SystemOfSaving.DocumentXML
                         UpdateDataNode(Document, DataNode, Data.BaudRate);
                         break;
 
+                    case "BaudRate_IsCustom":
+                        UpdateDataNode(Document, DataNode, Data.BaudRate_IsCustom);
+                        break;
+
+                    case "BaudRate_Custom":
+                        UpdateDataNode(Document, DataNode, Data.BaudRate_Custom);
+                        break;
+
                     case "Parity":
                         UpdateDataNode(Document, DataNode, Data.Parity);
                         break;
@@ -326,6 +338,8 @@ namespace SystemOfSaving.DocumentXML
 
             CreateValue(Document, Device, "COMPort", Data.COMPort);
             CreateValue(Document, Device, "BaudRate", Data.BaudRate);
+            CreateValue(Document, Device, "BaudRate_IsCustom", Data.BaudRate_IsCustom);
+            CreateValue(Document, Device, "BaudRate_Custom", Data.BaudRate_Custom);
             CreateValue(Document, Device, "Parity", Data.Parity);
             CreateValue(Document, Device, "DataBits", Data.DataBits);
             CreateValue(Document, Device, "StopBits", Data.StopBits);

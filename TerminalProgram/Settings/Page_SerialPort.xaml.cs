@@ -50,7 +50,22 @@ namespace TerminalProgram.Settings
                     new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
 
             SetValue(ComboBox_COMPort, Settings.COMPort);
+
             SetValue(ComboBox_BaudRate, Settings.BaudRate);
+            TextBox_BaudRate_Custom.Text = Settings.BaudRate_Custom;
+
+            if (Settings.BaudRate_IsCustom == "Enable")
+            {
+                CheckBox_BaudRate_Custom_Enable.IsChecked = true;
+            }
+
+            else
+            {
+                CheckBox_BaudRate_Custom_Enable.IsChecked = false;
+            }
+
+            CheckBox_BaudRate_Custom_Enable_Click(CheckBox_BaudRate_Custom_Enable, new RoutedEventArgs());
+
             SetValue(ComboBox_Parity, Settings.Parity);
             SetValue(ComboBox_DataBits, Settings.DataBits);
             SetValue(ComboBox_StopBits, Settings.StopBits);
@@ -114,7 +129,56 @@ namespace TerminalProgram.Settings
 
         private void ComboBox_BaudRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
+            if (ComboBox_BaudRate.SelectedIndex != -1)
+            {
+                Settings.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
+            }
+        }
+        
+        private void CheckBox_BaudRate_Custom_Enable_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBox_BaudRate_Custom_Enable.IsChecked == true)
+            {
+                ComboBox_BaudRate.SelectedIndex = -1;
+                ComboBox_BaudRate.IsEnabled = false;
+
+                TextBox_BaudRate_Custom.Text = Settings.BaudRate_Custom;
+                TextBox_BaudRate_Custom.IsEnabled = true;
+
+                Settings.BaudRate_IsCustom = "Enable";
+            }
+
+            else
+            {
+                SetValue(ComboBox_BaudRate, Settings.BaudRate);
+                ComboBox_BaudRate.IsEnabled = true;
+
+                TextBox_BaudRate_Custom.Text = String.Empty;
+                TextBox_BaudRate_Custom.IsEnabled = false;
+
+                Settings.BaudRate_IsCustom = "Disable";
+            }
+        }
+
+        private void TextBox_BaudRate_Custom_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (TextBox_BaudRate_Custom.Text.Length == 0)
+            {
+                return;
+            }
+
+            if (UInt32.TryParse(TextBox_BaudRate_Custom.Text, out _) == false)
+            {
+                MessageBox.Show("В это поле можно ввести только положительное целочисленное значение.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+
+                TextBox_BaudRate_Custom.Text = TextBox_BaudRate_Custom.Text.Substring(0, TextBox_BaudRate_Custom.Text.Length - 1);
+                TextBox_BaudRate_Custom.SelectionStart = TextBox_BaudRate_Custom.Text.Length;
+
+                return;
+            }
+
+            Settings.BaudRate_Custom = TextBox_BaudRate_Custom.Text;
         }
 
         private void ComboBox_Parity_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -130,6 +194,6 @@ namespace TerminalProgram.Settings
         private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Settings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
-        }
+        } 
     }
 }

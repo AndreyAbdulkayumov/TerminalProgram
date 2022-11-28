@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="250" d:DesignWidth="320"
+      d:DesignHeight="270" d:DesignWidth="350"
       Title="Settings_IP" 
       Loaded="Page_Loaded">
 
@@ -13,6 +13,15 @@
 
         <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="ItemsControl.Height" Value="24"/>
+            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
         </Style>
 
     </Page.Resources>
@@ -28,25 +37,25 @@
         <!-- IP address -->
         
         <TextBlock Grid.Row="0" x:Name="TextBlock_IP"  Text="IP" 
-                   Margin="0,12,190,0"
+                   Margin="0,13,205,0"
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <TextBox Grid.Row="0" x:Name="TextBox_IP" 
-                 Margin="135,10,0,0" Height="22" Width="107" 
+                 Margin="150,10,0,0"
+                 Width="107" 
                  TextWrapping="Wrap" 
-                 HorizontalAlignment="Left" VerticalAlignment="Top" 
                  TextChanged="TextBox_IP_TextChanged"/>
         
         <!-- Port -->
         
         <TextBlock Grid.Row="1" x:Name="TextBlock_Port" Text="Port"
-                   Margin="0,12,190,0" 
+                   Margin="0,13,205,0" 
                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
         <TextBox Grid.Row="1" x:Name="TextBox_Port" 
-                 Margin="135,10,0,0" Height="22" Width="50" 
+                 Margin="150,10,0,0"
+                 Width="50" 
                  TextWrapping="Wrap" 
-                 HorizontalAlignment="Left" VerticalAlignment="Top" 
                  TextChanged="TextBox_Port_TextChanged"/>
         
     </Grid>

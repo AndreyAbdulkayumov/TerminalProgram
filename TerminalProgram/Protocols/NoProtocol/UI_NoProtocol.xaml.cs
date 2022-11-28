@@ -169,13 +169,16 @@ namespace TerminalProgram.Protocols.NoProtocol
                     {
                         try
                         {
-                            //TextBlock_RX.Text += Encoding.UTF8.GetString(e.RX);
                             TextBlock_RX.Text += MainWindow.GlobalEncoding.GetString(e.RX);
 
                             if (CheckBox_NextLine.IsChecked == true)
                             {
                                 TextBlock_RX.Text += "\n";
                             }
+
+                            // TODO:
+                            // Сделать ограничение на отображаемое колличество строк (или символов) в TextBlock_RX.
+                            // Иначе при большой частоте приема данных программа начинает тупить.
 
                             ScrollViewer_RX.ScrollToEnd();
                         }
@@ -320,6 +323,5 @@ namespace TerminalProgram.Protocols.NoProtocol
             }
         }
 
-        
     }
 }

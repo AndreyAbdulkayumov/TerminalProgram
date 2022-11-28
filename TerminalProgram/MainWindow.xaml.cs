@@ -238,7 +238,8 @@ namespace TerminalProgram
             catch (Exception error)
             {
                 MessageBox.Show("Ошибка чтения данных из документа." +
-                    " Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message,
+                    " Проверьте его целостность или выберите другой файл настроек." +
+                    " Возможно данный файл не совместим с текущей версией программы.\n\n" + error.Message,
                     this.Title, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 return;
@@ -313,7 +314,7 @@ namespace TerminalProgram
 
                         Client.Connect(new ConnectionInfo(new SerialPortInfo(
                             Settings.COMPort,
-                            Settings.BaudRate,
+                            Settings.BaudRate_IsCustom == "Enable" ? Settings.BaudRate_Custom : Settings.BaudRate,
                             Settings.Parity,
                             Settings.DataBits,
                             Settings.StopBits

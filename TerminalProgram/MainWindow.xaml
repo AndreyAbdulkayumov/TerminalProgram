@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
         Title="Терминальная программа" 
-        Height="680" Width="780"
+        Height="740" Width="820"
         Background="#FF323232" 
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
@@ -15,13 +15,10 @@
 
     <Window.Resources>
 
-        <Style TargetType="Button">
-            <Setter Property="ItemsControl.Background" Value="#FFB0B0B9"/>
-            <Setter Property="ItemsControl.BorderBrush" Value="{x:Null}"/>
-            <Setter Property="ItemsControl.BorderThickness" Value="0"/>
-            <Setter Property="ItemsControl.Foreground" Value="Black"/>
+        <Style TargetType="TextBlock">
+            <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
         </Style>
-
+        
         <Style TargetType="ComboBox">
             <Setter Property="ItemsControl.Background" Value="Aqua"/>
             <Setter Property="ItemsControl.BorderThickness" Value="0"/>
@@ -51,6 +48,13 @@
 
         </Style>
 
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+        </Style>
+        
     </Window.Resources>
 
     <Grid>
@@ -95,29 +99,27 @@
                          Checked="RadioButton_Protocol_Http_Checked"/>
             
             <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
-                       Margin="20,60,0,0" 
+                       Margin="20,59,0,0" 
                        FontSize="16"
-                       HorizontalAlignment="Left" VerticalAlignment="Top"
-                       Foreground="#FFD2C25A"/>
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-            <ComboBox x:Name="ComboBox_SelectedPreset"
-                      Height="22" Width="160"
-                      Margin="175,60,0,0"
+            <ComboBox x:Name="ComboBox_SelectedPreset" 
+                      Height="25" Width="160"
+                      Margin="175,58,0,0"
+                      FontSize="14"
                       HorizontalAlignment="Left" VerticalAlignment="Top" 
                       SelectionChanged="ComboBox_SelectedPreset_SelectionChanged"/>
 
-            <Button x:Name="Button_Connect"
-                    Margin="380,60,0,0"
-                    Height="25" Width="80" 
+            <Button x:Name="Button_Connect" Template="{DynamicResource ButtonCommon}"
+                    Margin="380,55,0,0"
+                    Width="100"
                     Content="Подключить"
-                    HorizontalAlignment="Left" VerticalAlignment="Top"
                     Click="Button_Connect_Click"/>
 
-            <Button x:Name="Button_Disconnect"
-                    Margin="480,60,0,0"
-                    Height="25" Width="80" 
+            <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
+                    Margin="500,55,0,0"
+                    Width="100" 
                     Content="Отключить"
-                    HorizontalAlignment="Left" VerticalAlignment="Top"
                     Click="Button_Disconnect_Click"/>
             
         </Grid>

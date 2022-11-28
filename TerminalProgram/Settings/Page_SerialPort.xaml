@@ -5,18 +5,44 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="250" d:DesignWidth="320"
+      d:DesignHeight="270" d:DesignWidth="350"
       Title="Settings_SerialPort" 
       Loaded="Page_Loaded">
 
     <Page.Resources>
 
         <Style TargetType="TextBlock">
+            <Setter Property="ItemsControl.Margin" Value="0,12,185,0"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Right"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
             <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="ItemsControl.Margin" Value="170,10,0,0"/>
+            <Setter Property="ItemsControl.Height" Value="24"/>
+            <Setter Property="ItemsControl.Width" Value="80"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="ItemsControl.HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="ItemsControl.Margin" Value="170,10,0,0"/>
+            <Setter Property="ItemsControl.Height" Value="24"/>
+            <Setter Property="ItemsControl.Width" Value="80"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="ItemsControl.HorizontalContentAlignment" Value="Left"/>
         </Style>
 
     </Page.Resources>
-    
+
     <Grid>
 
         <Grid.RowDefinitions>
@@ -25,63 +51,54 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
         <!-- COM Port-->
-        
-        <TextBlock Grid.Row="0" x:Name="TextBlock_COMPort" Text="COM - Port" 
-                   Margin="0,12,170,0"
-                   VerticalAlignment="Top" HorizontalAlignment="Right"/>
 
-        <ComboBox Grid.Row="0" x:Name="ComboBox_COMPort" 
-                  Margin="155,10,0,0" Width="70" 
-                  HorizontalAlignment="Left" VerticalAlignment="Top" 
+        <TextBlock Grid.Row="0" x:Name="TextBlock_COMPort" Text="COM - Port"/>
+
+        <ComboBox Grid.Row="0" x:Name="ComboBox_COMPort"
                   SelectionChanged="ComboBox_COMPort_SelectionChanged"/>
 
         <!-- Baud Rate -->
-        
-        <TextBlock Grid.Row="1" x:Name="TextBlock_BaudRate" Text="BaudRate"
-                   Margin="0,12,170,0" 
-                   HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
-        <ComboBox Grid.Row="1" x:Name="ComboBox_BaudRate" 
-                  Margin="155,10,0,0" Width="70" 
-                  HorizontalAlignment="Left" VerticalAlignment="Top" 
+        <TextBlock Grid.Row="1" x:Name="TextBlock_BaudRate" Text="BaudRate"/>
+
+        <ComboBox Grid.Row="1" x:Name="ComboBox_BaudRate"
                   SelectionChanged="ComboBox_BaudRate_SelectionChanged"/>
 
-        <!-- Parity -->
-        
-        <TextBlock Grid.Row="2" x:Name="TextBlock_Parity" Text="Parity"
-                   Margin="0,12,170,0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        <CheckBox Grid.Row="2" x:Name="CheckBox_BaudRate_Custom_Enable"
+                  Content="Custom BaudRate"
+                  Foreground="#FFCBBD5A"
+                  Margin="0,13,185,0" FontSize="14"
+                  HorizontalAlignment="Right" VerticalAlignment="Top" 
+                  Click="CheckBox_BaudRate_Custom_Enable_Click"/>
 
-        <ComboBox Grid.Row="2" x:Name="ComboBox_Parity"
-                  Margin="155,10,0,0" Width="70" 
-                  HorizontalAlignment="Left" VerticalAlignment="Top" 
+        <TextBox Grid.Row="2" x:Name="TextBox_BaudRate_Custom"
+                 SelectionChanged="TextBox_BaudRate_Custom_SelectionChanged"/>
+
+        <!-- Parity -->
+
+        <TextBlock Grid.Row="3" x:Name="TextBlock_Parity" Text="Parity"/>
+
+        <ComboBox Grid.Row="3" x:Name="ComboBox_Parity"
                   SelectionChanged="ComboBox_Parity_SelectionChanged"/>
 
         <!-- Data Bits -->
-        
-        <TextBlock Grid.Row="3" x:Name="TextBlock_DataBits" Text="DataBits"
-                   Margin="0,12,170,0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
-        <ComboBox Grid.Row="3" x:Name="ComboBox_DataBits"
-                  Margin="155,10,0,0" Width="70" 
-                  HorizontalAlignment="Left" VerticalAlignment="Top"
+        <TextBlock Grid.Row="4" x:Name="TextBlock_DataBits" Text="DataBits"/>
+
+        <ComboBox Grid.Row="4" x:Name="ComboBox_DataBits"
                   SelectionChanged="ComboBox_DataBits_SelectionChanged"/>
 
         <!-- Stop Bits -->
-        
-        <TextBlock Grid.Row="8" x:Name="TextBlock_StopBits" Text="StopBits"
-                   Margin="0,12,170,0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top"/>
 
-        <ComboBox Grid.Row="8" x:Name="ComboBox_StopBits"
-                  Margin="155,10,0,0" Width="70" 
-                  HorizontalAlignment="Left" VerticalAlignment="Top" 
+        <TextBlock Grid.Row="5" x:Name="TextBlock_StopBits" Text="StopBits"/>
+
+        <ComboBox Grid.Row="5" x:Name="ComboBox_StopBits"
                   SelectionChanged="ComboBox_StopBits_SelectionChanged"/>
 
     </Grid>
-    
+
 </Page>

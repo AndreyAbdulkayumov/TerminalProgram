@@ -5,11 +5,21 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Protocols.Modbus"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800" 
+      d:DesignHeight="620" d:DesignWidth="820" 
       Background="#FF323232"
       Title="Modbus" 
       Loaded="Page_Loaded">
 
+    <Page.Resources>
+
+        <Style TargetType="Button">
+            <Setter Property="ItemsControl.Height" Value="30"/>
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+        </Style>
+
+    </Page.Resources>
+    
+    
     <Grid>
         
         <TextBlock Text="Режим обмена данными:"
@@ -32,8 +42,9 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
         <TextBox x:Name="TextBox_SlaveID"
-                 Height="20" Width="40"
-                 Margin="550,12,0,0"
+                 Height="25" Width="40"
+                 FontSize="14"
+                 Margin="550,10,0,0"
                  HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_SlaveID_TextChanged"/>
         
         <TextBlock Text="Адрес"
@@ -43,8 +54,9 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
         <TextBox x:Name="TextBox_Address"
-                 Height="20" Width="60"
-                 Margin="290,62,0,0"
+                 Height="25" Width="60"
+                 FontSize="14"
+                 Margin="290,60,0,0"
                  HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_Address_TextChanged"/>
 
         <TextBlock Text="Значение"
@@ -54,21 +66,24 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
         <TextBox x:Name="TextBox_Data"
-                 Height="20" Width="60"
-                 Margin="500,62,0,0"
+                 Height="25" Width="60"
+                 FontSize="14"
+                 Margin="500,60,0,0"
                  HorizontalAlignment="Left" VerticalAlignment="Top" TextChanged="TextBox_Data_TextChanged"/>
 
-        <Button x:Name="Button_Read"
+        <Button x:Name="Button_Read" Template="{DynamicResource ButtonCommon}"
                 Content="Прочитать"
-                Width="80" Height="25"
+                Width="100"
                 Margin="0,110,180,0"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_Read_Click"/>
+                HorizontalAlignment="Center" VerticalAlignment="Top" 
+                Click="Button_Read_Click"/>
 
-        <Button x:Name="Button_Write"
+        <Button x:Name="Button_Write" Template="{DynamicResource ButtonCommon}"
                 Content="Записать"
-                Width="80" Height="25"
+                Width="100"
                 Margin="180,110,0,0"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Click="Button_Write_Click"/>
+                HorizontalAlignment="Center" VerticalAlignment="Top" 
+                Click="Button_Write_Click"/>
 
         <TextBlock Text="Прочитанные данные:"
                    FontSize="18"
