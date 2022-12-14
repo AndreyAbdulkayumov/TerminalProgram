@@ -74,7 +74,6 @@ namespace TerminalProgram.Protocols.NoProtocol
         private void MainWindow_DeviceIsDisconnected(object sender, ConnectArgs e)
         {
             TextBox_TX.Text = String.Empty;
-            TextBlock_RX.Text = String.Empty;
 
             SetUI_Disconnected();
         }
@@ -97,10 +96,6 @@ namespace TerminalProgram.Protocols.NoProtocol
                 Button_Send.IsEnabled = false;
             }
 
-            Button_SaveAs.IsEnabled = true;
-            CheckBox_NextLine.IsEnabled = true;
-            Button_ClearFieldRX.IsEnabled = true;
-
             TextBox_TX.Focus();
         }
 
@@ -112,10 +107,6 @@ namespace TerminalProgram.Protocols.NoProtocol
             RadioButton_Char.IsEnabled = false;
             RadioButton_String.IsEnabled = false;
             Button_Send.IsEnabled = false;
-
-            Button_SaveAs.IsEnabled = false;
-            CheckBox_NextLine.IsEnabled = false;
-            Button_ClearFieldRX.IsEnabled = false;
         }
 
         private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
