@@ -29,14 +29,14 @@ namespace TerminalProgram.Settings
         private readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
 
         private DeviceData Settings;
-        private SettingsMediator SettingsManager;
+        private readonly string DefaultValue;
 
-        public Page_SerialPort(DeviceData Data, SettingsMediator SettingsManager)
+        public Page_SerialPort(ref DeviceData Settings, string DefaultValue)
         {
             InitializeComponent();
 
-            Settings = Data;
-            this.SettingsManager = SettingsManager;
+            this.Settings = Settings;
+            this.DefaultValue = DefaultValue;
 
             ComboBoxFilling(ComboBox_BaudRate, ref ArrayBaudRate);
             ComboBoxFilling(ComboBox_Parity, ref ArrayParity);
@@ -44,17 +44,23 @@ namespace TerminalProgram.Settings
             ComboBoxFilling(ComboBox_StopBits, ref ArrayStopBits);
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        public void UpdateUI(DeviceData UpdateSettings)
         {
             ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent,
                     new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
 
-            SetValue(ComboBox_COMPort, Settings.COMPort);
+            SetValue(ComboBox_COMPort, UpdateSettings.COMPort);
 
-            SetValue(ComboBox_BaudRate, Settings.BaudRate);
-            TextBox_BaudRate_Custom.Text = Settings.BaudRate_Custom;
+            SetValue(ComboBox_BaudRate, UpdateSettings.BaudRate);
 
-            if (Settings.BaudRate_IsCustom == "Enable")
+            if (UpdateSettings.BaudRate_Custom == DefaultValue)
+            {
+                UpdateSettings.BaudRate_Custom = String.Empty;
+            }
+
+            TextBox_BaudRate_Custom.Text = UpdateSettings.BaudRate_Custom;
+
+            if (UpdateSettings.BaudRate_IsCustom == "Enable")
             {
                 CheckBox_BaudRate_Custom_Enable.IsChecked = true;
             }
@@ -66,14 +72,16 @@ namespace TerminalProgram.Settings
 
             CheckBox_BaudRate_Custom_Enable_Click(CheckBox_BaudRate_Custom_Enable, new RoutedEventArgs());
 
-            SetValue(ComboBox_Parity, Settings.Parity);
-            SetValue(ComboBox_DataBits, Settings.DataBits);
-            SetValue(ComboBox_StopBits, Settings.StopBits);
+            SetValue(ComboBox_Parity, UpdateSettings.Parity);
+            SetValue(ComboBox_DataBits, UpdateSettings.DataBits);
+            SetValue(ComboBox_StopBits, UpdateSettings.StopBits);
+
+            Settings = UpdateSettings;
         }
 
         private void SetValue(ComboBox Box, string Value)
         {
-            if (Value == SettingsManager.DefaultNodeValue)
+            if (Value == DefaultValue)
             {
                 Box.SelectedIndex = -1;
                 return;
@@ -169,7 +177,7 @@ namespace TerminalProgram.Settings
 
             if (UInt32.TryParse(TextBox_BaudRate_Custom.Text, out _) == false)
             {
-                MessageBox.Show("В это поле можно ввести только положительное целочисленное значение.", "Ошибка",
+                MessageBox.Show("В поле Custom BaudRate можно ввести только положительное целочисленное значение.", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
                 TextBox_BaudRate_Custom.Text = TextBox_BaudRate_Custom.Text.Substring(0, TextBox_BaudRate_Custom.Text.Length - 1);

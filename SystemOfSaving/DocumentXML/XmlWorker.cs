@@ -10,7 +10,7 @@ namespace SystemOfSaving.DocumentXML
 {
     public class XmlWorker : ISystemOfSaving
     {
-        private string SettingsDocumentPath;
+        public string SettingsDocumentPath { get; private set; }
 
         private readonly XmlDocument SettingsDocument = new XmlDocument();
 

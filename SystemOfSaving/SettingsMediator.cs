@@ -9,10 +9,12 @@ namespace SystemOfSaving
 {
     public class SettingsMediator
     {
+        public string DocumentPath { get { return Document.SettingsDocumentPath; } }
         public string DefaultNodeValue { get; } = "Empty";
+        public string FileType { get; } = ".xml";
 
         private readonly XmlWorker Document;
-
+        
         public SettingsMediator()
         {
             Document = new XmlWorker(DefaultNodeValue);

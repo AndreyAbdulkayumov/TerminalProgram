@@ -11,8 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.IO.Ports;
+using System.IO;
 using SystemOfSaving;
+using TerminalProgram.Properties;
 
 namespace TerminalProgram.Settings
 {
@@ -24,7 +25,7 @@ namespace TerminalProgram.Settings
         public bool SettingsIsChanged { get; private set; } = false;
         public string SettingsDocument { get; private set; }
 
-        private readonly SettingsMediator SettingsManager = new SettingsMediator();
+        private readonly SettingsMediator SettingsManager;
         private DeviceData Settings = new DeviceData();
 
         private Page_IP Settings_IP = null;
@@ -34,15 +35,28 @@ namespace TerminalProgram.Settings
 
         private string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "Unicode", "UTF-7", "UTF-32" };
 
-        public SettingsWindow(string Directory, ref string[] PresetFiles)
+
+        public SettingsWindow(string SettingsPath, string SettingsFileName, SettingsMediator Settings)
         {
             InitializeComponent();
-                        
-            ComboBoxFilling(ComboBox_SelectedDevice, ref PresetFiles);
-            ComboBox_SelectedDevice.SelectedIndex = 0;
 
-            SettingsDocumentPath = Directory + PresetFiles[0] + ".xml";
-            SettingsDocument = PresetFiles[0];            
+            SettingsDocumentPath = SettingsPath;
+            SettingsManager = Settings;
+
+            string[] Devices = Directory.GetFiles(SettingsDocumentPath);
+
+            for (int i = 0; i < Devices.Length; i++)
+            {
+                Devices[i] = System.IO.Path.GetFileNameWithoutExtension(Devices[i]);
+            }
+
+            ComboBoxFilling(ComboBox_SelectedDevice, ref Devices);
+            ComboBoxFilling(ComboBox_SelectedEncoding, ref ArrayTypeOfEncoding);
+
+            ComboBox_SelectedDevice.SelectionChanged -= ComboBox_SelectedDevice_SelectionChanged;
+            ComboBox_SelectedDevice.SelectedValue =
+                Devices.Single(SelectedDevice => SelectedDevice == SettingsFileName);
+            ComboBox_SelectedDevice.SelectionChanged += ComboBox_SelectedDevice_SelectionChanged;
         }
 
         private void ComboBoxFilling(ComboBox Box, ref string[] Items)
@@ -55,10 +69,42 @@ namespace TerminalProgram.Settings
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Settings_SerialPort = new Page_SerialPort(ref Settings, SettingsManager.DefaultNodeValue)
+            {
+                Height = Frame_Settings.ActualHeight,
+                Width = Frame_Settings.ActualWidth,
+
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            Settings_IP = new Page_IP(ref Settings, SettingsManager.DefaultNodeValue)
+            {
+                Height = Frame_Settings.ActualHeight,
+                Width = Frame_Settings.ActualWidth,
+
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top
+            };
+
+            if (DisplaySettingsFile() == false)
+            {
+                Close();
+            }
+
+            
+        }
+
+        /// <summary>
+        /// Метод отображения содержимого файла настроек на UI.
+        /// </summary>
+        /// <returns>
+        /// true - если отображение прошло успешно, false - если пользователь проигнорировал все предупреждения.
+        /// </returns>
+        private bool DisplaySettingsFile()
+        {
             try
             {
-                SettingsManager.LoadSettingsFrom(SettingsDocumentPath);
-
                 List<string> Devices = SettingsManager.GetAllDevicesNames();
 
                 if (Devices.Count > 0)
@@ -68,57 +114,40 @@ namespace TerminalProgram.Settings
 
                 else
                 {
-                    if (MessageBox.Show("В документе " + SettingsDocumentPath + " нет настроек устройства. Создать их?", "Предупреждение",
-                    MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("В документе " + SettingsManager.DocumentPath +
+                        " нет настроек устройства. Создать их?", "Предупреждение",
+                        MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     {
                         SettingsManager.CreateDevice("Default Name");
                         RadioButton_SerialPort.IsChecked = true;
-                        return;
                     }
 
                     else
                     {
-                        Close();
-                        return;
+                        return false;
                     }
                 }
 
-                ComboBoxFilling(ComboBox_SelectedEncoding, ref ArrayTypeOfEncoding);
-                ComboBox_SelectedEncoding.SelectedValue = ArrayTypeOfEncoding.Single(element => element == Settings.GlobalEncoding);
+                UpdateCommonUI(Settings);
 
-                Settings_SerialPort = new Page_SerialPort(Settings, SettingsManager)
-                {
-                    Height = Frame_Settings.ActualHeight,
-                    Width = Frame_Settings.ActualWidth,
-
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
-
-                Settings_IP = new Page_IP(Settings, SettingsManager)
-                {
-                    Height = Frame_Settings.ActualHeight,
-                    Width = Frame_Settings.ActualWidth,
-
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
+                Settings_SerialPort.UpdateUI(Settings);
+                Settings_IP.UpdateUI(Settings);
             }
 
-            catch(Exception error)
+            catch (Exception error)
             {
-                MessageBox.Show("Ошибка чтения данных из документа. Проверьте его целостность или выберите другой файл настроек.\n\n" + error.Message, "Ошибка",
+                MessageBox.Show("Ошибка чтения данных из документа. " +
+                    "Проверьте его целостность или выберите другой файл настроек.\n\n" +
+                    error.Message, "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
-                Close();
-                return;
+                return false;
             }
 
-            UpdateUI(Settings);
+            return true;
         }
 
-
-        private void UpdateUI(DeviceData Data)
+        private void UpdateCommonUI(DeviceData Data)
         {
             SetValue(TextBox_Timeout_Write, Data.TimeoutWrite);
 
@@ -146,6 +175,17 @@ namespace TerminalProgram.Settings
             {
                 CheckBox_Timeout_Read_Infinite.IsChecked = false;
                 TextBox_Timeout_Read.IsEnabled = true;
+            }
+
+            if (Data.GlobalEncoding == null || Data.GlobalEncoding == SettingsManager.DefaultNodeValue)
+            {
+                ComboBox_SelectedEncoding.SelectedValue = null;
+            }
+            
+            else
+            {
+                ComboBox_SelectedEncoding.SelectedValue =
+                    ArrayTypeOfEncoding.Single(element => element == Data.GlobalEncoding);
             }
 
             switch (Data.TypeOfConnection)
@@ -190,7 +230,7 @@ namespace TerminalProgram.Settings
             switch (e.Key)
             {
                 case Key.Enter:
-                    Button_Save_Click(Button_Save, new RoutedEventArgs());
+                    Button_File_Save_Click(Button_File_Save, new RoutedEventArgs());
                     break;
 
                 case Key.Escape:
@@ -199,9 +239,87 @@ namespace TerminalProgram.Settings
             }
         }
 
+        private void Button_File_AddNew_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_File_AddExisting_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Microsoft.Win32.OpenFileDialog FileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Добавление уже существующего файла настроек подключения",
+                    Filter = "Файл настроек|*.xml" // Filter files by extension
+                };
+
+                // Show open file dialog box
+                Nullable<bool> result = FileDialog.ShowDialog();
+
+                // Process open file dialog box results
+                if (result == true)
+                {
+                    File.Copy(FileDialog.FileName, UsedDirectories.GetPath(ProgramDirectory.Settings) + FileDialog.SafeFileName);
+
+                    string FileName = System.IO.Path.GetFileNameWithoutExtension(FileDialog.SafeFileName);
+
+                    ComboBox_SelectedDevice.Items.Add(FileName);
+
+                    ComboBox_SelectedDevice.SelectedValue = FileName;
+                }
+            }
+            catch (Exception error)
+            {
+                MessageBox.Show("Ошибка при добавлении уже существующего пресета (XML файла).\n\n" + error.Message, "Ошибка",
+                                    MessageBoxButton.OK, MessageBoxImage.Error,
+                                    MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+            }
+        }
+
+        private void Button_File_Delete_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_File_Save_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsManager.Save(Settings);
+
+            SettingsIsChanged = true;
+
+            MessageBox.Show("Настройки успешно сохранены!", "Сообщение",
+                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+        }
+
         private void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SettingsDocument = ComboBox_SelectedDevice.SelectedItem.ToString();
+            string OldDocumentPath = SettingsManager.DocumentPath;
+
+            try
+            {
+                SettingsManager.LoadSettingsFrom(
+                    SettingsDocumentPath +
+                    ComboBox_SelectedDevice.SelectedItem +
+                    SettingsManager.FileType
+                    );
+
+                DisplaySettingsFile();
+
+                SettingsDocument = ComboBox_SelectedDevice.SelectedItem.ToString();
+            }
+
+            catch(Exception error)
+            {
+                MessageBox.Show("Не удалось загрузить файл настроек: " + 
+                    ComboBox_SelectedDevice.SelectedItem + 
+                    Settings_SerialPort.Name + "\n\n" + error.Message, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                ComboBox_SelectedDevice.SelectedValue = 
+                    System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileName(OldDocumentPath));
+            }
+            
         }
 
         private void TextBox_Timeout_Write_TextChanged(object sender, TextChangedEventArgs e)
@@ -275,7 +393,6 @@ namespace TerminalProgram.Settings
 
         private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)
         {
-
             if (Frame_Settings.Navigate(Settings_SerialPort) == false)
             {
                 MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort.Name, this.Title,
@@ -294,16 +411,6 @@ namespace TerminalProgram.Settings
             }
 
             Settings.TypeOfConnection = "Ethernet";
-        }
-
-        private void Button_Save_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsManager.Save(Settings);
-
-            SettingsIsChanged = true;
-
-            MessageBox.Show("Настройки успешно сохранены!", "",
-                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
         }
     }
 }

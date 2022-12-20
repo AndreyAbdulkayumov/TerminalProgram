@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
         Title="О программе" 
-        Height="200" Width="300" 
+        Height="240" Width="300" 
         ResizeMode="NoResize" 
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner">
@@ -18,7 +18,7 @@
                 BorderThickness="1,1,1,1"/>
 
         <TextBlock Text="Разработал:"
-                   Margin="0,0,0,130"
+                   Margin="0,0,0,150"
                    Foreground="#FFB1A972"
                    FontSize="18"
                    TextAlignment="Center"
@@ -26,7 +26,7 @@
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <TextBlock Text="Абдулкаюмов Андрей Ренатович"
-                   Margin="0,0,0,10"
+                   Margin="0,0,0,30"
                    Width="120"
                    Foreground="#FFD2C25A"
                    FontSize="18"
@@ -35,20 +35,41 @@
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
         <TextBlock Text="Версия:"
-                   Margin="0,110,50,0"
+                   Margin="0,80,50,0"
                    Foreground="#FFB1A972"
                    FontSize="18"
                    TextAlignment="Center"
                    TextWrapping="Wrap"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Text="1.6.1"
-                   Margin="70,110,0,0"
+        <TextBlock Text="1.7.0"
+                   Margin="70,80,0,0"
                    Foreground="#FFD2C25A"
                    FontSize="18"
                    TextAlignment="Center"
                    TextWrapping="Wrap"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <TextBlock Text="Картинки взяты с ресурса: "
+                   Margin="0,160,80,0"
+                   Foreground="#FFB1A972"
+                   FontSize="14"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <TextBlock Margin="140,160,0,0"
+                   FontSize="14"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center" VerticalAlignment="Center">      
+            <Hyperlink NavigateUri="https://icons8.com" RequestNavigate="Hyperlink_RequestNavigate">
+                icons8
+            </Hyperlink>
+        </TextBlock>
+
+
+
 
     </Grid>
     

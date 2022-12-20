@@ -79,6 +79,11 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Check.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Protocols\Http\UI_Http.xaml.cs">
       <DependentUpon>UI_Http.xaml</DependentUpon>
     </Compile>
@@ -155,11 +160,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -197,6 +197,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\MainLogo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\File_Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\File_Delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\File_AddExisting.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\File_AddNew.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

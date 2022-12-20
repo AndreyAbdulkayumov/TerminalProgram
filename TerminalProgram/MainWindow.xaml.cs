@@ -212,7 +212,11 @@ namespace TerminalProgram
         {
             try
             {
-                SettingsManager.LoadSettingsFrom(UsedDirectories.GetPath(ProgramDirectory.Settings) + DocumentName + ".xml");
+                SettingsManager.LoadSettingsFrom(
+                    UsedDirectories.GetPath(ProgramDirectory.Settings) +
+                    DocumentName + 
+                    SettingsManager.FileType
+                    );
 
                 List<string> Devices = SettingsManager.GetAllDevicesNames();
 
@@ -276,10 +280,23 @@ namespace TerminalProgram
             {
                 MessageBox.Show("Не найдено ни одно файла настроек.", this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
                 return;
             }
 
-            SettingsWindow Window = new SettingsWindow(UsedDirectories.GetPath(ProgramDirectory.Settings), ref PresetFileNames)
+            if (SettingsDocument == String.Empty)
+            {
+                MessageBox.Show("Не выбран файл настроек", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                return;
+            }
+
+            SettingsWindow Window = new SettingsWindow(
+                UsedDirectories.GetPath(ProgramDirectory.Settings),
+                SettingsDocument,
+                SettingsManager
+                )
             {
                 Owner = this
             };
@@ -297,7 +314,8 @@ namespace TerminalProgram
         {
             if (ComboBox_SelectedPreset.SelectedItem != null)
             {
-                UpdateDeviceData(ComboBox_SelectedPreset.SelectedItem.ToString());
+                SettingsDocument = ComboBox_SelectedPreset.SelectedItem.ToString();
+                UpdateDeviceData(SettingsDocument);
             }
         }
          

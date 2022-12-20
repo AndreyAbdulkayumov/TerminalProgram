@@ -23,25 +23,27 @@ namespace TerminalProgram.Settings
     public partial class Page_IP : Page
     {
         private DeviceData Settings;
-        private SettingsMediator SettingsManager;
+        private readonly string DefaultValue;
 
-        public Page_IP(DeviceData Data, SettingsMediator SettingsManager)
+        public Page_IP(ref DeviceData Settings, string DefaultValue)
         {
             InitializeComponent();
 
-            Settings = Data;
-            this.SettingsManager = SettingsManager;
+            this.Settings = Settings;
+            this.DefaultValue = DefaultValue;
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
+        public void UpdateUI(DeviceData UpdateSettings)
         {
-            SetValue(TextBox_IP, Settings.IP);
-            SetValue(TextBox_Port, Settings.Port);
+            SetValue(TextBox_IP, UpdateSettings.IP);
+            SetValue(TextBox_Port, UpdateSettings.Port);
+
+            Settings = UpdateSettings;
         }
 
         private void SetValue(TextBox Box, string Value)
         {
-            if (Value == SettingsManager.DefaultNodeValue)
+            if (Value == DefaultValue)
             {
                 Box.Text = String.Empty;
                 return;

@@ -6,8 +6,7 @@
       xmlns:local="clr-namespace:TerminalProgram.Settings"
       mc:Ignorable="d" 
       d:DesignHeight="270" d:DesignWidth="350"
-      Title="Settings_IP" 
-      Loaded="Page_Loaded">
+      Title="Settings_IP">
 
     <Page.Resources>
 

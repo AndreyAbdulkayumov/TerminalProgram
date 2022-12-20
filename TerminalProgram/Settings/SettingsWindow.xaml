@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram.Settings"
         mc:Ignorable="d"
         Title="Настройки подключения" 
-        Height="580" Width="350"
+        Height="610" Width="350"
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
@@ -46,90 +46,146 @@
         </Style>
 
     </Window.Resources>
-    
+
 
     <Grid>
-        
+
         <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.RowSpan="10" 
+        <Border Grid.RowSpan="11" 
                 Background="#FF3A3A3A"
                 BorderThickness="1"
                 BorderBrush="#FFABABAB"/>
         
         <!-- Row 0 -->
+
+        <ToolBarPanel Grid.Row="0" 
+                      Margin="1,0,1,0"
+                      ClipToBounds="True" Background="#FF464646">
+
+            <ToolBar Height="35" 
+                     Margin="0,0,-18,0" 
+                     Background="{x:Null}" 
+                     ToolBarTray.IsLocked="True">
+
+                <Button x:Name="Button_File_AddNew" 
+                        Width="35"
+                        ToolTip="Создать новый файл" Click="Button_File_AddNew_Click">
+                    
+                    <Image Source="/Resources/File_AddNew.png" />
+                    
+                </Button>
+
+                <Separator/>
+
+                <Button x:Name="Button_File_AddExisting"
+                        Width="35"
+                        ToolTip="Добавить существующий файл" Click="Button_File_AddExisting_Click">
+                    
+                    <Image Source="/Resources/File_AddExisting.png" />
+                    
+                </Button>
+
+                <Separator/>
+
+                <Button x:Name="Button_File_Delete" 
+                        Width="35"
+                        ToolTip="Удалить выбранный файл" Click="Button_File_Delete_Click">
+                    
+                    <Image Source="/Resources/File_Delete.png" />
+                    
+                </Button>
+
+                <Separator/>
+                
+                <Button x:Name="Button_File_Save"
+                        Width="35"
+                        ToolTip="Сохранить выбранный файл"
+                        Click="Button_File_Save_Click">
+                    
+                    <Image Source="/Resources/File_Save.png" />
+                    
+                </Button>
+
+            </ToolBar>
+            
+        </ToolBarPanel>
         
-        <TextBlock Grid.Row="0" Text="Устройство"
+        
+        <!-- Row 1 -->
+        
+        <TextBlock Grid.Row="1" Text="Устройство"
                    Margin="70,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
         
-        <ComboBox Grid.Row="0" x:Name="ComboBox_SelectedDevice"
+        <ComboBox Grid.Row="1" x:Name="ComboBox_SelectedDevice"
                   Margin="150,0,0,0" 
                   Width="120" 
                   FontSize="14"
                   HorizontalAlignment="Left" VerticalAlignment="Center" 
                   SelectionChanged="ComboBox_SelectedDevice_SelectionChanged"/>
 
-        <!-- Row 1 -->
+        <!-- Row 2 -->
         
-        <TextBlock Grid.Row="1" Text="Таймаут записи (мс): "
+        <TextBlock Grid.Row="2" Text="Таймаут записи (мс): "
                    Margin="10,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-        <TextBox x:Name="TextBox_Timeout_Write" Grid.Row="1"
+        <TextBox x:Name="TextBox_Timeout_Write" Grid.Row="2"
                  Margin="150,0,0,0"
                  Width="50"
                  TextChanged="TextBox_Timeout_Write_TextChanged"/>
 
-        <CheckBox x:Name="CheckBox_Timeout_Write_Infinite" Grid.Row="1"
+        <CheckBox x:Name="CheckBox_Timeout_Write_Infinite" Grid.Row="2"
                   Content="Бесконечно"
                   Margin="210,2,0,0"
                   FontSize="14"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Click="CheckBox_Timeout_Write_Infinite_Click"/>
 
-        <!-- Row 2 -->
+        <!-- Row 3 -->
         
-        <TextBlock Grid.Row="2" Text="Таймаут чтения (мс): "
+        <TextBlock Grid.Row="3" Text="Таймаут чтения (мс): "
                    Margin="10,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-        <TextBox x:Name="TextBox_Timeout_Read" Grid.Row="2"
+        <TextBox x:Name="TextBox_Timeout_Read" Grid.Row="3"
                  Margin="150,0,0,0"
                  Width="50"
                  TextChanged="TextBox_Timeout_Read_TextChanged"/>
 
-        <CheckBox x:Name="CheckBox_Timeout_Read_Infinite" Grid.Row="2"
+        <CheckBox x:Name="CheckBox_Timeout_Read_Infinite" Grid.Row="3"
                   Content="Бесконечно"
                   Margin="210,2,0,0"
                   FontSize="14"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Click="CheckBox_Timeout_Read_Infinite_Click"/>
 
-        <!-- Row 3 -->
+        <!-- Row 4 -->
         
-        <TextBlock Grid.Row="3" Text="Кодировка (реж. &quot;Без протокола&quot;):"
+        <TextBlock Grid.Row="4" Text="Кодировка (реж. &quot;Без протокола&quot;):"
                    Margin="10,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-        <ComboBox Grid.Row="3" x:Name="ComboBox_SelectedEncoding"
+        <ComboBox Grid.Row="4" x:Name="ComboBox_SelectedEncoding"
                   Margin="240,0,0,0" 
                   Width="80" 
                   FontSize="14"
                   HorizontalAlignment="Left" VerticalAlignment="Center" 
                   SelectionChanged="ComboBox_SelectedEncoding_SelectionChanged"/>
 
-        <!-- Row 4 -->
+        <!-- Row 5 -->
         
-        <StackPanel Grid.Row="4" 
+        <StackPanel Grid.Row="5" 
                     Height="30" Width="225" 
                     Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -146,20 +202,11 @@
 
         </StackPanel>
 
-        <!-- Row 5 -->
-        
-        <Frame x:Name="Frame_Settings" Grid.Row="5"
-               NavigationUIVisibility="Hidden"/>
-
         <!-- Row 6 -->
 
-        <Button Grid.Row="6" x:Name="Button_Save" Template="{DynamicResource ButtonCommon}"
-                Content="Сохранить"
-                Height="30" Width="100"
-                FontSize="14"
-                HorizontalAlignment="Center" VerticalAlignment="Center" 
-                Click="Button_Save_Click"/>
-
+        <Frame x:Name="Frame_Settings" Grid.Row="6"
+               NavigationUIVisibility="Hidden"/>
+        
     </Grid>
     
 </Window>
