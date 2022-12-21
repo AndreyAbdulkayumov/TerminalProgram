@@ -10,8 +10,7 @@
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
-        Loaded="Window_Loaded" 
-        Closing="Window_Closing" 
+        Loaded="Window_Loaded"
         KeyDown="Window_KeyDown">
 
     <Window.Resources>

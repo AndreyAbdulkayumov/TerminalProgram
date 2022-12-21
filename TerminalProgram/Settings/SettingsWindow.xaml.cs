@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using System.IO;
 using SystemOfSaving;
 using TerminalProgram.Properties;
+using System.Windows.Markup.Localizer;
+using System.IO.Ports;
 
 namespace TerminalProgram.Settings
 {
@@ -33,7 +35,7 @@ namespace TerminalProgram.Settings
 
         private readonly string SettingsDocumentPath;
 
-        private string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "Unicode", "UTF-7", "UTF-32" };
+        private readonly string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "Unicode", "UTF-7", "UTF-32" };
 
 
         public SettingsWindow(string SettingsPath, string SettingsFileName, SettingsMediator Settings)
@@ -43,24 +45,29 @@ namespace TerminalProgram.Settings
             SettingsDocumentPath = SettingsPath;
             SettingsManager = Settings;
 
-            string[] Devices = Directory.GetFiles(SettingsDocumentPath);
-
-            for (int i = 0; i < Devices.Length; i++)
-            {
-                Devices[i] = System.IO.Path.GetFileNameWithoutExtension(Devices[i]);
-            }
-
+            string[] Devices = MainWindow.GetDeviceList();
             ComboBoxFilling(ComboBox_SelectedDevice, ref Devices);
+
             ComboBoxFilling(ComboBox_SelectedEncoding, ref ArrayTypeOfEncoding);
 
             ComboBox_SelectedDevice.SelectionChanged -= ComboBox_SelectedDevice_SelectionChanged;
-            ComboBox_SelectedDevice.SelectedValue =
-                Devices.Single(SelectedDevice => SelectedDevice == SettingsFileName);
+
+            foreach(string element in ComboBox_SelectedDevice.Items)
+            {
+                if (element == SettingsFileName)
+                {
+                    ComboBox_SelectedDevice.SelectedValue = element;
+                    break;
+                }
+            }
+
             ComboBox_SelectedDevice.SelectionChanged += ComboBox_SelectedDevice_SelectionChanged;
         }
 
         private void ComboBoxFilling(ComboBox Box, ref string[] Items)
         {
+            Box.Items.Clear();
+
             for (int i = 0; i < Items.Length; i++)
             {
                 Box.Items.Add(Items[i]);
@@ -91,8 +98,6 @@ namespace TerminalProgram.Settings
             {
                 Close();
             }
-
-            
         }
 
         /// <summary>
@@ -204,6 +209,7 @@ namespace TerminalProgram.Settings
                         ".\n\nПо умолчанию будет выставлен SerialPort", "Предупреждение",
                         MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
 
+                    Data.TypeOfConnection = "SerialPort";
                     RadioButton_SerialPort.IsChecked = true;
                     break;
             }
@@ -218,11 +224,6 @@ namespace TerminalProgram.Settings
             }
 
             Box.Text = Value;
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            
         }
         
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -239,65 +240,17 @@ namespace TerminalProgram.Settings
             }
         }
 
-        private void Button_File_AddNew_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_File_AddExisting_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                Microsoft.Win32.OpenFileDialog FileDialog = new Microsoft.Win32.OpenFileDialog
-                {
-                    Title = "Добавление уже существующего файла настроек подключения",
-                    Filter = "Файл настроек|*.xml" // Filter files by extension
-                };
-
-                // Show open file dialog box
-                Nullable<bool> result = FileDialog.ShowDialog();
-
-                // Process open file dialog box results
-                if (result == true)
-                {
-                    File.Copy(FileDialog.FileName, UsedDirectories.GetPath(ProgramDirectory.Settings) + FileDialog.SafeFileName);
-
-                    string FileName = System.IO.Path.GetFileNameWithoutExtension(FileDialog.SafeFileName);
-
-                    ComboBox_SelectedDevice.Items.Add(FileName);
-
-                    ComboBox_SelectedDevice.SelectedValue = FileName;
-                }
-            }
-            catch (Exception error)
-            {
-                MessageBox.Show("Ошибка при добавлении уже существующего пресета (XML файла).\n\n" + error.Message, "Ошибка",
-                                    MessageBoxButton.OK, MessageBoxImage.Error,
-                                    MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
-            }
-        }
-
-        private void Button_File_Delete_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_File_Save_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsManager.Save(Settings);
-
-            SettingsIsChanged = true;
-
-            MessageBox.Show("Настройки успешно сохранены!", "Сообщение",
-                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-        }
-
         private void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             string OldDocumentPath = SettingsManager.DocumentPath;
 
             try
             {
+                if (ComboBox_SelectedDevice.SelectedItem == null)
+                {
+                    return;
+                }
+
                 SettingsManager.LoadSettingsFrom(
                     SettingsDocumentPath +
                     ComboBox_SelectedDevice.SelectedItem +

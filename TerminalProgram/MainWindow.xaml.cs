@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.IO;
 using System.IO.Ports;
 using SystemOfSaving;
+using TerminalProgram.ServiceWindows;
 using TerminalProgram.Settings;
 using TerminalProgram.Protocols;
 using TerminalProgram.Protocols.NoProtocol;
@@ -97,6 +98,18 @@ namespace TerminalProgram
             InitializeComponent();
         }
 
+        public static string[] GetDeviceList()
+        {
+            string[] Devices = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings));
+
+            for (int i = 0; i < Devices.Length; i++)
+            {
+                Devices[i] = System.IO.Path.GetFileNameWithoutExtension(Devices[i]);
+            }
+
+            return Devices;
+        }
+
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -113,11 +126,15 @@ namespace TerminalProgram
                 if (Check.SettingsFile(ref PresetFileNames, SettingsDocument) == false)
                 {
                     MessageBox.Show("Файл настроек не существует в папке " + UsedDirectories.GetPath(ProgramDirectory.Settings) +
-                        "\n\nНажмите ОК и выберите один из доступных пресетов в появившемся окне.",
+                        "\n\nНажмите ОК и выберите один из доступных файлов в появившемся окне.",
                         this.Title, MessageBoxButton.OK,
                         MessageBoxImage.Error, MessageBoxResult.OK);
 
-                    Select window = new Select(ref PresetFileNames);
+                    ComboBoxWindow window = new ComboBoxWindow(ref PresetFileNames)
+                    {
+                        Owner = this
+                    };
+
                     window.ShowDialog();
 
                     if (window.SelectedDocumentPath != String.Empty)
@@ -303,11 +320,33 @@ namespace TerminalProgram
 
             Window.ShowDialog();
 
+            string[] Devices = MainWindow.GetDeviceList();
+
+            ComboBox_SelectedPreset.Items.Clear();
+
+            bool SettingDocumentExists = false;
+
+            for(int i = 0; i < Devices.Length; i++)
+            {
+                ComboBox_SelectedPreset.Items.Add(Devices[i]);
+                
+                if (Devices[i] == SettingsDocument)
+                {
+                    SettingDocumentExists = true;
+                }
+            }
+
             if (Window.SettingsIsChanged)
             {
                 SettingsDocument = Window.SettingsDocument;
-                UpdateDeviceData(SettingsDocument);
             }
+
+            else if (SettingDocumentExists == false && Devices.Length != 0)
+            {
+                SettingsDocument = Devices[0];
+            }
+
+            UpdateDeviceData(SettingsDocument);
         }
 
         private void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -318,7 +357,6 @@ namespace TerminalProgram
                 UpdateDeviceData(SettingsDocument);
             }
         }
-         
 
         private void Button_Connect_Click(object sender, RoutedEventArgs e)
         {

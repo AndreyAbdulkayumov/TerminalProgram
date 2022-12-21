@@ -46,6 +46,8 @@ namespace TerminalProgram.Settings
 
         public void UpdateUI(DeviceData UpdateSettings)
         {
+            Settings = UpdateSettings;
+
             ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent,
                     new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
 
@@ -75,8 +77,6 @@ namespace TerminalProgram.Settings
             SetValue(ComboBox_Parity, UpdateSettings.Parity);
             SetValue(ComboBox_DataBits, UpdateSettings.DataBits);
             SetValue(ComboBox_StopBits, UpdateSettings.StopBits);
-
-            Settings = UpdateSettings;
         }
 
         private void SetValue(ComboBox Box, string Value)

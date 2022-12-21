@@ -12,23 +12,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace TerminalProgram
+namespace TerminalProgram.ServiceWindows
 {
     /// <summary>
-    /// Логика взаимодействия для Select.xaml
+    /// Логика взаимодействия для ComboBoxWindow.xaml
     /// </summary>
-    public partial class Select : Window
+    public partial class ComboBoxWindow : Window
     {
         public string SelectedDocumentPath { get; private set; } = String.Empty;
 
-        private readonly string[] ArrayOfDocuments;
 
-
-        public Select(ref string[] ArrayOfDocuments)
+        public ComboBoxWindow(ref string[] ArrayOfDocuments)
         {
             InitializeComponent();
-
-            this.ArrayOfDocuments = ArrayOfDocuments;
 
             for (int i = 0; i < ArrayOfDocuments.Length; i++)
             {
@@ -65,16 +61,6 @@ namespace TerminalProgram
             }
         }
 
-        private void Button_Select_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Документ \"" + ComboBox_SelectedDocument.SelectedItem.ToString() + "\" успешно выбран.", "Сообщение",
-                MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
-
-            SelectedDocumentPath = ComboBox_SelectedDocument.SelectedItem.ToString();
-
-            Close();
-        }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -87,6 +73,16 @@ namespace TerminalProgram
                     Close();
                     break;
             }
+        }
+
+        private void Button_Select_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Документ \"" + ComboBox_SelectedDocument.SelectedItem.ToString() + "\" успешно выбран.", "Сообщение",
+                MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+
+            SelectedDocumentPath = ComboBox_SelectedDocument.SelectedItem.ToString();
+
+            Close();
         }
     }
 }

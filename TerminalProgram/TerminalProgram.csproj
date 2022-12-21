@@ -98,8 +98,11 @@
       <DependentUpon>UI_NoProtocol.xaml</DependentUpon>
     </Compile>
     <Compile Include="Protocols\SerialPortClient.cs" />
-    <Compile Include="Select.xaml.cs">
-      <DependentUpon>Select.xaml</DependentUpon>
+    <Compile Include="ServiceWindows\ComboBoxWindow.xaml.cs">
+      <DependentUpon>ComboBoxWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceWindows\EnterTextWindow.xaml.cs">
+      <DependentUpon>EnterTextWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\Page_IP.xaml.cs">
       <DependentUpon>Page_IP.xaml</DependentUpon>
@@ -110,6 +113,7 @@
     <Compile Include="Settings\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Settings\SettingsWindow_ToolBar.cs" />
     <Compile Include="SystemOfPresets.cs" />
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
@@ -139,7 +143,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Select.xaml">
+    <Page Include="ServiceWindows\ComboBoxWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ServiceWindows\EnterTextWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
