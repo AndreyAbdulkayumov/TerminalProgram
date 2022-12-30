@@ -31,5 +31,13 @@ namespace TerminalProgram
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
             e.Handled = true;
         }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape || e.Key == Key.Space || e.Key == Key.Enter)
+            {
+                Close();
+            }
+        }
     }
 }

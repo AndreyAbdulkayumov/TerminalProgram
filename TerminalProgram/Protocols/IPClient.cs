@@ -16,7 +16,8 @@ namespace TerminalProgram.Protocols
         private NetworkStream Stream = null;
         private TcpClient Client = null;
 
-        private Thread ReadThread = null;
+        private Task ReadThread = null;
+        private CancellationTokenSource ReadCancelSource;
 
         public bool IsConnected { get; private set; } = false;
 
@@ -61,40 +62,27 @@ namespace TerminalProgram.Protocols
                     "Порт: " + Info.Socket.Port);
             }
 
-            Stream = Client.GetStream();
-
-            if (ReadThread == null)
-            {
-                ReadThread = new Thread(new ParameterizedThreadStart(ReadThread_Handler))
-                {
-                    IsBackground = true
-                };
-
-                ReadThread.Start();
-            }
+            Stream = Client.GetStream();         
 
             Stream.WriteTimeout = Info.TimeoutWrite;
             Stream.ReadTimeout = Info.TimeoutRead;
 
+            ReadCancelSource = new CancellationTokenSource();
+
+            ReadThread = Task.Run(() => AsyncThread_Read(Stream, ReadCancelSource.Token));
+
             IsConnected = true;
         }
 
-        public void Disconnect()
+        public async void Disconnect()
         {
-            if (ReadThread != null)
-            {
-                ReadThread = null;
-            }
+            ReadCancelSource.Cancel();
 
-            if (Stream != null)
-            {
-                Stream.Close();
-            }
-                
-            if (Client != null)
-            {
-                Client.Close();
-            }            
+            await Task.WhenAll(ReadThread);
+
+            Stream?.Close();
+
+            Client?.Close();
 
             IsConnected = false;                
         }
@@ -158,43 +146,89 @@ namespace TerminalProgram.Protocols
             }
         }
 
-        private void ReadThread_Handler(object x)
+        private async Task AsyncThread_Read(NetworkStream CurrentStream, CancellationToken ReadCancel)
         {
             try
             {
-                byte[] BufferRX = new byte[50]; 
-                
+                byte[] BufferRX = new byte[50];
+
+                int NumberOfReceiveBytes;
+
+                Task<int> ReadResult;
+
+                Task WaitCancel = Task.Run(() =>
+                {
+                    while (ReadCancel.IsCancellationRequested == false) ;
+                });
+
+                Task CompletedTask;
+
                 while(true)
                 {
-                    if (DataReceived != null && Stream != null)
+                    ReadCancel.ThrowIfCancellationRequested();
+
+                    if (DataReceived != null && CurrentStream != null)
                     {
-                        Stream.Read(BufferRX, 0, BufferRX.Length);
+                        /// Метод асинхронного чтения у объекта класса NetworkStream
+                        /// почему то не обрабатывает событие отмены у токена отмены.
+                        /// Судя по формумам это происходит из - за того что внутри метода происходят 
+                        /// неуправляемые вызовы никоуровневого API (в MSDN об этом не сказано).
+                        /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
+                        
+                        ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
+
+                        CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
+
+                        if (CompletedTask == WaitCancel)
+                        {
+                            throw new OperationCanceledException();
+                        }
+
+                        NumberOfReceiveBytes = ReadResult.Result;
+
+                        ReadCancel.ThrowIfCancellationRequested();
 
                         DataFromDevice Data = new DataFromDevice();
 
-                        Data.RX = new byte[BufferRX.Length];
+                        Data.RX = new byte[NumberOfReceiveBytes];
 
-                        for(int i = 0; i < BufferRX.Length; i++)
+                        for(int i = 0; i < NumberOfReceiveBytes; i++)
                         {
                             Data.RX[i] = BufferRX[i];
                         }
 
                         DataReceived(this, Data);
 
-                        Array.Clear(BufferRX, 0, BufferRX.Length);
+                        Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
                     }
                 }
             }
 
-            catch(Exception error)
+            catch (OperationCanceledException)
+            {
+                //  Возникает при отмене задачи.
+                //  По правилам отмены асинхронных задач это исключение можно игнорировать.
+            }
+
+            catch (System.IO.IOException error)
+            {
+                MessageBox.Show(
+                    "Возникла ошибка при асинхронном чтении у IP клиента.\n\n" + 
+                    error.Message +
+                    "\n\nТаймаут чтения: " + Stream.ReadTimeout + " мс." +
+                    "\n\nЧтение данных прекращено. Возможно вам стоит изменить настройки и переподключиться.",
+                    "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            catch (Exception error)
             {
                 // TODO: Как правильно обработать это исключение?
 
-                //Disconnect();
-
-                //MessageBox.Show("Возникла ошибка при асинхронном чтении у IP клиента.\n\n" + error.Message +
-                //    "\n\nКлиент был отключен.", "Ошибка",
-                //    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Возникла НЕОБРАБОТАННАЯ ошибка " +
+                    "при асинхронном чтении у IP клиента.\n\n" + error.Message +
+                    "\n\nКлиент был отключен.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
