@@ -156,9 +156,12 @@ namespace TerminalProgram.Protocols
 
                 Task<int> ReadResult;
 
-                Task WaitCancel = Task.Run(() =>
+                Task WaitCancel = Task.Run(async () =>
                 {
-                    while (ReadCancel.IsCancellationRequested == false) ;
+                    while (ReadCancel.IsCancellationRequested == false)
+                    {
+                        await Task.Delay(50);
+                    }
                 });
 
                 Task CompletedTask;
