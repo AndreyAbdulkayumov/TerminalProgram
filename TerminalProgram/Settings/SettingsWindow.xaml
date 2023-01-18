@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram.Settings"
         mc:Ignorable="d"
         Title="Настройки подключения" 
-        Height="610" Width="350"
+        Height="710" Width="350"
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
@@ -56,6 +56,8 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="10"/>
         </Grid.RowDefinitions>
@@ -64,7 +66,19 @@
                 Background="#FF3A3A3A"
                 BorderThickness="1"
                 BorderBrush="#FFABABAB"/>
+
+        <Border Grid.Row="1" 
+                BorderThickness="1,1,1,0"
+                BorderBrush="#FFABABAB"/>
         
+        <Border Grid.Row="2" Grid.RowSpan="2"
+                BorderThickness="1,1,1,0"
+                BorderBrush="#FFABABAB"/>
+
+        <Border Grid.Row="4" Grid.RowSpan="3"
+                BorderThickness="1"
+                BorderBrush="#FFABABAB"/>
+
         <!-- Row 0 -->
 
         <ToolBarPanel Grid.Row="0" 
@@ -134,57 +148,69 @@
                   SelectionChanged="ComboBox_SelectedDevice_SelectionChanged"/>
 
         <!-- Row 2 -->
-        
-        <TextBlock Grid.Row="2" Text="Таймаут записи (мс): "
+
+        <TextBlock Grid.Row="2" Text="&quot;Без протокола&quot;"
+                   FontSize="15"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <!-- Row 3 -->
+
+        <TextBlock Grid.Row="3" Text="Кодировка:"
+                   Margin="90,0,0,0"
+                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+        <ComboBox Grid.Row="3" x:Name="ComboBox_SelectedEncoding"
+                  Margin="180,0,0,0" 
+                  Width="80" 
+                  FontSize="14"
+                  HorizontalAlignment="Left" VerticalAlignment="Center" 
+                  SelectionChanged="ComboBox_SelectedEncoding_SelectionChanged"/>
+
+        <!-- Row 4 -->
+
+        <TextBlock Grid.Row="4" Text="&quot;Modbus&quot;"
+                   FontSize="15"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <!-- Row 5 -->
+
+        <TextBlock Grid.Row="5" Text="Таймаут записи (мс): "
                    Margin="10,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-        <TextBox x:Name="TextBox_Timeout_Write" Grid.Row="2"
+        <TextBox x:Name="TextBox_Timeout_Write" Grid.Row="5"
                  Margin="150,0,0,0"
                  Width="50"
                  TextChanged="TextBox_Timeout_Write_TextChanged"/>
 
-        <CheckBox x:Name="CheckBox_Timeout_Write_Infinite" Grid.Row="2"
+        <CheckBox x:Name="CheckBox_Timeout_Write_Infinite" Grid.Row="5"
                   Content="Бесконечно"
                   Margin="210,2,0,0"
                   FontSize="14"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Click="CheckBox_Timeout_Write_Infinite_Click"/>
+      
+        <!-- Row 6 -->
 
-        <!-- Row 3 -->
-        
-        <TextBlock Grid.Row="3" Text="Таймаут чтения (мс): "
+        <TextBlock Grid.Row="6" Text="Таймаут чтения (мс): "
                    Margin="10,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-        <TextBox x:Name="TextBox_Timeout_Read" Grid.Row="3"
+        <TextBox x:Name="TextBox_Timeout_Read" Grid.Row="6"
                  Margin="150,0,0,0"
                  Width="50"
                  TextChanged="TextBox_Timeout_Read_TextChanged"/>
 
-        <CheckBox x:Name="CheckBox_Timeout_Read_Infinite" Grid.Row="3"
+        <CheckBox x:Name="CheckBox_Timeout_Read_Infinite" Grid.Row="6"
                   Content="Бесконечно"
                   Margin="210,2,0,0"
                   FontSize="14"
                   HorizontalAlignment="Left" VerticalAlignment="Center"
                   Click="CheckBox_Timeout_Read_Infinite_Click"/>
 
-        <!-- Row 4 -->
+        <!-- Row 7 -->
         
-        <TextBlock Grid.Row="4" Text="Кодировка (реж. &quot;Без протокола&quot;):"
-                   Margin="10,0,0,0"
-                   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-        <ComboBox Grid.Row="4" x:Name="ComboBox_SelectedEncoding"
-                  Margin="240,0,0,0" 
-                  Width="80" 
-                  FontSize="14"
-                  HorizontalAlignment="Left" VerticalAlignment="Center" 
-                  SelectionChanged="ComboBox_SelectedEncoding_SelectionChanged"/>
-
-        <!-- Row 5 -->
-        
-        <StackPanel Grid.Row="5" 
+        <StackPanel Grid.Row="7" 
                     Height="30" Width="225" 
                     Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -201,9 +227,9 @@
 
         </StackPanel>
 
-        <!-- Row 6 -->
+        <!-- Row 8 -->
 
-        <Frame x:Name="Frame_Settings" Grid.Row="6"
+        <Frame x:Name="Frame_Settings" Grid.Row="8"
                NavigationUIVisibility="Hidden"/>
         
     </Grid>

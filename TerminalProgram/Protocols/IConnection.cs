@@ -3,19 +3,69 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SystemOfSaving;
 
 namespace TerminalProgram.Protocols
 {
+    public enum ReadMode
+    {
+        Async,
+        Sync
+    }
+
     public interface IConnection
     {
+        /// <summary>
+        /// Событие получения данных в режиме асинхронного чтения.
+        /// </summary>
         event EventHandler<DataFromDevice> DataReceived;
 
+        /// <summary>
+        /// Возращает значение указывающее на то, подключен ли сейчас клиент к какому либо хосту или нетю
+        /// </summary>
+        /// <returns>Значение true. если клиент подключен.</returns>
         bool IsConnected { get; }
 
+        /// <summary>
+        /// Возвращает или задает время ожидания окончания записи в милисекундах.
+        /// </summary>
+        /// <returns>Возращает время ожидания выполнения операции записи в милисекундах</returns>
+        int WriteTimeout { get; set; }
+        /// <summary>
+        /// Возвращает или задает время ожидания данных для чтения в милисекундах.
+        /// </summary>
+        /// <returns>Возращает время ожидания появления данных для чтения в милисекундах</returns>
+        int ReadTimeout { get; set; }
+
+        /// <summary>
+        /// Установка синхронного или асинхронного режима чтения.
+        /// </summary>
+        /// <param name="Mode"></param>
+        void SetReadMode(ReadMode Mode);
+        /// <summary>
+        /// Подключение к указанному хосту.
+        /// </summary>
+        /// <param name="Info"></param>
         void Connect(ConnectionInfo Info);
+        /// <summary>
+        /// Закрытие открытого соединения.
+        /// </summary>
         void Disconnect();
+        /// <summary>
+        /// Запись строки в открытое соединение.
+        /// </summary>
+        /// <param name="Message"></param>
         void Send(string Message);
-        void Send(byte[] Message);
+        /// <summary>
+        /// Запись определенного колличества байт в открытое соединение.
+        /// </summary>
+        /// <param name="Message"></param>
+        /// <param name="NumberOfBytes"></param>
+        void Send(byte[] Message, int NumberOfBytes);
+        /// <summary>
+        /// Сихронно считывает данные из соединения.
+        /// </summary>
+        /// <param name="Data"></param>
         void Receive(byte[] Data);
     }
 
@@ -59,41 +109,17 @@ namespace TerminalProgram.Protocols
         public SocketInfo Socket;
         public SerialPortInfo SerialPort;
 
-        //  Значение -1 обознает бесконечный таймаут
-        public readonly int TimeoutWrite;
-        public readonly int TimeoutRead;
-
         public readonly Encoding GlobalEncoding;
 
         public ConnectionInfo(SocketInfo Info, Encoding GlobalEncoding)
         {
             Socket = Info;
-            TimeoutWrite = -1;
-            TimeoutRead = -1;
-            this.GlobalEncoding = GlobalEncoding;
-        }
-
-        public ConnectionInfo(SocketInfo Info, int TimeoutWrite, int TimeoutRead, Encoding GlobalEncoding)
-        {
-            Socket = Info;
-            this.TimeoutWrite = TimeoutWrite;
-            this.TimeoutRead = TimeoutRead;
             this.GlobalEncoding = GlobalEncoding;
         }
 
         public ConnectionInfo(SerialPortInfo Info, Encoding GlobalEncoding) 
         { 
             SerialPort = Info;
-            TimeoutWrite = -1;
-            TimeoutRead = -1;
-            this.GlobalEncoding = GlobalEncoding;
-        }
-
-        public ConnectionInfo(SerialPortInfo Info, int TimeoutWrite, int TimeoutRead, Encoding GlobalEncoding)
-        {
-            SerialPort = Info;
-            this.TimeoutWrite = TimeoutWrite;
-            this.TimeoutRead = TimeoutRead;
             this.GlobalEncoding = GlobalEncoding;
         }
     }

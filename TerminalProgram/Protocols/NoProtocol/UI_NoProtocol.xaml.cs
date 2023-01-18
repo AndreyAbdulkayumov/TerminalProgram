@@ -232,7 +232,7 @@ namespace TerminalProgram.Protocols.NoProtocol
                     Message = MainWindow.GlobalEncoding.GetBytes(TextBox_TX.Text);
                 }
 
-                Client.Send(Message);
+                Client.Send(Message, Message.Length);
             }
 
             catch (Exception error)

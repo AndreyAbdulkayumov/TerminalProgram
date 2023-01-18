@@ -40,6 +40,8 @@ namespace TerminalProgram.Protocols.Modbus
 
         private Modbus ModbusDevice = null;
 
+        private int SelectedSlaveID = 0;
+
         private TypeOfModbus ModbusType;
 
         private UInt16 PackageNumber = 0;
@@ -142,11 +144,13 @@ namespace TerminalProgram.Protocols.Modbus
 
                 TextBlock_RX.Text = "";
 
+                ModbusDevice.SlaveID = (byte)SelectedSlaveID;
+
                 UInt16 Data = ModbusDevice.ReadRegister(
                                 PackageNumber,
                                 Convert.ToUInt16(TextBox_Address.Text),
                                 out CommonResponse,
-                                2,
+                                1,
                                 ModbusType,
                                 ModbusType == TypeOfModbus.TCP ? false : true);
 
@@ -159,7 +163,7 @@ namespace TerminalProgram.Protocols.Modbus
             {
                 if (ErrorHandler != null)
                 {
-                    //ErrorHandler(this, new EventArgs());
+                    ErrorHandler(this, new EventArgs());
 
                     MessageBox.Show("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" +
                         error.Message + "\n\nКлиент был отключен.", 
@@ -181,19 +185,22 @@ namespace TerminalProgram.Protocols.Modbus
             {
                 if (TextBox_SlaveID.Text == String.Empty)
                 {
-                    MessageBox.Show("Укажите Slave ID.", MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Укажите Slave ID.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
 
                     return;
                 }
 
                 TextBlock_RX.Text = "";
 
+                ModbusDevice.SlaveID = (byte)SelectedSlaveID;
+
                 ModbusDevice.WriteRegister(
                     PackageNumber,
                     Convert.ToUInt16(TextBox_Address.Text),
                     Convert.ToUInt16(TextBox_Data.Text),
                     out CommonResponse,
-                    2,
+                    1,
                     ModbusType,
                     false);
 
@@ -222,7 +229,7 @@ namespace TerminalProgram.Protocols.Modbus
 
         private void TextBox_SlaveID_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CheckNumber(TextBox_SlaveID);
+            SelectedSlaveID = CheckNumber(TextBox_SlaveID);
         }
 
         private void TextBox_Address_TextChanged(object sender, TextChangedEventArgs e)
@@ -235,25 +242,42 @@ namespace TerminalProgram.Protocols.Modbus
             CheckNumber(TextBox_Data);
         }
 
-        private void CheckNumber(TextBox SelectedTextBox)
+        private int CheckNumber(TextBox SelectedTextBox)
         {
             string TextData = SelectedTextBox.Text;
 
-            if (TextData == "")
+            if (TextData == String.Empty)
             {
-                return;
+                return 0;
             }
+            
+            UInt16 Number;
 
-            if (UInt16.TryParse(TextData, out _) == false)
+            while (true)
             {
-                SelectedTextBox.Text = SelectedTextBox.Text.Remove(SelectedTextBox.Text.Length - 1);
-                SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
-                
-                MessageBox.Show("Ввод букв и знаков не допустим",
-                    MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
+                if (TextData == String.Empty)
+                {
+                    return 0;
+                }
 
-        
+                if (UInt16.TryParse(TextData, out Number) == false)
+                {
+                    SelectedTextBox.Text = SelectedTextBox.Text.Remove(SelectedTextBox.Text.Length - 1);
+                    SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
+
+                    MessageBox.Show("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535.",
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    TextData = SelectedTextBox.Text;
+                }
+
+                else
+                {
+                    break;
+                }
+            }           
+
+            return Number;
+        }        
     }
 }

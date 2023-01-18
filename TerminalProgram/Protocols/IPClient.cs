@@ -13,17 +13,86 @@ namespace TerminalProgram.Protocols
     {
         public event EventHandler<DataFromDevice> DataReceived;
 
+        public bool IsConnected { get; private set; } = false;
+
+        public int WriteTimeout
+        {
+            get
+            {
+                if (Stream != null)
+                {
+                    return Stream.WriteTimeout;
+                }
+
+                return 0;
+            }
+
+            set
+            {
+                if (Stream != null)
+                {
+                    Stream.WriteTimeout = value;
+                }
+            }
+        }
+
+        public int ReadTimeout
+        {
+            get
+            {
+                if (Stream != null)
+                {
+                    return Stream.ReadTimeout;
+                }
+
+                return 0;
+            }
+
+            set
+            {
+                if (Stream != null)
+                {
+                    Stream.ReadTimeout = value;
+                }
+            }
+        }
+
         private NetworkStream Stream = null;
         private TcpClient Client = null;
 
         private Task ReadThread = null;
-        private CancellationTokenSource ReadCancelSource;
+        private CancellationTokenSource ReadCancelSource = null;
 
-        public bool IsConnected { get; private set; } = false;
 
-        public IPClient()
+        public async void SetReadMode(ReadMode Mode)
         {
-            
+            switch (Mode)
+            {
+                case ReadMode.Async:
+
+                    if (IsConnected)
+                    {
+                        ReadCancelSource = new CancellationTokenSource();
+
+                        ReadThread = Task.Run(() => AsyncThread_Read(Stream, ReadCancelSource.Token));
+                    }                    
+
+                    break;
+
+                case ReadMode.Sync:
+
+                    if (IsConnected && ReadCancelSource != null)
+                    {
+                        ReadCancelSource.Cancel();
+
+                        await Task.WhenAll(ReadThread);
+                    }
+                    
+                    break;
+
+                default:
+                    throw new Exception("У клиента задан неизвестный режим чтения: " + Mode.ToString());
+            }
         }
 
         public void Connect(ConnectionInfo Info)
@@ -62,23 +131,19 @@ namespace TerminalProgram.Protocols
                     "Порт: " + Info.Socket.Port);
             }
 
-            Stream = Client.GetStream();         
-
-            Stream.WriteTimeout = Info.TimeoutWrite;
-            Stream.ReadTimeout = Info.TimeoutRead;
-
-            ReadCancelSource = new CancellationTokenSource();
-
-            ReadThread = Task.Run(() => AsyncThread_Read(Stream, ReadCancelSource.Token));
+            Stream = Client.GetStream();
 
             IsConnected = true;
         }
 
         public async void Disconnect()
         {
-            ReadCancelSource.Cancel();
+            if (((MainWindow)Application.Current.MainWindow).SelectedProtocol.CurrentReadMode == ReadMode.Async)
+            {
+                ReadCancelSource.Cancel();
 
-            await Task.WhenAll(ReadThread);
+                await Task.WhenAll(ReadThread);
+            }            
 
             Stream?.Close();
 
@@ -87,7 +152,7 @@ namespace TerminalProgram.Protocols
             IsConnected = false;                
         }
 
-        public void Send(string Message)
+        public async void Send(string Message)
         {
             try
             {
@@ -95,7 +160,7 @@ namespace TerminalProgram.Protocols
                 {
                     byte[] Data = Encoding.ASCII.GetBytes(Message);
 
-                    Stream.WriteAsync(Data, 0, Data.Length);
+                    await Stream.WriteAsync(Data, 0, Data.Length);
                 }
             }
             
@@ -108,13 +173,13 @@ namespace TerminalProgram.Protocols
             }
         }
 
-        public void Send(byte[] Message)
+        public void Send(byte[] Message, int NumberOfBytes)
         {
             try
             {
                 if (IsConnected)
                 {
-                    Stream.WriteAsync(Message, 0, Message.Length);
+                    Stream.Write(Message, 0, NumberOfBytes);
                 }
             }
 
@@ -133,7 +198,18 @@ namespace TerminalProgram.Protocols
             {
                 if (IsConnected)
                 {
-                    Stream.Read(RX, 0, RX.Length);
+                    int NumberOfReveivedBytes = 0;
+
+                    do
+                    {
+                        if (NumberOfReveivedBytes > RX.Length)
+                        {
+                            break;
+                        }
+
+                        NumberOfReveivedBytes = Stream.Read(RX, NumberOfReveivedBytes, RX.Length);
+
+                    } while (Stream.DataAvailable);
                 }
             }
 
@@ -199,8 +275,8 @@ namespace TerminalProgram.Protocols
                         {
                             Data.RX[i] = BufferRX[i];
                         }
-
-                        DataReceived(this, Data);
+                                                
+                        DataReceived?.Invoke(this, Data);
 
                         Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
                     }

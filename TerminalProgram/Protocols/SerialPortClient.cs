@@ -26,7 +26,67 @@ namespace TerminalProgram.Protocols
             }
         }
 
+        public int WriteTimeout
+        {
+            get
+            {
+                if (DeviceSerialPort != null)
+                {
+                    return DeviceSerialPort.WriteTimeout;
+                }
+
+                return 0;
+            }
+
+            set
+            {
+                if (DeviceSerialPort != null)
+                {
+                    DeviceSerialPort.WriteTimeout = value;
+                }
+            }
+        }
+
+        public int ReadTimeout
+        {
+            get
+            {
+                if (DeviceSerialPort != null)
+                {
+                    return DeviceSerialPort.ReadTimeout;
+                }
+
+                return 0;
+            }
+
+            set
+            {
+                if (DeviceSerialPort != null)
+                {
+                    DeviceSerialPort.ReadTimeout = value;
+                }
+            }
+        }
+
         private SerialPort DeviceSerialPort = null;
+
+
+        public void SetReadMode(ReadMode Mode)
+        {
+            switch(Mode)
+            {
+                case ReadMode.Async:
+                    DeviceSerialPort.DataReceived += DeviceSerialPort_DataReceived;
+                    break;
+
+                case ReadMode.Sync:
+                    DeviceSerialPort.DataReceived -= DeviceSerialPort_DataReceived;
+                    break;
+
+                default:
+                    throw new Exception("У клиента задан неизвестный режим чтения: " + Mode.ToString());
+            }
+        }
 
         public void Connect(ConnectionInfo Info)
         {
@@ -113,9 +173,6 @@ namespace TerminalProgram.Protocols
                     DeviceSerialPort.DataBits = DataBits;
                     DeviceSerialPort.StopBits = SelectedStopBits;
 
-                    DeviceSerialPort.WriteTimeout = Info.TimeoutWrite;
-                    DeviceSerialPort.ReadTimeout = Info.TimeoutRead;
-
                     DeviceSerialPort.Open();
                 }
 
@@ -147,39 +204,11 @@ namespace TerminalProgram.Protocols
                     Disconnect();
                     throw new Exception(error.Message);
                 }
-
-                DeviceSerialPort.DataReceived += DeviceSerialPort_DataReceived;
             }
 
             catch (Exception error)
             {
                 throw new Exception("Ошибка подключения:\n" + error.Message);
-            }
-        }
-
-        private void DeviceSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            try
-            {
-                if (DataReceived != null)
-                {
-                    DataFromDevice Data = new DataFromDevice()
-                    {
-                        RX = new byte[DeviceSerialPort.BytesToRead]
-                    };
-
-                    DeviceSerialPort.Read(Data.RX, 0, Data.RX.Length);
-
-                    DataReceived(this, Data);
-                }
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
-                    "Таймаут приема: " +
-                    (DeviceSerialPort.ReadTimeout == Timeout.Infinite ?
-                    "бесконечно" : (DeviceSerialPort.ReadTimeout.ToString() + " мс.")));
             }
         }
 
@@ -215,11 +244,11 @@ namespace TerminalProgram.Protocols
             }
         }
 
-        public void Send(byte[] Message)
+        public void Send(byte[] Message, int NumberOfBytes)
         {
             try
             {
-                DeviceSerialPort.Write(Message, 0, Message.Length);
+                DeviceSerialPort.Write(Message, 0, NumberOfBytes);
             }
 
             catch (Exception error)
@@ -233,10 +262,45 @@ namespace TerminalProgram.Protocols
 
         public void Receive(byte[] Data)
         {
+            int SavedTimeout = ReadTimeout;
+
             try
             {
-                Task.Delay(100);
-                DeviceSerialPort.Read(Data, 0, DeviceSerialPort.BytesToRead);
+                // Если ожидать ответа с помощью таймаута, то в случае получения данных примется
+                // только несколько первых байт. Поэтому таймаут реализуется с помощью задержки.
+                // Таким образом, буфер приема успеет заполниться.
+                
+                ReadTimeout = 10;
+
+                Thread.Sleep(SavedTimeout);
+
+                DeviceSerialPort.Read(Data, 0, Data.Length);
+
+                ReadTimeout = SavedTimeout;
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
+                    "Таймаут приема: " + SavedTimeout + " мс.");
+            }
+        }
+
+        private void DeviceSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                if (DataReceived != null)
+                {
+                    DataFromDevice Data = new DataFromDevice()
+                    {
+                        RX = new byte[DeviceSerialPort.BytesToRead]
+                    };
+
+                    DeviceSerialPort.Read(Data.RX, 0, Data.RX.Length);
+
+                    DataReceived(this, Data);
+                }
             }
 
             catch (Exception error)
@@ -247,7 +311,5 @@ namespace TerminalProgram.Protocols
                     "бесконечно" : (DeviceSerialPort.ReadTimeout.ToString() + " мс.")));
             }
         }
-
-        
     }
 }

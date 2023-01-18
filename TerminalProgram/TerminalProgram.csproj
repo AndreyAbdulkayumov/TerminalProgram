@@ -92,12 +92,14 @@
     <Compile Include="Protocols\IPClient.cs" />
     <Compile Include="Protocols\Modbus\CRC_16.cs" />
     <Compile Include="Protocols\Modbus\Modbus.cs" />
+    <Compile Include="Protocols\Modbus\ModbusMessage.cs" />
     <Compile Include="Protocols\Modbus\UI_Modbus.xaml.cs">
       <DependentUpon>UI_Modbus.xaml</DependentUpon>
     </Compile>
     <Compile Include="Protocols\NoProtocol\UI_NoProtocol.xaml.cs">
       <DependentUpon>UI_NoProtocol.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Protocols\ProtocolMode.cs" />
     <Compile Include="Protocols\SerialPortClient.cs" />
     <Compile Include="ServiceWindows\ComboBoxWindow.xaml.cs">
       <DependentUpon>ComboBoxWindow.xaml</DependentUpon>

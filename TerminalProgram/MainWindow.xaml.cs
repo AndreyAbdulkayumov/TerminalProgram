@@ -78,6 +78,8 @@ namespace TerminalProgram
         private UI_Modbus ModbusPage = null;
         private UI_Http HttpPage = null;
 
+        public ProtocolMode SelectedProtocol { get; private set; } = null;
+
         private string SettingsDocument
         {
             get
@@ -375,8 +377,6 @@ namespace TerminalProgram
                             Settings.DataBits,
                             Settings.StopBits
                             ),
-                            Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite),
-                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead),
                             GlobalEncoding));
 
                         break;
@@ -389,8 +389,6 @@ namespace TerminalProgram
                             Settings.IP,
                             Settings.Port
                             ),
-                            Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite),
-                            Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead),
                             GlobalEncoding));
 
                         break;
@@ -400,6 +398,13 @@ namespace TerminalProgram
                 }
 
                 SetUI_Connected();
+
+                if (SelectedProtocol is ProtocolMode_Modbus)
+                {
+                    (SelectedProtocol as ProtocolMode_Modbus).UpdateTimeouts(Settings);
+                }
+
+                SelectedProtocol.InitMode(Client);
 
                 if (DeviceIsConnect != null)
                 {
@@ -466,6 +471,8 @@ namespace TerminalProgram
             {
                 MessageBox.Show("Не удалось перейти на страницу " + NoProtocolPage.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                return;
             }
 
             GridRow_Header.Height = new GridLength(100);
@@ -473,6 +480,8 @@ namespace TerminalProgram
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
             Button_Disconnect.Visibility = Visibility.Visible;
+
+            SelectedProtocol = new ProtocolMode_NoProtocol(Client);
         }
 
         private void RadioButton_Protocol_Modbus_Checked(object sender, RoutedEventArgs e)
@@ -481,6 +490,8 @@ namespace TerminalProgram
             {
                 MessageBox.Show("Не удалось перейти на страницу " + ModbusPage.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                return;
             }
 
             GridRow_Header.Height = new GridLength(100);
@@ -488,6 +499,8 @@ namespace TerminalProgram
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
             Button_Disconnect.Visibility = Visibility.Visible;
+
+            SelectedProtocol = new ProtocolMode_Modbus(Client, Settings);
         }
 
         private void RadioButton_Protocol_Http_Checked(object sender, RoutedEventArgs e)
@@ -496,16 +509,15 @@ namespace TerminalProgram
             {
                 MessageBox.Show("Не удалось перейти на страницу " + HttpPage.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                return;
             }
 
-            else
-            {
-                GridRow_Header.Height = new GridLength(50);
-                TextBlock_SelectedPreset.Visibility = Visibility.Hidden;
-                ComboBox_SelectedPreset.Visibility = Visibility.Hidden;
-                Button_Connect.Visibility = Visibility.Hidden;
-                Button_Disconnect.Visibility = Visibility.Hidden;
-            }
+            GridRow_Header.Height = new GridLength(50);
+            TextBlock_SelectedPreset.Visibility = Visibility.Hidden;
+            ComboBox_SelectedPreset.Visibility = Visibility.Hidden;
+            Button_Connect.Visibility = Visibility.Hidden;
+            Button_Disconnect.Visibility = Visibility.Hidden;
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
@@ -518,4 +530,6 @@ namespace TerminalProgram
             window.ShowDialog();
         }
     }
+
+    
 }
