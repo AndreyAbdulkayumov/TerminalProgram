@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SystemOfSaving.DocumentXML;
+using SystemOfSaving.XML;
 
 namespace SystemOfSaving
 {
     public class SettingsMediator
     {
         public string DocumentPath { get { return Document.SettingsDocumentPath; } }
-        public string DefaultNodeValue { get; } = "Empty";
+        public static string DefaultNodeValue { get; } = "Empty";
         public string FileType { get; } = ".xml";
 
         private readonly XmlWorker Document;

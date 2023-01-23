@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram.Settings"
         mc:Ignorable="d"
         Title="Настройки подключения" 
-        Height="710" Width="350"
+        Height="740" Width="350"
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
@@ -175,38 +175,24 @@
         <!-- Row 5 -->
 
         <TextBlock Grid.Row="5" Text="Таймаут записи (мс): "
-                   Margin="10,0,0,0"
+                   Margin="70,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
         <TextBox x:Name="TextBox_Timeout_Write" Grid.Row="5"
-                 Margin="150,0,0,0"
+                 Margin="210,0,0,0"
                  Width="50"
                  TextChanged="TextBox_Timeout_Write_TextChanged"/>
 
-        <CheckBox x:Name="CheckBox_Timeout_Write_Infinite" Grid.Row="5"
-                  Content="Бесконечно"
-                  Margin="210,2,0,0"
-                  FontSize="14"
-                  HorizontalAlignment="Left" VerticalAlignment="Center"
-                  Click="CheckBox_Timeout_Write_Infinite_Click"/>
-      
         <!-- Row 6 -->
 
         <TextBlock Grid.Row="6" Text="Таймаут чтения (мс): "
-                   Margin="10,0,0,0"
+                   Margin="70,0,0,0"
                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
         <TextBox x:Name="TextBox_Timeout_Read" Grid.Row="6"
-                 Margin="150,0,0,0"
+                 Margin="210,0,0,0"
                  Width="50"
                  TextChanged="TextBox_Timeout_Read_TextChanged"/>
-
-        <CheckBox x:Name="CheckBox_Timeout_Read_Infinite" Grid.Row="6"
-                  Content="Бесконечно"
-                  Margin="210,2,0,0"
-                  FontSize="14"
-                  HorizontalAlignment="Left" VerticalAlignment="Center"
-                  Click="CheckBox_Timeout_Read_Infinite_Click"/>
 
         <!-- Row 7 -->
         

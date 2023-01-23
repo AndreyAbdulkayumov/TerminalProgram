@@ -3,197 +3,89 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
 
 namespace TerminalProgram.Protocols.Modbus
 {
-    public enum TypeOfModbus
+    public static partial class ModbusMessage
     {
-        TCP,
-        RTU,
-        ASCII
-    }
-
-    public struct DEVICE_RESPONSE
-    {
-        // Только для Modbus TCP
-        public UInt16 OperationNumber;
-        public UInt16 ProtocolID;
-        public UInt16 LengthOfPDU; 
-        
-        // Общая часть для всех типов Modbus протокола
-        public byte SlaveID;
-
-        // PDU - Protocol Data Unit
-        public byte Command;
-        public int LengthOfData;
-        public byte[] Data;
-    }
-
-    public class Modbus
-    {
-        /// <summary>
-        /// Полином для расчета CRC.
-        /// </summary>
-        public ushort Polynom { get; } = 0xA001;
-        /// <summary>
-        /// Номер Slave устройства, с которым будет происходить обмен данными. 
-        /// По умолчанию равно 0, значит вызов широковещательный.
-        /// </summary>
-        public byte SlaveID { get; set; } = 0;
-
-        private static bool IsBusy = false;
-
-        private IConnection Device = null;
-
-        public Modbus(IConnection ConnectedDevice)
+        private static DEVICE_RESPONSE ModbusTCP_DecodingMessage(int CommandNumber, byte[] SourceArray)
         {
-            Device = ConnectedDevice;
-        }
-
-        public void WriteRegister(UInt16 PackageNumber, UInt16 Address, UInt16 Data, 
-            out DEVICE_RESPONSE Response, int NumberOfRegisters, TypeOfModbus ModbusType, bool CRC_IsEnable)
-        {
-            try
-            {
-                while (IsBusy) ;
-
-                IsBusy = true;
-
-                byte[] RX = new byte[20];
-
-                byte[] TX = ModbusMessage.Create_WriteType(ModbusType, SlaveID, Address, Data, CRC_IsEnable, Polynom);
-
-                Device.Send(TX, TX.Length);
-
-                Device.Receive(RX);
-
-                Response = ModbusMessage.Decoding(ModbusType, 0x06, RX);
-
-                IsBusy = false;
-            }
-            
-            catch(Exception error)
-            {
-                IsBusy = false;
-                throw new Exception(error.Message);
-            }
-        }
-
-        public UInt16 ReadRegister(UInt16 PackageNumber, UInt16 Address,
-            out DEVICE_RESPONSE Response, int NumberOfRegisters, TypeOfModbus ModbusType, bool CRC_IsEnable)
-        {
-            try
-            {
-                while (IsBusy) ;
-
-                IsBusy = true;
-
-                byte[] RX = new byte[20];
-
-                byte[] TX = ModbusMessage.Create_ReadType(ModbusType, SlaveID, Address, NumberOfRegisters, CRC_IsEnable, Polynom);
-
-                Device.Send(TX, TX.Length);
-
-                Device.Receive(RX);
-
-                Response = ModbusMessage.Decoding(ModbusType, 0x04, RX);
-
-                UInt16 result = (UInt16)BitConverter.ToInt16(Response.Data, 0);
-
-                IsBusy = false;
-
-                return result;
-            }
-
-            catch (Exception error)
-            {
-                IsBusy = false;
-                throw new Exception(error.Message);
-            }
-        }
-        /*
-        private DEVICE_RESPONSE DecodingOfArray(TypeOfModbus ModbusType, int command, byte [] massive, int NumberOfBytes)
-        {
-            DEVICE_RESPONSE Decoding = new DEVICE_RESPONSE();
+            DEVICE_RESPONSE DecodingResponse = new DEVICE_RESPONSE();
 
             byte[] temp = new byte[2];
 
-            if (ModbusType == TypeOfModbus.TCP)
+            temp[0] = SourceArray[1];
+            temp[1] = SourceArray[0];
+            DecodingResponse.OperationNumber = (UInt16)BitConverter.ToInt16(temp, 0);
+            temp[0] = SourceArray[3];
+            temp[1] = SourceArray[2];
+            DecodingResponse.ProtocolID = (UInt16)BitConverter.ToInt16(temp, 0);
+            temp[0] = SourceArray[5];
+            temp[1] = SourceArray[4];
+            DecodingResponse.LengthOfPDU = (UInt16)BitConverter.ToInt16(temp, 0);
+            DecodingResponse.SlaveID = SourceArray[6];
+            DecodingResponse.Command = SourceArray[7];
+
+            CheckErrorCode(TypeOfModbus.TCP, ref DecodingResponse, SourceArray);
+
+            if (CommandNumber == 0x04)
             {
-                temp[0] = massive[1];
-                temp[1] = massive[0];
-                Decoding.OperationNumber = (UInt16)BitConverter.ToInt16(temp, 0);
-                temp[0] = massive[3];
-                temp[1] = massive[2];
-                Decoding.ProtocolID = (UInt16)BitConverter.ToInt16(temp, 0);
-                temp[0] = massive[5];
-                temp[1] = massive[4];
-                Decoding.LengthOfPDU = (UInt16)BitConverter.ToInt16(temp, 0);
-                Decoding.SlaveID = massive[6];
-                Decoding.Command = massive[7];
+                DecodingResponse.LengthOfData = SourceArray[8];
+
+                DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
+
+                Array.Copy(SourceArray, 9, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
+
+                DecodingResponse.Data = ReverseArray(DecodingResponse.Data);
             }
 
-            else if (ModbusType == TypeOfModbus.RTU)
+            else if (CommandNumber == 0x06)
             {
-                Decoding.SlaveID = massive[0];
-                Decoding.Command = massive[1];                
-            }
-
-            else
-            {
-                throw new Exception("Неизвестный тип Modbus протокола. " + ModbusType);
-            }
-
-            CheckErrorCode(ModbusType, ref Decoding, massive);
-
-            if (command == 0x04)
-            {
-                if (ModbusType == TypeOfModbus.TCP)
-                {
-                    Decoding.LengthOfData = massive[8];
-                }
-                
-                else if (ModbusType == TypeOfModbus.RTU)
-                {
-                    Decoding.LengthOfData = massive[2];
-                }
-
-                else
-                {
-                    throw new Exception("Неизвестный тип Modbus протокола. " + ModbusType);
-                }
-
-                Decoding.Data = new byte[Decoding.LengthOfData];
-
-                if (ModbusType == TypeOfModbus.TCP)
-                {
-                    Array.Copy(massive, 9, Decoding.Data, 0, Decoding.LengthOfData);
-                }
-
-                else
-                {
-                    Array.Copy(massive, 3, Decoding.Data, 0, Decoding.LengthOfData);
-                }
-                
-                Decoding.Data = ReverseArray(Decoding.Data);
-            }
-
-            else if (command == 0x06)
-            {
-                Decoding.LengthOfData = -1;
+                DecodingResponse.LengthOfData = -1;
             }
 
             else
             {
-                throw new Exception("Неизвестный код Modbus команды");
+                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CommandNumber + ")");
             }
 
-            return Decoding;
+            return DecodingResponse;
         }
 
-        private void CheckErrorCode(TypeOfModbus ModbusType, ref DEVICE_RESPONSE Decoding, byte[] massive)
+        private static DEVICE_RESPONSE ModbusRTU_DecodingMessage(int CommandNumber, byte[] SourceArray)
+        {
+            DEVICE_RESPONSE DecodingResponse = new DEVICE_RESPONSE();
+
+            DecodingResponse.SlaveID = SourceArray[0];
+            DecodingResponse.Command = SourceArray[1];
+
+            CheckErrorCode(TypeOfModbus.RTU, ref DecodingResponse, SourceArray);
+
+            if (CommandNumber == 0x04)
+            {
+                DecodingResponse.LengthOfData = SourceArray[2];
+
+                DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
+
+                Array.Copy(SourceArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
+
+                DecodingResponse.Data = ReverseArray(DecodingResponse.Data);
+            }
+
+            else if (CommandNumber == 0x06)
+            {
+                DecodingResponse.LengthOfData = -1;
+            }
+
+            else
+            {
+                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CommandNumber + ")");
+            }            
+
+            return DecodingResponse;
+        }
+
+        private static void CheckErrorCode(TypeOfModbus ModbusType, ref DEVICE_RESPONSE Decoding, byte[] massive)
         {
             if (Decoding.Command > 128)
             {
@@ -205,11 +97,11 @@ namespace TerminalProgram.Protocols.Modbus
                 {
                     Array.Copy(massive, 8, Decoding.Data, 0, 1);
                 }
-                
+
                 else
                 {
                     Array.Copy(massive, 3, Decoding.Data, 0, 1);
-                }
+                }                
 
                 switch (Decoding.Data[0])
                 {
@@ -280,17 +172,16 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        static byte[] ReverseArray(byte[] SourceArray)
+        private static byte[] ReverseArray(byte[] SourceArray)
         {
             byte[] temp = new byte[SourceArray.Length];
 
-            for(int i = 0; i < SourceArray.Length; i++)
+            for (int i = 0; i < SourceArray.Length; i++)
             {
                 temp[i] = SourceArray[SourceArray.Length - 1 - i];
             }
 
             return temp;
-        }   
-        */
+        }
     }
 }

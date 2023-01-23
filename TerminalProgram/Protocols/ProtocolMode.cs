@@ -53,11 +53,8 @@ namespace TerminalProgram.Protocols
 
         public void UpdateTimeouts(DeviceData Settings)
         {
-            WriteTimeout =
-                   Settings.TimeoutWrite_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutWrite);
-
-            ReadTimeout =
-                Settings.TimeoutRead_IsInfinite == "Enable" ? -1 : Convert.ToInt32(Settings.TimeoutRead);
+            WriteTimeout = Convert.ToInt32(Settings.TimeoutWrite);
+            ReadTimeout = Convert.ToInt32(Settings.TimeoutRead);
         }
     }
 }

@@ -93,6 +93,9 @@
     <Compile Include="Protocols\Modbus\CRC_16.cs" />
     <Compile Include="Protocols\Modbus\Modbus.cs" />
     <Compile Include="Protocols\Modbus\ModbusMessage.cs" />
+    <Compile Include="Protocols\Modbus\ModbusMessage_Create_ReadType.cs" />
+    <Compile Include="Protocols\Modbus\ModbusMessage_Create_WriteType.cs" />
+    <Compile Include="Protocols\Modbus\ModbusMessage_Decoding.cs" />
     <Compile Include="Protocols\Modbus\UI_Modbus.xaml.cs">
       <DependentUpon>UI_Modbus.xaml</DependentUpon>
     </Compile>
@@ -189,12 +192,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SystemOfSaving\SystemOfSaving.csproj">
-      <Project>{0f4f4c79-78be-4d59-b652-6f147e1f97db}</Project>
-      <Name>SystemOfSaving</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.7.2 %28x86 и x64%29</ProductName>
@@ -221,5 +218,6 @@
   <ItemGroup>
     <Resource Include="Resources\File_AddNew.png" />
   </ItemGroup>
+  <Import Project="..\SystemOfSaving\SystemOfSaving.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

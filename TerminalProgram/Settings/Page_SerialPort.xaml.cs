@@ -48,10 +48,7 @@ namespace TerminalProgram.Settings
         {
             Settings = UpdateSettings;
 
-            ComboBox_COMPort.AddHandler(ComboBox.MouseLeftButtonUpEvent,
-                    new MouseButtonEventHandler(ComboBox_MouseLeftButtonDown), true);
-
-            SetValue(ComboBox_COMPort, UpdateSettings.COMPort);
+            Button_ReScan_COMPorts_Click(this, new RoutedEventArgs());
 
             SetValue(ComboBox_BaudRate, UpdateSettings.BaudRate);
 
@@ -97,31 +94,6 @@ namespace TerminalProgram.Settings
             Box.SelectedIndex = index;
         }
 
-        private void ComboBox_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            SearchSerialPorts(ComboBox_COMPort);
-        }
-
-        private void SearchSerialPorts(ComboBox Box)
-        {
-            string[] ports = SerialPort.GetPortNames();
-
-            if (ports.Length != Box.Items.Count)
-            {
-                int CountItems = Box.Items.Count;
-
-                for (int i = 0; i < CountItems; i++)
-                {
-                    Box.Items.RemoveAt(0);
-                }
-
-                foreach (string port in ports)
-                {
-                    Box.Items.Add(port);
-                }
-            }
-        }
-
         private void ComboBoxFilling(ComboBox Box, ref string[] Items)
         {
             for (int i = 0; i < Items.Length; i++)
@@ -132,7 +104,10 @@ namespace TerminalProgram.Settings
 
         private void ComboBox_COMPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
+            if (ComboBox_COMPort.SelectedIndex != -1)
+            {
+                Settings.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
+            }            
         }
 
         private void ComboBox_BaudRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -202,6 +177,52 @@ namespace TerminalProgram.Settings
         private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Settings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
-        } 
+        }
+
+        private void Button_ReScan_COMPorts_Click(object sender, RoutedEventArgs e)
+        {
+            string[] PortsList = SerialPort.GetPortNames();
+
+            ComboBox_COMPort.Items.Clear();
+
+            foreach (string Port in PortsList)
+            {
+                ComboBox_COMPort.Items.Add(Port);
+            }
+
+            if (Settings.COMPort == SettingsMediator.DefaultNodeValue)
+            {
+                ComboBox_COMPort.SelectedIndex = -1;
+                TextBlock_PortNotFound.Text = "Порт не задан";
+                Border_PortNotFound.Visibility = Visibility.Visible;
+
+                return;
+            }
+
+            string SelectedPort = Settings.COMPort;
+            string FoundPort = null;
+
+            foreach (string Port in ComboBox_COMPort.Items)
+            {
+                if (Port == SelectedPort)
+                {
+                    FoundPort = Port;
+                    break;
+                }
+            }
+
+            if (FoundPort == null)
+            {
+                ComboBox_COMPort.SelectedIndex = -1;
+                TextBlock_PortNotFound.Text = "Порт " + SelectedPort + " не найден";
+                Border_PortNotFound.Visibility = Visibility.Visible;
+            }
+
+            else
+            {
+                ComboBox_COMPort.SelectedItem = FoundPort;
+                Border_PortNotFound.Visibility = Visibility.Hidden;
+            }
+        }
     }
 }

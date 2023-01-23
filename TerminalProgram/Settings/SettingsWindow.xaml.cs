@@ -76,7 +76,7 @@ namespace TerminalProgram.Settings
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Settings_SerialPort = new Page_SerialPort(ref Settings, SettingsManager.DefaultNodeValue)
+            Settings_SerialPort = new Page_SerialPort(ref Settings, SettingsMediator.DefaultNodeValue)
             {
                 Height = Frame_Settings.ActualHeight,
                 Width = Frame_Settings.ActualWidth,
@@ -85,7 +85,7 @@ namespace TerminalProgram.Settings
                 VerticalAlignment = VerticalAlignment.Top
             };
 
-            Settings_IP = new Page_IP(ref Settings, SettingsManager.DefaultNodeValue)
+            Settings_IP = new Page_IP(ref Settings, SettingsMediator.DefaultNodeValue)
             {
                 Height = Frame_Settings.ActualHeight,
                 Width = Frame_Settings.ActualWidth,
@@ -154,44 +154,20 @@ namespace TerminalProgram.Settings
 
         private void UpdateCommonUI(DeviceData Data)
         {
-            SetValue(TextBox_Timeout_Write, Data.TimeoutWrite);
-
-            if (Data.TimeoutWrite_IsInfinite == "Enable")
-            {
-                CheckBox_Timeout_Write_Infinite.IsChecked = true;
-                TextBox_Timeout_Write.IsEnabled = false;
-            }
-
-            else
-            {
-                CheckBox_Timeout_Write_Infinite.IsChecked = false;
-                TextBox_Timeout_Write.IsEnabled = true;
-            }
-
-            SetValue(TextBox_Timeout_Read, Data.TimeoutRead);
-
-            if (Data.TimeoutRead_IsInfinite == "Enable")
-            {
-                CheckBox_Timeout_Read_Infinite.IsChecked = true;
-                TextBox_Timeout_Read.IsEnabled = false;
-            }
-
-            else
-            {
-                CheckBox_Timeout_Read_Infinite.IsChecked = false;
-                TextBox_Timeout_Read.IsEnabled = true;
-            }
-
-            if (Data.GlobalEncoding == null || Data.GlobalEncoding == SettingsManager.DefaultNodeValue)
+            if (Data.GlobalEncoding == null || Data.GlobalEncoding == SettingsMediator.DefaultNodeValue)
             {
                 ComboBox_SelectedEncoding.SelectedValue = null;
             }
-            
+
             else
             {
                 ComboBox_SelectedEncoding.SelectedValue =
                     ArrayTypeOfEncoding.Single(element => element == Data.GlobalEncoding);
             }
+
+            SetValue(TextBox_Timeout_Write, Data.TimeoutWrite);
+
+            SetValue(TextBox_Timeout_Read, Data.TimeoutRead);          
 
             switch (Data.TypeOfConnection)
             {
@@ -217,7 +193,7 @@ namespace TerminalProgram.Settings
 
         private void SetValue(TextBox Box, string Value)
         {
-            if (Value == SettingsManager.DefaultNodeValue)
+            if (Value == SettingsMediator.DefaultNodeValue)
             {
                 Box.Text = String.Empty;
                 return;
@@ -271,8 +247,7 @@ namespace TerminalProgram.Settings
 
                 ComboBox_SelectedDevice.SelectedValue = 
                     System.IO.Path.GetFileNameWithoutExtension(System.IO.Path.GetFileName(OldDocumentPath));
-            }
-            
+            }            
         }
 
         private void TextBox_Timeout_Write_TextChanged(object sender, TextChangedEventArgs e)
@@ -300,40 +275,10 @@ namespace TerminalProgram.Settings
             }
         }
 
-        private void CheckBox_Timeout_Write_Infinite_Click(object sender, RoutedEventArgs e)
-        {
-            if (CheckBox_Timeout_Write_Infinite.IsChecked == true)
-            {
-                TextBox_Timeout_Write.IsEnabled = false;
-                Settings.TimeoutWrite_IsInfinite = "Enable";
-            }
-
-            else
-            {
-                TextBox_Timeout_Write.IsEnabled = true;
-                Settings.TimeoutWrite_IsInfinite = "Disable";
-            }
-        }
-
         private void TextBox_Timeout_Read_TextChanged(object sender, TextChangedEventArgs e)
         {
             CheckNumber(TextBox_Timeout_Read);
             Settings.TimeoutRead = TextBox_Timeout_Read.Text;
-        }
-
-        private void CheckBox_Timeout_Read_Infinite_Click(object sender, RoutedEventArgs e)
-        {
-            if (CheckBox_Timeout_Read_Infinite.IsChecked == true)
-            {
-                TextBox_Timeout_Read.IsEnabled = false;
-                Settings.TimeoutRead_IsInfinite = "Enable";
-            }
-
-            else
-            {
-                TextBox_Timeout_Read.IsEnabled = true;
-                Settings.TimeoutRead_IsInfinite = "Disable";
-            }
         }
 
         private void ComboBox_SelectedEncoding_SelectionChanged(object sender, SelectionChangedEventArgs e)

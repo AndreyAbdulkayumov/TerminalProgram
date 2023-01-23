@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="270" d:DesignWidth="350"
+      d:DesignHeight="300" d:DesignWidth="350"
       Title="Settings_SerialPort">
 
     <Page.Resources>
@@ -51,10 +51,28 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
         <!-- COM Port-->
 
+        <Border x:Name="Border_PortNotFound" Grid.Row="0"
+                Width="170" Height="24"
+                Margin="130,-14,0,0"
+                HorizontalAlignment="Left" VerticalAlignment="Top" 
+                Background="#FF587C8D" 
+                BorderBrush="NavajoWhite"
+                BorderThickness="1,1,1,1">
+
+            <TextBlock x:Name="TextBlock_PortNotFound" Text="dsdfsf"
+                       TextWrapping="Wrap" 
+                       TextAlignment="Center"
+                       Foreground="#FFFAFAF0"
+                       Margin="0,0,0,0"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        </Border>
+        
         <TextBlock Grid.Row="0" x:Name="TextBlock_COMPort" Text="COM - Port"/>
 
         <ComboBox Grid.Row="0" x:Name="ComboBox_COMPort"
@@ -97,6 +115,15 @@
 
         <ComboBox Grid.Row="5" x:Name="ComboBox_StopBits"
                   SelectionChanged="ComboBox_StopBits_SelectionChanged"/>
+
+        <!-- Re-scan COM Ports -->
+
+        <Button Grid.Row="6" x:Name="Button_ReScan_COMPorts" Template="{DynamicResource ButtonCommon}"
+                Content="Поиск СОМ портов"
+                FontSize="14"
+                Width="150" Height="28"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Click="Button_ReScan_COMPorts_Click"/>
 
     </Grid>
 
