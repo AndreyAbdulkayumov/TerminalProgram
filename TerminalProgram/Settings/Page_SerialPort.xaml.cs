@@ -25,7 +25,7 @@ namespace TerminalProgram.Settings
     {
         private readonly string[] ArrayBaudRate = { "4800", "9600", "19200", "38400", "57600", "115200" };
         private readonly string[] ArrayParity = { "None", "Even", "Odd" };
-        private readonly string[] ArrayDataBits = { "8", "9" };
+        private readonly string[] ArrayDataBits = { "5", "6", "7", "8" };
         private readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
 
         private DeviceData Settings;

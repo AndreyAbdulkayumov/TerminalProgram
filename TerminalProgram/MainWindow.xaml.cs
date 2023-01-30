@@ -203,7 +203,7 @@ namespace TerminalProgram
             Button_Disconnect_Click(this, new RoutedEventArgs());
         }
 
-        private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
             {
@@ -216,7 +216,7 @@ namespace TerminalProgram
                         return;
                     }
 
-                    Client.Disconnect();
+                    await Client.Disconnect();
                 }
             }
             
@@ -419,13 +419,13 @@ namespace TerminalProgram
             }
         }
 
-        private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
+        private async void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 try
                 {
-                    Client.Disconnect();
+                    await Client.Disconnect();
                 }
 
                 catch (Exception error)

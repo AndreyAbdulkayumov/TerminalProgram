@@ -88,13 +88,16 @@
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Margin="10,0,10,0" Style="{StaticResource TX_RX_Field}">
+            <Border Grid.Row="0" Margin="10,0,10,0">
 
                 <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
 
-                    <TextBlock x:Name="TextBlock_RX"
-                               TextAlignment="Left" 
-                               TextWrapping="Wrap"/>
+                    <TextBox x:Name="TextBox_RX" Style="{StaticResource TX_RX_Field}"
+                             IsReadOnly="True"
+                             IsReadOnlyCaretVisible="True"
+                             MaxLength="300"
+                             TextAlignment="Left" 
+                             TextWrapping="Wrap"/>
 
                 </ScrollViewer>
 

@@ -50,7 +50,7 @@ namespace TerminalProgram.Protocols
         /// <summary>
         /// Закрытие открытого соединения.
         /// </summary>
-        void Disconnect();
+        Task Disconnect();
         /// <summary>
         /// Запись строки в открытое соединение.
         /// </summary>

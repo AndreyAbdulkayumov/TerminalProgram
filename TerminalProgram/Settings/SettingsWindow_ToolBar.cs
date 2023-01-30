@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Xml.Linq;
 using TerminalProgram.ServiceWindows;
 
@@ -153,6 +154,8 @@ namespace TerminalProgram.Settings
             SettingsDocument = ComboBox_SelectedDevice.SelectedValue.ToString();
 
             SettingsIsChanged = true;
+
+            DisplaySettingsFile();
 
             MessageBox.Show("Настройки успешно сохранены!", "Сообщение",
                     MessageBoxButton.OK, MessageBoxImage.Information);

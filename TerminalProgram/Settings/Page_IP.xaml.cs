@@ -35,10 +35,10 @@ namespace TerminalProgram.Settings
 
         public void UpdateUI(DeviceData UpdateSettings)
         {
+            Settings = UpdateSettings;
+
             SetValue(TextBox_IP, UpdateSettings.IP);
             SetValue(TextBox_Port, UpdateSettings.Port);
-
-            Settings = UpdateSettings;
         }
 
         private void SetValue(TextBox Box, string Value)

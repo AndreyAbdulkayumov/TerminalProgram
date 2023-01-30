@@ -29,11 +29,15 @@ namespace TerminalProgram.Protocols.NoProtocol
     {
         public event EventHandler<EventArgs> ErrorHandler;
 
+        private const int RX_MaxVisibleLine = 25;
+
         private IConnection Client = null;
 
         private TypeOfMessage MessageType;
 
         private readonly string MainWindowTitle;
+
+        private object locker = new object();
 
         public UI_NoProtocol(MainWindow window)
         {
@@ -155,21 +159,25 @@ namespace TerminalProgram.Protocols.NoProtocol
         {
             try
             {
-                TextBlock_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal,
+                lock(locker)
+                {
+                    TextBox_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
                     new Action(delegate
                     {
                         try
                         {
-                            TextBlock_RX.Text += MainWindow.GlobalEncoding.GetString(e.RX);
+                            if (TextBox_RX.LineCount > RX_MaxVisibleLine)
+                            {
+                                TextBox_RX.Text = TextBox_RX.Text.Remove(0,
+                                    TextBox_RX.GetCharacterIndexFromLineIndex(1));
+                            }
+
+                            TextBox_RX.Text += MainWindow.GlobalEncoding.GetString(e.RX);
 
                             if (CheckBox_NextLine.IsChecked == true)
                             {
-                                TextBlock_RX.Text += "\n";
-                            }
-
-                            // TODO:
-                            // Сделать ограничение на отображаемое колличество строк (или символов) в TextBlock_RX.
-                            // Иначе при большой частоте приема данных программа начинает тупить.
+                                TextBox_RX.Text += "\n";
+                            }                           
 
                             ScrollViewer_RX.ScrollToEnd();
                         }
@@ -181,6 +189,8 @@ namespace TerminalProgram.Protocols.NoProtocol
                                 MessageBoxOptions.ServiceNotification);
                         }
                     }));
+                }
+                
             }
 
             catch (Exception error)
@@ -259,7 +269,7 @@ namespace TerminalProgram.Protocols.NoProtocol
         {
             try
             {
-                if (TextBlock_RX.Text == "")
+                if (TextBox_RX.Text == "")
                 {
                     MessageBox.Show("Поле приема не содержит данных.", MainWindowTitle,
                         MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -282,7 +292,7 @@ namespace TerminalProgram.Protocols.NoProtocol
                 {
                     using (FileStream Stream = new FileStream(dialog.FileName, FileMode.OpenOrCreate))
                     {
-                        byte[] Data = Encoding.UTF8.GetBytes(TextBlock_RX.Text);
+                        byte[] Data = Encoding.UTF8.GetBytes(TextBox_RX.Text);
                         Stream.Write(Data, 0, Data.Length);
                     }
                 }
@@ -299,7 +309,7 @@ namespace TerminalProgram.Protocols.NoProtocol
 
         private void Button_ClearFieldRX_Click(object sender, RoutedEventArgs e)
         {
-            TextBlock_RX.Text = String.Empty;
+            TextBox_RX.Text = String.Empty;
 
             TextBox_TX.Focus();
         }

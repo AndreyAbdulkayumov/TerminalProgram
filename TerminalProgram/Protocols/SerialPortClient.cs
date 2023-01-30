@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TerminalProgram.Protocols
 {
@@ -70,17 +72,36 @@ namespace TerminalProgram.Protocols
 
         private SerialPort DeviceSerialPort = null;
 
+        private Task ReadThread = null;
+        private CancellationTokenSource ReadCancelSource = null;
 
-        public void SetReadMode(ReadMode Mode)
+        public async void SetReadMode(ReadMode Mode)
         {
             switch(Mode)
             {
                 case ReadMode.Async:
-                    DeviceSerialPort.DataReceived += DeviceSerialPort_DataReceived;
+
+                    if (IsConnected)
+                    {
+                        ReadCancelSource = new CancellationTokenSource();
+
+                        DeviceSerialPort.BaseStream.WriteTimeout = 500;
+                        DeviceSerialPort.BaseStream.ReadTimeout = -1;   // Бесконечно
+
+                        ReadThread = Task.Run(() => AsyncThread_Read(DeviceSerialPort.BaseStream, ReadCancelSource.Token));
+                    }
+
                     break;
 
                 case ReadMode.Sync:
-                    DeviceSerialPort.DataReceived -= DeviceSerialPort_DataReceived;
+
+                    if (IsConnected && ReadCancelSource != null)
+                    {
+                        ReadCancelSource.Cancel();
+
+                        await Task.WhenAll(ReadThread);
+                    }
+
                     break;
 
                 default:
@@ -165,59 +186,45 @@ namespace TerminalProgram.Protocols
                         throw new Exception("Неправильно задано значение StopBits");
                 }
 
-                try
-                {
-                    DeviceSerialPort.PortName = Info.SerialPort.COM_Port;
-                    DeviceSerialPort.BaudRate = BaudRate;
-                    DeviceSerialPort.Parity = SelectedParity;
-                    DeviceSerialPort.DataBits = DataBits;
-                    DeviceSerialPort.StopBits = SelectedStopBits;
+                DeviceSerialPort.PortName = Info.SerialPort.COM_Port;
+                DeviceSerialPort.BaudRate = BaudRate;
+                DeviceSerialPort.Parity = SelectedParity;
+                DeviceSerialPort.DataBits = DataBits;
+                DeviceSerialPort.StopBits = SelectedStopBits;
 
-                    DeviceSerialPort.Open();
-                }
-
-                catch (ArgumentException)
-                {
-                    Disconnect();
-                    throw new Exception("Неправильно задано имя COM порта.");
-                }
-
-                catch (UnauthorizedAccessException)
-                {
-                    Disconnect();
-                    throw new Exception("Отказ в доступе к СОМ порту.");
-                }
-
-                catch (InvalidOperationException)
-                {
-                    throw new Exception("СОМ порт уже открыт");
-                }
-
-                catch (IOException)
-                {
-                    Disconnect();
-                    throw new Exception("Не удалось подключиться к СОМ порту: " + Info.SerialPort.COM_Port);
-                }
-
-                catch (Exception error)
-                {
-                    Disconnect();
-                    throw new Exception(error.Message);
-                }
+                DeviceSerialPort.Open();
             }
 
             catch (Exception error)
             {
-                throw new Exception("Ошибка подключения:\n" + error.Message);
+                DeviceSerialPort.Close();
+
+                throw new Exception("Не удалось подключиться к СОМ порту.\n\n" +
+                    "Данные подключения:" + "\n" +
+                    "COM - Port: " + Info.SerialPort.COM_Port + "\n" +
+                    "BaudRate: " + Info.SerialPort.BaudRate + "\n" +
+                    "Parity: " + Info.SerialPort.Parity + "\n" +
+                    "DataBits: " + Info.SerialPort.DataBits + "\n" +
+                    "StopBits: " + Info.SerialPort.StopBits + "\n\n" +
+                    error.Message);
             }
         }
 
-        public void Disconnect()
+        public async Task Disconnect()
         {
             try
             {
                 if (DeviceSerialPort != null && DeviceSerialPort.IsOpen)
                 {
+                    if (((MainWindow)Application.Current.MainWindow).SelectedProtocol.CurrentReadMode == ReadMode.Async)
+                    {
+                        ReadCancelSource.Cancel();
+
+                        await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                    }
+
+                    await Task.Delay(100);
+
                     DeviceSerialPort.Close();
                 }
             }
@@ -286,29 +293,94 @@ namespace TerminalProgram.Protocols
             }
         }
 
-        private void DeviceSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        private async Task AsyncThread_Read(Stream CurrentStream, CancellationToken ReadCancel)
         {
             try
             {
-                if (DataReceived != null)
+                byte[] BufferRX = new byte[50];
+
+                int NumberOfReceiveBytes;
+
+                Task<int> ReadResult;
+
+                Task WaitCancel = Task.Run(async () =>
                 {
-                    DataFromDevice Data = new DataFromDevice()
+                    while (ReadCancel.IsCancellationRequested == false)
                     {
-                        RX = new byte[DeviceSerialPort.BytesToRead]
-                    };
+                        await Task.Delay(50);
+                    }
+                });
 
-                    DeviceSerialPort.Read(Data.RX, 0, Data.RX.Length);
+                Task CompletedTask;
 
-                    DataReceived(this, Data);
+                while (true)
+                {
+                    ReadCancel.ThrowIfCancellationRequested();
+
+                    if (DataReceived != null && CurrentStream != null)
+                    {
+                        /// Метод асинхронного чтения у объекта класса Stream, 
+                        /// который содержится в объекте класса SerialPort,
+                        /// почему то не обрабатывает событие отмены у токена отмены.
+                        /// Возможно это происходит из - за того что внутри метода происходят 
+                        /// неуправляемые вызовы никоуровневого API.
+                        /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
+                        
+                        ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
+
+                        CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
+
+                        if (CompletedTask == WaitCancel)
+                        {
+                            throw new OperationCanceledException();
+                        }
+
+                        NumberOfReceiveBytes = ReadResult.Result;
+
+                        ReadCancel.ThrowIfCancellationRequested();
+
+                        DataFromDevice Data = new DataFromDevice()
+                        {
+                            RX = new byte[NumberOfReceiveBytes]
+                        };
+
+                        for (int i = 0; i < NumberOfReceiveBytes; i++)
+                        {
+                            Data.RX[i] = BufferRX[i];
+                        }
+
+                        DataReceived?.Invoke(this, Data);
+
+                        Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
+                    }
                 }
+            }
+
+            catch (OperationCanceledException)
+            {
+                //  Возникает при отмене задачи.
+                //  По правилам отмены асинхронных задач это исключение можно игнорировать.
+            }
+
+            catch (IOException error)
+            {
+                MessageBox.Show(
+                    "Возникла ошибка при асинхронном чтении у SerialPort клиента.\n\n" +
+                    error.Message +
+                    "\n\nТаймаут чтения: " + CurrentStream.ReadTimeout + " мс." +
+                    "\n\nЧтение данных прекращено. Возможно вам стоит изменить настройки и переподключиться.",
+                    "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             catch (Exception error)
             {
-                throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
-                    "Таймаут приема: " +
-                    (DeviceSerialPort.ReadTimeout == Timeout.Infinite ?
-                    "бесконечно" : (DeviceSerialPort.ReadTimeout.ToString() + " мс.")));
+                // TODO: Как правильно обработать это исключение?
+
+                MessageBox.Show("Возникла НЕОБРАБОТАННАЯ ошибка " +
+                    "при асинхронном чтении у SerialPort клиента.\n\n" + error.Message +
+                    "\n\nКлиент был отключен.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

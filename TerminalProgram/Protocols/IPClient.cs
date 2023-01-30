@@ -136,7 +136,7 @@ namespace TerminalProgram.Protocols
             IsConnected = true;
         }
 
-        public async void Disconnect()
+        public async Task Disconnect()
         {
             if (((MainWindow)Application.Current.MainWindow).SelectedProtocol.CurrentReadMode == ReadMode.Async)
             {
@@ -267,11 +267,12 @@ namespace TerminalProgram.Protocols
 
                         ReadCancel.ThrowIfCancellationRequested();
 
-                        DataFromDevice Data = new DataFromDevice();
+                        DataFromDevice Data = new DataFromDevice()
+                        {
+                            RX = new byte[NumberOfReceiveBytes]
+                        };
 
-                        Data.RX = new byte[NumberOfReceiveBytes];
-
-                        for(int i = 0; i < NumberOfReceiveBytes; i++)
+                        for (int i = 0; i < NumberOfReceiveBytes; i++)
                         {
                             Data.RX[i] = BufferRX[i];
                         }
