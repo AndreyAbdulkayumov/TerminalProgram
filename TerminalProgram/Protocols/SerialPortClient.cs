@@ -221,9 +221,9 @@ namespace TerminalProgram.Protocols
                         ReadCancelSource.Cancel();
 
                         await Task.WhenAll(ReadThread).ConfigureAwait(false);
-                    }
 
-                    await Task.Delay(100);
+                        await Task.Delay(100);
+                    }                    
 
                     DeviceSerialPort.Close();
                 }
