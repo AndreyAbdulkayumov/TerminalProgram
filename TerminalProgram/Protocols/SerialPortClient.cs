@@ -307,7 +307,7 @@ namespace TerminalProgram.Protocols
                 {
                     while (ReadCancel.IsCancellationRequested == false)
                     {
-                        await Task.Delay(50);
+                        await Task.Delay(50, ReadCancel);
                     }
                 });
 
@@ -330,14 +330,14 @@ namespace TerminalProgram.Protocols
 
                         CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
 
+                        ReadCancel.ThrowIfCancellationRequested();
+
                         if (CompletedTask == WaitCancel)
                         {
                             throw new OperationCanceledException();
                         }
-
+                                                
                         NumberOfReceiveBytes = ReadResult.Result;
-
-                        ReadCancel.ThrowIfCancellationRequested();
 
                         DataFromDevice Data = new DataFromDevice()
                         {
@@ -348,6 +348,8 @@ namespace TerminalProgram.Protocols
                         {
                             Data.RX[i] = BufferRX[i];
                         }
+
+                        ReadCancel.ThrowIfCancellationRequested();
 
                         DataReceived?.Invoke(this, Data);
 

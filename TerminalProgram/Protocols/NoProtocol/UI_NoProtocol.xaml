@@ -94,11 +94,11 @@
 
                     <TextBox x:Name="TextBox_RX" Style="{StaticResource TX_RX_Field}"
                              IsReadOnly="True"
-                             IsReadOnlyCaretVisible="True"
+                             IsReadOnlyCaretVisible="True" IsUndoEnabled="False"
+                             MaxLines="50"
                              MaxLength="300"
-                             TextAlignment="Left" 
-                             TextWrapping="Wrap"/>
-
+                             TextAlignment="Left" TextWrapping="Wrap"/>
+                   
                 </ScrollViewer>
 
             </Border>

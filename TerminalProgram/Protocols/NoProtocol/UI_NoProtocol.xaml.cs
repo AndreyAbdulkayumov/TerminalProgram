@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,8 +29,6 @@ namespace TerminalProgram.Protocols.NoProtocol
     public partial class UI_NoProtocol : Page
     {
         public event EventHandler<EventArgs> ErrorHandler;
-
-        private const int RX_MaxVisibleLine = 25;
 
         private IConnection Client = null;
 
@@ -159,38 +158,44 @@ namespace TerminalProgram.Protocols.NoProtocol
         {
             try
             {
-                lock(locker)
+                lock (locker)
                 {
-                    TextBox_RX.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
+                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
                     new Action(delegate
                     {
                         try
                         {
-                            if (TextBox_RX.LineCount > RX_MaxVisibleLine)
-                            {
-                                TextBox_RX.Text = TextBox_RX.Text.Remove(0,
-                                    TextBox_RX.GetCharacterIndexFromLineIndex(1));
-                            }
-
-                            TextBox_RX.Text += MainWindow.GlobalEncoding.GetString(e.RX);
+                            TextBox_RX.AppendText(MainWindow.GlobalEncoding.GetString(e.RX));
 
                             if (CheckBox_NextLine.IsChecked == true)
                             {
-                                TextBox_RX.Text += "\n";
-                            }                           
+                                TextBox_RX.AppendText("\n");
+                            }
 
+                            TextBox_RX.LineDown();
                             ScrollViewer_RX.ScrollToEnd();
                         }
 
                         catch (Exception error)
                         {
-                            MessageBox.Show("Возникла ошибка при приеме данных от устройства:\n" + error.Message, MainWindowTitle,
-                                MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK,
-                                MessageBoxOptions.ServiceNotification);
+                            if (ErrorHandler != null)
+                            {
+                                ErrorHandler(this, new EventArgs());
+
+                                MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
+                                    "\n\nКлиент был отключен.", MainWindowTitle,
+                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                            }
+
+                            else
+                            {
+                                MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
+                                    "\n\nКлиент не был отключен.", MainWindowTitle,
+                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                            }
                         }
                     }));
                 }
-                
             }
 
             catch (Exception error)
