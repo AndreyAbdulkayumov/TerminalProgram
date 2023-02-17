@@ -43,7 +43,7 @@
                    TextWrapping="Wrap"
                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-        <TextBlock Text="1.7.7"
+        <TextBlock Text="1.8.0"
                    Margin="70,80,0,0"
                    Foreground="#FFD2C25A"
                    FontSize="18"

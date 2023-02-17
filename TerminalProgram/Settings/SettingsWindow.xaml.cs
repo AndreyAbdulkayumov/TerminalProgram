@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
-using SystemOfSaving;
 using TerminalProgram.Properties;
 using System.Windows.Markup.Localizer;
 using System.IO.Ports;
@@ -27,7 +26,6 @@ namespace TerminalProgram.Settings
         public bool SettingsIsChanged { get; private set; } = false;
         public string SettingsDocument { get; private set; }
 
-        private readonly SettingsMediator SettingsManager;
         private DeviceData Settings = new DeviceData();
 
         private Page_IP Settings_IP = null;
@@ -38,12 +36,11 @@ namespace TerminalProgram.Settings
         private readonly string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "Unicode", "UTF-7", "UTF-32" };
 
 
-        public SettingsWindow(string SettingsPath, string SettingsFileName, SettingsMediator Settings)
+        public SettingsWindow(string SettingsPath, string SettingsFileName)
         {
             InitializeComponent();
 
             SettingsDocumentPath = SettingsPath;
-            SettingsManager = Settings;
 
             string[] Devices = MainWindow.GetDeviceList();
             ComboBoxFilling(ComboBox_SelectedDevice, ref Devices);
@@ -74,9 +71,9 @@ namespace TerminalProgram.Settings
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Settings_SerialPort = new Page_SerialPort(ref Settings, SettingsMediator.DefaultNodeValue)
+            Settings_SerialPort = new Page_SerialPort(ref Settings)
             {
                 Height = Frame_Settings.ActualHeight,
                 Width = Frame_Settings.ActualWidth,
@@ -85,7 +82,7 @@ namespace TerminalProgram.Settings
                 VerticalAlignment = VerticalAlignment.Top
             };
 
-            Settings_IP = new Page_IP(ref Settings, SettingsMediator.DefaultNodeValue)
+            Settings_IP = new Page_IP(ref Settings)
             {
                 Height = Frame_Settings.ActualHeight,
                 Width = Frame_Settings.ActualWidth,
@@ -94,7 +91,7 @@ namespace TerminalProgram.Settings
                 VerticalAlignment = VerticalAlignment.Top
             };
 
-            if (DisplaySettingsFile() == false)
+            if (await DisplaySettingsFile() == false)
             {
                 Close();
             }
@@ -106,24 +103,19 @@ namespace TerminalProgram.Settings
         /// <returns>
         /// true - если отображение прошло успешно, false - если пользователь проигнорировал все предупреждения.
         /// </returns>
-        private bool DisplaySettingsFile()
+        private async Task<bool> DisplaySettingsFile()
         {
             try
             {
-                List<string> Devices = SettingsManager.GetAllDevicesNames();
+                DeviceData Device = await SystemOfSettings.Read();
 
-                if (Devices.Count > 0)
+                if (Device == null)
                 {
-                    Settings = SettingsManager.GetDeviceData(Devices[0]);
-                }
-
-                else
-                {
-                    if (MessageBox.Show("В документе " + SettingsManager.DocumentPath +
+                    if (MessageBox.Show("В документе " + SystemOfSettings.Settings_FilePath +
                         " нет настроек устройства. Создать их?", "Предупреждение",
                         MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                     {
-                        SettingsManager.CreateDevice("Default Name");
+                        Settings = SystemOfSettings.GetDefault();
                         RadioButton_SerialPort.IsChecked = true;
                     }
 
@@ -131,6 +123,11 @@ namespace TerminalProgram.Settings
                     {
                         return false;
                     }
+                }
+
+                else
+                {
+                    Settings = Device;
                 }
 
                 UpdateCommonUI(Settings);
@@ -154,7 +151,7 @@ namespace TerminalProgram.Settings
 
         private void UpdateCommonUI(DeviceData Data)
         {
-            if (Data.GlobalEncoding == null || Data.GlobalEncoding == SettingsMediator.DefaultNodeValue)
+            if (Data.GlobalEncoding == null)
             {
                 ComboBox_SelectedEncoding.SelectedValue = null;
             }
@@ -193,7 +190,7 @@ namespace TerminalProgram.Settings
 
         private void SetValue(TextBox Box, string Value)
         {
-            if (Value == SettingsMediator.DefaultNodeValue)
+            if (Value == null)
             {
                 Box.Text = String.Empty;
                 return;
@@ -216,9 +213,9 @@ namespace TerminalProgram.Settings
             }
         }
 
-        private void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string OldDocumentPath = SettingsManager.DocumentPath;
+            string OldDocumentPath = SystemOfSettings.Settings_FilePath;
 
             try
             {
@@ -227,13 +224,7 @@ namespace TerminalProgram.Settings
                     return;
                 }
 
-                SettingsManager.LoadSettingsFrom(
-                    SettingsDocumentPath +
-                    ComboBox_SelectedDevice.SelectedItem +
-                    SettingsManager.FileType
-                    );
-
-                DisplaySettingsFile();
+                await DisplaySettingsFile();
 
                 SettingsDocument = ComboBox_SelectedDevice.SelectedItem.ToString();
             }

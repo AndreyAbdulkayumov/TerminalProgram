@@ -13,7 +13,7 @@ namespace TerminalProgram.Settings
 {
     public partial class SettingsWindow : Window
     {
-        private void Button_File_AddNew_Click(object sender, RoutedEventArgs e)
+        private async void Button_File_AddNew_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -26,24 +26,14 @@ namespace TerminalProgram.Settings
 
                 if (window.FileName != String.Empty)
                 {
-                    XDocument DocumentXml = new XDocument();
-                    XElement Root = new XElement("Settings");
+                    Settings = SystemOfSettings.GetDefault();
 
-                    DocumentXml.Add(Root);
-
-                    DocumentXml.Save(
+                    SystemOfSettings.Settings_FilePath =
                         UsedDirectories.GetPath(ProgramDirectory.Settings) +
                         window.FileName +
-                        SettingsManager.FileType
-                        );
+                        SystemOfSettings.FileType;
 
-                    SettingsManager.LoadSettingsFrom(
-                        UsedDirectories.GetPath(ProgramDirectory.Settings) +
-                        window.FileName +
-                        SettingsManager.FileType
-                        );
-
-                    SettingsManager.CreateDevice("Default Name");
+                    await SystemOfSettings.Save(Settings);
 
                     string[] Files = MainWindow.GetDeviceList();
 
@@ -112,7 +102,7 @@ namespace TerminalProgram.Settings
                 if (MessageBox.Show("Вы действительно желайте удалить файл " + SelectedFile + "?", "Предупреждение",
                     MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
-                    File.Delete(SettingsManager.DocumentPath);
+                    File.Delete(SystemOfSettings.Settings_FilePath);
 
                     string[] Devices = MainWindow.GetDeviceList();
                     ComboBoxFilling(ComboBox_SelectedDevice, ref Devices);
@@ -147,15 +137,15 @@ namespace TerminalProgram.Settings
             }
         }
 
-        private void Button_File_Save_Click(object sender, RoutedEventArgs e)
+        private async void Button_File_Save_Click(object sender, RoutedEventArgs e)
         {
-            SettingsManager.Save(Settings);
+            await SystemOfSettings.Save(Settings);
 
             SettingsDocument = ComboBox_SelectedDevice.SelectedValue.ToString();
 
             SettingsIsChanged = true;
 
-            DisplaySettingsFile();
+            await DisplaySettingsFile();
 
             MessageBox.Show("Настройки успешно сохранены!", "Сообщение",
                     MessageBoxButton.OK, MessageBoxImage.Information);

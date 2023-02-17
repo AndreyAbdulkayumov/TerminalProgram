@@ -11,26 +11,11 @@ namespace TerminalProgram
 {
     public static class SystemOfPresets
     {
-        public static void CreateNew(string NameOfPreset)
-        {
-            XmlDocument Preset = new XmlDocument();
-
-            Preset.LoadXml("<Settings>" + "</Settings>");
-
-            XmlDeclaration PresetDeclaration = Preset.CreateXmlDeclaration("1.0", "utf-8", null);
-
-            XmlElement Root = Preset.DocumentElement;
-            Preset.InsertBefore(PresetDeclaration, Root);
-
-            Preset.Save(UsedDirectories.GetPath(ProgramDirectory.Settings) + NameOfPreset + ".xml");
-        }
-
-
         public static void Remove(string NameOfPreset)
         {
-            if (File.Exists(UsedDirectories.GetPath(ProgramDirectory.Settings) + NameOfPreset + ".xml"))
+            if (File.Exists(UsedDirectories.GetPath(ProgramDirectory.Settings) + NameOfPreset + SystemOfSettings.FileType))
             {
-                File.Delete(UsedDirectories.GetPath(ProgramDirectory.Settings) + NameOfPreset + ".xml");
+                File.Delete(UsedDirectories.GetPath(ProgramDirectory.Settings) + NameOfPreset + SystemOfSettings.FileType);
             }
 
             else
@@ -39,11 +24,13 @@ namespace TerminalProgram
             }
         }
 
-        public static void FindFilesOfPresets(ref string[] ArrayOfPresets)
+        public static async Task<string[]> FindFilesOfPresets()
         {
+            string[] ArrayOfPresets;
+
             try
             {
-                ArrayOfPresets = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings), "*.xml");
+                ArrayOfPresets = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings), "*" + SystemOfSettings.FileType);
             }
             
             catch(DirectoryNotFoundException)
@@ -64,9 +51,14 @@ namespace TerminalProgram
                     MessageBoxButton.OK, MessageBoxImage.Error,
                     MessageBoxResult.OK);
 
-                CreateNew("Default");
+                string NewFilePath = UsedDirectories.GetPath(ProgramDirectory.Settings) + "Unknown" + SystemOfSettings.FileType;
 
-                ArrayOfPresets = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings), "*.xml");
+                File.Create(NewFilePath).Close();
+
+                SystemOfSettings.Settings_FilePath = NewFilePath;
+                await SystemOfSettings.Save(SystemOfSettings.GetDefault());
+
+                ArrayOfPresets = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings), "*" + SystemOfSettings.FileType);
             }
 
             int Index;
@@ -81,6 +73,8 @@ namespace TerminalProgram
                 Index = ArrayOfPresets[i].IndexOf('.');
                 ArrayOfPresets[i] = ArrayOfPresets[i].Remove(Index);
             }
+
+            return ArrayOfPresets;
         }
     }
 }

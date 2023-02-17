@@ -14,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SystemOfSaving;
 
 namespace TerminalProgram.Settings
 {
@@ -29,14 +28,12 @@ namespace TerminalProgram.Settings
         private readonly string[] ArrayStopBits = { "0", "1", "1.5", "2" };
 
         private DeviceData Settings;
-        private readonly string DefaultValue;
 
-        public Page_SerialPort(ref DeviceData Settings, string DefaultValue)
+        public Page_SerialPort(ref DeviceData Settings)
         {
             InitializeComponent();
 
             this.Settings = Settings;
-            this.DefaultValue = DefaultValue;
 
             ComboBoxFilling(ComboBox_BaudRate, ref ArrayBaudRate);
             ComboBoxFilling(ComboBox_Parity, ref ArrayParity);
@@ -50,16 +47,16 @@ namespace TerminalProgram.Settings
 
             Button_ReScan_COMPorts_Click(this, new RoutedEventArgs());
 
-            SetValue(ComboBox_BaudRate, UpdateSettings.BaudRate);
+            SetValue(ComboBox_BaudRate, UpdateSettings.Connection_SerialPort.BaudRate);
 
-            if (UpdateSettings.BaudRate_Custom == DefaultValue)
+            if (UpdateSettings.Connection_SerialPort.BaudRate_Custom == null)
             {
-                UpdateSettings.BaudRate_Custom = String.Empty;
+                UpdateSettings.Connection_SerialPort.BaudRate_Custom = String.Empty;
             }
 
-            TextBox_BaudRate_Custom.Text = UpdateSettings.BaudRate_Custom;
+            TextBox_BaudRate_Custom.Text = UpdateSettings.Connection_SerialPort.BaudRate_Custom;
 
-            if (UpdateSettings.BaudRate_IsCustom == "Enable")
+            if (UpdateSettings.Connection_SerialPort.BaudRate_IsCustom == "Enable")
             {
                 CheckBox_BaudRate_Custom_Enable.IsChecked = true;
             }
@@ -71,14 +68,14 @@ namespace TerminalProgram.Settings
 
             CheckBox_BaudRate_Custom_Enable_Click(CheckBox_BaudRate_Custom_Enable, new RoutedEventArgs());
 
-            SetValue(ComboBox_Parity, UpdateSettings.Parity);
-            SetValue(ComboBox_DataBits, UpdateSettings.DataBits);
-            SetValue(ComboBox_StopBits, UpdateSettings.StopBits);
+            SetValue(ComboBox_Parity, UpdateSettings.Connection_SerialPort.Parity);
+            SetValue(ComboBox_DataBits, UpdateSettings.Connection_SerialPort.DataBits);
+            SetValue(ComboBox_StopBits, UpdateSettings.Connection_SerialPort.StopBits);
         }
 
         private void SetValue(ComboBox Box, string Value)
         {
-            if (Value == DefaultValue)
+            if (Value == null)
             {
                 Box.SelectedIndex = -1;
                 return;
@@ -106,7 +103,7 @@ namespace TerminalProgram.Settings
         {
             if (ComboBox_COMPort.SelectedIndex != -1)
             {
-                Settings.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
+                Settings.Connection_SerialPort.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
             }            
         }
 
@@ -114,7 +111,7 @@ namespace TerminalProgram.Settings
         {
             if (ComboBox_BaudRate.SelectedIndex != -1)
             {
-                Settings.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
+                Settings.Connection_SerialPort.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
             }
         }
         
@@ -125,21 +122,21 @@ namespace TerminalProgram.Settings
                 ComboBox_BaudRate.SelectedIndex = -1;
                 ComboBox_BaudRate.IsEnabled = false;
 
-                TextBox_BaudRate_Custom.Text = Settings.BaudRate_Custom;
+                TextBox_BaudRate_Custom.Text = Settings.Connection_SerialPort.BaudRate_Custom;
                 TextBox_BaudRate_Custom.IsEnabled = true;
 
-                Settings.BaudRate_IsCustom = "Enable";
+                Settings.Connection_SerialPort.BaudRate_IsCustom = "Enable";
             }
 
             else
             {
-                SetValue(ComboBox_BaudRate, Settings.BaudRate);
+                SetValue(ComboBox_BaudRate, Settings.Connection_SerialPort.BaudRate);
                 ComboBox_BaudRate.IsEnabled = true;
 
                 TextBox_BaudRate_Custom.Text = String.Empty;
                 TextBox_BaudRate_Custom.IsEnabled = false;
 
-                Settings.BaudRate_IsCustom = "Disable";
+                Settings.Connection_SerialPort.BaudRate_IsCustom = "Disable";
             }
         }
 
@@ -161,22 +158,22 @@ namespace TerminalProgram.Settings
                 return;
             }
 
-            Settings.BaudRate_Custom = TextBox_BaudRate_Custom.Text;
+            Settings.Connection_SerialPort.BaudRate_Custom = TextBox_BaudRate_Custom.Text;
         }
 
         private void ComboBox_Parity_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.Parity = ComboBox_Parity.SelectedItem?.ToString();
+            Settings.Connection_SerialPort.Parity = ComboBox_Parity.SelectedItem?.ToString();
         }
 
         private void ComboBox_DataBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
+            Settings.Connection_SerialPort.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
         }
 
         private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
+            Settings.Connection_SerialPort.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
         }
 
         private void Button_ReScan_COMPorts_Click(object sender, RoutedEventArgs e)
@@ -190,7 +187,7 @@ namespace TerminalProgram.Settings
                 ComboBox_COMPort.Items.Add(Port);
             }
 
-            if (Settings.COMPort == SettingsMediator.DefaultNodeValue)
+            if (Settings.Connection_SerialPort.COMPort == null)
             {
                 ComboBox_COMPort.SelectedIndex = -1;
                 TextBlock_PortNotFound.Text = "Порт не задан";
@@ -199,7 +196,7 @@ namespace TerminalProgram.Settings
                 return;
             }
 
-            string SelectedPort = Settings.COMPort;
+            string SelectedPort = Settings.Connection_SerialPort.COMPort;
             string FoundPort = null;
 
             foreach (string Port in ComboBox_COMPort.Items)

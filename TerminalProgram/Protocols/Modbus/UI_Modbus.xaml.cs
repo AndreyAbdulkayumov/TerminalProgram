@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,23 +9,23 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace TerminalProgram.Protocols.Modbus
 {
-    public struct ModbusData
+    public class ModbusDataDisplayed
     {
-        public int Register;
-        public int Data;
-
-        public ModbusData(int Register, int Data)
-        {
-            this.Register = Register;
-            this.Data = Data;
-        }
+        public UInt16 OperationID { get; set; }
+        public string FuncNumber { get; set; }
+        public UInt16 Address { get; set; }
+        public string ViewAddress { get; set; }
+        public UInt16 Data { get; set; }
+        public string ViewData { get; set; }
     }
 
     /// <summary>
@@ -34,9 +35,7 @@ namespace TerminalProgram.Protocols.Modbus
     {
         public event EventHandler<EventArgs> ErrorHandler;
 
-        public DEVICE_RESPONSE CommonResponse = new DEVICE_RESPONSE();
-
-        private List<ModbusData> DataList = new List<ModbusData>();
+        public ModbusResponse CommonResponse = new ModbusResponse();
 
         private Modbus ModbusDevice = null;
 
@@ -48,6 +47,8 @@ namespace TerminalProgram.Protocols.Modbus
 
         private readonly string MainWindowTitle;
 
+        ObservableCollection<ModbusDataDisplayed> DataDisplayedList = new ObservableCollection<ModbusDataDisplayed>();
+
         public UI_Modbus(MainWindow window)
         {
             InitializeComponent();
@@ -56,6 +57,8 @@ namespace TerminalProgram.Protocols.Modbus
 
             window.DeviceIsConnect += MainWindow_DeviceIsConnect;
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
+
+            DataGrid_ModbusData.ItemsSource = DataDisplayedList;
 
             SetUI_Disconnected();
         }
@@ -101,6 +104,9 @@ namespace TerminalProgram.Protocols.Modbus
 
             Button_Write.IsEnabled = true;
             Button_Read.IsEnabled = true;
+
+            DataDisplayedList.Clear();
+            PackageNumber = 0;
         }
 
         private void SetUI_Disconnected()
@@ -117,18 +123,6 @@ namespace TerminalProgram.Protocols.Modbus
 
             Button_Write.IsEnabled = false;
             Button_Read.IsEnabled = false;
-
-            TextBlock_RX.Text = "";
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            DataList.Add(new ModbusData(1, 0));
-            DataList.Add(new ModbusData(2, 43));
-            DataList.Add(new ModbusData(1, 43));
-            DataList.Add(new ModbusData(4, 0));
-
-            //DataGrid_History.ItemsSource = DataList;
         }
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
@@ -142,21 +136,39 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                TextBlock_RX.Text = "";
+                if (TextBox_Address.Text == String.Empty)
+                {
+                    MessageBox.Show("Укажите адрес Modbus регистра.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
 
                 ModbusDevice.SlaveID = (byte)SelectedSlaveID;
 
-                UInt16 Data = ModbusDevice.ReadRegister(
+                UInt16 ModbusAddress = Convert.ToUInt16(TextBox_Address.Text);
+
+                UInt16 ModbusReadData = ModbusDevice.ReadRegister(
                                 PackageNumber,
-                                Convert.ToUInt16(TextBox_Address.Text),
+                                ModbusAddress,
                                 out CommonResponse,
                                 1,
                                 ModbusType,
                                 ModbusType == TypeOfModbus.TCP ? false : true);
 
-                PackageNumber++;
+                DataDisplayedList.Add(new ModbusDataDisplayed()
+                {
+                    OperationID = PackageNumber,
+                    FuncNumber = "0x04 (чтение)",
+                    Address = ModbusAddress,
+                    ViewAddress = "0x" + ModbusAddress.ToString("X") + " (" + ModbusAddress.ToString() + ")",
+                    Data = ModbusReadData,
+                    ViewData = "0x" + ModbusReadData.ToString("X") + " (" + ModbusReadData.ToString() + ")"
+                });
 
-                TextBlock_RX.Text = Data.ToString();
+                DataGrid_ModbusData.ScrollIntoView(DataDisplayedList.Last());
+
+                PackageNumber++;
             }
             
             catch(Exception error)
@@ -191,18 +203,47 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                TextBlock_RX.Text = "";
+                if (TextBox_Address.Text == String.Empty)
+                {
+                    MessageBox.Show("Укажите адрес Modbus регистра.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
+                if (TextBox_Data.Text == String.Empty)
+                {
+                    MessageBox.Show("Укажите данные для записи в Modbus регистр.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
 
                 ModbusDevice.SlaveID = (byte)SelectedSlaveID;
 
+                UInt16 ModbusAddress = Convert.ToUInt16(TextBox_Address.Text);
+                UInt16 ModbusWriteData = Convert.ToUInt16(TextBox_Data.Text);
+
                 ModbusDevice.WriteRegister(
                     PackageNumber,
-                    Convert.ToUInt16(TextBox_Address.Text),
-                    Convert.ToUInt16(TextBox_Data.Text),
+                    ModbusAddress,
+                    ModbusWriteData,
                     out CommonResponse,
                     1,
                     ModbusType,
                     false);
+
+                DataDisplayedList.Add(new ModbusDataDisplayed()
+                {
+                    OperationID = PackageNumber,
+                    FuncNumber = "0x06 (запись)",
+                    Address = ModbusAddress,
+                    ViewAddress = "0x" + ModbusAddress.ToString("X") + " (" + ModbusAddress.ToString() + ")",
+                    Data = ModbusWriteData,
+                    ViewData = "0x" + ModbusWriteData.ToString("X") + " (" + ModbusWriteData.ToString() + ")"
+                });
+
+                DataGrid_ModbusData.ScrollIntoView(DataDisplayedList.Last());
 
                 PackageNumber++;
             }
@@ -278,6 +319,6 @@ namespace TerminalProgram.Protocols.Modbus
             }           
 
             return Number;
-        }        
+        }
     }
 }

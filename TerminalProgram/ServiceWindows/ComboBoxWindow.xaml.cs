@@ -40,7 +40,7 @@ namespace TerminalProgram.ServiceWindows
             {
                 MessageBox.Show("Список пуст.\n" +
                     "Закройте это окно.\n" +
-                    "Попробуйте вручную создать папку Settings и добавить туда .xml файл с настройками.", "Ошибка", 
+                    "Попробуйте вручную создать папку Settings и добавить туда файл с настройками.", "Ошибка", 
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 Close();

@@ -11,30 +11,30 @@
     <Page.Resources>
 
         <Style TargetType="TextBlock">
-            <Setter Property="ItemsControl.Margin" Value="0,12,185,0"/>
+            <Setter Property="ItemsControl.Margin" Value="0,0,7,0"/>
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Right"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
             <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
             <Setter Property="ItemsControl.FontSize" Value="14"/>
         </Style>
 
         <Style TargetType="ComboBox">
-            <Setter Property="ItemsControl.Margin" Value="170,10,0,0"/>
+            <Setter Property="ItemsControl.Margin" Value="7,0,0,0"/>
             <Setter Property="ItemsControl.Height" Value="24"/>
             <Setter Property="ItemsControl.Width" Value="80"/>
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
             <Setter Property="ItemsControl.FontSize" Value="14"/>
             <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
             <Setter Property="ItemsControl.HorizontalContentAlignment" Value="Left"/>
         </Style>
 
         <Style TargetType="TextBox">
-            <Setter Property="ItemsControl.Margin" Value="170,10,0,0"/>
+            <Setter Property="ItemsControl.Margin" Value="7,0,0,0"/>
             <Setter Property="ItemsControl.Height" Value="24"/>
             <Setter Property="ItemsControl.Width" Value="80"/>
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
             <Setter Property="ItemsControl.FontSize" Value="14"/>
             <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
             <Setter Property="ItemsControl.HorizontalContentAlignment" Value="Left"/>
@@ -54,17 +54,23 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        
         <!-- COM Port-->
 
-        <Border x:Name="Border_PortNotFound" Grid.Row="0"
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="Border_PortNotFound" 
                 Width="170" Height="24"
-                Margin="130,-14,0,0"
-                HorizontalAlignment="Left" VerticalAlignment="Top" 
+                Margin="130,-48,0,0"
+                HorizontalAlignment="Left" VerticalAlignment="Center" 
                 Background="#FF587C8D" 
                 BorderBrush="NavajoWhite"
                 BorderThickness="1,1,1,1">
 
-            <TextBlock x:Name="TextBlock_PortNotFound" Text="dsdfsf"
+            <TextBlock x:Name="TextBlock_PortNotFound" Text="Content"
                        TextWrapping="Wrap" 
                        TextAlignment="Center"
                        Foreground="#FFFAFAF0"
@@ -73,52 +79,65 @@
 
         </Border>
         
-        <TextBlock Grid.Row="0" x:Name="TextBlock_COMPort" Text="COM - Port"/>
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   x:Name="TextBlock_COMPort" Text="COM - Port"/>
 
-        <ComboBox Grid.Row="0" x:Name="ComboBox_COMPort"
+        <ComboBox Grid.Row="0" Grid.Column="1"
+                  x:Name="ComboBox_COMPort"
                   SelectionChanged="ComboBox_COMPort_SelectionChanged"/>
 
         <!-- Baud Rate -->
 
-        <TextBlock Grid.Row="1" x:Name="TextBlock_BaudRate" Text="BaudRate"/>
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   x:Name="TextBlock_BaudRate" Text="BaudRate"/>
 
-        <ComboBox Grid.Row="1" x:Name="ComboBox_BaudRate"
+        <ComboBox Grid.Row="1" Grid.Column="1"
+                  x:Name="ComboBox_BaudRate"
                   SelectionChanged="ComboBox_BaudRate_SelectionChanged"/>
 
-        <CheckBox Grid.Row="2" x:Name="CheckBox_BaudRate_Custom_Enable"
+        <CheckBox Grid.Row="2" Grid.Column="0"
+                  x:Name="CheckBox_BaudRate_Custom_Enable"
                   Content="Custom BaudRate"
                   Foreground="#FFCBBD5A"
-                  Margin="0,13,185,0" FontSize="14"
-                  HorizontalAlignment="Right" VerticalAlignment="Top" 
+                  Margin="0,0,7,0" FontSize="14"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" 
                   Click="CheckBox_BaudRate_Custom_Enable_Click"/>
 
-        <TextBox Grid.Row="2" x:Name="TextBox_BaudRate_Custom"
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 x:Name="TextBox_BaudRate_Custom"
                  SelectionChanged="TextBox_BaudRate_Custom_SelectionChanged"/>
 
         <!-- Parity -->
 
-        <TextBlock Grid.Row="3" x:Name="TextBlock_Parity" Text="Parity"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" 
+                   x:Name="TextBlock_Parity" Text="Parity"/>
 
-        <ComboBox Grid.Row="3" x:Name="ComboBox_Parity"
+        <ComboBox Grid.Row="3" Grid.Column="1"
+                  x:Name="ComboBox_Parity"
                   SelectionChanged="ComboBox_Parity_SelectionChanged"/>
 
         <!-- Data Bits -->
 
-        <TextBlock Grid.Row="4" x:Name="TextBlock_DataBits" Text="DataBits"/>
+        <TextBlock Grid.Row="4" Grid.Column="0"
+                   x:Name="TextBlock_DataBits" Text="DataBits"/>
 
-        <ComboBox Grid.Row="4" x:Name="ComboBox_DataBits"
+        <ComboBox Grid.Row="4" Grid.Column="1"
+                  x:Name="ComboBox_DataBits"
                   SelectionChanged="ComboBox_DataBits_SelectionChanged"/>
 
         <!-- Stop Bits -->
 
-        <TextBlock Grid.Row="5" x:Name="TextBlock_StopBits" Text="StopBits"/>
+        <TextBlock Grid.Row="5" Grid.Column="0"
+                   x:Name="TextBlock_StopBits" Text="StopBits"/>
 
-        <ComboBox Grid.Row="5" x:Name="ComboBox_StopBits"
+        <ComboBox Grid.Row="5" Grid.Column="1"
+                  x:Name="ComboBox_StopBits"
                   SelectionChanged="ComboBox_StopBits_SelectionChanged"/>
 
         <!-- Re-scan COM Ports -->
 
-        <Button Grid.Row="6" x:Name="Button_ReScan_COMPorts" Template="{DynamicResource ButtonCommon}"
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                x:Name="Button_ReScan_COMPorts" Template="{DynamicResource ButtonCommon}"
                 Content="Поиск СОМ портов"
                 FontSize="14"
                 Width="150" Height="28"

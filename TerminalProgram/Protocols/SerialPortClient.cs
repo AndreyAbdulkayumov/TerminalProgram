@@ -255,6 +255,9 @@ namespace TerminalProgram.Protocols
         {
             try
             {
+                DeviceSerialPort.DiscardInBuffer();
+                DeviceSerialPort.DiscardOutBuffer();
+
                 DeviceSerialPort.Write(Message, 0, NumberOfBytes);
             }
 

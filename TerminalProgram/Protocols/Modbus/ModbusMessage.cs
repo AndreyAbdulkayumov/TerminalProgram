@@ -53,7 +53,7 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        public static DEVICE_RESPONSE Decoding(TypeOfModbus ModbusType, 
+        public static ModbusResponse Decoding(TypeOfModbus ModbusType, 
             int CommandNumber, byte[] SourceArray)
         {
             if (ModbusType == TypeOfModbus.TCP)

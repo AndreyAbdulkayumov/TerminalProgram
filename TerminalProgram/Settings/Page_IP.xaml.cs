@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SystemOfSaving;
 
 namespace TerminalProgram.Settings
 {
@@ -23,27 +22,25 @@ namespace TerminalProgram.Settings
     public partial class Page_IP : Page
     {
         private DeviceData Settings;
-        private readonly string DefaultValue;
 
-        public Page_IP(ref DeviceData Settings, string DefaultValue)
+        public Page_IP(ref DeviceData Settings)
         {
             InitializeComponent();
 
             this.Settings = Settings;
-            this.DefaultValue = DefaultValue;
         }
 
         public void UpdateUI(DeviceData UpdateSettings)
         {
             Settings = UpdateSettings;
 
-            SetValue(TextBox_IP, UpdateSettings.IP);
-            SetValue(TextBox_Port, UpdateSettings.Port);
+            SetValue(TextBox_IP_Address, UpdateSettings.Connection_IP.IP_Address);
+            SetValue(TextBox_Port, UpdateSettings.Connection_IP.Port);
         }
 
         private void SetValue(TextBox Box, string Value)
         {
-            if (Value == DefaultValue)
+            if (Value == null)
             {
                 Box.Text = String.Empty;
                 return;
@@ -52,14 +49,14 @@ namespace TerminalProgram.Settings
             Box.Text = Value;
         }
 
-        private void TextBox_IP_TextChanged(object sender, TextChangedEventArgs e)
+        private void TextBox_IP_Address_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Settings.IP = TextBox_IP.Text;
+            Settings.Connection_IP.IP_Address = TextBox_IP_Address.Text;
         }
 
         private void TextBox_Port_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Settings.Port = TextBox_Port.Text;
+            Settings.Connection_IP.Port = TextBox_Port.Text;
         }
     }
 }

@@ -26,6 +26,7 @@ namespace TerminalProgram
                     Directory.CreateDirectory(UsedDirectories.GetPath(ProgramDirectory.Settings));
                 }
             }
+
             catch (Exception error)
             {
                 throw new Exception("Не удалось создать папку для хранения пресетов.\n\n" + error.Message);

@@ -14,7 +14,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.IO.Ports;
-using SystemOfSaving;
 using TerminalProgram.ServiceWindows;
 using TerminalProgram.Settings;
 using TerminalProgram.Protocols;
@@ -69,8 +68,6 @@ namespace TerminalProgram
         public static Encoding GlobalEncoding { get; private set; } = null;
 
         private IConnection Client = null;
-
-        private readonly SettingsMediator SettingsManager = new SettingsMediator();
         
         private string[] PresetFileNames;
 
@@ -112,13 +109,13 @@ namespace TerminalProgram
             return Devices;
         }
 
-        private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
                 Check.FilesDirectory();
 
-                SystemOfPresets.FindFilesOfPresets(ref PresetFileNames);
+                PresetFileNames = await SystemOfPresets.FindFilesOfPresets();
 
                 for (int i = 0; i < PresetFileNames.Length; i++)
                 {
@@ -153,7 +150,10 @@ namespace TerminalProgram
 
                 SetUI_Disconnected();
 
-                UpdateDeviceData(SettingsDocument);
+                SystemOfSettings.Settings_FilePath = UsedDirectories.GetPath(ProgramDirectory.Settings) +
+                    SettingsDocument + SystemOfSettings.FileType;
+
+                await UpdateDeviceData(SettingsDocument);
 
                 NoProtocolPage = new UI_NoProtocol(this)
                 {
@@ -227,34 +227,28 @@ namespace TerminalProgram
             }
         }
 
-        private void UpdateDeviceData(string DocumentName)
+        private async Task UpdateDeviceData(string DocumentName)
         {
             try
             {
-                SettingsManager.LoadSettingsFrom(
-                    UsedDirectories.GetPath(ProgramDirectory.Settings) +
-                    DocumentName + 
-                    SettingsManager.FileType
-                    );
+                DeviceData Device = await SystemOfSettings.Read();
 
-                List<string> Devices = SettingsManager.GetAllDevicesNames();
-
-                if (Devices.Count > 0)
-                {
-                    Settings = SettingsManager.GetDeviceData(Devices[0]);
-
-                    ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
-
-                    GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
-                }
-
-                else
+                if (Device == null)
                 {
                     MessageBox.Show("В документе " + UsedDirectories.GetPath(ProgramDirectory.Settings) + DocumentName +
                         ".xml" + " нет настроек устройства. Создайте их в меню Настройки.", this.Title, MessageBoxButton.OK,
                         MessageBoxImage.Error, MessageBoxResult.OK);
 
                     ComboBox_SelectedPreset.SelectedIndex = -1;
+                }
+
+                else
+                {
+                    Settings = (DeviceData)Device.Clone();
+
+                    ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
+
+                    GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
                 }
             }
 
@@ -293,7 +287,7 @@ namespace TerminalProgram
             }
         }
 
-        private void MenuSettings_Click(object sender, RoutedEventArgs e)
+        private async void MenuSettings_Click(object sender, RoutedEventArgs e)
         {
             if (PresetFileNames == null || PresetFileNames.Length == 0)
             {
@@ -313,8 +307,7 @@ namespace TerminalProgram
 
             SettingsWindow Window = new SettingsWindow(
                 UsedDirectories.GetPath(ProgramDirectory.Settings),
-                SettingsDocument,
-                SettingsManager
+                SettingsDocument
                 )
             {
                 Owner = this
@@ -348,15 +341,15 @@ namespace TerminalProgram
                 SettingsDocument = Devices[0];
             }
 
-            UpdateDeviceData(SettingsDocument);
+            await UpdateDeviceData(SettingsDocument);
         }
 
-        private void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ComboBox_SelectedPreset.SelectedItem != null)
             {
                 SettingsDocument = ComboBox_SelectedPreset.SelectedItem.ToString();
-                UpdateDeviceData(SettingsDocument);
+                await UpdateDeviceData(SettingsDocument);
             }
         }
 
@@ -371,11 +364,12 @@ namespace TerminalProgram
                         Client = new SerialPortClient();
 
                         Client.Connect(new ConnectionInfo(new SerialPortInfo(
-                            Settings.COMPort,
-                            Settings.BaudRate_IsCustom == "Enable" ? Settings.BaudRate_Custom : Settings.BaudRate,
-                            Settings.Parity,
-                            Settings.DataBits,
-                            Settings.StopBits
+                            Settings.Connection_SerialPort.COMPort,
+                            Settings.Connection_SerialPort.BaudRate_IsCustom == "Enable" ? 
+                                Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate,
+                            Settings.Connection_SerialPort.Parity,
+                            Settings.Connection_SerialPort.DataBits,
+                            Settings.Connection_SerialPort.StopBits
                             ),
                             GlobalEncoding));
 
@@ -386,8 +380,8 @@ namespace TerminalProgram
                         Client = new IPClient();
 
                         Client.Connect(new ConnectionInfo(new SocketInfo(
-                            Settings.IP,
-                            Settings.Port
+                            Settings.Connection_IP.IP_Address,
+                            Settings.Connection_IP.Port
                             ),
                             GlobalEncoding));
 

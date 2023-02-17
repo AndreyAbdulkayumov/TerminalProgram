@@ -8,9 +8,9 @@ namespace TerminalProgram.Protocols.Modbus
 {
     public static partial class ModbusMessage
     {
-        private static DEVICE_RESPONSE ModbusTCP_DecodingMessage(int CommandNumber, byte[] SourceArray)
+        private static ModbusResponse ModbusTCP_DecodingMessage(int CommandNumber, byte[] SourceArray)
         {
-            DEVICE_RESPONSE DecodingResponse = new DEVICE_RESPONSE();
+            ModbusResponse DecodingResponse = new ModbusResponse();
 
             byte[] temp = new byte[2];
 
@@ -52,9 +52,9 @@ namespace TerminalProgram.Protocols.Modbus
             return DecodingResponse;
         }
 
-        private static DEVICE_RESPONSE ModbusRTU_DecodingMessage(int CommandNumber, byte[] SourceArray)
+        private static ModbusResponse ModbusRTU_DecodingMessage(int CommandNumber, byte[] SourceArray)
         {
-            DEVICE_RESPONSE DecodingResponse = new DEVICE_RESPONSE();
+            ModbusResponse DecodingResponse = new ModbusResponse();
 
             DecodingResponse.SlaveID = SourceArray[0];
             DecodingResponse.Command = SourceArray[1];
@@ -85,7 +85,7 @@ namespace TerminalProgram.Protocols.Modbus
             return DecodingResponse;
         }
 
-        private static void CheckErrorCode(TypeOfModbus ModbusType, ref DEVICE_RESPONSE Decoding, byte[] massive)
+        private static void CheckErrorCode(TypeOfModbus ModbusType, ref ModbusResponse Decoding, byte[] massive)
         {
             if (Decoding.Command > 128)
             {

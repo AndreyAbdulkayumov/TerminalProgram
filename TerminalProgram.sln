@@ -5,8 +5,6 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalProgram", "TerminalProgram\TerminalProgram.csproj", "{D5360586-1811-41FD-9F1A-8E61FB2DB9E4}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SystemOfSaving", "SystemOfSaving\SystemOfSaving.shproj", "{EF824C4F-4A3E-420B-A7A2-EB7E911B226E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,9 +21,5 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {33D44EE2-36C4-4CDF-91E2-06F518E5BADF}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SystemOfSaving\SystemOfSaving.projitems*{d5360586-1811-41fd-9f1a-8e61fb2db9e4}*SharedItemsImports = 4
-		SystemOfSaving\SystemOfSaving.projitems*{ef824c4f-4a3e-420b-a7a2-eb7e911b226e}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
