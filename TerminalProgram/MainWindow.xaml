@@ -7,8 +7,7 @@
         mc:Ignorable="d"
         Title="Терминальная программа" 
         Height="740" Width="820"
-        Background="#FF323232" 
-        ResizeMode="CanMinimize"
+        Background="#FF323232"
         WindowStartupLocation="CenterScreen"
         Loaded="SourceWindow_Loaded"
         Closing="SourceWindow_Closing">
@@ -121,14 +120,10 @@
                     Width="100" 
                     Content="Отключить"
                     Click="Button_Disconnect_Click"/>
-            
         </Grid>
 
-        <Grid x:Name="Grid_Action" Grid.Row="2">
-
-            <Frame x:Name="Frame_ActionUI" NavigationUIVisibility="Hidden"/>
-            
-        </Grid>
+        <Frame x:Name="Frame_ActionUI" Grid.Row="2"
+               NavigationUIVisibility="Hidden"/>
 
     </Grid>
 

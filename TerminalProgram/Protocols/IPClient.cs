@@ -100,8 +100,8 @@ namespace TerminalProgram.Protocols
             if (Info.Socket.IP == null || Info.Socket.Port == null)
             {
                 throw new Exception(
-                    (Info.Socket.IP == null ? "Не был задан IP адрес\n." : "") +
-                    (Info.Socket.Port == null ? "Не был задан порт." : "")
+                    (Info.Socket.IP == null ? "Не задан IP адрес.\n" : "") +
+                    (Info.Socket.Port == null ? "Не задан Порт." : "")
                     );
             }
 

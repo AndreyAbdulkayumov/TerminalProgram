@@ -65,9 +65,9 @@ namespace TerminalProgram.Settings
         {
             Box.Items.Clear();
 
-            for (int i = 0; i < Items.Length; i++)
+            foreach(string Element in Items)
             {
-                Box.Items.Add(Items[i]);
+                Box.Items.Add(Element);
             }
         }
 

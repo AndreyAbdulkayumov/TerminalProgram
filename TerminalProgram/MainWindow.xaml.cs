@@ -20,6 +20,7 @@ using TerminalProgram.Protocols;
 using TerminalProgram.Protocols.NoProtocol;
 using TerminalProgram.Protocols.Modbus;
 using TerminalProgram.Protocols.Http;
+using System.Text.Json.Nodes;
 
 namespace TerminalProgram
 {
@@ -113,21 +114,24 @@ namespace TerminalProgram
         {
             try
             {
-                Check.FilesDirectory();
-
-                PresetFileNames = await SystemOfPresets.FindFilesOfPresets();
-
-                for (int i = 0; i < PresetFileNames.Length; i++)
+                if (Directory.Exists(UsedDirectories.GetPath(ProgramDirectory.Settings)) == false)
                 {
-                    ComboBox_SelectedPreset.Items.Add(PresetFileNames[i]);
+                    Directory.CreateDirectory(UsedDirectories.GetPath(ProgramDirectory.Settings));
                 }
 
-                if (Check.SettingsFile(ref PresetFileNames, SettingsDocument) == false)
+                PresetFileNames = await SystemOfSettings.FindFilesOfPresets();
+
+                foreach(string FileName in PresetFileNames)
+                {
+                    ComboBox_SelectedPreset.Items.Add(FileName);
+                }
+                
+                if (PresetFileNames.Contains(SettingsDocument) == false)
                 {
                     MessageBox.Show("Файл настроек не существует в папке " + UsedDirectories.GetPath(ProgramDirectory.Settings) +
                         "\n\nНажмите ОК и выберите один из доступных файлов в появившемся окне.",
                         this.Title, MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.OK);
+                        MessageBoxImage.Warning, MessageBoxResult.OK);
 
                     ComboBoxWindow window = new ComboBoxWindow(ref PresetFileNames)
                     {
@@ -153,40 +157,19 @@ namespace TerminalProgram
                 SystemOfSettings.Settings_FilePath = UsedDirectories.GetPath(ProgramDirectory.Settings) +
                     SettingsDocument + SystemOfSettings.FileType;
 
-                await UpdateDeviceData(SettingsDocument);
-
-                NoProtocolPage = new UI_NoProtocol(this)
-                {
-                    Height = Grid_Action.ActualHeight,
-                    Width = Grid_Action.ActualWidth,
-
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
+                NoProtocolPage = new UI_NoProtocol(this);
 
                 NoProtocolPage.ErrorHandler += CommonErrorHandler;
 
-                ModbusPage = new UI_Modbus(this)
-                {
-                    Height = Grid_Action.ActualHeight,
-                    Width = Grid_Action.ActualWidth,
-
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
+                ModbusPage = new UI_Modbus(this);
 
                 ModbusPage.ErrorHandler += CommonErrorHandler;
 
-                HttpPage = new UI_Http(this)
-                {
-                    Height = Grid_Action.ActualHeight,
-                    Width = Grid_Action.ActualWidth,
-
-                    HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Top
-                };
+                HttpPage = new UI_Http(this);
 
                 RadioButton_NoProtocol.IsChecked = true;
+
+                await UpdateDeviceData(SettingsDocument);
             }
 
             catch (Exception error)
@@ -233,23 +216,11 @@ namespace TerminalProgram
             {
                 DeviceData Device = await SystemOfSettings.Read();
 
-                if (Device == null)
-                {
-                    MessageBox.Show("В документе " + UsedDirectories.GetPath(ProgramDirectory.Settings) + DocumentName +
-                        ".xml" + " нет настроек устройства. Создайте их в меню Настройки.", this.Title, MessageBoxButton.OK,
-                        MessageBoxImage.Error, MessageBoxResult.OK);
+                Settings = (DeviceData)Device.Clone();
 
-                    ComboBox_SelectedPreset.SelectedIndex = -1;
-                }
+                ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
 
-                else
-                {
-                    Settings = (DeviceData)Device.Clone();
-
-                    ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
-
-                    GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
-                }
+                GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
             }
 
             catch (Exception error)
@@ -524,6 +495,4 @@ namespace TerminalProgram
             window.ShowDialog();
         }
     }
-
-    
 }

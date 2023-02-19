@@ -36,10 +36,11 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" MinHeight="100">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
@@ -81,14 +82,18 @@
 
         </Grid>
 
-        <Grid Grid.Row="1">
+        <GridSplitter Grid.Row="1" Height="2" ShowsPreview="False"
+                      Background="#FF6B6B6B"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        
+        <Grid Grid.Row="2" MinHeight="100">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Margin="10,0,10,0">
+            <Border Grid.Row="0" Margin="10,10,10,0">
 
                 <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
 

@@ -121,10 +121,10 @@ namespace TerminalProgram.Protocols
                 {
                     throw new Exception(
                         (Info.SerialPort.COM_Port == null ? "Не задан СОМ порт.\n" : "") +
-                        (Info.SerialPort.BaudRate == null ? "Не задано BaudRate.\n" : "") +
-                        (Info.SerialPort.Parity == null ? "Не задано Parity.\n" : "") +
-                        (Info.SerialPort.DataBits == null ? "Не задано DataBits\n" : "") +
-                        (Info.SerialPort.StopBits == null ? "Не задано StopBits\n" : "")
+                        (Info.SerialPort.BaudRate == null ? "Не задан BaudRate.\n" : "") +
+                        (Info.SerialPort.Parity == null ? "Не задан Parity.\n" : "") +
+                        (Info.SerialPort.DataBits == null ? "Не задан DataBits\n" : "") +
+                        (Info.SerialPort.StopBits == null ? "Не задан StopBits\n" : "")
                         );
                 }
 
@@ -197,7 +197,7 @@ namespace TerminalProgram.Protocols
 
             catch (Exception error)
             {
-                DeviceSerialPort.Close();
+                DeviceSerialPort?.Close();
 
                 throw new Exception("Не удалось подключиться к СОМ порту.\n\n" +
                     "Данные подключения:" + "\n" +

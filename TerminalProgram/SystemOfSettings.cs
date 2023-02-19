@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.IO;
-using System.Security.AccessControl;
+using System.Text.Json.Nodes;
+using System.Windows.Documents;
+using System.Windows;
 
 namespace TerminalProgram
 {
@@ -84,14 +86,60 @@ namespace TerminalProgram
                 throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + Settings_FilePath);
             }
 
-            DeviceData Data;
+            DeviceData Data;            
 
-            using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
+            try
             {
-                Data = await JsonSerializer.DeserializeAsync<DeviceData>(Stream);
+                using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
+                {
+                    Data = await JsonSerializer.DeserializeAsync<DeviceData>(Stream);
+                }                
+            }
+
+            catch (JsonException)
+            {
+                await Save(GetDefault());
+
+                using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
+                {
+                    Data = await JsonSerializer.DeserializeAsync<DeviceData>(Stream);
+                }
+
+                MessageBox.Show("В файле заданы некоректные данные. Созданы настройки по умолчанию.",
+                    "Предупреждение", MessageBoxButton.OK,
+                    MessageBoxImage.Warning, MessageBoxResult.OK);
             }
 
             return Data;
+        }
+
+        public static async Task<string[]> FindFilesOfPresets()
+        {
+            string[] ArrayOfPresets;
+
+            ArrayOfPresets = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings), "*" + FileType);
+
+            if (ArrayOfPresets.Length == 0)
+            {
+                MessageBox.Show("Не найдено ни одного файла настроек. Будет создан файл с настройками по умолчанию.",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+
+                string NewFilePath = UsedDirectories.GetPath(ProgramDirectory.Settings) + "Unknown" + FileType;
+
+                File.Create(NewFilePath).Close();
+
+                Settings_FilePath = NewFilePath;
+                await Save(GetDefault());
+
+                ArrayOfPresets = Directory.GetFiles(UsedDirectories.GetPath(ProgramDirectory.Settings), "*" + FileType);
+            }
+
+            for (int i = 0; i < ArrayOfPresets.Length; i++)
+            {
+                ArrayOfPresets[i] = Path.GetFileNameWithoutExtension(ArrayOfPresets[i]);
+            }
+
+            return ArrayOfPresets;
         }
     }
 }

@@ -108,7 +108,6 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Check.cs" />
     <Compile Include="DeviceData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -150,7 +149,6 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\SettingsWindow_ToolBar.cs" />
-    <Compile Include="SystemOfPresets.cs" />
     <Compile Include="SystemOfSettings.cs" />
     <Page Include="AboutWindow.xaml">
       <SubType>Designer</SubType>
