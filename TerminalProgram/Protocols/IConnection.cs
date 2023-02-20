@@ -51,11 +51,6 @@ namespace TerminalProgram.Protocols
         /// </summary>
         Task Disconnect();
         /// <summary>
-        /// Запись строки в открытое соединение.
-        /// </summary>
-        /// <param name="Message"></param>
-        void Send(string Message);
-        /// <summary>
         /// Запись определенного колличества байт в открытое соединение.
         /// </summary>
         /// <param name="Message"></param>

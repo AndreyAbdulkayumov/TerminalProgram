@@ -62,15 +62,25 @@ namespace TerminalProgram.Protocols.NoProtocol
             TextBox_TX.Focus();
         }
 
+        private void Page_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    Button_Send_Click(Button_Send, new RoutedEventArgs());
+                    break;
+            }
+        }
+
         private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
         {
             if (e.ConnectedDevice.IsConnected)
             {
                 Client = e.ConnectedDevice;
 
-                Client.DataReceived += Client_DataReceived;
-
                 SetUI_Connected();
+
+                Client.DataReceived += Client_DataReceived;                
             }            
         }
 
@@ -118,7 +128,7 @@ namespace TerminalProgram.Protocols.NoProtocol
             {
                 if (TextBox_TX.Text != String.Empty && MessageType == TypeOfMessage.Char)
                 {
-                    Client.Send(TextBox_TX.Text.Substring(TextBox_TX.Text.Length - 1));
+                    SendMessage(TextBox_TX.Text.Last().ToString());
                 }
             }
 
@@ -127,6 +137,31 @@ namespace TerminalProgram.Protocols.NoProtocol
                 MessageBox.Show("Возникла ошибка при отправлении данных устройству:\n" + error.Message, MainWindowTitle,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
+        }
+
+        private void SendMessage(string StringMessage)
+        {
+            if (StringMessage == String.Empty)
+            {
+                MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", MainWindowTitle,
+                    MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
+
+                return;
+            }
+
+            byte[] Message;
+
+            if (CheckBox_CRCF.IsChecked == true)
+            {
+                Message = MainWindow.GlobalEncoding.GetBytes(StringMessage + "\r\n");
+            }
+
+            else
+            {
+                Message = MainWindow.GlobalEncoding.GetBytes(StringMessage);
+            }
+
+            Client.Send(Message, Message.Length);
         }
 
         private void CheckBox_CRCF_Click(object sender, RoutedEventArgs e)
@@ -152,6 +187,38 @@ namespace TerminalProgram.Protocols.NoProtocol
             TextBox_TX.Text = String.Empty;
 
             TextBox_TX.Focus();
+        }       
+
+        private void Button_Send_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (MessageType == TypeOfMessage.Char)
+                {
+                    return;
+                }
+
+                SendMessage(TextBox_TX.Text);
+            }
+
+            catch (Exception error)
+            {
+                if (ErrorHandler != null)
+                {
+                    ErrorHandler(this, new EventArgs());
+
+                    MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
+                        "\n\nКлиент был отключен.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
+
+                else
+                {
+                    MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
+                        "\n\nКлиент не был отключен.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                }
+            }
         }
 
         private void Client_DataReceived(object sender, DataFromDevice e)
@@ -218,58 +285,6 @@ namespace TerminalProgram.Protocols.NoProtocol
             }
         }
 
-        private void Button_Send_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (MessageType == TypeOfMessage.Char)
-                {
-                    return;
-                }
-
-                if (TextBox_TX.Text == String.Empty)
-                {
-                    MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
-
-                    return;
-                }
-
-                byte[] Message;
-
-                if (CheckBox_CRCF.IsChecked == true)
-                {
-                    Message = MainWindow.GlobalEncoding.GetBytes(TextBox_TX.Text + "\r\n");
-                }
-
-                else
-                {
-                    Message = MainWindow.GlobalEncoding.GetBytes(TextBox_TX.Text);
-                }
-
-                Client.Send(Message, Message.Length);
-            }
-
-            catch (Exception error)
-            {
-                if (ErrorHandler != null)
-                {
-                    ErrorHandler(this, new EventArgs());
-
-                    MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
-                        "\n\nКлиент был отключен.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                }
-
-                else
-                {
-                    MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
-                        "\n\nКлиент не был отключен.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                }
-            }
-        }
-
         private void Button_SaveAs_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -317,17 +332,6 @@ namespace TerminalProgram.Protocols.NoProtocol
             TextBox_RX.Text = String.Empty;
 
             TextBox_TX.Focus();
-        }
-
-        private void Page_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.Key)
-            {
-                case Key.Enter:
-                    Button_Send_Click(Button_Send, new RoutedEventArgs());
-                    break;
-            }
-        }
-
+        }        
     }
 }

@@ -152,27 +152,6 @@ namespace TerminalProgram.Protocols
             IsConnected = false;                
         }
 
-        public async void Send(string Message)
-        {
-            try
-            {
-                if (IsConnected)
-                {
-                    byte[] Data = Encoding.ASCII.GetBytes(Message);
-
-                    await Stream.WriteAsync(Data, 0, Data.Length);
-                }
-            }
-            
-            catch(Exception error)
-            {
-                throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" + 
-                    "Таймаут передачи: " + 
-                    (Stream.WriteTimeout == Timeout.Infinite ?
-                    "бесконечно" : (Stream.WriteTimeout.ToString() + " мс.")));
-            }
-        }
-
         public void Send(byte[] Message, int NumberOfBytes)
         {
             try

@@ -235,27 +235,11 @@ namespace TerminalProgram.Protocols
             }
          }
 
-        public void Send(string Message)
-        {
-            try
-            {
-                DeviceSerialPort.Write(Message);
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
-                    "Таймаут передачи: " +
-                    (DeviceSerialPort.WriteTimeout == Timeout.Infinite ?
-                    "бесконечно" : (DeviceSerialPort.WriteTimeout.ToString() + " мс.")));
-            }
-        }
-
         public void Send(byte[] Message, int NumberOfBytes)
         {
             try
             {
-                DeviceSerialPort.DiscardInBuffer();
+                //DeviceSerialPort.DiscardInBuffer();
                 DeviceSerialPort.DiscardOutBuffer();
 
                 DeviceSerialPort.Write(Message, 0, NumberOfBytes);
@@ -383,7 +367,8 @@ namespace TerminalProgram.Protocols
                 // TODO: Как правильно обработать это исключение?
 
                 MessageBox.Show("Возникла НЕОБРАБОТАННАЯ ошибка " +
-                    "при асинхронном чтении у SerialPort клиента.\n\n" + error.Message +
+                    "при асинхронном чтении у SerialPort клиента.\n\n" + 
+                     (error.InnerException == null ? error.Message : error.InnerException.Message) +
                     "\n\nКлиент был отключен.", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
