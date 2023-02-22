@@ -40,8 +40,8 @@ namespace TerminalProgram.Protocols.Modbus
             TX[5] = 0x06;
             // Slave ID
             TX[6] = SlaveID;
-            // Write 1 register
-            TX[7] = 0x06;
+            // Command
+            TX[7] = (byte)ModbusCommand.PresetSingleRegister;
             // address 
             TX[8] = AddressArray[1];
             TX[9] = AddressArray[0];
@@ -79,8 +79,8 @@ namespace TerminalProgram.Protocols.Modbus
 
             // Slave ID
             TX[0] = SlaveID;
-            // Write 1 register
-            TX[1] = 0x06;
+            // Command
+            TX[1] = (byte)ModbusCommand.PresetSingleRegister;
             // address 
             TX[2] = AddressArray[1];
             TX[3] = AddressArray[0];

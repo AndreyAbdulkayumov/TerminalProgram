@@ -34,7 +34,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="1*" MinHeight="100"/>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="130"/>
         </Grid.RowDefinitions>
 
         <Grid x:Name="Grid_CommonInfo" Grid.Row="0">
@@ -52,21 +53,21 @@
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
             <TextBlock Text="Slave ID"
-                       Margin="480,10,0,0"
+                       Margin="480,11,0,0"
                        FontSize="16"
                        Foreground="#FFD2C25A"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
             <TextBox x:Name="TextBox_SlaveID"
                      Height="25" Width="40"
-                     FontSize="14"
+                     FontSize="16"
                      Margin="550,10,0,0"
                      HorizontalAlignment="Left" VerticalAlignment="Top" 
                      TextChanged="TextBox_SlaveID_TextChanged"/>
         </Grid>
 
         <DataGrid x:Name="DataGrid_ModbusData" Grid.Row="1" 
-                  Width="550"
+                  Width="575"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   FontSize="14"
@@ -79,7 +80,7 @@
                   VerticalGridLinesBrush="#FFABABAB"
                   VerticalScrollBarVisibility="Visible"
                   CellStyle="{StaticResource RowStyle_Custom}"
-                  HorizontalAlignment="Center" VerticalAlignment="Stretch">
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <DataGrid.Columns>
                 
@@ -112,45 +113,68 @@
             
         </DataGrid>
 
-        <Grid x:Name="Grid_Controls" Grid.Row="2">
+        <Grid x:Name="Grid_NumberFormat" Grid.Row="2">
             
+            <TextBlock Text="Формат числа:"
+                       Margin="0,0,310,0"
+                       FontSize="16"
+                       Foreground="#FFD2C25A"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <RadioButton x:Name="RadioButton_NumFormat_Dec"
+                         Content="Десятичный"
+                         Margin="300,0,0,0"
+                         FontSize="16"
+                         Foreground="#FFD2C25A"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Checked="RadioButton_NumFormat_Dec_Checked"/>
+
+            <RadioButton x:Name="RadioButton_NumFormat_Hex"
+                         Content="Шестнадцетиричный"
+                         Margin="0,0,0,0"
+                         FontSize="16"
+                         Foreground="#FFD2C25A"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" Checked="RadioButton_NumFormat_Hex_Checked"/>
+        </Grid>
+        
+        <Grid x:Name="Grid_Controls" Grid.Row="3">
+
             <TextBlock Text="Адрес"
-                       Margin="0,62,310,0"
+                       Margin="0,4,275,0"
                        FontSize="16"
                        Foreground="#FFD2C25A"
                        HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
             <TextBox x:Name="TextBox_Address"
                      Height="25" Width="60"
-                     FontSize="14"
-                     Margin="0,60,180,0"
+                     FontSize="16"
+                     Margin="0,3,140,0"
                      HorizontalAlignment="Center" VerticalAlignment="Top" 
                      TextChanged="TextBox_Address_TextChanged"/>
 
             <TextBlock Text="Значение"
-                       Margin="70,62,0,0"
+                       Margin="0,54,300,0"
                        FontSize="16"
                        Foreground="#FFD2C25A"
                        HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
             <TextBox x:Name="TextBox_Data"
                      Height="25" Width="60"
-                     FontSize="14"
-                     Margin="230,60,0,0"
+                     FontSize="16"
+                     Margin="0,53,140,0"
                      HorizontalAlignment="Center" VerticalAlignment="Top" 
                      TextChanged="TextBox_Data_TextChanged"/>
 
             <Button x:Name="Button_Read" Template="{DynamicResource ButtonCommon}"
                     Content="Прочитать"
                     Width="100"
-                    Margin="0,110,180,0"
+                    Margin="80,0,0,0"
                     HorizontalAlignment="Center" VerticalAlignment="Top" 
                     Click="Button_Read_Click"/>
 
             <Button x:Name="Button_Write" Template="{DynamicResource ButtonCommon}"
                     Content="Записать"
                     Width="100"
-                    Margin="180,110,0,0"
+                    Margin="80,50,0,0"
                     HorizontalAlignment="Center" VerticalAlignment="Top" 
                     Click="Button_Write_Click"/>
         </Grid>

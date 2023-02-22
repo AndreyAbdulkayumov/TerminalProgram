@@ -131,6 +131,7 @@
     <Compile Include="Protocols\NoProtocol\UI_NoProtocol.xaml.cs">
       <DependentUpon>UI_NoProtocol.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Protocols\NoProtocol\UI_NoProtocol_SendReceiveHandlers.cs" />
     <Compile Include="Protocols\ProtocolMode.cs" />
     <Compile Include="Protocols\SerialPortClient.cs" />
     <Compile Include="ServiceWindows\ComboBoxWindow.xaml.cs">

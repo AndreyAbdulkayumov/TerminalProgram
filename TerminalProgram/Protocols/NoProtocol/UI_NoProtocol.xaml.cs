@@ -35,8 +35,7 @@ namespace TerminalProgram.Protocols.NoProtocol
         private TypeOfMessage MessageType;
 
         private readonly string MainWindowTitle;
-
-        private object locker = new object();
+                
 
         public UI_NoProtocol(MainWindow window)
         {
@@ -95,7 +94,8 @@ namespace TerminalProgram.Protocols.NoProtocol
         {
             TextBox_TX.IsEnabled = true;
 
-            CheckBox_CRCF.IsEnabled = true;
+            CheckBox_CR.IsEnabled = true;
+            CheckBox_LF.IsEnabled = true;
             RadioButton_Char.IsEnabled = true;
             RadioButton_String.IsEnabled = true;
 
@@ -116,7 +116,8 @@ namespace TerminalProgram.Protocols.NoProtocol
         {
             TextBox_TX.IsEnabled = false;
 
-            CheckBox_CRCF.IsEnabled = false;
+            CheckBox_CR.IsEnabled = false;
+            CheckBox_LF.IsEnabled = false;
             RadioButton_Char.IsEnabled = false;
             RadioButton_String.IsEnabled = false;
             Button_Send.IsEnabled = false;
@@ -128,7 +129,9 @@ namespace TerminalProgram.Protocols.NoProtocol
             {
                 if (TextBox_TX.Text != String.Empty && MessageType == TypeOfMessage.Char)
                 {
-                    SendMessage(TextBox_TX.Text.Last().ToString());
+                    SendMessage(TextBox_TX.Text.Last().ToString(),
+                        (bool)CheckBox_CR.IsChecked,
+                        (bool)CheckBox_LF.IsChecked);
                 }
             }
 
@@ -139,32 +142,12 @@ namespace TerminalProgram.Protocols.NoProtocol
             }
         }
 
-        private void SendMessage(string StringMessage)
+        private void CheckBox_CR_Click(object sender, RoutedEventArgs e)
         {
-            if (StringMessage == String.Empty)
-            {
-                MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", MainWindowTitle,
-                    MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
-
-                return;
-            }
-
-            byte[] Message;
-
-            if (CheckBox_CRCF.IsChecked == true)
-            {
-                Message = MainWindow.GlobalEncoding.GetBytes(StringMessage + "\r\n");
-            }
-
-            else
-            {
-                Message = MainWindow.GlobalEncoding.GetBytes(StringMessage);
-            }
-
-            Client.Send(Message, Message.Length);
+            TextBox_TX.Focus();
         }
 
-        private void CheckBox_CRCF_Click(object sender, RoutedEventArgs e)
+        private void CheckBox_LF_Click(object sender, RoutedEventArgs e)
         {
             TextBox_TX.Focus();
         }
@@ -198,7 +181,9 @@ namespace TerminalProgram.Protocols.NoProtocol
                     return;
                 }
 
-                SendMessage(TextBox_TX.Text);
+                SendMessage(TextBox_TX.Text, 
+                    (bool)CheckBox_CR.IsChecked,
+                    (bool)CheckBox_LF.IsChecked);
             }
 
             catch (Exception error)
@@ -215,70 +200,6 @@ namespace TerminalProgram.Protocols.NoProtocol
                 else
                 {
                     MessageBox.Show("Возникла ошибка при отправлении данных:\n" + error.Message +
-                        "\n\nКлиент не был отключен.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                }
-            }
-        }
-
-        private void Client_DataReceived(object sender, DataFromDevice e)
-        {
-            try
-            {
-                lock (locker)
-                {
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
-                    new Action(delegate
-                    {
-                        try
-                        {
-                            TextBox_RX.AppendText(MainWindow.GlobalEncoding.GetString(e.RX));
-
-                            if (CheckBox_NextLine.IsChecked == true)
-                            {
-                                TextBox_RX.AppendText("\n");
-                            }
-
-                            TextBox_RX.LineDown();
-                            ScrollViewer_RX.ScrollToEnd();
-                        }
-
-                        catch (Exception error)
-                        {
-                            if (ErrorHandler != null)
-                            {
-                                ErrorHandler(this, new EventArgs());
-
-                                MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
-                                    "\n\nКлиент был отключен.", MainWindowTitle,
-                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                            }
-
-                            else
-                            {
-                                MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
-                                    "\n\nКлиент не был отключен.", MainWindowTitle,
-                                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                            }
-                        }
-                    }));
-                }
-            }
-
-            catch (Exception error)
-            {
-                if (ErrorHandler != null)
-                {
-                    ErrorHandler(this, new EventArgs());
-
-                    MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
-                        "\n\nКлиент был отключен.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                }
-
-                else
-                {
-                    MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
                         "\n\nКлиент не был отключен.", MainWindowTitle,
                         MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                 }

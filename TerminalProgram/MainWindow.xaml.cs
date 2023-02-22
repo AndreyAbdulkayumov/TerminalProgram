@@ -379,7 +379,7 @@ namespace TerminalProgram
             
             catch(Exception error)
             {
-                MessageBox.Show("Возникла ошибка при подключении к устройству.\n\n" + error.Message, this.Title,
+                MessageBox.Show("Возникла ошибка при подключении к хосту.\n\n" + error.Message, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }

@@ -100,6 +100,9 @@ namespace TerminalProgram.Protocols
                         ReadCancelSource.Cancel();
 
                         await Task.WhenAll(ReadThread);
+
+                        DeviceSerialPort.DiscardInBuffer();
+                        DeviceSerialPort.DiscardOutBuffer();
                     }
 
                     break;
@@ -239,10 +242,10 @@ namespace TerminalProgram.Protocols
         {
             try
             {
-                //DeviceSerialPort.DiscardInBuffer();
-                DeviceSerialPort.DiscardOutBuffer();
-
-                DeviceSerialPort.Write(Message, 0, NumberOfBytes);
+                if (IsConnected)
+                {
+                    DeviceSerialPort.Write(Message, 0, NumberOfBytes);
+                }                
             }
 
             catch (Exception error)
@@ -260,17 +263,20 @@ namespace TerminalProgram.Protocols
 
             try
             {
-                // Если ожидать ответа с помощью таймаута, то в случае получения данных примется
-                // только несколько первых байт. Поэтому таймаут реализуется с помощью задержки.
-                // Таким образом, буфер приема успеет заполниться.
-                
-                ReadTimeout = 10;
+                if (IsConnected)
+                {
+                    // Если ожидать ответа с помощью таймаута, то в случае получения данных примется
+                    // только несколько первых байт. Поэтому таймаут реализуется с помощью задержки.
+                    // Таким образом, буфер приема успеет заполниться.
 
-                Thread.Sleep(SavedTimeout);
+                    ReadTimeout = 10;
 
-                DeviceSerialPort.Read(Data, 0, Data.Length);
+                    Thread.Sleep(SavedTimeout);
 
-                ReadTimeout = SavedTimeout;
+                    DeviceSerialPort.Read(Data, 0, Data.Length);
+
+                    ReadTimeout = SavedTimeout;
+                }                
             }
 
             catch (Exception error)

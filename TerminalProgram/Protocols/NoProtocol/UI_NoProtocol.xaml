@@ -53,13 +53,27 @@
                      TextWrapping="Wrap"
                      TextChanged="TextBox_TX_TextChanged"/>
 
-            <CheckBox x:Name="CheckBox_CRCF" Grid.Row="1"
+            <TextBlock Text="Добавить в конце строки:" Grid.Row="1"
+                       Foreground="#FFD2C25A"
+                       FontSize="14"
+                       Margin="20,0,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            
+            <CheckBox x:Name="CheckBox_CR" Grid.Row="1"
                       Foreground="#FFD2C25A"
                       FontSize="14"
-                      Margin="60,0,0,0"
-                      Content="Окончание строки CR + LF (&quot;\r\n&quot;)"
+                      Margin="200,2,0,0"
+                      Content="CR ( &#8216;\r &#8217;, 0x0D)"
                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                      Click="CheckBox_CRCF_Click"/>
+                      Click="CheckBox_CR_Click"/>
+
+            <CheckBox x:Name="CheckBox_LF" Grid.Row="1"
+                      Foreground="#FFD2C25A"
+                      FontSize="14"
+                      Margin="325,2,0,0"
+                      Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                      Click="CheckBox_LF_Click"/>
 
             <RadioButton x:Name="RadioButton_Char" Grid.Row="1"
                          Margin="0,0,200,0" 

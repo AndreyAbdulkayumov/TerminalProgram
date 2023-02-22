@@ -31,6 +31,13 @@ namespace TerminalProgram.Protocols.Modbus
         public byte[] Data;
     }
 
+    public static class ModbusCommand
+    {
+        public static readonly int ReadInputRegisters = 0x04;
+
+        public static readonly int PresetSingleRegister = 0x06;
+    }
+
     public class Modbus
     {
         /// <summary>
@@ -52,8 +59,8 @@ namespace TerminalProgram.Protocols.Modbus
             Device = ConnectedDevice;
         }
 
-        public void WriteRegister(UInt16 PackageNumber, UInt16 Address, UInt16 Data, 
-            out ModbusResponse Response, int NumberOfRegisters, TypeOfModbus ModbusType, bool CRC_IsEnable)
+        public void WriteRegister(UInt16 Address, UInt16 Data, 
+            out ModbusResponse Response, TypeOfModbus ModbusType, bool CRC_IsEnable)
         {
             try
             {
@@ -69,7 +76,7 @@ namespace TerminalProgram.Protocols.Modbus
 
                 Device.Receive(RX);
 
-                Response = ModbusMessage.Decoding(ModbusType, 0x06, RX);
+                Response = ModbusMessage.Decoding(ModbusType, ModbusCommand.PresetSingleRegister, RX);
 
                 IsBusy = false;
             }
@@ -81,8 +88,8 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        public UInt16 ReadRegister(UInt16 PackageNumber, UInt16 Address,
-            out ModbusResponse Response, int NumberOfRegisters, TypeOfModbus ModbusType, bool CRC_IsEnable)
+        public UInt16 ReadRegister(UInt16 Address, out ModbusResponse Response, 
+            int NumberOfRegisters, TypeOfModbus ModbusType, bool CRC_IsEnable)
         {
             try
             {
@@ -98,7 +105,7 @@ namespace TerminalProgram.Protocols.Modbus
 
                 Device.Receive(RX);
 
-                Response = ModbusMessage.Decoding(ModbusType, 0x04, RX);
+                Response = ModbusMessage.Decoding(ModbusType, ModbusCommand.ReadInputRegisters, RX);
 
                 UInt16 result = (UInt16)BitConverter.ToInt16(Response.Data, 0);
 

@@ -56,75 +56,79 @@
         
     </Window.Resources>
 
-    <Grid>
+    <Border BorderBrush="#FF6B6B6B" BorderThickness="2,0,2,2">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <RowDefinition x:Name="GridRow_Header" Height="100"/>
-            <RowDefinition Height="1*"/>
-        </Grid.RowDefinitions>
+        <Grid>
 
-        <Menu Grid.Row="0" 
-              HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"/>
+                <RowDefinition x:Name="GridRow_Header" Height="100"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
 
-            <MenuItem Header="Настройки" Name="MenuSettings" 
-                      Click="MenuSettings_Click"
-                      Style="{StaticResource Menu}"/>
-            
-            <MenuItem Header="О программе" Name="MenuAbout"
-                      Click="MenuAbout_Click" 
-                      Style="{StaticResource Menu}"/>
+            <Menu Grid.Row="0"
+                  HorizontalAlignment="Left" VerticalAlignment="Top">
 
-        </Menu>
+                <MenuItem Header="Настройки" Name="MenuSettings" 
+                          Click="MenuSettings_Click"
+                          Style="{StaticResource Menu}"/>
 
-        <Grid Grid.Row="1">
+                <MenuItem Header="О программе" Name="MenuAbout"
+                          Click="MenuAbout_Click" 
+                          Style="{StaticResource Menu}"/>
 
-            <RadioButton x:Name="RadioButton_NoProtocol"
-                         Content="Без протокола"
-                         Margin="20,20,0,0"
-                         HorizontalAlignment="Left" VerticalAlignment="Top"
-                         Checked="RadioButton_NoProtocol_Checked"/>
+            </Menu>
 
-            <RadioButton x:Name="RadioButton_Protocol_Modbus"
-                         Content="Modbus"
-                         Margin="150,20,0,0"
-                         HorizontalAlignment="Left" VerticalAlignment="Top"
-                         Checked="RadioButton_Protocol_Modbus_Checked"/>
+            <Grid Grid.Row="1">
 
-            <RadioButton x:Name="RadioButton_Protocol_Http"
-                         Content="Http"
-                         Margin="250,20,0,0"
-                         HorizontalAlignment="Left" VerticalAlignment="Top"
-                         Checked="RadioButton_Protocol_Http_Checked"/>
-            
-            <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
-                       Margin="20,59,0,0" 
-                       FontSize="16"
-                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <RadioButton x:Name="RadioButton_NoProtocol"
+                             Content="Без протокола"
+                             Margin="20,20,0,0"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Checked="RadioButton_NoProtocol_Checked"/>
 
-            <ComboBox x:Name="ComboBox_SelectedPreset" 
-                      Height="25" Width="160"
-                      Margin="175,58,0,0"
-                      FontSize="14"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" 
-                      SelectionChanged="ComboBox_SelectedPreset_SelectionChanged"/>
+                <RadioButton x:Name="RadioButton_Protocol_Modbus"
+                             Content="Modbus"
+                             Margin="150,20,0,0"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Checked="RadioButton_Protocol_Modbus_Checked"/>
 
-            <Button x:Name="Button_Connect" Template="{DynamicResource ButtonCommon}"
-                    Margin="380,55,0,0"
-                    Width="100"
-                    Content="Подключить"
-                    Click="Button_Connect_Click"/>
+                <RadioButton x:Name="RadioButton_Protocol_Http"
+                             Content="Http"
+                             Margin="250,20,0,0"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Checked="RadioButton_Protocol_Http_Checked"/>
 
-            <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
-                    Margin="500,55,0,0"
-                    Width="100" 
-                    Content="Отключить"
-                    Click="Button_Disconnect_Click"/>
+                <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
+                           Margin="20,59,0,0" 
+                           FontSize="16"
+                           HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+                <ComboBox x:Name="ComboBox_SelectedPreset" 
+                          Height="25" Width="160"
+                          Margin="175,58,0,0"
+                          FontSize="14"
+                          HorizontalAlignment="Left" VerticalAlignment="Top" 
+                          SelectionChanged="ComboBox_SelectedPreset_SelectionChanged"/>
+
+                <Button x:Name="Button_Connect" Template="{DynamicResource ButtonCommon}"
+                        Margin="380,55,0,0"
+                        Width="100"
+                        Content="Подключить"
+                        Click="Button_Connect_Click"/>
+
+                <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
+                        Margin="500,55,0,0"
+                        Width="100" 
+                        Content="Отключить"
+                        Click="Button_Disconnect_Click"/>
+            </Grid>
+
+            <Frame x:Name="Frame_ActionUI" Grid.Row="2"
+                   NavigationUIVisibility="Hidden"/>
+
         </Grid>
 
-        <Frame x:Name="Frame_ActionUI" Grid.Row="2"
-               NavigationUIVisibility="Hidden"/>
-
-    </Grid>
+    </Border>    
 
 </Window>

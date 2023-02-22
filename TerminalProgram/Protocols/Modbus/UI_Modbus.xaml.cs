@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace TerminalProgram.Protocols.Modbus
 {
@@ -49,6 +50,9 @@ namespace TerminalProgram.Protocols.Modbus
 
         ObservableCollection<ModbusDataDisplayed> DataDisplayedList = new ObservableCollection<ModbusDataDisplayed>();
 
+        private NumberStyles Address_NumberStyle = NumberStyles.HexNumber;
+        private NumberStyles Data_NumberStyle = NumberStyles.HexNumber;
+
         public UI_Modbus(MainWindow window)
         {
             InitializeComponent();
@@ -59,6 +63,8 @@ namespace TerminalProgram.Protocols.Modbus
             window.DeviceIsDisconnected += MainWindow_DeviceIsDisconnected;
 
             DataGrid_ModbusData.ItemsSource = DataDisplayedList;
+
+            RadioButton_NumFormat_Hex.IsChecked = true;
 
             SetUI_Disconnected();
         }
@@ -99,6 +105,9 @@ namespace TerminalProgram.Protocols.Modbus
 
             TextBox_SlaveID.IsEnabled = true;
 
+            RadioButton_NumFormat_Hex.IsEnabled = true;
+            RadioButton_NumFormat_Dec.IsEnabled = true;
+
             TextBox_Address.IsEnabled = true;
             TextBox_Data.IsEnabled = true;
 
@@ -114,6 +123,9 @@ namespace TerminalProgram.Protocols.Modbus
             TextBlock_ModbusMode.Text = "не определено";
 
             TextBox_SlaveID.IsEnabled = false;
+
+            RadioButton_NumFormat_Hex.IsEnabled = false;
+            RadioButton_NumFormat_Dec.IsEnabled = false;
 
             TextBox_Address.IsEnabled = false;
             TextBox_Data.IsEnabled = false;
@@ -146,10 +158,9 @@ namespace TerminalProgram.Protocols.Modbus
 
                 ModbusDevice.SlaveID = (byte)SelectedSlaveID;
 
-                UInt16 ModbusAddress = Convert.ToUInt16(TextBox_Address.Text);
+                UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
 
                 UInt16 ModbusReadData = ModbusDevice.ReadRegister(
-                                PackageNumber,
                                 ModbusAddress,
                                 out CommonResponse,
                                 1,
@@ -221,15 +232,13 @@ namespace TerminalProgram.Protocols.Modbus
 
                 ModbusDevice.SlaveID = (byte)SelectedSlaveID;
 
-                UInt16 ModbusAddress = Convert.ToUInt16(TextBox_Address.Text);
-                UInt16 ModbusWriteData = Convert.ToUInt16(TextBox_Data.Text);
+                UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
+                UInt16 ModbusWriteData = CheckNumber(TextBox_Data, Data_NumberStyle);
 
                 ModbusDevice.WriteRegister(
-                    PackageNumber,
                     ModbusAddress,
                     ModbusWriteData,
                     out CommonResponse,
-                    1,
                     ModbusType,
                     false);
 
@@ -270,24 +279,55 @@ namespace TerminalProgram.Protocols.Modbus
 
         private void TextBox_SlaveID_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SelectedSlaveID = CheckNumber(TextBox_SlaveID);
+            try
+            {
+                SelectedSlaveID = CheckNumber(TextBox_SlaveID, NumberStyles.Number);
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при изменении текста в поле \"Slave ID\":\n\n" +
+                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            }            
         }
 
         private void TextBox_Address_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CheckNumber(TextBox_Address);
+            try
+            {
+                CheckNumber(TextBox_Address, Address_NumberStyle);
+
+                TextBox_Address.Text = TextBox_Address.Text.ToUpper();
+                TextBox_Address.SelectionStart = TextBox_Address.Text.Length;
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при изменении текста в поле \"Адрес\":\n\n" +
+                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void TextBox_Data_TextChanged(object sender, TextChangedEventArgs e)
         {
-            CheckNumber(TextBox_Data);
+            try
+            {
+                CheckNumber(TextBox_Data, Data_NumberStyle);
+
+                TextBox_Data.Text = TextBox_Data.Text.ToUpper();
+                TextBox_Data.SelectionStart = TextBox_Data.Text.Length;
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
+                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private int CheckNumber(TextBox SelectedTextBox)
+        private UInt16 CheckNumber(TextBox SelectedTextBox, NumberStyles Style)
         {
-            string TextData = SelectedTextBox.Text;
-
-            if (TextData == String.Empty)
+            if (SelectedTextBox.Text == String.Empty)
             {
                 return 0;
             }
@@ -296,29 +336,77 @@ namespace TerminalProgram.Protocols.Modbus
 
             while (true)
             {
-                if (TextData == String.Empty)
+                if (SelectedTextBox.Text == String.Empty)
                 {
                     return 0;
                 }
 
-                if (UInt16.TryParse(TextData, out Number) == false)
+                if (UInt16.TryParse(SelectedTextBox.Text, Style, CultureInfo.InvariantCulture, out Number) == false)
                 {
                     SelectedTextBox.Text = SelectedTextBox.Text.Remove(SelectedTextBox.Text.Length - 1);
                     SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
 
-                    MessageBox.Show("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535.",
-                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
-
-                    TextData = SelectedTextBox.Text;
+                    MessageBox.Show("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535 (0x0000 - 0xFFFF).",
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
                 else
                 {
                     break;
                 }
-            }           
+            }
 
             return Number;
+        }
+
+        private void RadioButton_NumFormat_Hex_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Address_NumberStyle = NumberStyles.HexNumber;
+                Data_NumberStyle = NumberStyles.HexNumber;
+
+                if (TextBox_Address.Text.Length > 0)
+                {
+                    TextBox_Address.Text = Convert.ToInt32(TextBox_Address.Text).ToString("X");
+                }
+
+                if (TextBox_Data.Text.Length > 0)
+                {
+                    TextBox_Data.Text = Convert.ToInt32(TextBox_Data.Text).ToString("X");
+                }
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при выборе пункта \"Шестнадцатеричный\":\n\n" +
+                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RadioButton_NumFormat_Dec_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Address_NumberStyle = NumberStyles.Number;
+                Data_NumberStyle = NumberStyles.Number;
+
+                if (TextBox_Address.Text.Length > 0)
+                {
+                    TextBox_Address.Text = Int32.Parse(TextBox_Address.Text, NumberStyles.HexNumber).ToString();
+                }
+
+                if (TextBox_Data.Text.Length > 0)
+                {
+                    TextBox_Data.Text = Int32.Parse(TextBox_Data.Text, NumberStyles.HexNumber).ToString();
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при выборе пункта \"Десятичный\":\n\n" +
+                    error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

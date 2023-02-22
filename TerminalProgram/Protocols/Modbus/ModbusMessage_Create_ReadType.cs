@@ -38,8 +38,8 @@ namespace TerminalProgram.Protocols.Modbus
             TX[5] = 0x06;
             // Slave ID
             TX[6] = SlaveID;
-            // Read 1 register
-            TX[7] = 0x04;
+            // Command
+            TX[7] = (byte)ModbusCommand.ReadInputRegisters;
             // address 
             TX[8] = AddressArray[1];
             TX[9] = AddressArray[0];
@@ -77,8 +77,8 @@ namespace TerminalProgram.Protocols.Modbus
 
             // Slave ID
             TX[0] = SlaveID;
-            // Read 1 register
-            TX[1] = 0x04;
+            // Command
+            TX[1] = (byte)ModbusCommand.ReadInputRegisters;
             // address 
             TX[2] = AddressArray[1];
             TX[3] = AddressArray[0];

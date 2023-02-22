@@ -86,6 +86,8 @@ namespace TerminalProgram.Protocols
                         ReadCancelSource.Cancel();
 
                         await Task.WhenAll(ReadThread);
+
+                        await Stream.FlushAsync();
                     }
                     
                     break;
@@ -177,16 +179,16 @@ namespace TerminalProgram.Protocols
             {
                 if (IsConnected)
                 {
-                    int NumberOfReveivedBytes = 0;
+                    int NumberOfReceivedBytes = 0;
 
                     do
                     {
-                        if (NumberOfReveivedBytes > RX.Length)
+                        if (NumberOfReceivedBytes > RX.Length)
                         {
                             break;
                         }
 
-                        NumberOfReveivedBytes = Stream.Read(RX, NumberOfReveivedBytes, RX.Length);
+                        NumberOfReceivedBytes = Stream.Read(RX, NumberOfReceivedBytes, RX.Length);
 
                     } while (Stream.DataAvailable);
                 }
