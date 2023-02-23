@@ -64,7 +64,7 @@ namespace TerminalProgram.Protocols
         private CancellationTokenSource ReadCancelSource = null;
 
 
-        public async void SetReadMode(ReadMode Mode)
+        public void SetReadMode(ReadMode Mode)
         {
             switch (Mode)
             {
@@ -85,9 +85,11 @@ namespace TerminalProgram.Protocols
                     {
                         ReadCancelSource.Cancel();
 
-                        await Task.WhenAll(ReadThread);
+                        Task WaitCancel = Task.WhenAll(ReadThread);
 
-                        await Stream.FlushAsync();
+                        Task FlushTask = Stream.FlushAsync();
+
+                        Task.WaitAll(WaitCancel, FlushTask);
                     }
                     
                     break;
@@ -269,6 +271,8 @@ namespace TerminalProgram.Protocols
             {
                 //  Возникает при отмене задачи.
                 //  По правилам отмены асинхронных задач это исключение можно игнорировать.
+
+                ActionAfterCancel(CurrentStream);
             }
 
             catch (System.IO.IOException error)
@@ -293,5 +297,30 @@ namespace TerminalProgram.Protocols
             }
         }
 
+        // В методе ReadAsync у класса NetworkStream сейчас невозможно отменить операцию чтения.
+        // Поэтому при отмене асинхронной операции поток продолжает считывать данные (ReadTimeout == Timeout.Infinite).
+        // Данная особенность порождает баг:
+        // После подключения к хосту, при переходе из режима "Без протокола" в режим "Modbus"
+        // клиент не может синхронно считать данные за отведенный таймаут. 
+        // Это возникает из - за того, что эти данные уже прочитал поток неотменненый ранее. 
+        // Эту особенность можно увидеть в методе ниже, если поставить таймаут на большее значение.
+        private void ActionAfterCancel(NetworkStream CurrentStream)
+        {
+            try
+            {
+                if (CurrentStream == null)
+                {
+                    return;
+                }
+
+                CurrentStream.ReadTimeout = 1;
+                CurrentStream?.Read(new byte[10], 0, 10);
+            }
+
+            catch (Exception)
+            {
+                CurrentStream.ReadTimeout = Timeout.Infinite;
+            }
+        }
     }
 }

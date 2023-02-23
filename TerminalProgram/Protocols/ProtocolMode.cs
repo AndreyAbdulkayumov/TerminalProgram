@@ -19,10 +19,10 @@ namespace TerminalProgram.Protocols
                 return;
             }
 
+            Client.SetReadMode(CurrentReadMode);
+
             Client.WriteTimeout = WriteTimeout;
             Client.ReadTimeout = ReadTimeout;
-
-            Client.SetReadMode(CurrentReadMode);
         }
     }
 

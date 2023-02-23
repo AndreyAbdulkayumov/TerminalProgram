@@ -75,7 +75,7 @@ namespace TerminalProgram.Protocols
         private Task ReadThread = null;
         private CancellationTokenSource ReadCancelSource = null;
 
-        public async void SetReadMode(ReadMode Mode)
+        public void SetReadMode(ReadMode Mode)
         {
             switch(Mode)
             {
@@ -99,7 +99,7 @@ namespace TerminalProgram.Protocols
                     {
                         ReadCancelSource.Cancel();
 
-                        await Task.WhenAll(ReadThread);
+                        Task.WaitAll(ReadThread);
 
                         DeviceSerialPort.DiscardInBuffer();
                         DeviceSerialPort.DiscardOutBuffer();
