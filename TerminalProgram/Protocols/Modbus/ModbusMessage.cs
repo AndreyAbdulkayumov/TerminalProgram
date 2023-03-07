@@ -13,17 +13,37 @@ namespace TerminalProgram.Protocols.Modbus
     {
         private static ulong PackageNumber = 0;
 
-        public static byte[] Create_WriteType(TypeOfModbus ModbusType, 
-            byte SlaveID, UInt16 Address, UInt16 Data, bool CRC_IsEnable, UInt16 Polynom)
+        public static byte[] Create_WriteType(ModbusWriteFunction WriteFunction, TypeOfModbus ModbusType, 
+            byte SlaveID, UInt16 Address, UInt16[] Data, bool CRC_IsEnable, UInt16 Polynom)
         {
             if (ModbusType == TypeOfModbus.TCP)
             {
-                return ModbusTCP_Create_WriteTypeMessage(SlaveID, Address, Data, CRC_IsEnable, Polynom);
+                if (Data.Length > 1)
+                {
+                    return ModbusTCP_Create_WriteTypeMessage_Multiple(WriteFunction,
+                        SlaveID, Address, Data);
+                }
+                
+                else
+                {
+                    return ModbusTCP_Create_WriteTypeMessage(WriteFunction,
+                        SlaveID, Address, Data.First());
+                }
             }
 
             else if (ModbusType == TypeOfModbus.RTU)
             {
-                return ModbusRTU_Create_WriteTypeMessage(SlaveID, Address, Data, CRC_IsEnable, Polynom);
+                if (Data.Length > 1)
+                {
+                    return ModbusRTU_Create_WriteTypeMessage_Multiple(WriteFunction,
+                        SlaveID, Address, Data, CRC_IsEnable, Polynom);
+                }
+
+                else
+                {
+                    return ModbusRTU_Create_WriteTypeMessage(WriteFunction,
+                        SlaveID, Address, Data.First(), CRC_IsEnable, Polynom);
+                }                
             }
 
             else
@@ -32,18 +52,19 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        public static byte[] Create_ReadType(TypeOfModbus ModbusType,
+        public static byte[] Create_ReadType(ModbusReadFunction ReadFunction, TypeOfModbus ModbusType,
             byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CRC_IsEnable, UInt16 Polynom)
         {
             if (ModbusType == TypeOfModbus.TCP)
             {
-                return ModbusTCP_Create_ReadTypeMessage(SlaveID, Address, NumberOfRegisters, 
-                    CRC_IsEnable, Polynom);
+                return ModbusTCP_Create_ReadTypeMessage(ReadFunction,
+                    SlaveID, Address, NumberOfRegisters);
             }
 
             else if (ModbusType == TypeOfModbus.RTU)
             {
-                return ModbusRTU_Create_ReadTypeMessage(SlaveID, Address, NumberOfRegisters,
+                return ModbusRTU_Create_ReadTypeMessage(ReadFunction,
+                    SlaveID, Address, NumberOfRegisters,
                     CRC_IsEnable, Polynom);
             }
 

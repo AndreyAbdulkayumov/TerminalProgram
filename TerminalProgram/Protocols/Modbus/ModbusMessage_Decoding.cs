@@ -46,7 +46,7 @@ namespace TerminalProgram.Protocols.Modbus
                 // Информационная часть начинается с 9 байта.
                 Array.Copy(SourceArray, 9, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
 
-                DecodingResponse.Data = ReverseArray(DecodingResponse.Data);
+                DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
             }
 
             else if (CommandNumber == ModbusCommand.PresetSingleRegister)
@@ -90,7 +90,7 @@ namespace TerminalProgram.Protocols.Modbus
 
                 Array.Copy(SourceArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
 
-                DecodingResponse.Data = ReverseArray(DecodingResponse.Data);
+                DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
             }
 
             else if (CommandNumber == ModbusCommand.PresetSingleRegister)
@@ -109,23 +109,29 @@ namespace TerminalProgram.Protocols.Modbus
         private static void CheckErrorCode(TypeOfModbus ModbusType, ref ModbusResponse Decoding, byte[] massive)
         {
             // Согласно документации на протокол Modbus:
-            // Если значение в поле команды больше 128, то это ошибка.
-            // Код ошибки = Значение команды - 128
+            // Если значение в поле команды больше 0x80, то это ошибка.
+            // Значение команды = значение в поле команды - 0x80
 
-            if (Decoding.Command > 128)
+            if (Decoding.Command > 0x80)
             {
-                int FunctionCode = Decoding.Command - 128;
+                int FunctionCode = Decoding.Command - 0x80;
 
                 Decoding.Data = new byte[1]; // Код ошибки занимает 1 байт
 
+                // Modbus TCP
+                // [0],[1] - Package ID, [2],[3] - Modbus ID, [4],[5] - Length of PDU
+                // [6] - Slave ID, [7] - Command, [8] - Error code
                 if (ModbusType == TypeOfModbus.TCP)
                 {
-                    Array.Copy(massive, 8, Decoding.Data, 0, 1);
+                    Decoding.Data[0] = massive[8];
                 }
 
+                // Modbus RTU 
+                // [0] - Slave ID, [1] - Command, [2] - Error code,
+                // [3] - CRC_low, [4] - CRC_high
                 else
                 {
-                    Array.Copy(massive, 3, Decoding.Data, 0, 1);
+                    Decoding.Data[0] = massive[2];
                 }                
 
                 switch (Decoding.Data[0])
@@ -197,16 +203,18 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        private static byte[] ReverseArray(byte[] SourceArray)
+        private static byte[] ReverseLowAndHighBytes(byte[] SourceArray)
         {
-            byte[] temp = new byte[SourceArray.Length];
+            byte temp;
 
-            for (int i = 0; i < SourceArray.Length; i++)
+            for (int i = 0; i < SourceArray.Length; i += 2)
             {
-                temp[i] = SourceArray[SourceArray.Length - 1 - i];
+                temp = SourceArray[i];
+                SourceArray[i] = SourceArray[i + 1];
+                SourceArray[i + 1] = temp;
             }
 
-            return temp;
+            return SourceArray;
         }
     }
 }

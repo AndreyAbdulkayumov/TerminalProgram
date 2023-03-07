@@ -120,6 +120,7 @@
     <Compile Include="Protocols\IConnection.cs" />
     <Compile Include="Protocols\IPClient.cs" />
     <Compile Include="Protocols\Modbus\CRC_16.cs" />
+    <Compile Include="Protocols\Modbus\Function.cs" />
     <Compile Include="Protocols\Modbus\Modbus.cs" />
     <Compile Include="Protocols\Modbus\ModbusMessage.cs" />
     <Compile Include="Protocols\Modbus\ModbusMessage_Create_ReadType.cs" />

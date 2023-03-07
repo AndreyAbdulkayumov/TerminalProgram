@@ -59,7 +59,7 @@ namespace TerminalProgram.Protocols.Modbus
             Device = ConnectedDevice;
         }
 
-        public void WriteRegister(UInt16 Address, UInt16 Data, 
+        public void WriteRegister(ModbusWriteFunction WriteFunction, UInt16 Address, UInt16[] Data, 
             out ModbusResponse Response, TypeOfModbus ModbusType, bool CRC_IsEnable)
         {
             try
@@ -70,7 +70,8 @@ namespace TerminalProgram.Protocols.Modbus
 
                 byte[] RX = new byte[20];
 
-                byte[] TX = ModbusMessage.Create_WriteType(ModbusType, SlaveID, Address, Data, CRC_IsEnable, Polynom);
+                byte[] TX = ModbusMessage.Create_WriteType(WriteFunction, ModbusType, 
+                    SlaveID, Address, Data, CRC_IsEnable, Polynom);
 
                 Device.Send(TX, TX.Length);
 
@@ -88,8 +89,9 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        public UInt16 ReadRegister(UInt16 Address, out ModbusResponse Response, 
-            int NumberOfRegisters, TypeOfModbus ModbusType, bool CRC_IsEnable)
+        public UInt16[] ReadRegister(ModbusReadFunction ReadFunction, UInt16 Address, 
+            out ModbusResponse Response, int NumberOfRegisters, 
+            TypeOfModbus ModbusType, bool CRC_IsEnable)
         {
             try
             {
@@ -97,9 +99,10 @@ namespace TerminalProgram.Protocols.Modbus
 
                 IsBusy = true;
 
-                byte[] RX = new byte[20];
+                byte[] RX = new byte[100];
 
-                byte[] TX = ModbusMessage.Create_ReadType(ModbusType, SlaveID, Address, NumberOfRegisters, CRC_IsEnable, Polynom);
+                byte[] TX = ModbusMessage.Create_ReadType(ReadFunction, ModbusType, 
+                    SlaveID, Address, NumberOfRegisters, CRC_IsEnable, Polynom);
 
                 Device.Send(TX, TX.Length);
 
@@ -107,7 +110,12 @@ namespace TerminalProgram.Protocols.Modbus
 
                 Response = ModbusMessage.Decoding(ModbusType, ModbusCommand.ReadInputRegisters, RX);
 
-                UInt16 result = (UInt16)BitConverter.ToInt16(Response.Data, 0);
+                UInt16[] result = new UInt16[Response.Data.Length / 2];
+
+                for (int i = 0; i < result.Length; i++)
+                {
+                    result[i] = BitConverter.ToUInt16(Response.Data, i * 2);
+                }
 
                 IsBusy = false;
 

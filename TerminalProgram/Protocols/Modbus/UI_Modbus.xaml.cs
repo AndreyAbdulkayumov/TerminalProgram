@@ -25,10 +25,11 @@ namespace TerminalProgram.Protocols.Modbus
         public string FuncNumber { get; set; }
         public UInt16 Address { get; set; }
         public string ViewAddress { get; set; }
-        public UInt16 Data { get; set; }
+        public UInt16[] Data { get; set; }
         public string ViewData { get; set; }
     }
 
+    
     /// <summary>
     /// Логика взаимодействия для Modbus.xaml
     /// </summary>
@@ -53,6 +54,24 @@ namespace TerminalProgram.Protocols.Modbus
         private NumberStyles Address_NumberStyle = NumberStyles.HexNumber;
         private NumberStyles Data_NumberStyle = NumberStyles.HexNumber;
 
+        private UInt16 NumberOfRegisters = 1;
+        private bool CRC_Enable = false;
+
+        // Значения по умолчанию (самые частоиспользуемые функции).
+        private ModbusReadFunction ReadFunction = Function.ReadInputRegisters;
+        private ModbusWriteFunction WriteFunction = Function.PresetSingleRegister;
+
+        private readonly string[] ReadFunctions = { 
+            Function.ReadHoldingRegisters.DisplayedName,
+            Function.ReadInputRegisters.DisplayedName
+        };
+
+        private readonly string[] WriteFunctions = {
+            Function.PresetSingleRegister.DisplayedName,
+            Function.PresetMultipleRegister.DisplayedName
+        };
+
+
         public UI_Modbus(MainWindow window)
         {
             InitializeComponent();
@@ -66,6 +85,17 @@ namespace TerminalProgram.Protocols.Modbus
 
             RadioButton_NumFormat_Hex.IsChecked = true;
 
+            TextBox_NumberOfRegisters.Text = NumberOfRegisters.ToString();
+
+            CheckBox_CRC_Enable.IsChecked = true;
+            CheckBox_CRC_Enable_Click(CheckBox_CRC_Enable, new RoutedEventArgs());
+
+            ComboBox_ReadFunc.ItemsSource = ReadFunctions;
+            ComboBox_WriteFunc.ItemsSource = WriteFunctions;
+                        
+            ComboBox_ReadFunc.SelectedValue = ReadFunction.DisplayedName;
+            ComboBox_WriteFunc.SelectedValue = WriteFunction.DisplayedName;
+
             SetUI_Disconnected();
         }
 
@@ -78,11 +108,15 @@ namespace TerminalProgram.Protocols.Modbus
                 if (e.ConnectedDevice is IPClient)
                 {
                     ModbusType = TypeOfModbus.TCP;
+
+                    CheckBox_CRC_Enable.Visibility = Visibility.Hidden;
                 }
 
                 else if (e.ConnectedDevice is SerialPortClient)
                 {
                     ModbusType = TypeOfModbus.RTU;
+
+                    CheckBox_CRC_Enable.Visibility = Visibility.Visible;
                 }
 
                 else
@@ -114,6 +148,12 @@ namespace TerminalProgram.Protocols.Modbus
             Button_Write.IsEnabled = true;
             Button_Read.IsEnabled = true;
 
+            ComboBox_ReadFunc.IsEnabled = true;
+            ComboBox_WriteFunc.IsEnabled = true;
+
+            TextBox_NumberOfRegisters.IsEnabled = true;
+            CheckBox_CRC_Enable.IsEnabled = true;
+
             DataDisplayedList.Clear();
             PackageNumber = 0;
         }
@@ -135,6 +175,12 @@ namespace TerminalProgram.Protocols.Modbus
 
             Button_Write.IsEnabled = false;
             Button_Read.IsEnabled = false;
+
+            ComboBox_ReadFunc.IsEnabled = false;
+            ComboBox_WriteFunc.IsEnabled = false;
+
+            TextBox_NumberOfRegisters.IsEnabled = false;
+            CheckBox_CRC_Enable.IsEnabled = false;
         }
 
         private void Button_Read_Click(object sender, RoutedEventArgs e)
@@ -156,25 +202,47 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
+                if (TextBox_NumberOfRegisters.Text == String.Empty)
+                {
+                    MessageBox.Show("Введите количество регистров для чтения.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
                 ModbusDevice.SlaveID = (byte)SelectedSlaveID;
 
                 UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
 
-                UInt16 ModbusReadData = ModbusDevice.ReadRegister(
+                UInt16[] ModbusReadData = ModbusDevice.ReadRegister(
+                                ReadFunction,
                                 ModbusAddress,
                                 out CommonResponse,
-                                1,
+                                NumberOfRegisters,
                                 ModbusType,
-                                ModbusType == TypeOfModbus.TCP ? false : true);
+                                ModbusType == TypeOfModbus.TCP ? false : CRC_Enable);
+
+                string ViewData = "";
+
+                for (int i = 0; i < ModbusReadData.Length; i++)
+                {
+                    ViewData += "0x" + ModbusReadData[i].ToString("X") +
+                        " (" + ModbusReadData[i].ToString() + ")";
+
+                    if (i != ModbusReadData.Length - 1)
+                    {
+                        ViewData += ", ";
+                    }
+                }
 
                 DataDisplayedList.Add(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
-                    FuncNumber = "0x04 (чтение)",
+                    FuncNumber = ReadFunction.DisplayedNumber,
                     Address = ModbusAddress,
                     ViewAddress = "0x" + ModbusAddress.ToString("X") + " (" + ModbusAddress.ToString() + ")",
                     Data = ModbusReadData,
-                    ViewData = "0x" + ModbusReadData.ToString("X") + " (" + ModbusReadData.ToString() + ")"
+                    ViewData = ViewData
                 });
 
                 DataGrid_ModbusData.ScrollIntoView(DataDisplayedList.Last());
@@ -233,23 +301,39 @@ namespace TerminalProgram.Protocols.Modbus
                 ModbusDevice.SlaveID = (byte)SelectedSlaveID;
 
                 UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
-                UInt16 ModbusWriteData = CheckNumber(TextBox_Data, Data_NumberStyle);
+
+                UInt16[] ModbusWriteData = new UInt16[1];
+                ModbusWriteData[0] = CheckNumber(TextBox_Data, Data_NumberStyle);
 
                 ModbusDevice.WriteRegister(
+                    WriteFunction,
                     ModbusAddress,
                     ModbusWriteData,
                     out CommonResponse,
                     ModbusType,
-                    false);
+                    CRC_Enable);
+
+                string ViewData = "";
+
+                for (int i = 0; i < ModbusWriteData.Length; i++)
+                {
+                    ViewData += "0x" + ModbusWriteData[i].ToString("X") + 
+                        " (" + ModbusWriteData[i].ToString() + ")";
+
+                    if (i != ModbusWriteData.Length - 1)
+                    {
+                        ViewData += ", ";
+                    }
+                }
 
                 DataDisplayedList.Add(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
-                    FuncNumber = "0x06 (запись)",
+                    FuncNumber = WriteFunction.DisplayedNumber,
                     Address = ModbusAddress,
                     ViewAddress = "0x" + ModbusAddress.ToString("X") + " (" + ModbusAddress.ToString() + ")",
                     Data = ModbusWriteData,
-                    ViewData = "0x" + ModbusWriteData.ToString("X") + " (" + ModbusWriteData.ToString() + ")"
+                    ViewData = ViewData
                 });
 
                 DataGrid_ModbusData.ScrollIntoView(DataDisplayedList.Last());
@@ -325,40 +409,6 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        private UInt16 CheckNumber(TextBox SelectedTextBox, NumberStyles Style)
-        {
-            if (SelectedTextBox.Text == String.Empty)
-            {
-                return 0;
-            }
-            
-            UInt16 Number;
-
-            while (true)
-            {
-                if (SelectedTextBox.Text == String.Empty)
-                {
-                    return 0;
-                }
-
-                if (UInt16.TryParse(SelectedTextBox.Text, Style, CultureInfo.InvariantCulture, out Number) == false)
-                {
-                    SelectedTextBox.Text = SelectedTextBox.Text.Remove(SelectedTextBox.Text.Length - 1);
-                    SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
-
-                    MessageBox.Show("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535 (0x0000 - 0xFFFF).",
-                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-
-                else
-                {
-                    break;
-                }
-            }
-
-            return Number;
-        }
-
         private void RadioButton_NumFormat_Hex_Checked(object sender, RoutedEventArgs e)
         {
             try
@@ -407,6 +457,97 @@ namespace TerminalProgram.Protocols.Modbus
                 MessageBox.Show("Возникла ошибка при выборе пункта \"Десятичный\":\n\n" +
                     error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ComboBox_ReadFunc_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (ComboBox_ReadFunc.SelectedIndex < 0)
+                {
+                    return;
+                }
+
+                ReadFunction = (ModbusReadFunction)Function.All.Single(
+                    element => element.DisplayedName == ComboBox_ReadFunc.SelectedItem.ToString());
+            }
+            
+            catch(Exception error)
+            {
+                MessageBox.Show("Не удалось выставить функцию чтения.\n\n" + error.Message, this.Title, 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+
+                ComboBox_ReadFunc.SelectedIndex = -1;
+            }
+        }
+
+        private void ComboBox_WriteFunc_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (ComboBox_WriteFunc.SelectedIndex < 0)
+                {
+                    return;
+                }
+
+                WriteFunction = (ModbusWriteFunction)Function.All.Single(
+                    element => element.DisplayedName == ComboBox_WriteFunc.SelectedItem.ToString());
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Не удалось выставить функцию записи.\n\n" + error.Message, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+
+                ComboBox_WriteFunc.SelectedIndex = -1;
+            }
+        }
+
+        private void TextBox_NumberOfRegisters_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            NumberOfRegisters = CheckNumber(TextBox_NumberOfRegisters, NumberStyles.Integer);
+        }
+
+        private void CheckBox_CRC_Enable_Click(object sender, RoutedEventArgs e)
+        {
+            if (CheckBox_CRC_Enable != null)
+            {
+                CRC_Enable = (bool)CheckBox_CRC_Enable.IsChecked;
+            }
+        }
+
+        private UInt16 CheckNumber(TextBox SelectedTextBox, NumberStyles Style)
+        {
+            if (SelectedTextBox.Text == String.Empty)
+            {
+                return 0;
+            }
+
+            UInt16 Number;
+
+            while (true)
+            {
+                if (SelectedTextBox.Text == String.Empty)
+                {
+                    return 0;
+                }
+
+                if (UInt16.TryParse(SelectedTextBox.Text, Style, CultureInfo.InvariantCulture, out Number) == false)
+                {
+                    SelectedTextBox.Text = SelectedTextBox.Text.Remove(SelectedTextBox.Text.Length - 1);
+                    SelectedTextBox.SelectionStart = SelectedTextBox.Text.Length;
+
+                    MessageBox.Show("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535 (0x0000 - 0xFFFF).",
+                        MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+
+                else
+                {
+                    break;
+                }
+            }
+
+            return Number;
         }
     }
 }

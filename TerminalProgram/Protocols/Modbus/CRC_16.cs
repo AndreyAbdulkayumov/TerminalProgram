@@ -50,9 +50,9 @@ namespace TerminalProgram.Protocols.Modbus
                     }
                 }
             }
-
-            CRC[1] = (byte)(Register >> 8); // присваеваем старший байт полученного регистра младшему байту результата CRC (CRClow)
-            CRC[0] = (byte)(Register & 0x00FF); // присваеваем младший байт полученного регистра старшему байту результата CRC (CRCHi) это условность Modbus — обмен байтов местами.
+                        
+            CRC[0] = (byte)(Register & 0x00FF); // присваеваем младший байт 
+            CRC[1] = (byte)(Register >> 8); // присваеваем старший байт
 
             return CRC;
         }
