@@ -5,16 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
+using TerminalProgram.Protocols.Modbus.Message;
 
 namespace TerminalProgram.Protocols.Modbus
 {
-    public enum TypeOfModbus
-    {
-        TCP,
-        RTU,
-        ASCII
-    }
-
     public struct ModbusResponse
     {
         // Только для Modbus TCP
@@ -31,36 +25,19 @@ namespace TerminalProgram.Protocols.Modbus
         public byte[] Data;
     }
 
-    public static class ModbusCommand
-    {
-        public static readonly int ReadInputRegisters = 0x04;
-
-        public static readonly int PresetSingleRegister = 0x06;
-    }
-
     public class Modbus
     {
-        /// <summary>
-        /// Полином для расчета CRC.
-        /// </summary>
-        public ushort Polynom { get; } = 0xA001;
-        /// <summary>
-        /// Номер Slave устройства, с которым будет происходить обмен данными. 
-        /// По умолчанию равно 0, значит вызов широковещательный.
-        /// </summary>
-        public byte SlaveID { get; set; } = 0;
-
         private static bool IsBusy = false;
 
-        private IConnection Device = null;
+        private readonly IConnection Device;
 
         public Modbus(IConnection ConnectedDevice)
         {
             Device = ConnectedDevice;
         }
 
-        public void WriteRegister(ModbusWriteFunction WriteFunction, UInt16 Address, UInt16[] Data, 
-            out ModbusResponse Response, TypeOfModbus ModbusType, bool CRC_IsEnable)
+        public void WriteRegister(ModbusWriteFunction WriteFunction, MessageData DataForWrite, 
+            ModbusMessage Message, out ModbusResponse Response)
         {
             try
             {
@@ -70,14 +47,13 @@ namespace TerminalProgram.Protocols.Modbus
 
                 byte[] RX = new byte[20];
 
-                byte[] TX = ModbusMessage.Create_WriteType(WriteFunction, ModbusType, 
-                    SlaveID, Address, Data, CRC_IsEnable, Polynom);
+                byte[] TX = Message.CreateMessage(WriteFunction, DataForWrite);
 
                 Device.Send(TX, TX.Length);
 
                 Device.Receive(RX);
 
-                Response = ModbusMessage.Decoding(ModbusType, ModbusCommand.PresetSingleRegister, RX);
+                Response = Message.DecodingMessage(WriteFunction, RX);
 
                 IsBusy = false;
             }
@@ -89,9 +65,8 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        public UInt16[] ReadRegister(ModbusReadFunction ReadFunction, UInt16 Address, 
-            out ModbusResponse Response, int NumberOfRegisters, 
-            TypeOfModbus ModbusType, bool CRC_IsEnable)
+        public UInt16[] ReadRegister(ModbusReadFunction ReadFunction, MessageData DataForRead,
+            ModbusMessage Message, out ModbusResponse Response)
         {
             try
             {
@@ -101,14 +76,13 @@ namespace TerminalProgram.Protocols.Modbus
 
                 byte[] RX = new byte[100];
 
-                byte[] TX = ModbusMessage.Create_ReadType(ReadFunction, ModbusType, 
-                    SlaveID, Address, NumberOfRegisters, CRC_IsEnable, Polynom);
+                byte[] TX = Message.CreateMessage(ReadFunction, DataForRead);
 
                 Device.Send(TX, TX.Length);
 
                 Device.Receive(RX);
 
-                Response = ModbusMessage.Decoding(ModbusType, ModbusCommand.ReadInputRegisters, RX);
+                Response = Message.DecodingMessage(ReadFunction, RX);
 
                 UInt16[] result = new UInt16[Response.Data.Length / 2];
 

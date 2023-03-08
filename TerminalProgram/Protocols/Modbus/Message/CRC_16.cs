@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TerminalProgram.Protocols.Modbus
+namespace TerminalProgram.Protocols.Modbus.Message
 {
-
     public static class CRC_16
     {
         /* Принцип расчета CRC:

@@ -119,13 +119,14 @@
     </Compile>
     <Compile Include="Protocols\IConnection.cs" />
     <Compile Include="Protocols\IPClient.cs" />
-    <Compile Include="Protocols\Modbus\CRC_16.cs" />
+    <Compile Include="Protocols\Modbus\Message\CRC_16.cs" />
     <Compile Include="Protocols\Modbus\Function.cs" />
+    <Compile Include="Protocols\Modbus\Message\MessageData.cs" />
+    <Compile Include="Protocols\Modbus\Message\ModbusRTU_Message.cs" />
+    <Compile Include="Protocols\Modbus\Message\ModbusTCP_Message.cs" />
+    <Compile Include="Protocols\Modbus\Message\Modbus_PDU.cs" />
     <Compile Include="Protocols\Modbus\Modbus.cs" />
-    <Compile Include="Protocols\Modbus\ModbusMessage.cs" />
-    <Compile Include="Protocols\Modbus\ModbusMessage_Create_ReadType.cs" />
-    <Compile Include="Protocols\Modbus\ModbusMessage_Create_WriteType.cs" />
-    <Compile Include="Protocols\Modbus\ModbusMessage_Decoding.cs" />
+    <Compile Include="Protocols\Modbus\Message\ModbusMessage.cs" />
     <Compile Include="Protocols\Modbus\UI_Modbus.xaml.cs">
       <DependentUpon>UI_Modbus.xaml</DependentUpon>
     </Compile>
@@ -250,5 +251,6 @@
   <ItemGroup>
     <Resource Include="Resources\File_AddNew.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

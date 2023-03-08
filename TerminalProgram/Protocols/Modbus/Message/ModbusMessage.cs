@@ -1,112 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalProgram.Protocols.Modbus
+namespace TerminalProgram.Protocols.Modbus.Message
 {
-    public static partial class ModbusMessage
+    public abstract class ModbusMessage
     {
-        private static ModbusResponse ModbusTCP_DecodingMessage(int CommandNumber, byte[] SourceArray)
+        public abstract string ProtocolName { get; }
+        public abstract byte[] CreateMessage(ModbusFunction Function, MessageData Data);
+        public abstract ModbusResponse DecodingMessage(ModbusFunction Function, byte[] SourceArray);
+
+        protected ulong PackageNumber = 0;
+
+        protected enum TypeOfModbus
         {
-            ModbusResponse DecodingResponse = new ModbusResponse();
-
-            byte[] temp = new byte[2];
-
-            temp[0] = SourceArray[1];
-            temp[1] = SourceArray[0];
-            DecodingResponse.OperationNumber = (UInt16)BitConverter.ToInt16(temp, 0);
-            temp[0] = SourceArray[3];
-            temp[1] = SourceArray[2];
-            DecodingResponse.ProtocolID = (UInt16)BitConverter.ToInt16(temp, 0);
-            temp[0] = SourceArray[5];
-            temp[1] = SourceArray[4];
-            DecodingResponse.LengthOfPDU = (UInt16)BitConverter.ToInt16(temp, 0);
-            DecodingResponse.SlaveID = SourceArray[6];
-            DecodingResponse.Command = SourceArray[7];
-
-            CheckErrorCode(TypeOfModbus.TCP, ref DecodingResponse, SourceArray);
-
-            if (CommandNumber == ModbusCommand.ReadInputRegisters)
-            {
-                DecodingResponse.LengthOfData = SourceArray[8];
-
-                if (DecodingResponse.LengthOfData == 0)
-                {
-                    throw new Exception("Длина информационной части пакета равна 0.\n" +
-                        "Код функции: " + CommandNumber.ToString() + "\n" +
-                        "Возможно нарушение целостности пакета Modbus TCP.");
-                }
-
-                DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
-
-                // Согласно документации на протокол Modbus:
-                // В пакете ответном пакете Modbus TCP на команду чтения (0х04)
-                // Информационная часть начинается с 9 байта.
-                Array.Copy(SourceArray, 9, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
-
-                DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
-            }
-
-            else if (CommandNumber == ModbusCommand.PresetSingleRegister)
-            {
-                DecodingResponse.LengthOfData = -1;
-            }
-
-            else
-            {
-                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CommandNumber + ")");
-            }
-
-            return DecodingResponse;
+            TCP,
+            RTU,
+            ASCII
         }
 
-        private static ModbusResponse ModbusRTU_DecodingMessage(int CommandNumber, byte[] SourceArray)
-        {
-            ModbusResponse DecodingResponse = new ModbusResponse();
-
-            DecodingResponse.SlaveID = SourceArray[0];
-            DecodingResponse.Command = SourceArray[1];
-
-            CheckErrorCode(TypeOfModbus.RTU, ref DecodingResponse, SourceArray);
-
-            if (CommandNumber == ModbusCommand.ReadInputRegisters)
-            {
-                DecodingResponse.LengthOfData = SourceArray[2];
-
-                if (DecodingResponse.LengthOfData == 0)
-                {
-                    throw new Exception("Длина информационной части пакета равна 0.\n" +
-                        "Код функции: " + CommandNumber.ToString() + "\n" +
-                        "Возможно нарушение целостности пакета Modbus RTU.");
-                }
-
-                DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
-
-                // Согласно документации на протокол Modbus:
-                // В пакете ответном пакете Modbus RTU на команду чтения (0х04)
-                // Информационная часть начинается с 3 байта.
-
-                Array.Copy(SourceArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
-
-                DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
-            }
-
-            else if (CommandNumber == ModbusCommand.PresetSingleRegister)
-            {
-                DecodingResponse.LengthOfData = -1;
-            }
-
-            else
-            {
-                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CommandNumber + ")");
-            }            
-
-            return DecodingResponse;
-        }
-
-        private static void CheckErrorCode(TypeOfModbus ModbusType, ref ModbusResponse Decoding, byte[] massive)
+        protected void CheckErrorCode(TypeOfModbus ModbusType, ref ModbusResponse Decoding, byte[] massive)
         {
             // Согласно документации на протокол Modbus:
             // Если значение в поле команды больше 0x80, то это ошибка.
@@ -132,7 +48,7 @@ namespace TerminalProgram.Protocols.Modbus
                 else
                 {
                     Decoding.Data[0] = massive[2];
-                }                
+                }
 
                 switch (Decoding.Data[0])
                 {
@@ -203,7 +119,7 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
-        private static byte[] ReverseLowAndHighBytes(byte[] SourceArray)
+        protected byte[] ReverseLowAndHighBytes(byte[] SourceArray)
         {
             byte temp;
 

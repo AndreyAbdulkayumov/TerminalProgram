@@ -40,6 +40,12 @@ namespace TerminalProgram.Protocols.Modbus
             Number = 0x04
         };
 
+        public static readonly ModbusReadFunction[] AllReadFunctions =
+        {
+            ReadHoldingRegisters,
+            ReadInputRegisters
+        };
+
         public static readonly ModbusWriteFunction PresetSingleRegister = new ModbusWriteFunction()
         {
             DisplayedName = "0x06 Запись одного регистра",
@@ -54,11 +60,8 @@ namespace TerminalProgram.Protocols.Modbus
             Number = 0x10
         };
 
-        public static readonly ModbusFunction[] All =
+        public static readonly ModbusWriteFunction[] AllWriteFunctions =
         {
-            ReadHoldingRegisters,
-            ReadInputRegisters,
-
             PresetSingleRegister,
             PresetMultipleRegister
         };

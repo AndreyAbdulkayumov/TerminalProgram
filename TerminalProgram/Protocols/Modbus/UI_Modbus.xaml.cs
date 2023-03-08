@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml.Linq;
 using System.Globalization;
+using TerminalProgram.Protocols.Modbus.Message;
 
 namespace TerminalProgram.Protocols.Modbus
 {
@@ -28,7 +29,6 @@ namespace TerminalProgram.Protocols.Modbus
         public UInt16[] Data { get; set; }
         public string ViewData { get; set; }
     }
-
     
     /// <summary>
     /// Логика взаимодействия для Modbus.xaml
@@ -43,18 +43,21 @@ namespace TerminalProgram.Protocols.Modbus
 
         private int SelectedSlaveID = 0;
 
-        private TypeOfModbus ModbusType;
+        private ModbusMessage ModbusMessageType;
 
         private UInt16 PackageNumber = 0;
 
         private readonly string MainWindowTitle;
 
-        ObservableCollection<ModbusDataDisplayed> DataDisplayedList = new ObservableCollection<ModbusDataDisplayed>();
+        private readonly ObservableCollection<ModbusDataDisplayed> DataDisplayedList = 
+            new ObservableCollection<ModbusDataDisplayed>();
 
         private NumberStyles Address_NumberStyle = NumberStyles.HexNumber;
         private NumberStyles Data_NumberStyle = NumberStyles.HexNumber;
 
         private UInt16 NumberOfRegisters = 1;
+
+        private const UInt16 CRC_Polynom = 0xA001;
         private bool CRC_Enable = false;
 
         // Значения по умолчанию (самые частоиспользуемые функции).
@@ -107,14 +110,14 @@ namespace TerminalProgram.Protocols.Modbus
 
                 if (e.ConnectedDevice is IPClient)
                 {
-                    ModbusType = TypeOfModbus.TCP;
+                    ModbusMessageType = new ModbusTCP_Message();
 
                     CheckBox_CRC_Enable.Visibility = Visibility.Hidden;
                 }
 
                 else if (e.ConnectedDevice is SerialPortClient)
                 {
-                    ModbusType = TypeOfModbus.RTU;
+                    ModbusMessageType = new ModbusRTU_Message();
 
                     CheckBox_CRC_Enable.Visibility = Visibility.Visible;
                 }
@@ -135,7 +138,7 @@ namespace TerminalProgram.Protocols.Modbus
 
         private void SetUI_Connected()
         {
-            TextBlock_ModbusMode.Text = "Modbus " + ModbusType.ToString();
+            TextBlock_ModbusMode.Text = ModbusMessageType.ProtocolName;
 
             TextBox_SlaveID.IsEnabled = true;
 
@@ -210,17 +213,20 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                ModbusDevice.SlaveID = (byte)SelectedSlaveID;
-
                 UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
+
+                MessageData DataForRead = new MessageData(
+                    (byte)SelectedSlaveID,
+                    ModbusAddress,
+                    NumberOfRegisters,
+                    ModbusMessageType is ModbusTCP_Message ? false : CRC_Enable,
+                    CRC_Polynom);
 
                 UInt16[] ModbusReadData = ModbusDevice.ReadRegister(
                                 ReadFunction,
-                                ModbusAddress,
-                                out CommonResponse,
-                                NumberOfRegisters,
-                                ModbusType,
-                                ModbusType == TypeOfModbus.TCP ? false : CRC_Enable);
+                                DataForRead,
+                                ModbusMessageType,
+                                out CommonResponse);
 
                 string ViewData = "";
 
@@ -298,20 +304,23 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                ModbusDevice.SlaveID = (byte)SelectedSlaveID;
-
                 UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
 
                 UInt16[] ModbusWriteData = new UInt16[1];
                 ModbusWriteData[0] = CheckNumber(TextBox_Data, Data_NumberStyle);
 
-                ModbusDevice.WriteRegister(
-                    WriteFunction,
+                MessageData DataForWrite = new MessageData(
+                    (byte)SelectedSlaveID,
                     ModbusAddress,
                     ModbusWriteData,
-                    out CommonResponse,
-                    ModbusType,
-                    CRC_Enable);
+                    ModbusMessageType is ModbusTCP_Message ? false : CRC_Enable,
+                    CRC_Polynom);
+
+                ModbusDevice.WriteRegister(
+                    WriteFunction,
+                    DataForWrite,
+                    ModbusMessageType,
+                    out CommonResponse);
 
                 string ViewData = "";
 
@@ -468,13 +477,13 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                ReadFunction = (ModbusReadFunction)Function.All.Single(
+                ReadFunction = Function.AllReadFunctions.Single(
                     element => element.DisplayedName == ComboBox_ReadFunc.SelectedItem.ToString());
             }
             
             catch(Exception error)
             {
-                MessageBox.Show("Не удалось выставить функцию чтения.\n\n" + error.Message, this.Title, 
+                MessageBox.Show("Не удалось выставить функцию чтения.\n\n" + error.Message, MainWindowTitle, 
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
                 ComboBox_ReadFunc.SelectedIndex = -1;
@@ -490,13 +499,13 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                WriteFunction = (ModbusWriteFunction)Function.All.Single(
+                WriteFunction = Function.AllWriteFunctions.Single(
                     element => element.DisplayedName == ComboBox_WriteFunc.SelectedItem.ToString());
             }
 
             catch (Exception error)
             {
-                MessageBox.Show("Не удалось выставить функцию записи.\n\n" + error.Message, this.Title,
+                MessageBox.Show("Не удалось выставить функцию записи.\n\n" + error.Message, MainWindowTitle,
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
                 ComboBox_WriteFunc.SelectedIndex = -1;
