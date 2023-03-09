@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TerminalProgram"
         mc:Ignorable="d"
         Title="Терминальная программа" 
-        Height="740" Width="820"
+        Height="750" Width="820"
         Background="#FF323232"
         WindowStartupLocation="CenterScreen"
         Loaded="SourceWindow_Loaded"

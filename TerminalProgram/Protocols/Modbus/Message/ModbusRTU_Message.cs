@@ -31,14 +31,14 @@ namespace TerminalProgram.Protocols.Modbus.Message
             // Slave ID
             TX[0] = Data.SlaveID;
 
-            Array.Copy(PDU, 0, TX, 7, PDU.Length);
+            Array.Copy(PDU, 0, TX, 1, PDU.Length);
 
             // CRC
             if (Data.CRC_IsEnable)
             {
                 byte[] CRC = CRC_16.Calculate(TX, Data.Polynom);
-                TX[TX.Length - 1] = CRC[0];
-                TX[TX.Length] = CRC[1];
+                TX[TX.Length - 2] = CRC[0];  // Предпоследний элемент
+                TX[TX.Length - 1] = CRC[1];  // Последний элемент
             }
 
             return TX;
