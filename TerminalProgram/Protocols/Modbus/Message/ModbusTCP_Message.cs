@@ -73,8 +73,8 @@ namespace TerminalProgram.Protocols.Modbus.Message
                 DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
 
                 // Согласно документации на протокол Modbus:
-                // В пакете ответном пакете Modbus TCP на команду чтения (0х04)
-                // Информационная часть начинается с 9 байта.
+                // В ответном пакете Modbus TCP на команды чтения
+                // информационная часть начинается с 9 байта.
                 Array.Copy(SourceArray, 9, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
 
                 DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);

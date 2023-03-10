@@ -7,6 +7,28 @@ using System.Threading.Tasks;
 
 namespace TerminalProgram.Protocols.Modbus.Message
 {
+    public class ModbusException : Exception
+    {
+        public readonly byte ErrorCode;
+        public readonly byte FunctionCode;
+
+        public override string Message { get; }
+
+        public ModbusException(byte FunctionCode, byte ErrorCode, string Message)
+        {
+            this.FunctionCode = FunctionCode;
+            this.ErrorCode = ErrorCode;
+            this.Message = Message;
+        }
+
+        public ModbusException(ModbusException ErrorObject)
+        {
+            FunctionCode= ErrorObject.FunctionCode;
+            ErrorCode = ErrorObject.ErrorCode;
+            Message = ErrorObject.Message;
+        }
+    }
+
     public abstract class ModbusMessage
     {
         public abstract string ProtocolName { get; }
@@ -50,77 +72,17 @@ namespace TerminalProgram.Protocols.Modbus.Message
                     Decoding.Data[0] = massive[2];
                 }
 
-                switch (Decoding.Data[0])
-                {
-                    case 1:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Принятый код функции не может быть обработан (Код 1).");
-
-                    case 2:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Адрес данных, указанный в запросе, недоступен (Код 2).");
-
-                    case 3:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Значение, содержащееся в поле данных запроса, является недопустимой величиной (Код 3).");
-
-                    case 4:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Невосстанавливаемая ошибка имела место, " +
-                            "пока ведомое устройство пыталось выполнить затребованное действие (Код 4).");
-
-                    case 5:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Ведомое устройство приняло запрос и обрабатывает его, " +
-                            "но это требует много времени. " +
-                            "Этот ответ предохраняет ведущее устройство от генерации ошибки тайм-аута (Код 5).");
-
-                    case 6:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Ведомое устройство занято обработкой команды. " +
-                            "Ведущее устройство должно повторить сообщение позже, когда ведомое освободится. (Код 6).");
-
-                    case 7:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Ведомое устройство не может выполнить программную функцию, заданную в запросе. " +
-                            "Этот код возвращается для неуспешного программного запроса, " +
-                            "использующего функции с номерами 13 или 14. " +
-                            "Ведущее устройство должно запросить диагностическую информацию " +
-                            "или информацию об ошибках от ведомого (Код 7).");
-
-                    case 8:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Ведомое устройство при чтении расширенной памяти обнаружило ошибку контроля четности. " +
-                            "Master может повторить запрос позже, " +
-                            "но обычно в таких случаях требуется ремонт оборудования (Код 8).");
-
-                    case 10:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Шлюз неправильно настроен или перегружен запросами (Код 10).");
-
-                    case 11:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Ошибка Modbus: " +
-                            "Slave устройства нет в сети или от него нет ответа (Код 11).");
-
-                    default:
-                        throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                            "Неизвестная ошибка Modbus (Код " + Decoding.Data[0] + ")");
-                }
+                GetModbusException(Decoding.Data[0], (byte)FunctionCode);
             }
         }
 
         protected byte[] ReverseLowAndHighBytes(byte[] SourceArray)
         {
+            if (SourceArray.Length < 2)
+            {
+                return SourceArray;
+            }
+
             byte temp;
 
             for (int i = 0; i < SourceArray.Length; i += 2)
@@ -131,6 +93,67 @@ namespace TerminalProgram.Protocols.Modbus.Message
             }
 
             return SourceArray;
+        }
+
+        private void GetModbusException(byte ErrorCode, byte FunctionCode)
+        {
+            switch (ErrorCode)
+            {
+                case 1:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Принятый код функции не может быть обработан.");
+
+                case 2:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Адрес данных, указанный в запросе, недоступен.");
+
+                case 3:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Значение, содержащееся в поле данных запроса, " +
+                        "является недопустимой величиной.");
+
+                case 4:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Невосстанавливаемая ошибка имела место, " +
+                        "пока ведомое устройство пыталось выполнить затребованное действие.");
+
+                case 5:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Ведомое устройство приняло запрос и обрабатывает его, " +
+                        "но это требует много времени. " +
+                        "Этот ответ предохраняет ведущее устройство от генерации ошибки тайм-аута.");
+
+                case 6:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Ведомое устройство занято обработкой команды. " +
+                        "Ведущее устройство должно повторить сообщение позже, когда ведомое освободится.");
+
+                case 7:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Ведомое устройство не может выполнить программную функцию, заданную в запросе. " +
+                        "Этот код возвращается для неуспешного программного запроса, " +
+                        "использующего функции с номерами 13 или 14. " +
+                        "Ведущее устройство должно запросить диагностическую информацию " +
+                        "или информацию об ошибках от ведомого.");
+
+                case 8:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Ведомое устройство при чтении расширенной памяти обнаружило ошибку контроля четности. " +
+                        "Master может повторить запрос позже, " +
+                        "но обычно в таких случаях требуется ремонт оборудования.");
+
+                case 10:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Шлюз неправильно настроен или перегружен запросами.");
+
+                case 11:
+                    throw new ModbusException(FunctionCode, ErrorCode,
+                        "Slave устройства нет в сети или от него нет ответа.");
+
+                default:
+                    throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
+                        "Неизвестная ошибка Modbus (Код " + ErrorCode + ")");
+            }
         }
     }
 }

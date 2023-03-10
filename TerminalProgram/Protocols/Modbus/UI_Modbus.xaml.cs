@@ -41,11 +41,7 @@ namespace TerminalProgram.Protocols.Modbus
 
         private Modbus ModbusDevice = null;
 
-        private int SelectedSlaveID = 0;
-
-        private ModbusMessage ModbusMessageType;
-
-        private UInt16 PackageNumber = 0;
+        private ModbusMessage ModbusMessageType = null;
 
         private readonly string MainWindowTitle;
 
@@ -55,27 +51,21 @@ namespace TerminalProgram.Protocols.Modbus
         private NumberStyles Address_NumberStyle = NumberStyles.HexNumber;
         private NumberStyles Data_NumberStyle = NumberStyles.HexNumber;
 
+        private UInt16 PackageNumber = 0;
+
+        private byte SelectedSlaveID = 0;
+        private UInt16 SelectedAddress = 0;
         private UInt16 NumberOfRegisters = 1;
 
         private const UInt16 CRC_Polynom = 0xA001;
         private bool CRC_Enable = false;
 
+        private readonly List<UInt16> WriteBuffer = new List<UInt16>();
+        private string WriteDataText = String.Empty;
+
         // Значения по умолчанию (самые частоиспользуемые функции).
         private ModbusReadFunction ReadFunction = Function.ReadInputRegisters;
         private ModbusWriteFunction WriteFunction = Function.PresetSingleRegister;
-
-        private readonly string[] ReadFunctions = { 
-            Function.ReadHoldingRegisters.DisplayedName,
-            Function.ReadInputRegisters.DisplayedName
-        };
-
-        private readonly string[] WriteFunctions = {
-            Function.PresetSingleRegister.DisplayedName,
-            Function.PresetMultipleRegister.DisplayedName
-        };
-
-        private readonly List<UInt16> WriteBuffer = new List<UInt16>();
-        private string WriteDataText = String.Empty;
 
 
         public UI_Modbus(MainWindow window)
@@ -96,9 +86,16 @@ namespace TerminalProgram.Protocols.Modbus
             CheckBox_CRC_Enable.IsChecked = true;
             CheckBox_CRC_Enable_Click(CheckBox_CRC_Enable, new RoutedEventArgs());
 
-            ComboBox_ReadFunc.ItemsSource = ReadFunctions;
-            ComboBox_WriteFunc.ItemsSource = WriteFunctions;
-                        
+            foreach (ModbusReadFunction element in Function.AllReadFunctions)
+            {
+                ComboBox_ReadFunc.Items.Add(element.DisplayedName);
+            }
+
+            foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
+            {
+                ComboBox_WriteFunc.Items.Add(element.DisplayedName);
+            }
+
             ComboBox_ReadFunc.SelectedValue = ReadFunction.DisplayedName;
             ComboBox_WriteFunc.SelectedValue = WriteFunction.DisplayedName;
 
@@ -228,11 +225,9 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
-
                 MessageData DataForRead = new MessageData(
-                    (byte)SelectedSlaveID,
-                    ModbusAddress,
+                    SelectedSlaveID,
+                    SelectedAddress,
                     NumberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : CRC_Enable,
                     CRC_Polynom);
@@ -247,8 +242,8 @@ namespace TerminalProgram.Protocols.Modbus
                 {
                     OperationID = PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
-                    Address = ModbusAddress,
-                    ViewAddress = "0x" + ModbusAddress.ToString("X") + " (" + ModbusAddress.ToString() + ")",
+                    Address = SelectedAddress,
+                    ViewAddress = CreateViewAddress(SelectedAddress, ModbusReadData.Length),
                     Data = ModbusReadData,
                     ViewData = CreateViewData(ModbusReadData)
                 });
@@ -256,6 +251,11 @@ namespace TerminalProgram.Protocols.Modbus
                 DataGrid_ModbusData.ScrollIntoView(DataDisplayedList.Last());
 
                 PackageNumber++;
+            }
+
+            catch(ModbusException error)
+            {
+                ModbusErrorHandler(error);
             }
             
             catch(Exception error)
@@ -278,6 +278,28 @@ namespace TerminalProgram.Protocols.Modbus
             }
         }
 
+        private string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)
+        {
+            string DisplayedString = String.Empty;
+
+            UInt16 CurrentAddress = StartAddress;
+
+            for (int i = 0; i < NumberOfRegisters; i++)
+            {
+                DisplayedString += "0x" + CurrentAddress.ToString("X") +
+                    " (" + CurrentAddress.ToString() + ")";
+
+                if (i != NumberOfRegisters - 1)
+                {
+                    DisplayedString += "\n";
+                }
+
+                CurrentAddress++;
+            }
+
+            return DisplayedString;
+        }
+
         private string CreateViewData(UInt16[] ModbusData)
         {
             string DisplayedString = String.Empty;
@@ -289,11 +311,34 @@ namespace TerminalProgram.Protocols.Modbus
 
                 if (i != ModbusData.Length - 1)
                 {
-                    DisplayedString += ", ";
+                    DisplayedString += "\n";
                 }
             }
 
             return DisplayedString;
+        }
+
+        private void ModbusErrorHandler(ModbusException error)
+        {
+            DataDisplayedList.Add(new ModbusDataDisplayed()
+            {
+                OperationID = PackageNumber,
+                FuncNumber = ReadFunction.DisplayedNumber,
+                Address = SelectedAddress,
+                ViewAddress = CreateViewAddress(SelectedAddress, 1),
+                Data = new UInt16[1],
+                ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
+            });
+
+            DataGrid_ModbusData.ScrollIntoView(DataDisplayedList.Last());
+
+            PackageNumber++;
+
+            MessageBox.Show("Ошибка Modbus.\n\n" +
+                "Код функции: " + error.FunctionCode.ToString() + "\n" +
+                "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
+                error.Message,
+                MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void Button_Write_Click(object sender, RoutedEventArgs e)
@@ -324,8 +369,6 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                UInt16 ModbusAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
-
                 UInt16[] ModbusWriteData;
 
                 if (WriteFunction == Function.PresetMultipleRegister)
@@ -342,8 +385,8 @@ namespace TerminalProgram.Protocols.Modbus
                 }
 
                 MessageData DataForWrite = new MessageData(
-                    (byte)SelectedSlaveID,
-                    ModbusAddress,
+                    SelectedSlaveID,
+                    SelectedAddress,
                     ModbusWriteData,
                     ModbusMessageType is ModbusTCP_Message ? false : CRC_Enable,
                     CRC_Polynom);
@@ -358,8 +401,8 @@ namespace TerminalProgram.Protocols.Modbus
                 {
                     OperationID = PackageNumber,
                     FuncNumber = WriteFunction.DisplayedNumber,
-                    Address = ModbusAddress,
-                    ViewAddress = "0x" + ModbusAddress.ToString("X") + " (" + ModbusAddress.ToString() + ")",
+                    Address = SelectedAddress,
+                    ViewAddress = CreateViewAddress(SelectedAddress, ModbusWriteData.Length),
                     Data = ModbusWriteData,
                     ViewData = CreateViewData(ModbusWriteData)
                 });
@@ -368,8 +411,13 @@ namespace TerminalProgram.Protocols.Modbus
 
                 PackageNumber++;
             }
-            
-            catch(Exception error)
+
+            catch (ModbusException error)
+            {
+                ModbusErrorHandler(error);
+            }
+
+            catch (Exception error)
             {
                 if (ErrorHandler != null)
                 {
@@ -393,7 +441,7 @@ namespace TerminalProgram.Protocols.Modbus
         {
             try
             {
-                SelectedSlaveID = CheckNumber(TextBox_SlaveID, NumberStyles.Number);
+                SelectedSlaveID = (byte)CheckNumber(TextBox_SlaveID, NumberStyles.Number);
             }
 
             catch (Exception error)
@@ -420,7 +468,7 @@ namespace TerminalProgram.Protocols.Modbus
         {
             try
             {
-                CheckNumber(TextBox_Address, Address_NumberStyle);
+                SelectedAddress = CheckNumber(TextBox_Address, Address_NumberStyle);
 
                 TextBox_Address.Text = TextBox_Address.Text.ToUpper();
                 TextBox_Address.SelectionStart = TextBox_Address.Text.Length;
@@ -431,6 +479,11 @@ namespace TerminalProgram.Protocols.Modbus
                 MessageBox.Show("Возникла ошибка при изменении текста в поле \"Адрес\":\n\n" +
                     error.Message, MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void TextBox_NumberOfRegisters_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            NumberOfRegisters = CheckNumber(TextBox_NumberOfRegisters, NumberStyles.Integer);
         }
 
         private void TextBox_Data_TextChanged(object sender, TextChangedEventArgs e)
@@ -470,9 +523,10 @@ namespace TerminalProgram.Protocols.Modbus
                 {
                     CheckNumber(TextBox_Data, Data_NumberStyle);
                 }
-                
+
+                int CursorPosition = TextBox_Data.SelectionStart;
                 TextBox_Data.Text = TextBox_Data.Text.ToUpper();
-                TextBox_Data.SelectionStart = TextBox_Data.Text.Length;
+                TextBox_Data.SelectionStart = CursorPosition;
 
                 WriteDataText = TextBox_Data.Text;
             }
@@ -605,11 +659,6 @@ namespace TerminalProgram.Protocols.Modbus
 
                 ComboBox_WriteFunc.SelectedIndex = -1;
             }
-        }
-
-        private void TextBox_NumberOfRegisters_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            NumberOfRegisters = CheckNumber(TextBox_NumberOfRegisters, NumberStyles.Integer);
         }
 
         private UInt16 CheckNumber(TextBox SelectedTextBox, NumberStyles Style)

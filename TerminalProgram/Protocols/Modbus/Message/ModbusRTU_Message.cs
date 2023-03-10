@@ -68,15 +68,15 @@ namespace TerminalProgram.Protocols.Modbus.Message
                 DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
 
                 // Согласно документации на протокол Modbus:
-                // В пакете ответном пакете Modbus RTU на команду чтения (0х04)
-                // Информационная часть начинается с 3 байта.
+                // В ответном пакете Modbus RTU на команды чтения
+                // информационная часть начинается с 3 байта.
 
                 Array.Copy(SourceArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
 
                 DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
             }
 
-            else if (Function is ModbusReadFunction)
+            else if (Function is ModbusWriteFunction)
             {
                 DecodingResponse.LengthOfData = -1;
             }

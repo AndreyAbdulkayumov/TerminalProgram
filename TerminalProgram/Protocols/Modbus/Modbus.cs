@@ -57,8 +57,14 @@ namespace TerminalProgram.Protocols.Modbus
 
                 IsBusy = false;
             }
-            
-            catch(Exception error)
+
+            catch (ModbusException error)
+            {
+                IsBusy = false;
+                throw new ModbusException(error);
+            }
+
+            catch (Exception error)
             {
                 IsBusy = false;
                 throw new Exception(error.Message);
@@ -84,16 +90,34 @@ namespace TerminalProgram.Protocols.Modbus
 
                 Response = Message.DecodingMessage(ReadFunction, RX);
 
-                UInt16[] result = new UInt16[Response.Data.Length / 2];
-
-                for (int i = 0; i < result.Length; i++)
+                UInt16[] result;
+                
+                if (Response.Data.Length < 2)
                 {
-                    result[i] = BitConverter.ToUInt16(Response.Data, i * 2);
+                    result = new UInt16[1];
+
+                    result[0] = Response.Data[0];
+                }
+
+                else
+                {
+                    result = new UInt16[Response.Data.Length / 2];
+
+                    for (int i = 0; i < result.Length; i++)
+                    {
+                        result[i] = BitConverter.ToUInt16(Response.Data, i * 2);
+                    }
                 }
 
                 IsBusy = false;
 
                 return result;
+            }
+
+            catch (ModbusException error)
+            {
+                IsBusy = false;
+                throw new ModbusException(error);
             }
 
             catch (Exception error)
