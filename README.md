@@ -27,7 +27,7 @@
 	- Modbus RTU
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/86914394/220899846-c2e8fc23-5408-4faf-8742-917fd16361c4.PNG" />
+  <img src="https://user-images.githubusercontent.com/86914394/224363917-75262901-8f72-4fa1-8979-cf3f3f060f3b.PNG" />
 </p>
 
 ## *"Http"*
