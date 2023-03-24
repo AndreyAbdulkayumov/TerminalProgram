@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Protocols.Http"
       mc:Ignorable="d" 
-      d:DesignHeight="670" d:DesignWidth="820"
+      d:DesignHeight="670" d:DesignWidth="850"
       Title="UI_Http"
       Background="#FF323232"
       KeyDown="Page_KeyDown">

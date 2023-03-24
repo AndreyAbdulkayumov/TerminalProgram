@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Protocols.Modbus"
       mc:Ignorable="d" 
-      d:DesignHeight="630" d:DesignWidth="820" 
+      d:DesignHeight="630" d:DesignWidth="850" 
       Background="#FF323232"
       Title="Modbus">
 
@@ -50,7 +50,7 @@
         </Grid>
 
         <DataGrid x:Name="DataGrid_ModbusData" Grid.Row="1" 
-                  Width="775"
+                  Width="795"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   FontSize="16"
@@ -85,7 +85,7 @@
                     Header="Функция"  
                     Binding="{Binding Path=FuncNumber}" 
                     HeaderStyle="{StaticResource ColumnHeaderStyle_Custom}"
-                    Width="150">
+                    Width="160">
 
                     <DataGridTextColumn.ElementStyle>
                         <Style>
@@ -100,7 +100,7 @@
                     Header="Адрес" 
                     Binding="{Binding Path=ViewAddress}" 
                     HeaderStyle="{StaticResource ColumnHeaderStyle_Custom}"
-                    Width="150">
+                    Width="160">
 
                     <DataGridTextColumn.ElementStyle>
                         <Style>
@@ -212,17 +212,24 @@
                 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="90"/>
+                    <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="280"/>
                     <ColumnDefinition Width="130"/>
-                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="270"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Адрес" Grid.Column="1" Grid.Row="0"
-                           Margin="0,1,10,0"
+                           Margin="0,1,45,0"
                            FontSize="16"
                            Foreground="#FFD2C25A"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock x:Name="TextBlock_Address_NumberFormat" Grid.Column="1" Grid.Row="0"
+                           Text="(hex)" 
+                           Margin="0,1,5,0"
+                           FontSize="16"
+                           Foreground="#FFE6AB44"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBox x:Name="TextBox_Address" Grid.Column="2" Grid.Row="0"
@@ -247,9 +254,16 @@
                          TextChanged="TextBox_NumberOfRegisters_TextChanged"/>
                 
                 <TextBlock Text="Значение" Grid.Column="1" Grid.Row="1"
-                           Margin="0,1,10,0"
+                           Margin="0,1,45,0"
                            FontSize="16"
                            Foreground="#FFD2C25A"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock x:Name="TextBlock_Data_NumberFormat" Grid.Column="1" Grid.Row="1"
+                           Text="(dec)" 
+                           Margin="0,1,5,0"
+                           FontSize="16"
+                           Foreground="#FFE6AB44"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBox x:Name="TextBox_Data" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1"

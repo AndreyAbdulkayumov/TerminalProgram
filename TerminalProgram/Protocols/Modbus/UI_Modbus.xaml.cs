@@ -67,6 +67,8 @@ namespace TerminalProgram.Protocols.Modbus
         private ModbusReadFunction ReadFunction = Function.ReadInputRegisters;
         private ModbusWriteFunction WriteFunction = Function.PresetSingleRegister;
 
+        private const string NumberFormatName_Hex = "(hex)";
+        private const string NumberFormatName_Dec = "(dec)";
 
         public UI_Modbus(MainWindow window)
         {
@@ -554,6 +556,9 @@ namespace TerminalProgram.Protocols.Modbus
                 {
                     ConvertDataTextIn(NumberStyles.HexNumber);
                 }
+
+                TextBlock_Address_NumberFormat.Text = NumberFormatName_Hex;
+                TextBlock_Data_NumberFormat.Text = NumberFormatName_Hex;
             }
             
             catch(Exception error)
@@ -579,6 +584,9 @@ namespace TerminalProgram.Protocols.Modbus
                 {
                     ConvertDataTextIn(NumberStyles.Number);
                 }
+
+                TextBlock_Address_NumberFormat.Text = NumberFormatName_Dec;
+                TextBlock_Data_NumberFormat.Text = NumberFormatName_Dec;
             }
 
             catch (Exception error)
