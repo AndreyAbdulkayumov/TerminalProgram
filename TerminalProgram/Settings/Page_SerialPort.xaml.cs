@@ -43,6 +43,11 @@ namespace TerminalProgram.Settings
 
         public void UpdateUI(DeviceData UpdateSettings)
         {
+            if (UpdateSettings.Connection_SerialPort == null)
+            {
+                throw new Exception("Нет информации о настройках подключения по последовательному порту.");
+            }
+
             Settings = UpdateSettings;
 
             Button_ReScan_COMPorts_Click(this, new RoutedEventArgs());
@@ -73,7 +78,7 @@ namespace TerminalProgram.Settings
             SetValue(ComboBox_StopBits, UpdateSettings.Connection_SerialPort.StopBits);
         }
 
-        private void SetValue(ComboBox Box, string Value)
+        private void SetValue(ComboBox Box, string? Value)
         {
             if (Value == null)
             {
@@ -101,7 +106,7 @@ namespace TerminalProgram.Settings
 
         private void ComboBox_COMPort_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboBox_COMPort.SelectedIndex != -1)
+            if (Settings.Connection_SerialPort != null && ComboBox_COMPort.SelectedIndex != -1)
             {
                 Settings.Connection_SerialPort.COMPort = ComboBox_COMPort.SelectedItem?.ToString();
             }            
@@ -109,7 +114,7 @@ namespace TerminalProgram.Settings
 
         private void ComboBox_BaudRate_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboBox_BaudRate.SelectedIndex != -1)
+            if (Settings.Connection_SerialPort != null && ComboBox_BaudRate.SelectedIndex != -1)
             {
                 Settings.Connection_SerialPort.BaudRate = ComboBox_BaudRate.SelectedItem?.ToString();
             }
@@ -117,26 +122,40 @@ namespace TerminalProgram.Settings
         
         private void CheckBox_BaudRate_Custom_Enable_Click(object sender, RoutedEventArgs e)
         {
-            if (CheckBox_BaudRate_Custom_Enable.IsChecked == true)
+            try
             {
-                ComboBox_BaudRate.SelectedIndex = -1;
-                ComboBox_BaudRate.IsEnabled = false;
+                if (Settings.Connection_SerialPort == null)
+                {
+                    throw new Exception("Нет информации о настройках подключения по последовательному порту.");
+                }
 
-                TextBox_BaudRate_Custom.Text = Settings.Connection_SerialPort.BaudRate_Custom;
-                TextBox_BaudRate_Custom.IsEnabled = true;
+                if (CheckBox_BaudRate_Custom_Enable.IsChecked == true)
+                {
+                    ComboBox_BaudRate.SelectedIndex = -1;
+                    ComboBox_BaudRate.IsEnabled = false;
 
-                Settings.Connection_SerialPort.BaudRate_IsCustom = "Enable";
+                    TextBox_BaudRate_Custom.Text = Settings.Connection_SerialPort.BaudRate_Custom;
+                    TextBox_BaudRate_Custom.IsEnabled = true;
+
+                    Settings.Connection_SerialPort.BaudRate_IsCustom = "Enable";
+                }
+
+                else
+                {
+                    SetValue(ComboBox_BaudRate, Settings.Connection_SerialPort.BaudRate);
+                    ComboBox_BaudRate.IsEnabled = true;
+
+                    TextBox_BaudRate_Custom.Text = String.Empty;
+                    TextBox_BaudRate_Custom.IsEnabled = false;
+
+                    Settings.Connection_SerialPort.BaudRate_IsCustom = "Disable";
+                }
             }
-
-            else
+            
+            catch(Exception error)
             {
-                SetValue(ComboBox_BaudRate, Settings.Connection_SerialPort.BaudRate);
-                ComboBox_BaudRate.IsEnabled = true;
-
-                TextBox_BaudRate_Custom.Text = String.Empty;
-                TextBox_BaudRate_Custom.IsEnabled = false;
-
-                Settings.Connection_SerialPort.BaudRate_IsCustom = "Disable";
+                MessageBox.Show(error.Message, "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
 
@@ -158,22 +177,34 @@ namespace TerminalProgram.Settings
                 return;
             }
 
-            Settings.Connection_SerialPort.BaudRate_Custom = TextBox_BaudRate_Custom.Text;
+            if (Settings.Connection_SerialPort != null)
+            {
+                Settings.Connection_SerialPort.BaudRate_Custom = TextBox_BaudRate_Custom.Text;
+            }
         }
 
         private void ComboBox_Parity_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.Connection_SerialPort.Parity = ComboBox_Parity.SelectedItem?.ToString();
+            if (Settings.Connection_SerialPort != null)
+            {
+                Settings.Connection_SerialPort.Parity = ComboBox_Parity.SelectedItem?.ToString();
+            }            
         }
 
         private void ComboBox_DataBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.Connection_SerialPort.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
+            if (Settings.Connection_SerialPort != null)
+            {
+                Settings.Connection_SerialPort.DataBits = ComboBox_DataBits.SelectedItem?.ToString();
+            }            
         }
 
         private void ComboBox_StopBits_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Settings.Connection_SerialPort.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
+            if (Settings.Connection_SerialPort != null)
+            {
+                Settings.Connection_SerialPort.StopBits = ComboBox_StopBits.SelectedItem?.ToString();
+            }
         }
 
         private void Button_ReScan_COMPorts_Click(object sender, RoutedEventArgs e)
@@ -187,7 +218,7 @@ namespace TerminalProgram.Settings
                 ComboBox_COMPort.Items.Add(Port);
             }
 
-            if (Settings.Connection_SerialPort.COMPort == null)
+            if (Settings.Connection_SerialPort == null || Settings.Connection_SerialPort.COMPort == null)
             {
                 ComboBox_COMPort.SelectedIndex = -1;
                 TextBlock_PortNotFound.Text = "Порт не задан";
@@ -197,7 +228,7 @@ namespace TerminalProgram.Settings
             }
 
             string SelectedPort = Settings.Connection_SerialPort.COMPort;
-            string FoundPort = null;
+            string? FoundPort = null;
 
             foreach (string Port in ComboBox_COMPort.Items)
             {

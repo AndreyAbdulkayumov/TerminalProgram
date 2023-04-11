@@ -65,15 +65,20 @@ namespace TerminalProgram.Protocols
 
     public class DataFromDevice : EventArgs
     {
-        public byte[] RX;
+        public readonly byte[] RX;
+
+        public DataFromDevice(int RX_ArrayLength)
+        {
+            RX = new byte[RX_ArrayLength];
+        }
     }
 
     public class SocketInfo
     {
-        public string IP = null;
-        public string Port = null;
+        public string? IP;
+        public string? Port;
 
-        public SocketInfo(string IP, string Port)
+        public SocketInfo(string? IP, string? Port)
         {
             this.IP = IP;
             this.Port = Port;
@@ -82,13 +87,13 @@ namespace TerminalProgram.Protocols
 
     public class SerialPortInfo
     {
-        public string COM_Port = null;
-        public string BaudRate = null;
-        public string Parity = null;
-        public string DataBits = null;
-        public string StopBits = null;
+        public string? COM_Port;
+        public string? BaudRate;
+        public string? Parity;
+        public string? DataBits;
+        public string? StopBits;
 
-        public SerialPortInfo(string COM_Port, string BaudRate, string Parity, string DataBits, string StopBits)
+        public SerialPortInfo(string? COM_Port, string? BaudRate, string? Parity, string? DataBits, string? StopBits)
         {
             this.COM_Port = COM_Port;
             this.BaudRate = BaudRate;
@@ -100,8 +105,8 @@ namespace TerminalProgram.Protocols
 
     public class ConnectionInfo
     {
-        public SocketInfo Socket;
-        public SerialPortInfo SerialPort;
+        public SocketInfo? Socket;
+        public SerialPortInfo? SerialPort;
 
         public readonly Encoding GlobalEncoding;
 

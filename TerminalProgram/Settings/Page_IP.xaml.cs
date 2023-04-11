@@ -32,13 +32,18 @@ namespace TerminalProgram.Settings
 
         public void UpdateUI(DeviceData UpdateSettings)
         {
+            if (UpdateSettings.Connection_IP == null)
+            {
+                throw new Exception("Нет информации о настройках подключения по Ethernet.");
+            }
+
             Settings = UpdateSettings;
 
             SetValue(TextBox_IP_Address, UpdateSettings.Connection_IP.IP_Address);
             SetValue(TextBox_Port, UpdateSettings.Connection_IP.Port);
         }
 
-        private void SetValue(TextBox Box, string Value)
+        private void SetValue(TextBox Box, string? Value)
         {
             if (Value == null)
             {
@@ -51,12 +56,18 @@ namespace TerminalProgram.Settings
 
         private void TextBox_IP_Address_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Settings.Connection_IP.IP_Address = TextBox_IP_Address.Text;
+            if (Settings.Connection_IP != null)
+            {
+                Settings.Connection_IP.IP_Address = TextBox_IP_Address.Text;
+            }
         }
 
         private void TextBox_Port_TextChanged(object sender, TextChangedEventArgs e)
         {
-            Settings.Connection_IP.Port = TextBox_Port.Text;
+            if (Settings.Connection_IP != null)
+            {
+                Settings.Connection_IP.Port = TextBox_Port.Text;
+            }
         }
     }
 }

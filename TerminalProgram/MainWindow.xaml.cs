@@ -61,22 +61,23 @@ namespace TerminalProgram
     /// </summary>
     public partial class MainWindow : Window
     {
-        public event EventHandler<ConnectArgs> DeviceIsConnect;
-        public event EventHandler<ConnectArgs> DeviceIsDisconnected;
+        public event EventHandler<ConnectArgs>? DeviceIsConnect;
+        public event EventHandler<ConnectArgs>? DeviceIsDisconnected;
 
         public DeviceData Settings { get; private set; } = new DeviceData();
 
-        public static Encoding GlobalEncoding { get; private set; } = null;
+        // Значение кодировки по умолчанию
+        public static Encoding GlobalEncoding { get; private set; } = Encoding.Default;
 
-        private IConnection Client = null;
+        public ProtocolMode? SelectedProtocol { get; private set; }
+
+        private IConnection? Client = null;
         
-        private string[] PresetFileNames;
+        private string[]? PresetFileNames;
 
-        private UI_NoProtocol NoProtocolPage = null;
-        private UI_Modbus ModbusPage = null;
-        private UI_Http HttpPage = null;
-
-        public ProtocolMode SelectedProtocol { get; private set; } = null;
+        private UI_NoProtocol? NoProtocolPage = null;
+        private UI_Modbus? ModbusPage = null;
+        private UI_Http? HttpPage = null;
 
         private string SettingsDocument
         {
@@ -181,7 +182,7 @@ namespace TerminalProgram
             }
         }
 
-        private void CommonErrorHandler(object sender, EventArgs e)
+        private void CommonErrorHandler(object? sender, EventArgs e)
         {
             Button_Disconnect_Click(this, new RoutedEventArgs());
         }
@@ -220,6 +221,11 @@ namespace TerminalProgram
 
                 ComboBox_SelectedPreset.SelectedIndex = ComboBox_SelectedPreset.Items.IndexOf(DocumentName);
 
+                if (Settings.GlobalEncoding == null)
+                {
+                    throw new Exception("Не удалось обработать значение кодировки.");
+                }
+
                 GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
             }
 
@@ -247,9 +253,6 @@ namespace TerminalProgram
                 case "UTF-32":
                     return Encoding.UTF32;
 
-                case "UTF-7":
-                    return Encoding.UTF7;
-
                 case "UTF-8":
                     return Encoding.UTF8;
 
@@ -276,10 +279,7 @@ namespace TerminalProgram
                 return;
             }
 
-            SettingsWindow Window = new SettingsWindow(
-                UsedDirectories.GetPath(ProgramDirectory.Settings),
-                SettingsDocument
-                )
+            SettingsWindow Window = new SettingsWindow(SettingsDocument)
             {
                 Owner = this
             };
@@ -317,10 +317,27 @@ namespace TerminalProgram
 
         private async void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboBox_SelectedPreset.SelectedItem != null)
+            try
             {
-                SettingsDocument = ComboBox_SelectedPreset.SelectedItem.ToString();
-                await UpdateDeviceData(SettingsDocument);
+                if (ComboBox_SelectedPreset.SelectedItem != null)
+                {
+                    string? DocumentName = ComboBox_SelectedPreset.SelectedItem.ToString();
+
+                    if (DocumentName == null)
+                    {
+                        throw new Exception("Не удалось обработать имя выбранного пресета.");
+                    }
+
+                    SettingsDocument = DocumentName;
+
+                    await UpdateDeviceData(SettingsDocument);
+                }
+            }
+            
+            catch (Exception error)
+            {
+                MessageBox.Show("Возникла ошибка при изменении пресета.\n\n" + error.Message, this.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
         }
 
@@ -328,6 +345,11 @@ namespace TerminalProgram
         {
             try
             {
+                if (SelectedProtocol == null)
+                {
+                    throw new Exception("Не выбран протокол.");
+                }
+
                 switch (Settings.TypeOfConnection)
                 {
                     case "SerialPort":
@@ -335,12 +357,12 @@ namespace TerminalProgram
                         Client = new SerialPortClient();
 
                         Client.Connect(new ConnectionInfo(new SerialPortInfo(
-                            Settings.Connection_SerialPort.COMPort,
-                            Settings.Connection_SerialPort.BaudRate_IsCustom == "Enable" ? 
-                                Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate,
-                            Settings.Connection_SerialPort.Parity,
-                            Settings.Connection_SerialPort.DataBits,
-                            Settings.Connection_SerialPort.StopBits
+                            Settings.Connection_SerialPort?.COMPort,
+                            Settings.Connection_SerialPort?.BaudRate_IsCustom == "Enable" ? 
+                                Settings.Connection_SerialPort?.BaudRate_Custom : Settings.Connection_SerialPort?.BaudRate,
+                            Settings.Connection_SerialPort?.Parity,
+                            Settings.Connection_SerialPort?.DataBits,
+                            Settings.Connection_SerialPort?.StopBits
                             ),
                             GlobalEncoding));
 
@@ -351,8 +373,8 @@ namespace TerminalProgram
                         Client = new IPClient();
 
                         Client.Connect(new ConnectionInfo(new SocketInfo(
-                            Settings.Connection_IP.IP_Address,
-                            Settings.Connection_IP.Port
+                            Settings.Connection_IP?.IP_Address,
+                            Settings.Connection_IP?.Port
                             ),
                             GlobalEncoding));
 
@@ -364,17 +386,13 @@ namespace TerminalProgram
 
                 SetUI_Connected();
 
-                if (SelectedProtocol is ProtocolMode_Modbus)
-                {
-                    (SelectedProtocol as ProtocolMode_Modbus).UpdateTimeouts(Settings);
-                }
+                ProtocolMode_Modbus? ModbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
+
+                ModbusProtocol?.UpdateTimeouts(Settings);
 
                 SelectedProtocol.InitMode(Client);
 
-                if (DeviceIsConnect != null)
-                {
-                    DeviceIsConnect(this, new ConnectArgs(Client));
-                }
+                DeviceIsConnect?.Invoke(this, new ConnectArgs(Client));
             }
             
             catch(Exception error)
@@ -388,6 +406,11 @@ namespace TerminalProgram
         {
             try
             {
+                if (Client == null)
+                {
+                    return;
+                }
+
                 try
                 {
                     await Client.Disconnect();
@@ -401,10 +424,7 @@ namespace TerminalProgram
 
                 SetUI_Disconnected();
 
-                if (DeviceIsDisconnected != null)
-                {
-                    DeviceIsDisconnected(this, new ConnectArgs(Client));
-                }
+                DeviceIsDisconnected?.Invoke(this, new ConnectArgs(Client));
             }
 
             catch(Exception error)
@@ -432,6 +452,11 @@ namespace TerminalProgram
 
         private void RadioButton_NoProtocol_Checked(object sender, RoutedEventArgs e)
         {
+            if (NoProtocolPage == null)
+            {
+                return;
+            }
+
             if (Frame_ActionUI.Navigate(NoProtocolPage) == false)
             {
                 MessageBox.Show("Не удалось перейти на страницу " + NoProtocolPage.Name, this.Title,
@@ -451,6 +476,11 @@ namespace TerminalProgram
 
         private void RadioButton_Protocol_Modbus_Checked(object sender, RoutedEventArgs e)
         {
+            if (ModbusPage == null)
+            {
+                return;
+            }
+
             if (Frame_ActionUI.Navigate(ModbusPage) == false)
             {
                 MessageBox.Show("Не удалось перейти на страницу " + ModbusPage.Name, this.Title,
@@ -470,6 +500,11 @@ namespace TerminalProgram
 
         private void RadioButton_Protocol_Http_Checked(object sender, RoutedEventArgs e)
         {
+            if (HttpPage == null)
+            {
+                return;
+            }
+
             if (Frame_ActionUI.Navigate(HttpPage) == false)
             {
                 MessageBox.Show("Не удалось перейти на страницу " + HttpPage.Name, this.Title,

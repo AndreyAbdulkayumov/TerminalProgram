@@ -23,11 +23,11 @@ namespace TerminalProgram.Protocols.Modbus
     public class ModbusDataDisplayed
     {
         public UInt16 OperationID { get; set; }
-        public string FuncNumber { get; set; }
+        public string? FuncNumber { get; set; }
         public UInt16 Address { get; set; }
-        public string ViewAddress { get; set; }
-        public UInt16[] Data { get; set; }
-        public string ViewData { get; set; }
+        public string? ViewAddress { get; set; }
+        public UInt16[]? Data { get; set; }
+        public string? ViewData { get; set; }
     }
     
     /// <summary>
@@ -35,13 +35,13 @@ namespace TerminalProgram.Protocols.Modbus
     /// </summary>
     public partial class UI_Modbus : Page
     {
-        public event EventHandler<EventArgs> ErrorHandler;
+        public event EventHandler<EventArgs>? ErrorHandler;
 
         public ModbusResponse CommonResponse = new ModbusResponse();
 
-        private Modbus ModbusDevice = null;
+        private Modbus? ModbusDevice = null;
 
-        private ModbusMessage ModbusMessageType = null;
+        private ModbusMessage? ModbusMessageType = null;
 
         private readonly string MainWindowTitle;
 
@@ -104,7 +104,7 @@ namespace TerminalProgram.Protocols.Modbus
             SetUI_Disconnected();
         }
 
-        private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
+        private void MainWindow_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             if (e.ConnectedDevice.IsConnected)
             {
@@ -135,13 +135,18 @@ namespace TerminalProgram.Protocols.Modbus
             }            
         }
 
-        private void MainWindow_DeviceIsDisconnected(object sender, ConnectArgs e)
+        private void MainWindow_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             SetUI_Disconnected();
         }
 
         private void SetUI_Connected()
         {
+            if (ModbusMessageType == null)
+            {
+                throw new Exception("Не задан тип протокола Modbus.");
+            }
+
             TextBlock_ModbusMode.Text = ModbusMessageType.ProtocolName;
 
             TextBox_SlaveID.IsEnabled = true;
@@ -196,9 +201,26 @@ namespace TerminalProgram.Protocols.Modbus
         {
             try
             {
+                if (ModbusDevice == null)
+                {
+                    MessageBox.Show("Не инициализирован Modbus клиент.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
+                if (ModbusMessageType == null)
+                {
+                    MessageBox.Show("Не задан тип протокола Modbus.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
                 if (TextBox_SlaveID.Text == String.Empty)
                 {
-                    MessageBox.Show("Укажите Slave ID.", MainWindowTitle, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Укажите Slave ID.", MainWindowTitle, 
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
 
                     return;
                 }
@@ -227,7 +249,7 @@ namespace TerminalProgram.Protocols.Modbus
                     return;
                 }
 
-                MessageData DataForRead = new MessageData(
+                MessageData Data = new ReadTypeMessage(
                     SelectedSlaveID,
                     SelectedAddress,
                     NumberOfRegisters,
@@ -236,7 +258,7 @@ namespace TerminalProgram.Protocols.Modbus
 
                 UInt16[] ModbusReadData = ModbusDevice.ReadRegister(
                                 ReadFunction,
-                                DataForRead,
+                                Data,
                                 ModbusMessageType,
                                 out CommonResponse);
 
@@ -347,6 +369,22 @@ namespace TerminalProgram.Protocols.Modbus
         {
             try
             {
+                if (ModbusDevice == null)
+                {
+                    MessageBox.Show("Не инициализирован Modbus клиент.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
+                if (ModbusMessageType == null)
+                {
+                    MessageBox.Show("Не задан тип протокола Modbus.", MainWindowTitle,
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+
+                    return;
+                }
+
                 if (TextBox_SlaveID.Text == String.Empty)
                 {
                     MessageBox.Show("Укажите Slave ID.", MainWindowTitle,
@@ -386,7 +424,7 @@ namespace TerminalProgram.Protocols.Modbus
                     };
                 }
 
-                MessageData DataForWrite = new MessageData(
+                MessageData Data = new WriteTypeMessage(
                     SelectedSlaveID,
                     SelectedAddress,
                     ModbusWriteData,
@@ -395,7 +433,7 @@ namespace TerminalProgram.Protocols.Modbus
 
                 ModbusDevice.WriteRegister(
                     WriteFunction,
-                    DataForWrite,
+                    Data,
                     ModbusMessageType,
                     out CommonResponse);
 
@@ -457,7 +495,7 @@ namespace TerminalProgram.Protocols.Modbus
         {
             if (CheckBox_CRC_Enable != null)
             {
-                CRC_Enable = (bool)CheckBox_CRC_Enable.IsChecked;
+                CRC_Enable = CheckBox_CRC_Enable.IsChecked == null ? false : (bool)CheckBox_CRC_Enable.IsChecked;
             }
         }
 

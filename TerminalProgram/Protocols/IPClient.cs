@@ -11,7 +11,7 @@ namespace TerminalProgram.Protocols
 {
     public class IPClient : IConnection
     {
-        public event EventHandler<DataFromDevice> DataReceived;
+        public event EventHandler<DataFromDevice>? DataReceived;
 
         public bool IsConnected { get; private set; } = false;
 
@@ -57,11 +57,11 @@ namespace TerminalProgram.Protocols
             }
         }
 
-        private NetworkStream Stream = null;
-        private TcpClient Client = null;
+        private NetworkStream? Stream = null;
+        private TcpClient? Client = null;
 
-        private Task ReadThread = null;
-        private CancellationTokenSource ReadCancelSource = null;
+        private Task? ReadThread = null;
+        private CancellationTokenSource? ReadCancelSource = null;
 
 
         public void SetReadMode(ReadMode Mode)
@@ -70,7 +70,7 @@ namespace TerminalProgram.Protocols
             {
                 case ReadMode.Async:
 
-                    if (IsConnected)
+                    if (Stream != null && IsConnected)
                     {
                         ReadCancelSource = new CancellationTokenSource();
 
@@ -81,15 +81,18 @@ namespace TerminalProgram.Protocols
 
                 case ReadMode.Sync:
 
-                    if (IsConnected && ReadCancelSource != null)
+                    if (Stream != null && IsConnected)
                     {
-                        ReadCancelSource.Cancel();
+                        ReadCancelSource?.Cancel();
 
-                        Task WaitCancel = Task.WhenAll(ReadThread);
+                        if (ReadThread != null)
+                        {
+                            Task WaitCancel = Task.WhenAll(ReadThread);
 
-                        Task FlushTask = Stream.FlushAsync();
+                            Task FlushTask = Stream.FlushAsync();
 
-                        Task.WaitAll(WaitCancel, FlushTask);
+                            Task.WaitAll(WaitCancel, FlushTask);
+                        }                        
                     }
                     
                     break;
@@ -101,6 +104,11 @@ namespace TerminalProgram.Protocols
 
         public void Connect(ConnectionInfo Info)
         {
+            if (Info.Socket == null)
+            {
+                throw new Exception("Нет информации о настройках подключения по Ethernet.");
+            }
+
             if (Info.Socket.IP == null || Info.Socket.Port == null)
             {
                 throw new Exception(
@@ -142,11 +150,16 @@ namespace TerminalProgram.Protocols
 
         public async Task Disconnect()
         {
-            if (((MainWindow)Application.Current.MainWindow).SelectedProtocol.CurrentReadMode == ReadMode.Async)
-            {
-                ReadCancelSource.Cancel();
+            ProtocolMode? SelectedProtocol = ((MainWindow)Application.Current.MainWindow).SelectedProtocol;
 
-                await Task.WhenAll(ReadThread);
+            if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
+            {
+                ReadCancelSource?.Cancel();
+
+                if (ReadThread != null)
+                {
+                    await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                }                
             }            
 
             Stream?.Close();
@@ -158,6 +171,11 @@ namespace TerminalProgram.Protocols
 
         public void Send(byte[] Message, int NumberOfBytes)
         {
+            if (Stream == null)
+            {
+                return;
+            }
+
             try
             {
                 if (IsConnected)
@@ -177,6 +195,11 @@ namespace TerminalProgram.Protocols
 
         public void Receive(byte[] RX)
         {
+            if (Stream == null)
+            {
+                return;
+            }
+
             try
             {
                 if (IsConnected)
@@ -250,10 +273,7 @@ namespace TerminalProgram.Protocols
 
                         ReadCancel.ThrowIfCancellationRequested();
 
-                        DataFromDevice Data = new DataFromDevice()
-                        {
-                            RX = new byte[NumberOfReceiveBytes]
-                        };
+                        DataFromDevice Data = new DataFromDevice(NumberOfReceiveBytes);
 
                         for (int i = 0; i < NumberOfReceiveBytes; i++)
                         {
@@ -280,7 +300,7 @@ namespace TerminalProgram.Protocols
                 MessageBox.Show(
                     "Возникла ошибка при асинхронном чтении у IP клиента.\n\n" + 
                     error.Message +
-                    "\n\nТаймаут чтения: " + Stream.ReadTimeout + " мс." +
+                    "\n\nТаймаут чтения: " + CurrentStream.ReadTimeout + " мс." +
                     "\n\nЧтение данных прекращено. Возможно вам стоит изменить настройки и переподключиться.",
                     "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);

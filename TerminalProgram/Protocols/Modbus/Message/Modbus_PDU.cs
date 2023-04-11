@@ -10,19 +10,22 @@ namespace TerminalProgram.Protocols.Modbus.Message
     {
         public static byte[] Create(ModbusFunction Function, MessageData Data)
         {
-            if (Function.Number >= 1 && Function.Number <= 4)
+            WriteTypeMessage? DataForWrite = Data as WriteTypeMessage;
+            ReadTypeMessage? DataForRead = Data as ReadTypeMessage;
+
+            if (DataForRead != null && Function.Number >= 1 && Function.Number <= 4)
             {
-                return Create_Read(Function, Data);
+                return Create_Read(Function, DataForRead);
             }
 
-            else if (Function.Number == 5 || Function.Number == 6)
+            else if (DataForWrite != null && (Function.Number == 5 || Function.Number == 6))
             {
-                return Create_Write(Function, Data);
+                return Create_Write(Function, DataForWrite);
             }
 
-            else if (Function.Number == 15 || Function.Number == 16)
+            else if (DataForWrite != null && (Function.Number == 15 || Function.Number == 16))
             {
-                return Create_WriteMultiple(Function, Data);
+                return Create_WriteMultiple(Function, DataForWrite);
             }
 
             else
@@ -32,7 +35,7 @@ namespace TerminalProgram.Protocols.Modbus.Message
             }
         }
 
-        private static byte[] Create_Read(ModbusFunction ReadFunction, MessageData Data)
+        private static byte[] Create_Read(ModbusFunction ReadFunction, ReadTypeMessage Data)
         {
             byte[] PDU = new byte[5];
 
@@ -51,7 +54,7 @@ namespace TerminalProgram.Protocols.Modbus.Message
             return PDU;
         }
 
-        private static byte[] Create_Write(ModbusFunction WriteFunction, MessageData Data)
+        private static byte[] Create_Write(ModbusFunction WriteFunction, WriteTypeMessage Data)
         {
             byte[] PDU = new byte[5];
 
@@ -70,7 +73,7 @@ namespace TerminalProgram.Protocols.Modbus.Message
             return PDU;
         }
 
-        private static byte[] Create_WriteMultiple(ModbusFunction WriteFunction, MessageData Data)
+        private static byte[] Create_WriteMultiple(ModbusFunction WriteFunction, WriteTypeMessage Data)
         {
             byte[] PDU = new byte[6 + Data.WriteData.Length * 2];
 

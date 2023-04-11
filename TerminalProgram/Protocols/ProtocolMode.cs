@@ -12,7 +12,7 @@ namespace TerminalProgram.Protocols
         public int ReadTimeout { get; protected set; }
         public ReadMode CurrentReadMode { get; protected set; } = ReadMode.Async;
 
-        public virtual void InitMode(IConnection Client)
+        public virtual void InitMode(IConnection? Client)
         {
             if (Client == null || Client.IsConnected == false)
             {
@@ -28,7 +28,7 @@ namespace TerminalProgram.Protocols
 
     public class ProtocolMode_NoProtocol : ProtocolMode
     {
-        public ProtocolMode_NoProtocol(IConnection Client)
+        public ProtocolMode_NoProtocol(IConnection? Client)
         {
             CurrentReadMode = ReadMode.Async;
 
@@ -41,7 +41,7 @@ namespace TerminalProgram.Protocols
 
     public class ProtocolMode_Modbus : ProtocolMode
     {
-        public ProtocolMode_Modbus(IConnection Client, DeviceData Settings)
+        public ProtocolMode_Modbus(IConnection? Client, DeviceData Settings)
         {
             CurrentReadMode = ReadMode.Sync;
 

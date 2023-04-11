@@ -13,7 +13,7 @@ namespace TerminalProgram
 {
     public static class SystemOfSettings
     {
-        public static string Settings_FilePath { get; set; }
+        public static string? Settings_FilePath { get; set; }
 
         public const string FileType = ".json";
 
@@ -86,24 +86,28 @@ namespace TerminalProgram
                 throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + Settings_FilePath);
             }
 
-            DeviceData Data;            
+            DeviceData? Data;            
 
             try
             {
                 using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
                 {
                     Data = await JsonSerializer.DeserializeAsync<DeviceData>(Stream);
-                }                
+                }
+                
+                if (Data == null)
+                {
+                    Data = GetDefault();
+
+                    await Save(Data);
+                }
             }
 
             catch (JsonException)
             {
-                await Save(GetDefault());
+                Data = GetDefault();
 
-                using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
-                {
-                    Data = await JsonSerializer.DeserializeAsync<DeviceData>(Stream);
-                }
+                await Save(Data);
 
                 MessageBox.Show("В файле заданы некоректные данные. Созданы настройки по умолчанию.",
                     "Предупреждение", MessageBoxButton.OK,

@@ -28,9 +28,9 @@ namespace TerminalProgram.Protocols.NoProtocol
     /// </summary>
     public partial class UI_NoProtocol : Page
     {
-        public event EventHandler<EventArgs> ErrorHandler;
+        public event EventHandler<EventArgs>? ErrorHandler;
 
-        private IConnection Client = null;
+        private IConnection? Client = null;
 
         private TypeOfMessage MessageType;
 
@@ -71,7 +71,7 @@ namespace TerminalProgram.Protocols.NoProtocol
             }
         }
 
-        private void MainWindow_DeviceIsConnect(object sender, ConnectArgs e)
+        private void MainWindow_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             if (e.ConnectedDevice.IsConnected)
             {
@@ -83,7 +83,7 @@ namespace TerminalProgram.Protocols.NoProtocol
             }            
         }
 
-        private void MainWindow_DeviceIsDisconnected(object sender, ConnectArgs e)
+        private void MainWindow_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             TextBox_TX.Text = String.Empty;
 
@@ -130,8 +130,8 @@ namespace TerminalProgram.Protocols.NoProtocol
                 if (TextBox_TX.Text != String.Empty && MessageType == TypeOfMessage.Char)
                 {
                     SendMessage(TextBox_TX.Text.Last().ToString(),
-                        (bool)CheckBox_CR.IsChecked,
-                        (bool)CheckBox_LF.IsChecked);
+                        CheckBox_CR.IsChecked == null ? false : (bool)CheckBox_CR.IsChecked,
+                        CheckBox_LF.IsChecked == null ? false : (bool)CheckBox_LF.IsChecked);
                 }
             }
 
@@ -181,9 +181,9 @@ namespace TerminalProgram.Protocols.NoProtocol
                     return;
                 }
 
-                SendMessage(TextBox_TX.Text, 
-                    (bool)CheckBox_CR.IsChecked,
-                    (bool)CheckBox_LF.IsChecked);
+                SendMessage(TextBox_TX.Text,
+                    CheckBox_CR.IsChecked == null ? false : (bool)CheckBox_CR.IsChecked,
+                    CheckBox_LF.IsChecked == null ? false : (bool)CheckBox_LF.IsChecked);
             }
 
             catch (Exception error)

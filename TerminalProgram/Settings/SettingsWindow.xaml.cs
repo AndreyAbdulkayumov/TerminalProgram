@@ -28,19 +28,17 @@ namespace TerminalProgram.Settings
 
         private DeviceData Settings = new DeviceData();
 
-        private Page_IP Settings_IP = null;
-        private Page_SerialPort Settings_SerialPort = null;
+        private Page_IP? Settings_IP;
+        private Page_SerialPort? Settings_SerialPort;
 
-        private readonly string SettingsDocumentPath;
-
-        private readonly string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "Unicode", "UTF-7", "UTF-32" };
+        private readonly string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "UTF-32", "Unicode" };
 
 
-        public SettingsWindow(string SettingsPath, string SettingsFileName)
+        public SettingsWindow(string SettingsFileName)
         {
             InitializeComponent();
 
-            SettingsDocumentPath = SettingsPath;
+            SettingsDocument = SettingsFileName;
 
             string[] Devices = MainWindow.GetDeviceList();
             ComboBoxFilling(ComboBox_SelectedDevice, ref Devices);
@@ -132,8 +130,8 @@ namespace TerminalProgram.Settings
 
                 UpdateCommonUI(Settings);
 
-                Settings_SerialPort.UpdateUI(Settings);
-                Settings_IP.UpdateUI(Settings);
+                Settings_SerialPort?.UpdateUI(Settings);
+                Settings_IP?.UpdateUI(Settings);
             }
 
             catch (Exception error)
@@ -178,7 +176,7 @@ namespace TerminalProgram.Settings
 
                 default:
                     MessageBox.Show("В файле настроек задан неизвестный интерфейс связи: " + 
-                        Data.TypeOfConnection.ToString() +
+                        Data.TypeOfConnection?.ToString() +
                         ".\n\nПо умолчанию будет выставлен SerialPort", "Предупреждение",
                         MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
 
@@ -188,7 +186,7 @@ namespace TerminalProgram.Settings
             }
         }
 
-        private void SetValue(TextBox Box, string Value)
+        private void SetValue(TextBox Box, string? Value)
         {
             if (Value == null)
             {
@@ -215,7 +213,7 @@ namespace TerminalProgram.Settings
 
         private async void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            string OldDocumentPath = SystemOfSettings.Settings_FilePath;
+            string? OldDocumentPath = SystemOfSettings.Settings_FilePath;
 
             try
             {
@@ -226,14 +224,21 @@ namespace TerminalProgram.Settings
 
                 await DisplaySettingsFile();
 
-                SettingsDocument = ComboBox_SelectedDevice.SelectedItem.ToString();
+                string? SelectedFile = ComboBox_SelectedDevice.SelectedItem.ToString();
+
+                if (SelectedFile == null)
+                {
+                    throw new Exception("Не удалось обработать выбранное имя файла.");
+                }
+
+                SettingsDocument = SelectedFile;
             }
 
             catch(Exception error)
             {
                 MessageBox.Show("Не удалось загрузить файл настроек: " + 
                     ComboBox_SelectedDevice.SelectedItem + 
-                    Settings_SerialPort.Name + "\n\n" + error.Message, this.Title,
+                    Settings_SerialPort?.Name + "\n\n" + error.Message, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 ComboBox_SelectedDevice.SelectedValue = 
@@ -284,7 +289,7 @@ namespace TerminalProgram.Settings
         {
             if (Frame_Settings.Navigate(Settings_SerialPort) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort.Name, this.Title,
+                MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort?.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
 
@@ -295,7 +300,7 @@ namespace TerminalProgram.Settings
         {
             if (Frame_Settings.Navigate(Settings_IP) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + Settings_IP.Name, this.Title,
+                MessageBox.Show("Не удалось перейти на страницу " + Settings_IP?.Name, this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
 

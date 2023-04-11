@@ -63,15 +63,14 @@
                    FontSize="14"
                    TextAlignment="Center"
                    TextWrapping="Wrap"
-                   HorizontalAlignment="Center" VerticalAlignment="Center">      
+                   HorizontalAlignment="Center" VerticalAlignment="Center">  
+            
             <Hyperlink NavigateUri="https://icons8.com" RequestNavigate="Hyperlink_RequestNavigate">
                 icons8
             </Hyperlink>
+            
         </TextBlock>
-
-
-
-
+        
     </Grid>
     
 </Window>

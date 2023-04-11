@@ -13,7 +13,7 @@ namespace TerminalProgram.Protocols
 {
     public class SerialPortClient : IConnection
     {
-        public event EventHandler<DataFromDevice> DataReceived;
+        public event EventHandler<DataFromDevice>? DataReceived;
 
         public bool IsConnected
         {
@@ -70,10 +70,10 @@ namespace TerminalProgram.Protocols
             }
         }
 
-        private SerialPort DeviceSerialPort = null;
+        private SerialPort? DeviceSerialPort = null;
 
-        private Task ReadThread = null;
-        private CancellationTokenSource ReadCancelSource = null;
+        private Task? ReadThread = null;
+        private CancellationTokenSource? ReadCancelSource = null;
 
         public void SetReadMode(ReadMode Mode)
         {
@@ -81,7 +81,7 @@ namespace TerminalProgram.Protocols
             {
                 case ReadMode.Async:
 
-                    if (IsConnected)
+                    if (DeviceSerialPort != null && IsConnected)
                     {
                         ReadCancelSource = new CancellationTokenSource();
 
@@ -95,11 +95,14 @@ namespace TerminalProgram.Protocols
 
                 case ReadMode.Sync:
 
-                    if (IsConnected && ReadCancelSource != null)
+                    if (DeviceSerialPort != null && IsConnected)
                     {
-                        ReadCancelSource.Cancel();
+                        ReadCancelSource?.Cancel();
 
-                        Task.WaitAll(ReadThread);
+                        if (ReadThread != null)
+                        {
+                            Task.WaitAll(ReadThread);
+                        }                        
 
                         DeviceSerialPort.DiscardInBuffer();
                         DeviceSerialPort.DiscardOutBuffer();
@@ -116,11 +119,16 @@ namespace TerminalProgram.Protocols
         {
             try
             {
+                if (Info.SerialPort == null)
+                {
+                    throw new Exception("Нет информации о настройках подключения по последовательному порту.");
+                }
+
                 if (Info.SerialPort.COM_Port == null ||
-                Info.SerialPort.BaudRate == null ||
-                Info.SerialPort.Parity == null ||
-                Info.SerialPort.DataBits == null ||
-                Info.SerialPort.StopBits == null)
+                    Info.SerialPort.BaudRate == null ||
+                    Info.SerialPort.Parity == null ||
+                    Info.SerialPort.DataBits == null ||
+                    Info.SerialPort.StopBits == null)
                 {
                     throw new Exception(
                         (Info.SerialPort.COM_Port == null ? "Не задан СОМ порт.\n" : "") +
@@ -202,14 +210,21 @@ namespace TerminalProgram.Protocols
             {
                 DeviceSerialPort?.Close();
 
-                throw new Exception("Не удалось подключиться к СОМ порту.\n\n" +
-                    "Данные подключения:" + "\n" +
-                    "COM - Port: " + Info.SerialPort.COM_Port + "\n" +
-                    "BaudRate: " + Info.SerialPort.BaudRate + "\n" +
-                    "Parity: " + Info.SerialPort.Parity + "\n" +
-                    "DataBits: " + Info.SerialPort.DataBits + "\n" +
-                    "StopBits: " + Info.SerialPort.StopBits + "\n\n" +
-                    error.Message);
+                string CommonMessage = "Не удалось подключиться к СОМ порту.\n\n";
+
+                if (Info.SerialPort != null)
+                {
+                    throw new Exception(CommonMessage +
+                        "Данные подключения:" + "\n" +
+                        "COM - Port: " + Info.SerialPort.COM_Port + "\n" +
+                        "BaudRate: " + Info.SerialPort.BaudRate + "\n" +
+                        "Parity: " + Info.SerialPort.Parity + "\n" +
+                        "DataBits: " + Info.SerialPort.DataBits + "\n" +
+                        "StopBits: " + Info.SerialPort.StopBits + "\n\n" +
+                        error.Message);
+                }
+
+                throw new Exception(CommonMessage + error.Message);
             }
         }
 
@@ -219,13 +234,18 @@ namespace TerminalProgram.Protocols
             {
                 if (DeviceSerialPort != null && DeviceSerialPort.IsOpen)
                 {
-                    if (((MainWindow)Application.Current.MainWindow).SelectedProtocol.CurrentReadMode == ReadMode.Async)
+                    ProtocolMode? SelectedProtocol = ((MainWindow)Application.Current.MainWindow).SelectedProtocol;
+
+                    if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
                     {
-                        ReadCancelSource.Cancel();
+                        ReadCancelSource?.Cancel();
 
-                        await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                        if (ReadThread != null)
+                        {
+                            await Task.WhenAll(ReadThread).ConfigureAwait(false);
 
-                        await Task.Delay(100);
+                            await Task.Delay(100);
+                        }                        
                     }                    
 
                     DeviceSerialPort.Close();
@@ -240,6 +260,11 @@ namespace TerminalProgram.Protocols
 
         public void Send(byte[] Message, int NumberOfBytes)
         {
+            if (DeviceSerialPort == null)
+            {
+                return;
+            }
+
             try
             {
                 if (IsConnected)
@@ -259,6 +284,11 @@ namespace TerminalProgram.Protocols
 
         public void Receive(byte[] Data)
         {
+            if (DeviceSerialPort == null)
+            {
+                return;
+            }
+
             int SavedTimeout = ReadTimeout;
 
             try
@@ -332,10 +362,7 @@ namespace TerminalProgram.Protocols
                                                 
                         NumberOfReceiveBytes = ReadResult.Result;
 
-                        DataFromDevice Data = new DataFromDevice()
-                        {
-                            RX = new byte[NumberOfReceiveBytes]
-                        };
+                        DataFromDevice Data = new DataFromDevice(NumberOfReceiveBytes);
 
                         for (int i = 0; i < NumberOfReceiveBytes; i++)
                         {

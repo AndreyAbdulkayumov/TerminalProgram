@@ -96,12 +96,17 @@ namespace TerminalProgram.Settings
                     return;
                 }
 
-                string SelectedFile = ComboBox_SelectedDevice.SelectedValue.ToString();
+                string? SelectedFile = ComboBox_SelectedDevice.SelectedValue?.ToString();
                 int DeletedIndex = ComboBox_SelectedDevice.SelectedIndex;
 
                 if (MessageBox.Show("Вы действительно желайте удалить файл " + SelectedFile + "?", "Предупреждение",
                     MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
+                    if (SystemOfSettings.Settings_FilePath == null)
+                    {
+                        throw new Exception("Не инициализирован путь к выбранному файлу.");
+                    }
+
                     File.Delete(SystemOfSettings.Settings_FilePath);
 
                     string[] Devices = MainWindow.GetDeviceList();
@@ -141,7 +146,14 @@ namespace TerminalProgram.Settings
         {
             await SystemOfSettings.Save(Settings);
 
-            SettingsDocument = ComboBox_SelectedDevice.SelectedValue.ToString();
+            string? SelectedFile = ComboBox_SelectedDevice.SelectedValue?.ToString();
+
+            if (SelectedFile == null)
+            {
+                throw new Exception("Не удалось обработать выбранное имя файла.");
+            }
+
+            SettingsDocument = SelectedFile;
 
             SettingsIsChanged = true;
 

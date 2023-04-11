@@ -14,6 +14,14 @@ namespace TerminalProgram.Protocols.NoProtocol
 
         private void SendMessage(string StringMessage, bool CR_Enable, bool CF_Enable)
         {
+            if (Client == null)
+            {
+                MessageBox.Show("Клиент не инициализирован.", MainWindowTitle,
+                    MessageBoxButton.OK, MessageBoxImage.Warning, MessageBoxResult.OK);
+
+                return;
+            }
+
             if (StringMessage == String.Empty)
             {
                 MessageBox.Show("Буфер для отправления пуст. Введите в поле TX отправляемое значение.", MainWindowTitle,
@@ -37,13 +45,11 @@ namespace TerminalProgram.Protocols.NoProtocol
             Client.Send(Message.ToArray(), Message.Count);
         }
 
-        private void Client_DataReceived(object sender, DataFromDevice e)
+        private void Client_DataReceived(object? sender, DataFromDevice e)
         {
-            try
+            lock (locker)
             {
-                lock (locker)
-                {
-                    Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
+                Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
                     new Action(delegate
                     {
                         try
@@ -78,26 +84,6 @@ namespace TerminalProgram.Protocols.NoProtocol
                             }
                         }
                     }));
-                }
-            }
-
-            catch (Exception error)
-            {
-                if (ErrorHandler != null)
-                {
-                    ErrorHandler(this, new EventArgs());
-
-                    MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
-                        "\n\nКлиент был отключен.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                }
-
-                else
-                {
-                    MessageBox.Show("Возникла ошибка при приеме данных:\n" + error.Message +
-                        "\n\nКлиент не был отключен.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                }
             }
         }
     }
