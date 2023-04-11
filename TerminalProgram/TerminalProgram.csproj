@@ -5,6 +5,12 @@
     <TargetFramework>net7.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\MainLogo.ico</ApplicationIcon>
+    <AssemblyVersion>1.10.0</AssemblyVersion>
+    <FileVersion>1.10.0</FileVersion>
+    <Company>XSoft</Company>
+    <Description></Description>
+    <Version>1.10.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +19,10 @@
     <None Remove="Resources\File_Delete.png" />
     <None Remove="Resources\File_Save.png" />
     <None Remove="Resources\MainLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\MainLogo.ico" />
   </ItemGroup>
 
   <ItemGroup>
