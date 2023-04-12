@@ -77,10 +77,24 @@ namespace TerminalProgram.ServiceWindows
 
         private void Button_Select_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Документ \"" + ComboBox_SelectedDocument.SelectedItem.ToString() + "\" успешно выбран.", "Сообщение",
-                MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            string? SelectedFile = ComboBox_SelectedDocument.SelectedItem?.ToString();
 
-            SelectedDocumentPath = ComboBox_SelectedDocument.SelectedItem.ToString();
+            if (SelectedFile == null)
+            {
+                SelectedDocumentPath = String.Empty;
+
+                MessageBox.Show("Не удалось выбрать документ.", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+            }
+
+            else
+            {
+                SelectedDocumentPath = SelectedFile;
+
+                MessageBox.Show("Документ \"" + ComboBox_SelectedDocument.SelectedItem?.ToString() +
+                    "\" успешно выбран.", "Сообщение",
+                    MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            }
 
             Close();
         }

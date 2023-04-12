@@ -11,6 +11,8 @@
     <Company>XSoft</Company>
     <Description></Description>
     <Version>1.10.0</Version>
+    <Authors>Abdulkayumov Andrey</Authors>
+    <Copyright>Abdulkayumov Andrey</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
