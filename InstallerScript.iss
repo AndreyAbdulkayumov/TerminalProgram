@@ -9,23 +9,33 @@
 #define InstallDirectory "D:\XSoft\TerminalProgram_1.10.0"
 #define OutputFileName "TerminalProgram_1.10.0_installer"
 
+
 #define MyAppPublisher "XSoft"
 #define MyAppExeName "TerminalProgram.exe"
-#define MyAppAssocName "TerminalProgram_File"
+#define MyAppAssocName "TerminalProgram File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
+#define RuntimeInstallDerictory 'D:\Programming\Visual Studio\0_Runtimes'
 #define RuntimeExeName "windowsdesktop-runtime-7.0.4-win-x64.exe"
 
 #define RuntimeDirectory 'C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\7.0.4'
-#define OutputDirectory 'D:\TerminalProgram'
 
+; Относительный путь
+#define PublishDirectory 'TerminalProgram\bin\Release\net7.0-windows\publish\win-x64'
+
+#define OutputDirectory 'D:\0_Compiled_Installers\TerminalProgram'
+
+; Относительный путь
+#define LicenseFileDirectory 'LICENSE.md'
+
+; Относительный путь
 #define SetupIconFileDirectory 'TerminalProgram\Resources\MainLogo.ico'
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{1EE1C899-07F3-45CB-A2D8-928D57E35BDD}
+AppId={{DEE0A88B-092D-4E5E-A8C3-F4F35B17E73C}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -34,6 +44,7 @@ DefaultDirName={#InstallDirectory}
 ChangesAssociations=yes
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
+LicenseFile={#LicenseFileDirectory}
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 
@@ -57,10 +68,21 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "TerminalProgram\bin\Release\net7.0-windows\publish\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "TerminalProgram\bin\Release\net7.0-windows\publish\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-; .NET Runtime
-Source: "D:\Programming\Visual Studio\0_Runtimes\{#RuntimeExeName}"; DestDir: "{tmp}"; Flags: deleteafterinstall;
+; Исполняемый файл приложения
+Source: "{#PublishDirectory}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+
+; Служебные файлы
+Source: "{#PublishDirectory}\System.IO.Ports.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishDirectory}\TerminalProgram.deps.json"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishDirectory}\TerminalProgram.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishDirectory}\TerminalProgram.dll.config"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishDirectory}\TerminalProgram.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishDirectory}\TerminalProgram.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
+
+; Runtime
+Source: "{#RuntimeInstallDerictory}\{#RuntimeExeName}"; DestDir: "{tmp}"; Flags: deleteafterinstall;
+
+; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
 Root: HKA; Subkey: "Software\Classes\{#MyAppAssocExt}\OpenWithProgids"; ValueType: string; ValueName: "{#MyAppAssocKey}"; ValueData: ""; Flags: uninsdeletevalue
