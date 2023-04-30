@@ -10,11 +10,11 @@ using Core.Models.Http;
 
 namespace Core.ViewModels
 {
-    public class Http_ViewModel : INotifyPropertyChanged
+    public class ViewModel_Http : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Http_Model Model = new Http_Model();
+        #region Properties
 
         private string requestURI = String.Empty;
 
@@ -48,26 +48,50 @@ namespace Core.ViewModels
             }
         }
 
+        #endregion
 
-        private readonly ICommand sendRequest;
+        #region Commands
 
-        public ICommand SendRequest
+        public ICommand SendRequest_Command { get; }
+        public ICommand ClearResponse_Command { get; }
+
+        #endregion
+
+        private Model_Http Model = new Model_Http();
+
+        private ViewMessage Message;
+
+        public ViewModel_Http(ViewMessage MessageBox)
         {
-            get
+            Message = MessageBox;
+
+            SendRequest_Command = new ButtonCommand(
+                ExecuteAction: SendRequest_Action,
+                MessageBox: Message
+                );
+
+            ClearResponse_Command = new ButtonCommand(
+                ExecuteAction: ClearResponse_Action,
+                MessageBox: Message
+                );
+        }
+
+        private async void SendRequest_Action(object? _)
+        {
+            try
             {
-                return sendRequest;
+                Response = await Model.SendRequest(RequestURI);
+            }
+            
+            catch (Exception error)
+            {
+                Message?.Invoke(error.Message, MessageType.Error);
             }
         }
 
-
-        public Http_ViewModel()
+        private void ClearResponse_Action(object? _)
         {
-            sendRequest = new Command(SendRequestAction);
-        }
-
-        private async void SendRequestAction(object? _)
-        {
-            Response = await Model.SendRequest(RequestURI);
+            Response = String.Empty;
         }
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")

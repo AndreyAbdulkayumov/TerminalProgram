@@ -4,17 +4,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:View_WPF.Protocols"
-      xmlns:ViewModel="clr-namespace:Core.ViewModels;assembly=Core"
-      mc:Ignorable="d" 
+      xmlns:ViewModel="clr-namespace:Core.ViewModels;assembly=Core" 
+      mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Http}"
       d:DesignHeight="670" d:DesignWidth="850"
       Title="Http"
       Background="#FF323232"
       KeyDown="Page_KeyDown">
-
-    <Page.DataContext>
-        <ViewModel:Http_ViewModel/>
-    </Page.DataContext>
-
 
     <Page.Resources>
 
@@ -52,9 +48,9 @@
                 <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
-            <TextBox x:Name="TextBox_TX" Grid.Row="0" 
-                     Text="{Binding RequestURI}"
+            <TextBox x:Name="TextBox_TX" Grid.Row="0"
                      Margin="10,0,10,0"
+                     Text="{Binding RequestURI, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource TX_RX_Field}"
                      TextWrapping="Wrap"/>
 
@@ -63,7 +59,7 @@
                     Width="90" 
                     Content="Отправить"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Command="{Binding SendRequest}"/>
+                    Command="{Binding SendRequest_Command}"/>
 
         </Grid>
 
@@ -83,7 +79,7 @@
                 <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
 
                     <TextBlock x:Name="TextBlock_RX"
-                               Text="{Binding Response}"
+                               Text="{Binding Response, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                TextAlignment="Left" 
                                TextWrapping="Wrap"
                                HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -104,7 +100,7 @@
                     Width="120" 
                     Content="Очистить поле"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Click="Button_ClearFieldRX_Click"/>
+                    Command="{Binding ClearResponse_Command}"/>
 
         </Grid>
 

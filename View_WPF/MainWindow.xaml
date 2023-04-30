@@ -15,7 +15,7 @@
         Closing="SourceWindow_Closing">
 
     <Window.DataContext>
-        <ViewModel:CommonUI_ViewModel/>
+        <ViewModel:ViewModel_CommonUI/>
     </Window.DataContext> 
     
     

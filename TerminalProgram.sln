@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "View_WPF", "View_WPF\View_WPF.csproj", "{AF8EF686-5F5D-44AB-B10E-5DE175EFEFE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgram", "TerminalProgram\TerminalProgram.csproj", "{F3C7DC09-6B1E-4E6B-BBD5-65A35AD4E45C}"
 EndProject

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Core.Models.Http
 {
-    internal class Http_Model
+    internal class Model_Http
     {
-        public async Task<string> SendRequest(string ResponseURI)
+        public async Task<string> SendRequest(string RequestURI)
         {
             try
             {
@@ -16,7 +16,7 @@ namespace Core.Models.Http
 
                 List<Task> Tasks = new List<Task>();
 
-                Task<HttpResponseMessage> HttpRequest = client.GetAsync(ResponseURI);
+                Task<HttpResponseMessage> HttpRequest = client.GetAsync(RequestURI);
                 Tasks.Add(HttpRequest);
 
                 HttpResponseMessage Response = HttpRequest.Result;
@@ -33,7 +33,7 @@ namespace Core.Models.Http
             catch (Exception error)
             {
                 throw new Exception("Ошибка отправки http запроса:\n\n" + error.Message + 
-                    "\n\nУказанный URI:\n\n" + ResponseURI);
+                    "\n\nУказанный URI:\n\n" + RequestURI);
             }
         }
     }

@@ -11,7 +11,7 @@
       Title="Modbus">
 
     <Page.DataContext>
-        <ViewModel:Modbus_ViewModel/>
+        <ViewModel:ViewModel_Modbus/>
     </Page.DataContext>
 
 

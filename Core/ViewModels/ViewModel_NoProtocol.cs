@@ -8,10 +8,8 @@ using System.Threading.Tasks;
 
 namespace Core.ViewModels
 {
-    public class CommonUI_ViewModel : INotifyPropertyChanged
+    public class ViewModel_NoProtocol : INotifyPropertyChanged
     {
-
-
 
 
         public event PropertyChangedEventHandler? PropertyChanged;

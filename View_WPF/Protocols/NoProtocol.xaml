@@ -13,7 +13,7 @@
       Loaded="Page_Loaded">
 
     <Page.DataContext>
-        <ViewModel:NoProtocol_ViewModel/>
+        <ViewModel:ViewModel_NoProtocol/>
     </Page.DataContext>
 
 

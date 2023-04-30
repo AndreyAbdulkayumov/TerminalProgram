@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Core.ViewModels
 {
-    public class NoProtocol_ViewModel : INotifyPropertyChanged
+    public class ViewModel_Modbus : INotifyPropertyChanged
     {
 
 
