@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+using System.IO.Ports;
 using View_WPF.Protocols;
 
 namespace View_WPF
@@ -44,6 +46,21 @@ namespace View_WPF
         private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
 
+        }
+
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void Button_MinimizeApplication_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         private void MenuSettings_Click(object sender, RoutedEventArgs e)
@@ -144,6 +161,6 @@ namespace View_WPF
         private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
 
-        }        
+        }
     }
 }

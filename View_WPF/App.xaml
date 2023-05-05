@@ -5,58 +5,15 @@
              StartupUri="MainWindow.xaml">
     
     <Application.Resources>
-        
-        <!-- Шаблон кнопки для всего приложения -->
 
-        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFD4D4D4"/>
-        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="Silver"/>
-        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFF0F0F0"/>
-        <SolidColorBrush x:Key="Button.Pressed.Border" Color="Silver"/>
-        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFA0A0A0"/>
-        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
-        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF505050"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="CommonControls/Button_Common.xaml" />
+                <ResourceDictionary Source="CommonControls/Button_MinimizeApp.xaml" />
+                <ResourceDictionary Source="CommonControls/Button_CloseApp.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
 
-        <ControlTemplate x:Key="ButtonCommon" TargetType="{x:Type ButtonBase}">
-
-            <Border x:Name="border" CornerRadius="10" 
-                    Background="#FFBABABA"
-                    BorderBrush="{x:Null}" BorderThickness="0,0,0,0"
-                    SnapsToDevicePixels="true">
-
-                <ContentPresenter x:Name="contentPresenter" Focusable="False" 
-                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                  Margin="{TemplateBinding Padding}"
-                                  RecognizesAccessKey="True"
-                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-            </Border>
-
-            <ControlTemplate.Triggers>
-
-                <Trigger Property="Button.IsDefaulted" Value="true">
-                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                </Trigger>
-
-                <Trigger Property="IsMouseOver" Value="true">
-                    <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
-                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
-                </Trigger>
-
-                <Trigger Property="IsPressed" Value="true">
-                    <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
-                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
-                </Trigger>
-
-                <Trigger Property="IsEnabled" Value="false">
-                    <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
-                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
-                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
-                </Trigger>
-
-            </ControlTemplate.Triggers>
-
-        </ControlTemplate>
-        
     </Application.Resources>
     
 </Application>

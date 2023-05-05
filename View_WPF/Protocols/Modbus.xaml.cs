@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,34 @@ namespace View_WPF.Protocols
             InitializeComponent();
 
             MainWindowTitle = window.Title;
+
+            DataContext = new ViewModel_Modbus(MessageBoxView);
+        }
+
+        private void MessageBoxView(string Message, MessageType Type)
+        {
+            MessageBoxImage Image;
+
+            switch (Type)
+            {
+                case MessageType.Error:
+                    Image = MessageBoxImage.Error;
+                    break;
+
+                case MessageType.Warning:
+                    Image = MessageBoxImage.Warning;
+                    break;
+
+                case MessageType.Information:
+                    Image = MessageBoxImage.Information;
+                    break;
+
+                default:
+                    Image = MessageBoxImage.Information;
+                    break;
+            }
+
+            MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
         }
 
         private void TextBox_SlaveID_TextChanged(object sender, TextChangedEventArgs e)
@@ -65,16 +94,6 @@ namespace View_WPF.Protocols
         }
 
         private void TextBox_Data_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void Button_Read_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Write_Click(object sender, RoutedEventArgs e)
         {
 
         }

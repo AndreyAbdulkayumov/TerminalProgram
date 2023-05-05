@@ -6,13 +6,10 @@
       xmlns:local="clr-namespace:View_WPF.Protocols"
       xmlns:ViewModel="clr-namespace:Core.ViewModels;assembly=Core"
       mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus}"
       d:DesignHeight="630" d:DesignWidth="850" 
       Background="#FF323232"
       Title="Modbus">
-
-    <Page.DataContext>
-        <ViewModel:ViewModel_Modbus/>
-    </Page.DataContext>
 
 
     <Page.Resources>
@@ -286,14 +283,14 @@
                         Content="Прочитать"
                         Width="100"
                         HorizontalAlignment="Center" VerticalAlignment="Center" 
-                        Click="Button_Read_Click"/>
+                        Command="{Binding Read_Command}"/>
 
                 <Button x:Name="Button_Write" Grid.Column="3" Grid.Row="1"
                         Template="{DynamicResource ButtonCommon}"
                         Content="Записать"
                         Width="100"
                         HorizontalAlignment="Center" VerticalAlignment="Center" 
-                        Click="Button_Write_Click"/>
+                        Command="{Binding Write_Command}"/>
 
                 <ComboBox x:Name="ComboBox_ReadFunc" Grid.Column="4" Grid.Row="0"
                           Height="26" Width="255"

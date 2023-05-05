@@ -75,6 +75,16 @@ namespace TerminalProgram.ServiceWindows
             }
         }
 
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void Button_Select_Click(object sender, RoutedEventArgs e)
         {
             string? SelectedFile = ComboBox_SelectedDocument.SelectedItem?.ToString();

@@ -53,6 +53,16 @@ namespace TerminalProgram.ServiceWindows
             }
         }
 
+        private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
+        }
+
+        private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
         private void TextBox_FileName_TextChanged(object sender, TextChangedEventArgs e)
         {
             FileName = TextBox_FileName.Text;

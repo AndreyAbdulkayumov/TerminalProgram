@@ -8,7 +8,10 @@
         Title="Терминальная программа" 
         Height="750" Width="850"
         Background="#FF323232"
+        AllowsTransparency="True"
+        WindowStyle="None"
         WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
         Loaded="SourceWindow_Loaded"
         Closing="SourceWindow_Closing">
 
@@ -56,17 +59,47 @@
         
     </Window.Resources>
 
-    <Border BorderBrush="#FF6B6B6B" BorderThickness="2,0,2,2">
+    <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
 
         <Grid>
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="20"/>
                 <RowDefinition x:Name="GridRow_Header" Height="100"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <Menu Grid.Row="0"
+            <Grid Grid.Row="0">
+
+                <Border Background="#FF484848" 
+                        MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+                <TextBlock Text="{Binding ElementName=SourceWindow, Path=Title}"
+                           FontSize="14"
+                           Foreground="WhiteSmoke"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+                <Button x:Name="Button_MinimizeApplication" Template="{DynamicResource Button_MinimizeApp}"
+                        Width="45" Height="30" 
+                        Background="Silver"
+                        Foreground="#FF3A3232"
+                        Margin="0,0,45,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Click="Button_MinimizeApplication_Click"/>
+
+                <Button x:Name="Button_CloseApplication" Template="{DynamicResource Button_CloseApp}"
+                        Width="45" Height="30" 
+                        Background="IndianRed"
+                        Foreground="#FF3A3232"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Click="Button_CloseApplication_Click"/>
+
+            </Grid>
+
+            <Menu Grid.Row="1"
                   HorizontalAlignment="Left" VerticalAlignment="Top">
 
                 <MenuItem Header="Настройки" Name="MenuSettings" 
@@ -79,7 +112,7 @@
 
             </Menu>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
 
                 <RadioButton x:Name="RadioButton_NoProtocol"
                              Content="Без протокола"
@@ -124,7 +157,7 @@
                         Click="Button_Disconnect_Click"/>
             </Grid>
 
-            <Frame x:Name="Frame_ActionUI" Grid.Row="2"
+            <Frame x:Name="Frame_ActionUI" Grid.Row="3"
                    NavigationUIVisibility="Hidden"/>
 
         </Grid>
