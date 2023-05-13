@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Models.Modbus
 {
-    internal class Model_Modbus
+    public class Model_Modbus
     {
 
     }

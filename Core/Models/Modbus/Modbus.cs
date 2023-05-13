@@ -5,9 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using TerminalProgram.Protocols.Modbus.Message;
+using Core.Models;
+using Core.Models.Modbus.Message;
 
-namespace TerminalProgram.Protocols.Modbus
+namespace Core.Models.Modbus
 {
     public struct ModbusResponse
     {

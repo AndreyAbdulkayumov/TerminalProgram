@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TerminalProgram.Protocols.Modbus.Message
+namespace Core.Models.Modbus.Message
 {
     public static class CRC_16
     {

@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace View_WPF
+namespace View_WPF.Views
 {
     /// <summary>
     /// Логика взаимодействия для AboutWindow.xaml

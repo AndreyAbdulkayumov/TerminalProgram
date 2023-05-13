@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Core.Models.Http
 {
-    internal class Model_Http
+    public class Model_Http
     {
         public async Task<string> SendRequest(string RequestURI)
         {

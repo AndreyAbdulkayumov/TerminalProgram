@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace View_WPF.Protocols
+namespace View_WPF.Views.Protocols
 {
     public enum TypeOfMessage
     {

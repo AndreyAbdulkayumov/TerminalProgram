@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace TerminalProgram.Protocols
+namespace Core.Models
 {
     public class SerialPortClient : IConnection
     {

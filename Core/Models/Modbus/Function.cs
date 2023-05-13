@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalProgram.Protocols.Modbus
+namespace Core.Models.Modbus
 {
     public abstract class ModbusFunction
     {

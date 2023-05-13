@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalProgram.Protocols.Modbus.Message
+namespace Core.Models.Modbus.Message
 {
     public class ModbusRTU_Message : ModbusMessage
     {

@@ -20,7 +20,6 @@ using TerminalProgram.Protocols;
 using TerminalProgram.Protocols.NoProtocol;
 using TerminalProgram.Protocols.Modbus;
 using TerminalProgram.Protocols.Http;
-using System.Text.Json.Nodes;
 
 namespace TerminalProgram
 {
@@ -219,6 +218,28 @@ namespace TerminalProgram
         private void Button_MinimizeApplication_Click(object sender, RoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+
+            ////// Получаем размеры рабочей области экрана, включая панель задач Windows
+            //var workingArea = SystemParameters.WorkArea;
+            ////Left = workingArea.Left;
+            ////Top = workingArea.Top;
+            ////Width = workingArea.Width;
+            ////Height = workingArea.Height;
+
+            //// Определяем монитор, на котором находится окно
+            //if (Left >= SystemParameters.VirtualScreenLeft &&
+            //    Left + ActualWidth <= SystemParameters.VirtualScreenLeft + SystemParameters.VirtualScreenWidth &&
+            //    Top >= SystemParameters.VirtualScreenTop &&
+            //    Top + ActualHeight <= SystemParameters.VirtualScreenTop + SystemParameters.VirtualScreenHeight)
+            //{
+            //    // Окно находится на главном мониторе
+            //    // Добавьте свой код здесь
+            //}
+            //else
+            //{
+            //    // Окно находится на второстепенном мониторе
+            //    // Добавьте свой код здесь
+            //}
         }
 
         private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)

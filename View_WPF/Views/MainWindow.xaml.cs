@@ -14,9 +14,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.IO.Ports;
-using View_WPF.Protocols;
+using View_WPF.Views.Protocols;
+using View_WPF.ViewModels;
 
-namespace View_WPF
+namespace View_WPF.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -31,11 +32,39 @@ namespace View_WPF
         {
             InitializeComponent();
 
+            DataContext = new ViewModel_CommonUI(MessageBoxView);
+
             NoProtocolPage = new NoProtocol(this);
 
             ModbusPage = new Modbus(this);
 
             HttpPage = new Http(this);
+        }
+
+        private void MessageBoxView(string Message, MessageType Type)
+        {
+            MessageBoxImage Image;
+
+            switch (Type)
+            {
+                case MessageType.Error:
+                    Image = MessageBoxImage.Error;
+                    break;
+
+                case MessageType.Warning:
+                    Image = MessageBoxImage.Warning;
+                    break;
+
+                case MessageType.Information:
+                    Image = MessageBoxImage.Information;
+                    break;
+
+                default:
+                    Image = MessageBoxImage.Information;
+                    break;
+            }
+
+            MessageBox.Show(Message, this.Title, MessageBoxButton.OK, Image);
         }
 
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Models.Modbus;
 
-namespace Core.ViewModels
+namespace View_WPF.ViewModels
 {
     public class ViewModel_Modbus : INotifyPropertyChanged
     {
@@ -34,14 +34,6 @@ namespace Core.ViewModels
         public ViewModel_Modbus(ViewMessage MessageBox)
         {
             Message = MessageBox;
-
-            Write_Command = new ButtonCommand(TestCommand, MessageBox);
-            Read_Command = new ButtonCommand(TestCommand, MessageBox);
-        }
-
-        public void TestCommand(object? _)
-        {
-
         }
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")

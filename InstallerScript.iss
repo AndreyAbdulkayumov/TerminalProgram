@@ -16,11 +16,6 @@
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
-#define RuntimeInstallDerictory 'D:\Programming\Visual Studio\0_Runtimes'
-#define RuntimeExeName "windowsdesktop-runtime-7.0.4-win-x64.exe"
-
-#define RuntimeDirectory 'C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\7.0.4'
-
 ; Относительный путь
 #define PublishDirectory 'TerminalProgram\bin\Release\net7.0-windows\publish\win-x64'
 
@@ -72,15 +67,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#PublishDirectory}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Служебные файлы
-Source: "{#PublishDirectory}\System.IO.Ports.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PublishDirectory}\TerminalProgram.deps.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PublishDirectory}\TerminalProgram.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PublishDirectory}\TerminalProgram.dll.config"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PublishDirectory}\TerminalProgram.pdb"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#PublishDirectory}\TerminalProgram.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-
-; Runtime
-Source: "{#RuntimeInstallDerictory}\{#RuntimeExeName}"; DestDir: "{tmp}"; Flags: deleteafterinstall;
+Source: "{#PublishDirectory}\*"; DestDir: "{app}"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -96,16 +83,4 @@ Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\{#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Filename: "{tmp}\{#RuntimeExeName}"; StatusMsg: "Install .NET runtime. Please wait..."; Check: not NET_Runtime_IsInstalled
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
-
-[Code]
-// determines if .NET is installed
-function NET_Runtime_IsInstalled: Boolean;
-begin
-  if DirExists(ExpandConstant('{#RuntimeDirectory}')) then 
-  begin
-    Result := True;
-  end else
-    Result := False;
-end;

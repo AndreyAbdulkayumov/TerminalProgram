@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalProgram
+namespace Core.Models
 {
     public class SerialPort_Info
     {

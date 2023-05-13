@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Models\NoProtocol\" />
-    <Folder Include="Models\CommonUI\" />
   </ItemGroup>
 
   <ItemGroup>

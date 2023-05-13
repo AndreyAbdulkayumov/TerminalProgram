@@ -6,12 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.ViewModels
+namespace View_WPF.ViewModels
 {
-    public class ViewModel_CommonUI : INotifyPropertyChanged
+    public class ViewModel_NoProtocol : INotifyPropertyChanged
     {
-
-
 
 
         public event PropertyChangedEventHandler? PropertyChanged;

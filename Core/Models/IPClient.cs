@@ -7,7 +7,7 @@ using System.Threading;
 using System.Net.Sockets;
 using System.Windows;
 
-namespace TerminalProgram.Protocols
+namespace Core.Models
 {
     public class IPClient : IConnection
     {

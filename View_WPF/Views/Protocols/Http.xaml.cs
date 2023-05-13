@@ -1,5 +1,4 @@
-﻿using Core.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,8 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using View_WPF.ViewModels;
 
-namespace View_WPF.Protocols
+namespace View_WPF.Views.Protocols
 {
     /// <summary>
     /// Логика взаимодействия для Http.xaml
@@ -64,7 +64,7 @@ namespace View_WPF.Protocols
             switch (e.Key)
             {
                 case Key.Enter:
-                    ((ViewModel_Http)DataContext).SendRequest_Command.Execute(null);
+                    ((ViewModel_Http)DataContext).SendRequest_Command.Execute();
                     break;
             }
         }

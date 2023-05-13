@@ -1,5 +1,4 @@
-﻿using Core.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using View_WPF.ViewModels;
 
-namespace View_WPF.Protocols
+namespace View_WPF.Views.Protocols
 {
     /// <summary>
     /// Логика взаимодействия для Modbus.xaml

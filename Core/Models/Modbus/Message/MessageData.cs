@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalProgram.Protocols.Modbus
+namespace Core.Models.Modbus.Message
 {
     public abstract class MessageData
     {

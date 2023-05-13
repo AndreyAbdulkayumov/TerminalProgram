@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerminalProgram.Protocols.Modbus.Message
+namespace Core.Models.Modbus.Message
 {
     public static class Modbus_PDU
     {
