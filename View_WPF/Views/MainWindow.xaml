@@ -7,7 +7,7 @@
         xmlns:ViewModel="clr-namespace:View_WPF.ViewModels"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_CommonUI}"
-        Title="Терминальная программа" 
+        Title="Терминальная программа (MVVM)" 
         Height="750" Width="850"
         Background="#FF323232"
         AllowsTransparency="True"
@@ -123,12 +123,14 @@
                              Content="Без протокола"
                              Margin="20,20,0,0"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Command="{Binding Command_ProtocolMode_NoProtocol}"
                              Checked="RadioButton_NoProtocol_Checked"/>
 
                 <RadioButton x:Name="RadioButton_Protocol_Modbus"
                              Content="Modbus"
                              Margin="150,20,0,0"
                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Command="{Binding Command_ProtocolMode_Modbus}"
                              Checked="RadioButton_Protocol_Modbus_Checked"/>
 
                 <RadioButton x:Name="RadioButton_Protocol_Http"
@@ -154,7 +156,7 @@
                         Width="100"
                         Content="Подключить"
                         Command="{Binding Command_Connect}"
-                        CommandParameter="{Binding ElementName=ComboBox_SelectedPreset, Path=SelectedItem}"/>
+                        CommandParameter="{Binding SettingsDocument}"/>
 
                 <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
                         Margin="500,55,0,0"

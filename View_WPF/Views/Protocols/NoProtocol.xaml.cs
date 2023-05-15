@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using View_WPF.ViewModels;
 
 namespace View_WPF.Views.Protocols
 {
@@ -26,7 +27,7 @@ namespace View_WPF.Views.Protocols
     /// </summary>
     public partial class NoProtocol : Page
     {
-        private TypeOfMessage MessageType;
+        private TypeOfMessage SendMessageType;
 
         private readonly string MainWindowTitle;
 
@@ -35,6 +36,34 @@ namespace View_WPF.Views.Protocols
             InitializeComponent();
 
             MainWindowTitle = window.Title;
+
+            DataContext = new ViewModel_NoProtocol(MessageBoxView);
+        }
+
+        private void MessageBoxView(string Message, MessageType Type)
+        {
+            MessageBoxImage Image;
+
+            switch (Type)
+            {
+                case MessageType.Error:
+                    Image = MessageBoxImage.Error;
+                    break;
+
+                case MessageType.Warning:
+                    Image = MessageBoxImage.Warning;
+                    break;
+
+                case MessageType.Information:
+                    Image = MessageBoxImage.Information;
+                    break;
+
+                default:
+                    Image = MessageBoxImage.Information;
+                    break;
+            }
+
+            MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
@@ -43,7 +72,7 @@ namespace View_WPF.Views.Protocols
             RadioButton_String.IsChecked = true;
             RadioButton_String.Checked += RadioButton_String_Checked;
 
-            MessageType = TypeOfMessage.String;
+            SendMessageType = TypeOfMessage.String;
             TextBox_TX.Text = String.Empty;
 
             TextBox_TX.Focus();

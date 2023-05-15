@@ -14,7 +14,14 @@ namespace Core.Models
     {
         private readonly static string FolderPath_Settings = "Settings/";
 
-        public static string? Settings_FilePath { get; set; }
+        public static string Settings_FilePath
+        {
+            get { return FolderPath_Settings + Settings_FileName + FileType; }
+        }
+
+        public static string? Settings_FileName { get; set; }
+
+        private const string DefaultFileName = "Unknown";
 
         public const string FileType = ".json";
 
@@ -134,11 +141,12 @@ namespace Core.Models
                 //MessageBox.Show("Не найдено ни одного файла настроек. Будет создан файл с настройками по умолчанию.",
                 //    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
-                string NewFilePath = FolderPath_Settings + "Unknown" + FileType;
+                string NewFilePath = FolderPath_Settings + DefaultFileName + FileType;
 
                 File.Create(NewFilePath).Close();
 
-                Settings_FilePath = NewFilePath;
+                Settings_FileName = DefaultFileName;
+
                 await Save(GetDefault());
 
                 ArrayOfPresets = Directory.GetFiles(FolderPath_Settings, "*" + FileType);
