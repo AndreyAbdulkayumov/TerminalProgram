@@ -283,14 +283,14 @@
                         Content="Прочитать"
                         Width="100"
                         HorizontalAlignment="Center" VerticalAlignment="Center" 
-                        Command="{Binding Read_Command}"/>
+                        Command="{Binding Command_Read}"/>
 
                 <Button x:Name="Button_Write" Grid.Column="3" Grid.Row="1"
                         Template="{DynamicResource ButtonCommon}"
                         Content="Записать"
                         Width="100"
                         HorizontalAlignment="Center" VerticalAlignment="Center" 
-                        Command="{Binding Write_Command}"/>
+                        Command="{Binding Command_Write}"/>
 
                 <ComboBox x:Name="ComboBox_ReadFunc" Grid.Column="4" Grid.Row="0"
                           Height="26" Width="255"

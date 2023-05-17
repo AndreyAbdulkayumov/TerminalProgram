@@ -45,11 +45,15 @@ namespace View_WPF.ViewModels
         private readonly ConnectedHost Model;
 
         private readonly ViewMessage Message;
+        private readonly StateUI_Connected SetUI_Connected;
+        private readonly StateUI_Disconnected SetUI_Disconnected;
 
-        public ViewModel_CommonUI(ViewMessage MessageBox)
+
+        public ViewModel_CommonUI(
+            ViewMessage MessageBox,
+            StateUI_Connected UI_Connected_Handler,
+            StateUI_Disconnected UI_Disconnected_Handler)
         {
-            Model = ConnectedHost.Model;
-
             /**********************************/
             //
             // Debug
@@ -60,6 +64,15 @@ namespace View_WPF.ViewModels
             /**********************************/
 
             Message = MessageBox;
+            SetUI_Connected = UI_Connected_Handler;
+            SetUI_Disconnected = UI_Disconnected_Handler;
+
+            Model = ConnectedHost.Model;
+
+            SetUI_Disconnected.Invoke();
+
+            Model.DeviceIsConnect += Model_DeviceIsConnect;
+            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(Model.SetProtocol_NoProtocol);
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(Model.SetProtocol_Modbus);
@@ -71,6 +84,16 @@ namespace View_WPF.ViewModels
             Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
 
             Command_Disconnect.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
+        }
+
+        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        {
+            SetUI_Connected?.Invoke();
+        }
+
+        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        {
+            SetUI_Disconnected?.Invoke();
         }
     }
 }

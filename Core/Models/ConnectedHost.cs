@@ -52,7 +52,7 @@ namespace Core.Models
 
         private IConnection? Client = null;
 
-        public ProtocolMode? SelectedProtocol { get; private set; }
+        public static ProtocolMode? SelectedProtocol { get; private set; }
 
         public DeviceData Settings { get; private set; } = new DeviceData();
 
@@ -69,6 +69,8 @@ namespace Core.Models
             Modbus = new Model_Modbus();
 
             SetProtocol_NoProtocol();
+
+            DeviceIsDisconnected?.Invoke(this, new ConnectArgs(Client));
         }
 
 

@@ -234,19 +234,19 @@ namespace Core.Models
             {
                 if (DeviceSerialPort != null && DeviceSerialPort.IsOpen)
                 {
-                    //ProtocolMode? SelectedProtocol = ((MainWindow)Application.Current.MainWindow).SelectedProtocol;
+                    ProtocolMode? SelectedProtocol = ConnectedHost.SelectedProtocol;
 
-                    //if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
-                    //{
-                    //    ReadCancelSource?.Cancel();
+                    if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
+                    {
+                        ReadCancelSource?.Cancel();
 
-                    //    if (ReadThread != null)
-                    //    {
-                    //        await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                        if (ReadThread != null)
+                        {
+                            await Task.WhenAll(ReadThread).ConfigureAwait(false);
 
-                    //        await Task.Delay(100);
-                    //    }                        
-                    //}                    
+                            await Task.Delay(100);
+                        }
+                    }
 
                     DeviceSerialPort.Close();
                 }
@@ -340,7 +340,7 @@ namespace Core.Models
                 {
                     ReadCancel.ThrowIfCancellationRequested();
 
-                    if (DataReceived != null && CurrentStream != null)
+                    if (CurrentStream != null)
                     {
                         /// Метод асинхронного чтения у объекта класса Stream, 
                         /// который содержится в объекте класса SerialPort,

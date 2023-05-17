@@ -150,17 +150,17 @@ namespace Core.Models
 
         public async Task Disconnect()
         {
-            //ProtocolMode? SelectedProtocol = ((MainWindow)Application.Current.MainWindow).SelectedProtocol;
+            ProtocolMode? SelectedProtocol = ConnectedHost.SelectedProtocol;
 
-            //if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
-            //{
-            //    ReadCancelSource?.Cancel();
+            if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
+            {
+                ReadCancelSource?.Cancel();
 
-            //    if (ReadThread != null)
-            //    {
-            //        await Task.WhenAll(ReadThread).ConfigureAwait(false);
-            //    }                
-            //}            
+                if (ReadThread != null)
+                {
+                    await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                }
+            }
 
             Stream?.Close();
 
@@ -252,7 +252,7 @@ namespace Core.Models
                 {
                     ReadCancel.ThrowIfCancellationRequested();
 
-                    if (DataReceived != null && CurrentStream != null)
+                    if (CurrentStream != null)
                     {
                         /// Метод асинхронного чтения у объекта класса NetworkStream
                         /// почему то не обрабатывает событие отмены у токена отмены.

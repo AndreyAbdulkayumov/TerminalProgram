@@ -37,7 +37,11 @@ namespace View_WPF.Views.Protocols
 
             MainWindowTitle = window.Title;
 
-            DataContext = new ViewModel_NoProtocol(MessageBoxView);
+            DataContext = new ViewModel_NoProtocol(
+                MessageBoxView, 
+                SetUI_Connected, 
+                SetUI_Disconnected,
+                ActionAfterReceive);
         }
 
         private void MessageBoxView(string Message, MessageType Type)
@@ -66,6 +70,45 @@ namespace View_WPF.Views.Protocols
             MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
         }
 
+        private void SetUI_Connected()
+        {
+            TextBox_TX.IsEnabled = true;
+
+            CheckBox_CR.IsEnabled = true;
+            CheckBox_LF.IsEnabled = true;
+            RadioButton_Char.IsEnabled = true;
+            RadioButton_String.IsEnabled = true;
+
+            if (RadioButton_String.IsChecked == true)
+            {
+                Button_Send.IsEnabled = true;
+            }
+
+            else
+            {
+                Button_Send.IsEnabled = false;
+            }
+
+            TextBox_TX.Focus();
+        }
+
+        private void SetUI_Disconnected()
+        {
+            TextBox_TX.IsEnabled = false;
+
+            CheckBox_CR.IsEnabled = false;
+            CheckBox_LF.IsEnabled = false;
+            RadioButton_Char.IsEnabled = false;
+            RadioButton_String.IsEnabled = false;
+            Button_Send.IsEnabled = false;
+        }
+
+        private void ActionAfterReceive()
+        {
+            TextBox_RX.LineDown();
+            ScrollViewer_RX.ScrollToEnd();
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             RadioButton_String.Checked -= RadioButton_String_Checked;
@@ -83,34 +126,29 @@ namespace View_WPF.Views.Protocols
             switch (e.Key)
             {
                 case Key.Enter:
-                    Button_Send_Click(Button_Send, new RoutedEventArgs());
+                    ((ViewModel_NoProtocol)DataContext).Command_Send.Execute();
                     break;
             }
         }
 
-        private void TextBox_TX_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
         private void CheckBox_CR_Click(object sender, RoutedEventArgs e)
         {
-
+            TextBox_TX.Focus();
         }
 
         private void CheckBox_LF_Click(object sender, RoutedEventArgs e)
         {
-
+            TextBox_TX.Focus();
         }
 
         private void RadioButton_Char_Checked(object sender, RoutedEventArgs e)
         {
-
+            TextBox_TX.Focus();
         }
 
         private void RadioButton_String_Checked(object sender, RoutedEventArgs e)
         {
-
+            TextBox_TX.Focus();
         }
 
         private void Button_Send_Click(object sender, RoutedEventArgs e)

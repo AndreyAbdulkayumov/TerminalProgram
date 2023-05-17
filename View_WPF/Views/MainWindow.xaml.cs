@@ -32,7 +32,10 @@ namespace View_WPF.Views
         {
             InitializeComponent();
 
-            DataContext = new ViewModel_CommonUI(MessageBoxView);
+            DataContext = new ViewModel_CommonUI(
+                MessageBoxView,
+                SetUI_Connected,
+                SetUI_Disconnected);
 
             NoProtocolPage = new NoProtocol(this);
 
@@ -65,6 +68,22 @@ namespace View_WPF.Views
             }
 
             MessageBox.Show(Message, this.Title, MessageBoxButton.OK, Image);
+        }
+
+        private void SetUI_Connected()
+        {
+            Button_Connect.IsEnabled = false;
+            Button_Disconnect.IsEnabled = true;
+
+            MenuSettings.IsEnabled = false;
+        }
+
+        private void SetUI_Disconnected()
+        {
+            Button_Connect.IsEnabled = true;
+            Button_Disconnect.IsEnabled = false;
+
+            MenuSettings.IsEnabled = true;
         }
 
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)

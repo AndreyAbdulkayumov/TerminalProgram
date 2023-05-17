@@ -29,7 +29,10 @@ namespace View_WPF.Views.Protocols
 
             MainWindowTitle = window.Title;
 
-            DataContext = new ViewModel_Modbus(MessageBoxView);
+            DataContext = new ViewModel_Modbus(
+                MessageBoxView,
+                SetUI_Connected,
+                SetUI_Disconnected);
         }
 
         private void MessageBoxView(string Message, MessageType Type)
@@ -56,6 +59,55 @@ namespace View_WPF.Views.Protocols
             }
 
             MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
+        }
+
+        private void SetUI_Connected()
+        {
+            TextBlock_ModbusMode.Text = "TEST";
+
+            TextBox_SlaveID.IsEnabled = true;
+
+            RadioButton_NumFormat_Hex.IsEnabled = true;
+            RadioButton_NumFormat_Dec.IsEnabled = true;
+
+            TextBox_Address.IsEnabled = true;
+            TextBox_Data.IsEnabled = true;
+
+            Button_Write.IsEnabled = true;
+            Button_Read.IsEnabled = true;
+
+            ComboBox_ReadFunc.IsEnabled = true;
+            ComboBox_WriteFunc.IsEnabled = true;
+
+            TextBox_NumberOfRegisters.IsEnabled = true;
+            CheckBox_CRC_Enable.IsEnabled = true;
+        }
+
+        private void SetUI_Disconnected()
+        {
+            TextBlock_ModbusMode.Text = "не определено";
+
+            TextBox_SlaveID.IsEnabled = false;
+
+            RadioButton_NumFormat_Hex.IsEnabled = false;
+            RadioButton_NumFormat_Dec.IsEnabled = false;
+
+            TextBox_Address.IsEnabled = false;
+            TextBox_Data.IsEnabled = false;
+
+            TextBox_Address.Text = "";
+            TextBox_Data.Text = "";
+
+            Button_Write.IsEnabled = false;
+            Button_Read.IsEnabled = false;
+
+            ComboBox_ReadFunc.IsEnabled = false;
+            ComboBox_WriteFunc.IsEnabled = false;
+
+            TextBox_NumberOfRegisters.IsEnabled = false;
+            CheckBox_CRC_Enable.IsEnabled = false;
+
+            CheckBox_CRC_Enable.Visibility = Visibility.Visible;
         }
 
         private void TextBox_SlaveID_TextChanged(object sender, TextChangedEventArgs e)

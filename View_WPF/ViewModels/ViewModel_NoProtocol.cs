@@ -11,8 +11,38 @@ using ReactiveUI;
 
 namespace View_WPF.ViewModels
 {
+    public enum SendMessageType
+    {
+        String,
+        Char
+    }
+
     public class ViewModel_NoProtocol : ReactiveObject
     {
+        #region Properties
+
+        private string tx = String.Empty;
+
+        public string TX_String
+        {
+            get 
+            { 
+                return tx; 
+            }
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref tx, value);
+
+                if (Model.HostIsConnect && 
+                    tx != String.Empty &&
+                    TypeOfSendMessage == SendMessageType.Char)
+                {
+                    Model.NoProtocol.Send(tx.Last().ToString(), CR_Enable, LF_Enable);
+                }
+            }
+        }
+
         private bool _cr_enable;
 
         public bool CR_Enable
@@ -45,38 +75,85 @@ namespace View_WPF.ViewModels
             set => this.RaiseAndSetIfChanged(ref _messageIsString, value);
         }
 
-        public ReactiveCommand<string, Unit> Command_Send { get; }
+        private string rx = String.Empty;
+
+        public string RX_String
+        {
+            get => rx;
+            set => this.RaiseAndSetIfChanged(ref rx, value);
+        }
+
+        #endregion
+
+        public ReactiveCommand<Unit, Unit> Command_Select_Char { get; }
+        public ReactiveCommand<Unit, Unit> Command_Select_String { get; }
+
+        public ReactiveCommand<Unit, Unit> Command_Send { get; }
+
+        private SendMessageType TypeOfSendMessage;
 
         private readonly ConnectedHost Model;
 
         private readonly ViewMessage Message;
+        private readonly StateUI_Connected SetUI_Connected;
+        private readonly StateUI_Disconnected SetUI_Disconnected;
+        private readonly ActionAfter_Receive UIAction_Receive;
 
-
-        public ViewModel_NoProtocol(ViewMessage MessageBox)
+        public ViewModel_NoProtocol(
+            ViewMessage MessageBox,
+            StateUI_Connected UI_Connected_Handler,
+            StateUI_Disconnected UI_Disconnected_Handler,
+            ActionAfter_Receive ActionAfter_Receive_Handler)
         {
             Message = MessageBox;
 
+            SetUI_Connected = UI_Connected_Handler;
+            SetUI_Disconnected = UI_Disconnected_Handler;
+
+            UIAction_Receive = ActionAfter_Receive_Handler;
+
             Model = ConnectedHost.Model;
 
-            Command_Send = ReactiveCommand.Create<string>(SendMessage);
+            SetUI_Disconnected.Invoke();
+
+            Model.DeviceIsConnect += Model_DeviceIsConnect;
+            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+            
+
+            Command_Select_Char = ReactiveCommand.Create(Select_Char);
+            Command_Select_String = ReactiveCommand.Create(Select_String);
+
+            Command_Send = ReactiveCommand.Create(SendMessage);
 
             Command_Send.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
         }
 
-
-        public void SendMessage(string Message)
+        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
-            Model.NoProtocol.Send(Message, CR_Enable, LF_Enable);
+            SetUI_Connected?.Invoke();
+        }
 
-            //if (MessageIsChar == true && MessageIsString == false)
-            //{
-            //    Model.NoProtocol.Send(Message.Last().ToString(), CR_Enable, LF_Enable);
-            //}
+        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        {
+            TX_String = String.Empty;
+            SetUI_Disconnected?.Invoke();
+        }
 
-            //else if (MessageIsChar == false && MessageIsString == true)
-            //{
-            //    Model.NoProtocol.Send(Message, CR_Enable, LF_Enable);
-            //}
+        public void Select_Char()
+        {
+            TypeOfSendMessage = SendMessageType.Char;
+            TX_String = String.Empty;
+        }
+
+        public void Select_String()
+        {
+            TypeOfSendMessage = SendMessageType.String;
+            TX_String = String.Empty;
+        }
+
+        public void SendMessage()
+        {
+            Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
         }
     }
 }
