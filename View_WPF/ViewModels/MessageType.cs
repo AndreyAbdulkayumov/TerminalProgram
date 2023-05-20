@@ -12,11 +12,4 @@ namespace View_WPF.ViewModels
         Warning,
         Information
     }
-
-    public delegate void ViewMessage(string Message, MessageType Type);
-
-    public delegate void StateUI_Connected();
-    public delegate void StateUI_Disconnected();
-
-    public delegate void ActionAfter_Receive();
 }

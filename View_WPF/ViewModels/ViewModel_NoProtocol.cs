@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using Core.Models;
 using ReactiveUI;
 
@@ -75,14 +76,6 @@ namespace View_WPF.ViewModels
             set => this.RaiseAndSetIfChanged(ref _messageIsString, value);
         }
 
-        private string rx = String.Empty;
-
-        public string RX_String
-        {
-            get => rx;
-            set => this.RaiseAndSetIfChanged(ref rx, value);
-        }
-
         #endregion
 
         public ReactiveCommand<Unit, Unit> Command_Select_Char { get; }
@@ -90,27 +83,30 @@ namespace View_WPF.ViewModels
 
         public ReactiveCommand<Unit, Unit> Command_Send { get; }
 
+        public ReactiveCommand<Unit, Unit> Command_ClearRX { get; }
+
         private SendMessageType TypeOfSendMessage;
 
         private readonly ConnectedHost Model;
 
-        private readonly ViewMessage Message;
-        private readonly StateUI_Connected SetUI_Connected;
-        private readonly StateUI_Disconnected SetUI_Disconnected;
-        private readonly ActionAfter_Receive UIAction_Receive;
+        private readonly Action<string, MessageType> Message;
+        private readonly Action SetUI_Connected;
+        private readonly Action SetUI_Disconnected;
+        private readonly Action<string> UI_Action_Receive;
 
         public ViewModel_NoProtocol(
-            ViewMessage MessageBox,
-            StateUI_Connected UI_Connected_Handler,
-            StateUI_Disconnected UI_Disconnected_Handler,
-            ActionAfter_Receive ActionAfter_Receive_Handler)
+            Action<string, MessageType> MessageBox,
+            Action UI_Connected_Handler,
+            Action UI_Disconnected_Handler,
+            Action<string> Action_Receive_Handler,
+            Action Clear_ReceiveField)
         {
             Message = MessageBox;
 
             SetUI_Connected = UI_Connected_Handler;
             SetUI_Disconnected = UI_Disconnected_Handler;
 
-            UIAction_Receive = ActionAfter_Receive_Handler;
+            UI_Action_Receive = Action_Receive_Handler;
 
             Model = ConnectedHost.Model;
 
@@ -118,7 +114,8 @@ namespace View_WPF.ViewModels
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
-            
+
+            Model.NoProtocol.NoProtocol_DataReceived += NoProtocol_NoProtocol_DataReceived;
 
             Command_Select_Char = ReactiveCommand.Create(Select_Char);
             Command_Select_String = ReactiveCommand.Create(Select_String);
@@ -126,6 +123,13 @@ namespace View_WPF.ViewModels
             Command_Send = ReactiveCommand.Create(SendMessage);
 
             Command_Send.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
+
+            Command_ClearRX = ReactiveCommand.Create(Clear_ReceiveField);
+        }
+
+        private void NoProtocol_NoProtocol_DataReceived(object? sender, string e)
+        {
+            UI_Action_Receive.Invoke(e);
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)

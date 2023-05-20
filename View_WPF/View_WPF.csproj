@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\File_AddExisting.png" />
+    <None Remove="Resources\File_AddNew.png" />
+    <None Remove="Resources\File_Delete.png" />
+    <None Remove="Resources\File_Save.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Resources\MainLogo.ico" />
   </ItemGroup>
 
@@ -18,6 +25,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\File_AddExisting.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\File_AddNew.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\File_Delete.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\File_Save.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

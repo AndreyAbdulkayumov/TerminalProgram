@@ -36,9 +36,9 @@ namespace View_WPF.ViewModels
 
         private readonly Model_Http Model = new Model_Http();
 
-        private readonly ViewMessage Message;
+        private readonly Action<string, MessageType> Message;
 
-        public ViewModel_Http(ViewMessage MessageBox)
+        public ViewModel_Http(Action<string, MessageType> MessageBox)
         {
             Message = MessageBox;
 
@@ -47,7 +47,6 @@ namespace View_WPF.ViewModels
             SendRequest_Command.Subscribe(result => Response = result);
 
             SendRequest_Command.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
-
 
             ClearResponse_Command = ReactiveCommand.Create(new Action(() => Response = String.Empty));
         }

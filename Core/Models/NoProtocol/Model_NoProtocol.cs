@@ -8,6 +8,8 @@ namespace Core.Models.NoProtocol
 {
     public class Model_NoProtocol
     {
+        public event EventHandler<string>? NoProtocol_DataReceived;
+
         private IConnection? Client;
 
         public Model_NoProtocol(ConnectedHost Host)
@@ -21,7 +23,14 @@ namespace Core.Models.NoProtocol
             if (e.ConnectedDevice.IsConnected)
             {
                 Client = e.ConnectedDevice;
+
+                Client.DataReceived += Client_DataReceived;
             }
+        }
+
+        private void Client_DataReceived(object? sender, DataFromDevice e)
+        {
+            NoProtocol_DataReceived?.Invoke(this, ConnectedHost.GlobalEncoding.GetString(e.RX));
         }
 
         private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)

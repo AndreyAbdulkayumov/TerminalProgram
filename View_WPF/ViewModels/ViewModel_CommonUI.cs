@@ -44,15 +44,15 @@ namespace View_WPF.ViewModels
 
         private readonly ConnectedHost Model;
 
-        private readonly ViewMessage Message;
-        private readonly StateUI_Connected SetUI_Connected;
-        private readonly StateUI_Disconnected SetUI_Disconnected;
+        private readonly Action<string, MessageType> Message;
+        private readonly Action SetUI_Connected;
+        private readonly Action SetUI_Disconnected;
 
 
         public ViewModel_CommonUI(
-            ViewMessage MessageBox,
-            StateUI_Connected UI_Connected_Handler,
-            StateUI_Disconnected UI_Disconnected_Handler)
+            Action<string, MessageType> MessageBox,
+            Action UI_Connected_Handler,
+            Action UI_Disconnected_Handler)
         {
             /**********************************/
             //

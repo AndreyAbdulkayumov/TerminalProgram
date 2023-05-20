@@ -41,7 +41,9 @@ namespace View_WPF.Views.Protocols
                 MessageBoxView, 
                 SetUI_Connected, 
                 SetUI_Disconnected,
-                ActionAfterReceive);
+                Action_Receive,
+                Action_Clear_ReceiveField
+                );
         }
 
         private void MessageBoxView(string Message, MessageType Type)
@@ -103,10 +105,21 @@ namespace View_WPF.Views.Protocols
             Button_Send.IsEnabled = false;
         }
 
-        private void ActionAfterReceive()
+        private void Action_Receive(string Data)
         {
-            TextBox_RX.LineDown();
-            ScrollViewer_RX.ScrollToEnd();
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
+                    new Action(delegate
+                    {
+                        TextBox_RX.AppendText(Data);
+                        TextBox_RX.LineDown();
+                        ScrollViewer_RX.ScrollToEnd();
+                    }));
+            
+        }
+
+        private void Action_Clear_ReceiveField()
+        {
+            TextBox_RX.Clear();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)

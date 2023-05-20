@@ -16,6 +16,7 @@ using System.IO;
 using System.IO.Ports;
 using View_WPF.Views.Protocols;
 using View_WPF.ViewModels;
+using View_WPF.Views.Settings;
 
 namespace View_WPF.Views
 {
@@ -42,6 +43,12 @@ namespace View_WPF.Views
             ModbusPage = new Modbus(this);
 
             HttpPage = new Http(this);
+
+            ComboBox_SelectedPreset.Items.Add("Item_1.qw");
+            ComboBox_SelectedPreset.Items.Add("Item_2.qw");
+            ComboBox_SelectedPreset.Items.Add("Item_3.qw");
+            ComboBox_SelectedPreset.Items.Add("Item_4.qw");
+            ComboBox_SelectedPreset.SelectedIndex = 0;
         }
 
         private void MessageBoxView(string Message, MessageType Type)
@@ -72,18 +79,22 @@ namespace View_WPF.Views
 
         private void SetUI_Connected()
         {
-            Button_Connect.IsEnabled = false;
-            Button_Disconnect.IsEnabled = true;
-
             MenuSettings.IsEnabled = false;
+
+            ComboBox_SelectedPreset.IsEnabled = false;
+
+            Button_Connect.IsEnabled = false;
+            Button_Disconnect.IsEnabled = true;            
         }
 
         private void SetUI_Disconnected()
         {
-            Button_Connect.IsEnabled = true;
-            Button_Disconnect.IsEnabled = false;
-
             MenuSettings.IsEnabled = true;
+
+            ComboBox_SelectedPreset.IsEnabled = true;
+
+            Button_Connect.IsEnabled = true;
+            Button_Disconnect.IsEnabled = false;            
         }
 
         private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
@@ -113,7 +124,12 @@ namespace View_WPF.Views
 
         private void MenuSettings_Click(object sender, RoutedEventArgs e)
         {
+            SettingsWindow Window = new SettingsWindow()
+            {
+                Owner = this
+            };
 
+            Window.ShowDialog();
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
@@ -146,8 +162,6 @@ namespace View_WPF.Views
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
             Button_Disconnect.Visibility = Visibility.Visible;
-
-            //SelectedProtocol = new ProtocolMode_NoProtocol(Client);
         }
 
         private void RadioButton_Protocol_Modbus_Checked(object sender, RoutedEventArgs e)
@@ -170,8 +184,6 @@ namespace View_WPF.Views
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
             Button_Disconnect.Visibility = Visibility.Visible;
-
-            //SelectedProtocol = new ProtocolMode_Modbus(Client, Settings);
         }
 
         private void RadioButton_Protocol_Http_Checked(object sender, RoutedEventArgs e)
@@ -197,16 +209,6 @@ namespace View_WPF.Views
         }
 
         private void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void Button_Connect_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_Disconnect_Click(object sender, RoutedEventArgs e)
         {
 
         }

@@ -1,0 +1,77 @@
+﻿<Window x:Class="View_WPF.Views.ServiceWindows.EnterTextWindow"
+        x:Name="Window_EnterText"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:View_WPF.Views.ServiceWindows"
+        mc:Ignorable="d"
+        Title="Терминальная программа"
+        Height="190" Width="300" 
+        ResizeMode="NoResize"      
+        AllowsTransparency="True"
+        WindowStyle="None"
+        WindowStartupLocation="CenterOwner"
+        KeyDown="Window_KeyDown"         
+        Closing="Window_Closing">
+
+    <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+
+                <Border Background="#FF484848"
+                        MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+                <TextBlock Text="{Binding ElementName=Window_EnterText, Path=Title}"
+                           FontSize="14"
+                           Foreground="WhiteSmoke"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+                <Button x:Name="Button_CloseApplication" Template="{DynamicResource Button_CloseApp}"
+                        Width="45" Height="30" 
+                        Background="IndianRed"
+                        Foreground="#FF3A3232"
+                        Margin="0,0,0,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Click="Button_CloseApplication_Click"/>
+            </Grid>
+            
+            <Grid Grid.Row="1">
+
+                <Border Background="#FF323232"/>
+
+                <TextBlock Text="Введите имя файла" 
+                           Margin="0,25,0,0"
+                           FontSize="14"
+                           Foreground="#FFD2C25A"
+                           HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+                <TextBox x:Name="TextBox_FileName" 
+                         Margin="0,60,0,0" 
+                         FontSize="14"
+                         Height="25" Width="140" 
+                         HorizontalAlignment="Center" VerticalAlignment="Top"
+                         TextChanged="TextBox_FileName_TextChanged"/>
+
+                <Button x:Name="Button_Select" Content="Выбрать" Template="{DynamicResource ButtonCommon}"
+                        Margin="0,105,0,0"
+                        Height="25" Width="80"
+                        FontSize="14"
+                        HorizontalAlignment="Center" VerticalAlignment="Top" 
+                        Click="Button_Select_Click"/>
+
+            </Grid>
+            
+        </Grid>
+        
+    </Border>    
+    
+</Window>

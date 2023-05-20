@@ -15,12 +15,11 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResizeWithGrip"
         Loaded="SourceWindow_Loaded"
-        Closing="SourceWindow_Closing">
+        Closing="SourceWindow_Closing"
+    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
 
-    <Window.Resources>
-
-        
+    <Window.Resources>        
 
         <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
@@ -61,7 +60,8 @@
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
             <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
         </Style>
-
+        
+        
     </Window.Resources>
 
     <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
@@ -144,7 +144,7 @@
                            FontSize="16"
                            HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-                <ComboBox x:Name="ComboBox_SelectedPreset" 
+                <ComboBox x:Name="ComboBox_SelectedPreset" Template="{DynamicResource ComboBox_Common}"
                           Height="25" Width="160"
                           Margin="175,58,0,0"
                           FontSize="14"

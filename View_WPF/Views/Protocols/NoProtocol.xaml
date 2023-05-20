@@ -147,7 +147,7 @@
                     Width="120" 
                     Content="Очистить поле"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Click="Button_ClearFieldRX_Click"/>
+                    Command="{Binding Command_ClearRX}"/>
 
         </Grid>
 

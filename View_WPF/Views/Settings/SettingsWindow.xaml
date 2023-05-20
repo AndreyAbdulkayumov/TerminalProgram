@@ -1,10 +1,10 @@
-﻿<Window x:Class="TerminalProgram.Settings.SettingsWindow"
+﻿<Window x:Class="View_WPF.Views.Settings.SettingsWindow"
         x:Name="Window_Settings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TerminalProgram.Settings"
+        xmlns:local="clr-namespace:View_WPF.Views.Settings"
         mc:Ignorable="d"
         Title="Настройки подключения" 
         Height="740" Width="350"
@@ -110,7 +110,7 @@
                             ToolTip="Создать новый файл" 
                             Click="Button_File_AddNew_Click">
 
-                        <Image Source="Resources/File_AddNew.png" />
+                        <Image Source="/Resources/File_AddNew.png" />
 
                     </Button>
 

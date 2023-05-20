@@ -9,6 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="CommonControls/Button_Common.xaml" />
+                <ResourceDictionary Source="CommonControls/ComboBox_Common.xaml" />
                 <ResourceDictionary Source="CommonControls/Button_MinimizeApp.xaml" />
                 <ResourceDictionary Source="CommonControls/Button_CloseApp.xaml" />
             </ResourceDictionary.MergedDictionaries>
