@@ -11,9 +11,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace View_WPF.ViewModels
+namespace View_WPF.ViewModels.MainWindow
 {
-    public class ViewModel_CommonUI : ReactiveObject
+    internal class ViewModel_CommonUI : ReactiveObject
     {
         public bool IsConnect
         {

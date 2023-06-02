@@ -11,9 +11,9 @@ using Core.Models;
 using Core.Models.Modbus;
 using ReactiveUI;
 
-namespace View_WPF.ViewModels
+namespace View_WPF.ViewModels.MainWindow
 {
-    public class ViewModel_Modbus : ReactiveObject
+    internal class ViewModel_Modbus : ReactiveObject
     {
         #region Properties
 
@@ -36,7 +36,7 @@ namespace View_WPF.ViewModels
 
         public ViewModel_Modbus(
             Action<string, MessageType> MessageBox,
-            Action UI_Connected_Handler, 
+            Action UI_Connected_Handler,
             Action UI_Disconnected_Handler)
         {
             Message = MessageBox;

@@ -14,6 +14,11 @@ using System.Windows.Shapes;
 using System.IO;
 using System.Windows.Markup.Localizer;
 using System.IO.Ports;
+using ReactiveUI;
+using View_WPF.ViewModels;
+using System.Reactive;
+using System.Reactive.Linq;
+using View_WPF.ViewModels.Settings;
 
 namespace View_WPF.Views.Settings
 {
@@ -28,32 +33,51 @@ namespace View_WPF.Views.Settings
         private Page_IP? Settings_IP;
         private Page_SerialPort? Settings_SerialPort;
 
-        private readonly string[] ArrayTypeOfEncoding = { "ASCII", "UTF-8", "UTF-32", "Unicode" };
+        
+
+        internal readonly ViewModel_Settings ViewModel;
 
 
         public SettingsWindow()
         {
             InitializeComponent();
 
-            ComboBox_SelectedDevice.SelectionChanged -= ComboBox_SelectedDevice_SelectionChanged;
+            ViewModel = new ViewModel_Settings(MessageBoxView);
 
-
-            ComboBox_SelectedDevice.SelectionChanged += ComboBox_SelectedDevice_SelectionChanged;
+            DataContext = ViewModel;
         }
 
-        private void ComboBoxFilling(ComboBox Box, ref string[] Items)
+        private void MessageBoxView(string Message, MessageType Type)
         {
-            Box.Items.Clear();
+            MessageBoxImage Image;
 
-            foreach(string Element in Items)
+            switch (Type)
             {
-                Box.Items.Add(Element);
+                case MessageType.Error:
+                    Image = MessageBoxImage.Error;
+                    break;
+
+                case MessageType.Warning:
+                    Image = MessageBoxImage.Warning;
+                    break;
+
+                case MessageType.Information:
+                    Image = MessageBoxImage.Information;
+                    break;
+
+                default:
+                    Image = MessageBoxImage.Information;
+                    break;
             }
+
+            MessageBox.Show(Message, this.Title, MessageBoxButton.OK, Image);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Settings_SerialPort = new Page_SerialPort()
+            await ViewModel.Command_Loaded?.Execute();
+
+            Settings_SerialPort = new Page_SerialPort(ViewModel.SerialPort_VM)
             {
                 Height = Frame_Settings.ActualHeight,
                 Width = Frame_Settings.ActualWidth,
@@ -62,7 +86,7 @@ namespace View_WPF.Views.Settings
                 VerticalAlignment = VerticalAlignment.Top
             };
 
-            Settings_IP = new Page_IP()
+            Settings_IP = new Page_IP(ViewModel.Ethernet_VM)
             {
                 Height = Frame_Settings.ActualHeight,
                 Width = Frame_Settings.ActualWidth,
@@ -103,18 +127,6 @@ namespace View_WPF.Views.Settings
             return true;
         }
 
-
-        private void SetValue(TextBox Box, string? Value)
-        {
-            if (Value == null)
-            {
-                Box.Text = String.Empty;
-                return;
-            }
-
-            Box.Text = Value;
-        }
-        
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -137,11 +149,6 @@ namespace View_WPF.Views.Settings
         private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-        }
-
-        private async void ComboBox_SelectedDevice_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            
         }
 
         private void TextBox_Timeout_Write_TextChanged(object sender, TextChangedEventArgs e)

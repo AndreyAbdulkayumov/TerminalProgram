@@ -10,33 +10,33 @@ using System.Windows.Threading;
 using Core.Models;
 using ReactiveUI;
 
-namespace View_WPF.ViewModels
+namespace View_WPF.ViewModels.MainWindow
 {
-    public enum SendMessageType
+    internal enum SendMessageType
     {
         String,
         Char
     }
 
-    public class ViewModel_NoProtocol : ReactiveObject
+    internal class ViewModel_NoProtocol : ReactiveObject
     {
         #region Properties
 
-        private string tx = String.Empty;
+        private string tx = string.Empty;
 
         public string TX_String
         {
-            get 
-            { 
-                return tx; 
+            get
+            {
+                return tx;
             }
 
             set
             {
                 this.RaiseAndSetIfChanged(ref tx, value);
 
-                if (Model.HostIsConnect && 
-                    tx != String.Empty &&
+                if (Model.HostIsConnect &&
+                    tx != string.Empty &&
                     TypeOfSendMessage == SendMessageType.Char)
                 {
                     Model.NoProtocol.Send(tx.Last().ToString(), CR_Enable, LF_Enable);
@@ -139,20 +139,20 @@ namespace View_WPF.ViewModels
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            TX_String = String.Empty;
+            TX_String = string.Empty;
             SetUI_Disconnected?.Invoke();
         }
 
         public void Select_Char()
         {
             TypeOfSendMessage = SendMessageType.Char;
-            TX_String = String.Empty;
+            TX_String = string.Empty;
         }
 
         public void Select_String()
         {
             TypeOfSendMessage = SendMessageType.String;
-            TX_String = String.Empty;
+            TX_String = string.Empty;
         }
 
         public void SendMessage()

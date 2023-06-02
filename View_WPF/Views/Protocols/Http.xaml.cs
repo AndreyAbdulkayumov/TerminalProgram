@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using View_WPF.ViewModels;
+using View_WPF.ViewModels.MainWindow;
 
 namespace View_WPF.Views.Protocols
 {

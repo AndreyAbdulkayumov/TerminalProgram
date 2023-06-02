@@ -5,7 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:View_WPF.Views.Settings"
+        xmlns:ViewModel="clr-namespace:View_WPF.ViewModels.Settings"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Settings}"
         Title="Настройки подключения" 
         Height="740" Width="350"
         ResizeMode="NoResize" 
@@ -165,7 +167,8 @@
                           Width="120" 
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Center" 
-                          SelectionChanged="ComboBox_SelectedDevice_SelectionChanged"/>
+                          ItemsSource="{Binding Devices}"
+                          SelectedItem="{Binding SelectedDevice}"/>
             </Grid>
             
 
@@ -189,7 +192,8 @@
                           Width="80" 
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Center" 
-                          SelectionChanged="ComboBox_SelectedEncoding_SelectionChanged"/>
+                          ItemsSource="{Binding TypeOfEncoding}"
+                          SelectedItem="{Binding SelectedEncoding}"/>
             </Grid>
             
 
@@ -211,7 +215,7 @@
                 <TextBox x:Name="TextBox_Timeout_Write"
                          Margin="210,0,0,0"
                          Width="50"
-                         TextChanged="TextBox_Timeout_Write_TextChanged"/>
+                         Text="{Binding WriteTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             
 
@@ -226,7 +230,7 @@
                 <TextBox x:Name="TextBox_Timeout_Read"
                          Margin="210,0,0,0"
                          Width="50"
-                         TextChanged="TextBox_Timeout_Read_TextChanged"/>
+                         Text="{Binding ReadTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             
 
@@ -240,11 +244,13 @@
                 <RadioButton x:Name="RadioButton_SerialPort" Content="Serial Port" 
                              Margin="20,0,0,0" 
                              HorizontalAlignment="Center" VerticalAlignment="Center" 
+                             IsChecked="{Binding Selected_SerialPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Checked="RadioButton_SerialPort_Checked"/>
 
                 <RadioButton x:Name="RadioButton_Ethernet" Content="Ethernet" 
                              Margin="30,0,0,0" 
                              HorizontalAlignment="Center" VerticalAlignment="Center" 
+                             IsChecked="{Binding Selected_Ethernet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Checked="RadioButton_Ethernet_Checked"/>
 
             </StackPanel>

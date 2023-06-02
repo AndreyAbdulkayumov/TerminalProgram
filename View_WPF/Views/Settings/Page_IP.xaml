@@ -4,9 +4,10 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:View_WPF.Views.Settings"
+      xmlns:ViewModel="clr-namespace:View_WPF.ViewModels.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="350"
-      Title="Settings_IP">
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Settings_Ethernet}"
+      d:DesignHeight="300" d:DesignWidth="350">
 
     <Page.Resources>
 
@@ -41,33 +42,33 @@
         <!-- IP address -->
         
         <TextBlock Grid.Row="0" Grid.Column="0"
-                   x:Name="TextBlock_IP" Text="IP" 
+                   Text="IP" 
                    FontSize="14"
                    Margin="0,0,7,2"
                    HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
         <TextBox Grid.Row="0" Grid.Column="1"
-                 x:Name="TextBox_IP_Address" 
                  Margin="7,0,0,0"
                  Width="110" 
                  TextWrapping="Wrap" 
                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                 Text="{Binding IP_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextChanged="TextBox_IP_Address_TextChanged"/>
         
         <!-- Port -->
         
         <TextBlock Grid.Row="1" Grid.Column="0"
-                   x:Name="TextBlock_Port" Text="Port"
+                   Text="Port"
                    FontSize="14"
                    Margin="0,0,7,2" 
                    HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
         <TextBox Grid.Row="1" Grid.Column="1"
-                 x:Name="TextBox_Port" 
                  Margin="7,0,0,0"
                  Width="50" 
                  TextWrapping="Wrap" 
                  HorizontalAlignment="Left" VerticalAlignment="Center"
+                 Text="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  TextChanged="TextBox_Port_TextChanged"/>
         
     </Grid>

@@ -10,11 +10,11 @@ using System.Windows.Input;
 using Core.Models.Http;
 using ReactiveUI;
 
-namespace View_WPF.ViewModels
+namespace View_WPF.ViewModels.MainWindow
 {
     public class ViewModel_Http : ReactiveObject
     {
-        private string requestURI = String.Empty;
+        private string requestURI = string.Empty;
 
         public string RequestURI
         {
@@ -22,7 +22,7 @@ namespace View_WPF.ViewModels
             set { this.RaiseAndSetIfChanged(ref requestURI, value); }
         }
 
-        private string response = String.Empty;
+        private string response = string.Empty;
 
         public string Response
         {
@@ -48,7 +48,7 @@ namespace View_WPF.ViewModels
 
             SendRequest_Command.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
 
-            ClearResponse_Command = ReactiveCommand.Create(new Action(() => Response = String.Empty));
+            ClearResponse_Command = ReactiveCommand.Create(new Action(() => Response = string.Empty));
         }
     }
 }

@@ -4,7 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:View_WPF.Views.Protocols"
-      xmlns:ViewModel="clr-namespace:View_WPF.ViewModels" 
+      xmlns:ViewModel="clr-namespace:View_WPF.ViewModels.MainWindow" 
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Http}"
       d:DesignHeight="670" d:DesignWidth="850"

@@ -22,17 +22,17 @@ namespace Core.Models
 
     public class ConnectedHost
     {
-        public bool HostIsConnect 
-        { 
-            get 
-            { 
+        public bool HostIsConnect
+        {
+            get
+            {
                 if (Client == null)
                 {
                     return false;
                 }
 
-                return Client.IsConnected; 
-            } 
+                return Client.IsConnected;
+            }
         }
 
         public event EventHandler<ConnectArgs>? DeviceIsConnect;
@@ -60,7 +60,7 @@ namespace Core.Models
         public static Encoding GlobalEncoding { get; private set; } = Encoding.Default;
 
 
-        
+
 
 
         public ConnectedHost()
@@ -83,7 +83,7 @@ namespace Core.Models
         {
             SelectedProtocol = new ProtocolMode_Modbus(Client, Settings);
         }
-                
+
 
         public async Task Connect(string FileName)
         {
@@ -150,7 +150,12 @@ namespace Core.Models
         }
 
 
-        private async Task ReadSettings(string DocumentName)
+        public async Task<string[]> GetSettings_FileNames()
+        {
+            return await SystemOfSettings.FindFilesOfPresets();
+        }
+
+        public async Task ReadSettings(string DocumentName)
         {
             try
             {

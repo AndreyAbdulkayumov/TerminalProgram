@@ -14,8 +14,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 using System.IO.Ports;
-using View_WPF.Views.Protocols;
 using View_WPF.ViewModels;
+using View_WPF.ViewModels.MainWindow;
+using View_WPF.Views.Protocols;
 using View_WPF.Views.Settings;
 
 namespace View_WPF.Views

@@ -4,9 +4,10 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:View_WPF.Views.Settings"
+      xmlns:ViewModel="clr-namespace:View_WPF.ViewModels.Settings"
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="350"
-      Title="Settings_SerialPort">
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Settings_SerialPort}"
+      d:DesignHeight="300" d:DesignWidth="350">
 
     <Page.Resources>
 
@@ -18,7 +19,7 @@
             <Setter Property="ItemsControl.FontSize" Value="14"/>
         </Style>
 
-        <Style TargetType="ComboBox">
+        <Style x:Key="ComboBox_Common" TargetType="{x:Type ComboBox}">
             <Setter Property="ItemsControl.Margin" Value="7,0,0,0"/>
             <Setter Property="ItemsControl.Height" Value="24"/>
             <Setter Property="ItemsControl.Width" Value="80"/>
@@ -62,7 +63,6 @@
         <!-- COM Port-->
 
         <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-                x:Name="Border_PortNotFound" 
                 Width="170" Height="24"
                 Margin="130,-48,0,0"
                 HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -70,7 +70,21 @@
                 BorderBrush="NavajoWhite"
                 BorderThickness="1,1,1,1">
 
-            <TextBlock x:Name="TextBlock_PortNotFound" Text="Content"
+            <Border.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Message_PortNotFound_IsVisible}" Value="True">
+                            <Setter Property="FrameworkElement.Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Message_PortNotFound_IsVisible}" Value="False">
+                            <Setter Property="FrameworkElement.Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            
+            
+            <TextBlock Text="{Binding Message_PortNotFound, Mode=OneWay}"
                        TextWrapping="Wrap" 
                        TextAlignment="Center"
                        Foreground="#FFFAFAF0"
@@ -79,70 +93,92 @@
 
         </Border>
         
-        <TextBlock Grid.Row="0" Grid.Column="0"
-                   x:Name="TextBlock_COMPort" Text="COM - Port"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" 
+                   Text="COM - Port"/>
 
         <ComboBox Grid.Row="0" Grid.Column="1"
-                  x:Name="ComboBox_COMPort"
-                  SelectionChanged="ComboBox_COMPort_SelectionChanged"/>
+                  Style="{StaticResource ComboBox_Common}"
+                  ItemsSource="{Binding COM_Ports}"
+                  SelectedItem="{Binding Selected_COM_Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- Baud Rate -->
 
         <TextBlock Grid.Row="1" Grid.Column="0"
-                   x:Name="TextBlock_BaudRate" Text="BaudRate"/>
+                   Text="BaudRate"/>
 
         <ComboBox Grid.Row="1" Grid.Column="1"
                   x:Name="ComboBox_BaudRate"
-                  SelectionChanged="ComboBox_BaudRate_SelectionChanged"/>
+                  ItemsSource="{Binding BaudRate}"
+                  SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+            <ComboBox.Style>
+                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_Common}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Selected_Custom_BaudRate}" Value="True">
+                            <Setter Property="FrameworkElement.IsEnabled" Value="False"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Selected_Custom_BaudRate}" Value="False">
+                            <Setter Property="FrameworkElement.IsEnabled" Value="True"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+            
+        </ComboBox>
 
         <CheckBox Grid.Row="2" Grid.Column="0"
-                  x:Name="CheckBox_BaudRate_Custom_Enable"
+                  x:Name="CheckBox_Custom_BaudRate"
                   Content="Custom BaudRate"
                   Foreground="#FFCBBD5A"
                   Margin="0,0,7,0" FontSize="14"
                   HorizontalAlignment="Right" VerticalAlignment="Center" 
-                  Click="CheckBox_BaudRate_Custom_Enable_Click"/>
+                  IsChecked="{Binding Selected_Custom_BaudRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="TextBox_BaudRate_Custom"
+                 Text="{Binding Custom_BaudRate_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding Selected_Custom_BaudRate}"
                  SelectionChanged="TextBox_BaudRate_Custom_SelectionChanged"/>
 
         <!-- Parity -->
 
         <TextBlock Grid.Row="3" Grid.Column="0" 
-                   x:Name="TextBlock_Parity" Text="Parity"/>
+                   Text="Parity"/>
 
         <ComboBox Grid.Row="3" Grid.Column="1"
-                  x:Name="ComboBox_Parity"
-                  SelectionChanged="ComboBox_Parity_SelectionChanged"/>
+                  Style="{StaticResource ComboBox_Common}"
+                  ItemsSource="{Binding Parity}"
+                  SelectedItem="{Binding Selected_Parity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- Data Bits -->
 
         <TextBlock Grid.Row="4" Grid.Column="0"
-                   x:Name="TextBlock_DataBits" Text="DataBits"/>
+                   Text="DataBits"/>
 
         <ComboBox Grid.Row="4" Grid.Column="1"
-                  x:Name="ComboBox_DataBits"
-                  SelectionChanged="ComboBox_DataBits_SelectionChanged"/>
+                  Style="{StaticResource ComboBox_Common}"
+                  ItemsSource="{Binding DataBits}"
+                  SelectedItem="{Binding Selected_DataBits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- Stop Bits -->
 
         <TextBlock Grid.Row="5" Grid.Column="0"
-                   x:Name="TextBlock_StopBits" Text="StopBits"/>
+                   Text="StopBits"/>
 
         <ComboBox Grid.Row="5" Grid.Column="1"
-                  x:Name="ComboBox_StopBits"
-                  SelectionChanged="ComboBox_StopBits_SelectionChanged"/>
+                  Style="{StaticResource ComboBox_Common}"
+                  ItemsSource="{Binding StopBits}"
+                  SelectedItem="{Binding Selected_StopBits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <!-- Re-scan COM Ports -->
 
         <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
-                x:Name="Button_ReScan_COMPorts" Template="{DynamicResource ButtonCommon}"
+                Template="{DynamicResource ButtonCommon}"
                 Content="Поиск СОМ портов"
                 FontSize="14"
                 Width="150" Height="28"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
-                Click="Button_ReScan_COMPorts_Click"/>
+                Command="{Binding Command_ReScan_COMPorts}"/>
 
     </Grid>
 

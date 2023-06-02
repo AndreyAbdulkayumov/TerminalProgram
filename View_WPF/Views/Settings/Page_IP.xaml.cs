@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using View_WPF.ViewModels;
+using View_WPF.ViewModels.Settings;
 
 namespace View_WPF.Views.Settings
 {
@@ -21,25 +23,11 @@ namespace View_WPF.Views.Settings
     /// </summary>
     public partial class Page_IP : Page
     {
-        public Page_IP()
+        public Page_IP(ViewModel_Settings_Ethernet ViewModel)
         {
             InitializeComponent();
-        }
 
-        public void UpdateUI()
-        {
-            
-        }
-
-        private void SetValue(TextBox Box, string? Value)
-        {
-            if (Value == null)
-            {
-                Box.Text = String.Empty;
-                return;
-            }
-
-            Box.Text = Value;
+            DataContext = ViewModel;
         }
 
         private void TextBox_IP_Address_TextChanged(object sender, TextChangedEventArgs e)
