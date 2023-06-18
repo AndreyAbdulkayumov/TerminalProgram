@@ -8,6 +8,14 @@ namespace Core.Models.Modbus
 {
     public class Model_Modbus
     {
+        public void WriteRegister()
+        {
 
+        }
+
+        public void ReadRegister()
+        {
+
+        }
     }
 }

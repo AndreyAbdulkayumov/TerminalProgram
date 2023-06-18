@@ -42,10 +42,11 @@ namespace View_WPF.Views.Settings
         {
             InitializeComponent();
 
-            ViewModel = new ViewModel_Settings(MessageBoxView);
+            ViewModel = new ViewModel_Settings(MessageBoxView, ToolBar_File_AddExisting);
 
             DataContext = ViewModel;
         }
+
 
         private void MessageBoxView(string Message, MessageType Type)
         {
@@ -75,8 +76,6 @@ namespace View_WPF.Views.Settings
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await ViewModel.Command_Loaded?.Execute();
-
             Settings_SerialPort = new Page_SerialPort(ViewModel.SerialPort_VM)
             {
                 Height = Frame_Settings.ActualHeight,
@@ -94,6 +93,11 @@ namespace View_WPF.Views.Settings
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top
             };
+
+            if (ViewModel != null)
+            {
+                await ViewModel.Command_Loaded.Execute();
+            }
 
             if (await DisplaySettingsFile() == false)
             {
@@ -203,22 +207,47 @@ namespace View_WPF.Views.Settings
             }
         }
 
-        private void Button_File_Save_Click(object sender, RoutedEventArgs e)
+        private void File_Save()
         {
 
         }
 
-        private void Button_File_Delete_Click(object sender, RoutedEventArgs e)
+        private void File_Delete()
         {
 
         }
 
-        private void Button_File_AddExisting_Click(object sender, RoutedEventArgs e)
+        private void ToolBar_File_AddExisting()
         {
+            try
+            {
+                Microsoft.Win32.OpenFileDialog FileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Добавление уже существующего файла настроек подключения",
+                    Filter = "Файл настроек|*.xml" // Filter files by extension
+                };
 
+                // Show open file dialog box
+                Nullable<bool> result = FileDialog.ShowDialog();
+
+                // Process open file dialog box results
+                if (result == true)
+                {
+
+
+                    string FileName = System.IO.Path.GetFileNameWithoutExtension(FileDialog.SafeFileName);
+
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageBox.Show("Ошибка при добавлении уже существующего файла.\n\n" + error.Message,
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        private void Button_File_AddNew_Click(object sender, RoutedEventArgs e)
+        private void File_AddNew()
         {
 
         }

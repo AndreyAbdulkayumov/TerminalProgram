@@ -33,7 +33,8 @@ namespace View_WPF.Views.Protocols
             DataContext = new ViewModel_Modbus(
                 MessageBoxView,
                 SetUI_Connected,
-                SetUI_Disconnected);
+                SetUI_Disconnected,
+                DataGrid_ScrollTo);
         }
 
         private void MessageBoxView(string Message, MessageType Type)
@@ -64,8 +65,6 @@ namespace View_WPF.Views.Protocols
 
         private void SetUI_Connected()
         {
-            TextBlock_ModbusMode.Text = "TEST";
-
             TextBox_SlaveID.IsEnabled = true;
 
             RadioButton_NumFormat_Hex.IsEnabled = true;
@@ -86,8 +85,6 @@ namespace View_WPF.Views.Protocols
 
         private void SetUI_Disconnected()
         {
-            TextBlock_ModbusMode.Text = "не определено";
-
             TextBox_SlaveID.IsEnabled = false;
 
             RadioButton_NumFormat_Hex.IsEnabled = false;
@@ -111,54 +108,9 @@ namespace View_WPF.Views.Protocols
             CheckBox_CRC_Enable.Visibility = Visibility.Visible;
         }
 
-        private void TextBox_SlaveID_TextChanged(object sender, TextChangedEventArgs e)
+        private void DataGrid_ScrollTo(ModbusDataDisplayed Item)
         {
-
-        }
-
-        private void CheckBox_CRC_Enable_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_ClearDataGrid_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RadioButton_NumFormat_Hex_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RadioButton_NumFormat_Dec_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void TextBox_Address_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void TextBox_NumberOfRegisters_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void TextBox_Data_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void ComboBox_ReadFunc_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void ComboBox_WriteFunc_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
+            DataGrid_ModbusData.ScrollIntoView(Item);
         }
     }
 }

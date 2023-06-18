@@ -15,8 +15,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResizeWithGrip"
         Loaded="SourceWindow_Loaded"
-        Closing="SourceWindow_Closing"
-    xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
+        Closing="SourceWindow_Closing">
 
 
     <Window.Resources>        

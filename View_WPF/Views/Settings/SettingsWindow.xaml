@@ -109,8 +109,8 @@
 
                     <Button x:Name="Button_File_AddNew" 
                             Width="35"
-                            ToolTip="Создать новый файл" 
-                            Click="Button_File_AddNew_Click">
+                            ToolTip="Создать новый файл"
+                            >
 
                         <Image Source="/Resources/File_AddNew.png" />
 
@@ -121,7 +121,7 @@
                     <Button x:Name="Button_File_AddExisting"
                             Width="35"
                             ToolTip="Добавить существующий файл" 
-                            Click="Button_File_AddExisting_Click">
+                            Command="{Binding Command_File_AddExisting}">
 
                         <Image Source="/Resources/File_AddExisting.png" />
 
@@ -132,7 +132,7 @@
                     <Button x:Name="Button_File_Delete" 
                             Width="35"
                             ToolTip="Удалить выбранный файл" 
-                            Click="Button_File_Delete_Click">
+                            >
 
                         <Image Source="/Resources/File_Delete.png" />
 
@@ -143,7 +143,7 @@
                     <Button x:Name="Button_File_Save"
                             Width="35"
                             ToolTip="Сохранить выбранный файл"
-                            Click="Button_File_Save_Click">
+                            >
 
                         <Image Source="/Resources/File_Save.png" />
 

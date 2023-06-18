@@ -19,7 +19,7 @@
             <Setter Property="ItemsControl.FontSize" Value="14"/>
         </Style>
 
-        <Style x:Key="ComboBox_Common" TargetType="{x:Type ComboBox}">
+        <Style x:Key="ComboBox_SerialPort" TargetType="ComboBox">
             <Setter Property="ItemsControl.Margin" Value="7,0,0,0"/>
             <Setter Property="ItemsControl.Height" Value="24"/>
             <Setter Property="ItemsControl.Width" Value="80"/>
@@ -97,7 +97,7 @@
                    Text="COM - Port"/>
 
         <ComboBox Grid.Row="0" Grid.Column="1"
-                  Style="{StaticResource ComboBox_Common}"
+                  Style="{StaticResource ComboBox_SerialPort}"
                   ItemsSource="{Binding COM_Ports}"
                   SelectedItem="{Binding Selected_COM_Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -112,7 +112,7 @@
                   SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
             <ComboBox.Style>
-                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_Common}">
+                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_SerialPort}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Selected_Custom_BaudRate}" Value="True">
                             <Setter Property="FrameworkElement.IsEnabled" Value="False"/>
@@ -146,7 +146,7 @@
                    Text="Parity"/>
 
         <ComboBox Grid.Row="3" Grid.Column="1"
-                  Style="{StaticResource ComboBox_Common}"
+                  Style="{StaticResource ComboBox_SerialPort}"
                   ItemsSource="{Binding Parity}"
                   SelectedItem="{Binding Selected_Parity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -156,7 +156,7 @@
                    Text="DataBits"/>
 
         <ComboBox Grid.Row="4" Grid.Column="1"
-                  Style="{StaticResource ComboBox_Common}"
+                  Style="{StaticResource ComboBox_SerialPort}"
                   ItemsSource="{Binding DataBits}"
                   SelectedItem="{Binding Selected_DataBits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -166,7 +166,7 @@
                    Text="StopBits"/>
 
         <ComboBox Grid.Row="5" Grid.Column="1"
-                  Style="{StaticResource ComboBox_Common}"
+                  Style="{StaticResource ComboBox_SerialPort}"
                   ItemsSource="{Binding StopBits}"
                   SelectedItem="{Binding Selected_StopBits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 

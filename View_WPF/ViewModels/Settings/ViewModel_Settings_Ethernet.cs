@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,6 +38,11 @@ namespace View_WPF.ViewModels.Settings
             Message = MessageBox;
 
             Model = ConnectedHost.Model;
+
+            this.WhenAnyValue(x => x.Port)
+                .Where(x => x != string.Empty)
+                .Select(Main_VM.CheckNumber)
+                .Subscribe(result => Port = result);
         }
 
         private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)

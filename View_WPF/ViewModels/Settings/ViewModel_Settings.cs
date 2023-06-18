@@ -84,6 +84,11 @@ namespace View_WPF.ViewModels.Settings
         
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
+        public ReactiveCommand<Unit, Unit> Command_File_AddNew { get; }
+        public ReactiveCommand<Unit, Unit> Command_File_AddExisting { get; }
+        public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
+        public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
+
 
         private Action<string, MessageType> Message;
 
@@ -94,7 +99,9 @@ namespace View_WPF.ViewModels.Settings
         public readonly ViewModel_Settings_Ethernet Ethernet_VM;
         public readonly ViewModel_Settings_SerialPort SerialPort_VM;
 
-        public ViewModel_Settings(Action<string, MessageType> MessageBox)
+        public ViewModel_Settings(
+            Action<string, MessageType> MessageBox,
+            Action File_AddExisting)
         {
             Message = MessageBox;
 
@@ -102,13 +109,37 @@ namespace View_WPF.ViewModels.Settings
 
             Command_Loaded = ReactiveCommand.CreateFromTask(Loaded_EventHandler);
 
+            Command_File_AddExisting = ReactiveCommand.Create(File_AddExisting);
+
             this.WhenAnyValue(x => x.SelectedDevice)
                 .Where(x => x != string.Empty)
                 .Select(async value => await Model.ReadSettings(value))
                 .Subscribe(UpdateUI);
 
+            this.WhenAnyValue(x => x.WriteTimeout)
+                .Where(x => x != string.Empty)
+                .Select(CheckNumber)
+                .Subscribe(result => WriteTimeout = result);
+            
+            this.WhenAnyValue(x => x.ReadTimeout)
+                .Where(x => x != string.Empty)
+                .Select(CheckNumber)
+                .Subscribe(result => ReadTimeout = result);
+
             Ethernet_VM = new ViewModel_Settings_Ethernet(this, MessageBox);
             SerialPort_VM = new ViewModel_Settings_SerialPort(this, MessageBox);
+        }
+
+        public string CheckNumber(string Text)
+        {
+            if (UInt32.TryParse(Text, out _) == false)
+            {
+                Text = Text.Substring(0, Text.Length - 1);
+
+                Message?.Invoke("Разрешается вводить только неотрицательные целые числа.", MessageType.Warning);
+            }
+
+            return Text;
         }
 
         private async void UpdateUI(Task task)
