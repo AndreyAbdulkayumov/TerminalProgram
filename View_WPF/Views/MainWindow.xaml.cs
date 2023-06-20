@@ -80,7 +80,7 @@ namespace View_WPF.Views
 
         private void SetUI_Connected()
         {
-            MenuSettings.IsEnabled = false;
+            MenuItem_Settings.IsEnabled = false;
 
             ComboBox_SelectedPreset.IsEnabled = false;
 
@@ -90,7 +90,7 @@ namespace View_WPF.Views
 
         private void SetUI_Disconnected()
         {
-            MenuSettings.IsEnabled = true;
+            MenuItem_Settings.IsEnabled = true;
 
             ComboBox_SelectedPreset.IsEnabled = true;
 
@@ -207,11 +207,6 @@ namespace View_WPF.Views
             ComboBox_SelectedPreset.Visibility = Visibility.Hidden;
             Button_Connect.Visibility = Visibility.Hidden;
             Button_Disconnect.Visibility = Visibility.Hidden;
-        }
-
-        private void ComboBox_SelectedPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
     }
 }

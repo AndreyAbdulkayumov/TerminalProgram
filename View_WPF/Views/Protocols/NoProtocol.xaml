@@ -15,6 +15,8 @@
 
     <Page.Resources>
 
+        <SolidColorBrush x:Key="Color_Text" Color="#FFD2C25A"/>
+
         <Style x:Key="TX_RX_Field">
             <Setter Property="ItemsControl.Background" Value="#FF464646"/>
             <Setter Property="ItemsControl.Foreground" Value="WhiteSmoke"/>
@@ -24,7 +26,7 @@
         </Style>
 
         <Style TargetType="RadioButton">
-            <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="ItemsControl.Foreground" Value="{StaticResource Color_Text}"/>
             <Setter Property="ItemsControl.FontSize" Value="14"/>
         </Style>
 
@@ -56,42 +58,38 @@
                      Text="{Binding TX_String, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <TextBlock Text="Добавить в конце строки:" Grid.Row="1"
-                       Foreground="#FFD2C25A"
+                       Foreground="{StaticResource Color_Text}"
                        FontSize="14"
                        Margin="20,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
             <CheckBox x:Name="CheckBox_CR" Grid.Row="1"
-                      Foreground="#FFD2C25A"
+                      Foreground="{StaticResource Color_Text}"
                       FontSize="14"
                       Margin="200,2,0,0"
                       Content="CR ( &#8216;\r &#8217;, 0x0D)"
                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                      IsChecked="{Binding CR_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                      Click="CheckBox_CR_Click"/>
+                      IsChecked="{Binding CR_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <CheckBox x:Name="CheckBox_LF" Grid.Row="1"
-                      Foreground="#FFD2C25A"
+                      Foreground="{StaticResource Color_Text}"
                       FontSize="14"
                       Margin="325,2,0,0"
                       Content="LF ( &#8216;\n	&#8216;, 0x0A)"
                       HorizontalAlignment="Left" VerticalAlignment="Center"
-                      IsChecked="{Binding LF_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                      Click="CheckBox_LF_Click"/>
+                      IsChecked="{Binding LF_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             <RadioButton x:Name="RadioButton_Char" Grid.Row="1"
                          Margin="0,0,200,0" 
                          Content="Символ" 
                          HorizontalAlignment="Right" VerticalAlignment="Center"
-                         Command="{Binding Command_Select_Char}" 
-                         Checked="RadioButton_Char_Checked"/>
+                         Command="{Binding Command_Select_Char}"/>
 
             <RadioButton x:Name="RadioButton_String" Grid.Row="1" 
                          Margin="0,0,130,0" 
                          Content="Строка"
                          HorizontalAlignment="Right" VerticalAlignment="Center" 
-                         Command="{Binding Command_Select_String}"
-                         Checked="RadioButton_String_Checked"/>
+                         Command="{Binding Command_Select_String}"/>
 
             <Button x:Name="Button_Send" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
                     Margin="0,0,20,0" 
@@ -136,7 +134,7 @@
                     Click="Button_SaveAs_Click"/>
 
             <CheckBox x:Name="CheckBox_NextLine" Grid.Row="1"
-                      Foreground="#FFD2C25A"
+                      Foreground="{StaticResource Color_Text}"
                       FontSize="14"
                       Margin="180,0,0,0"
                       Content="Переходить на новую строку в конце полученного сообщения"

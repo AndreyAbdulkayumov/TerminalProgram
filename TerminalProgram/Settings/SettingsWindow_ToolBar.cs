@@ -57,7 +57,7 @@ namespace TerminalProgram.Settings
                 Microsoft.Win32.OpenFileDialog FileDialog = new Microsoft.Win32.OpenFileDialog
                 {
                     Title = "Добавление уже существующего файла настроек подключения",
-                    Filter = "Файл настроек|*.xml" // Filter files by extension
+                    Filter = "Файл настроек|*.json" // Filter files by extension
                 };
 
                 // Show open file dialog box

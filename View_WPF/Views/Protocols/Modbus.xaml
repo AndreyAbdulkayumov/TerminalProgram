@@ -15,8 +15,11 @@
     <Page.Resources>
 
         <Style TargetType="Button">
-            <Setter Property="ItemsControl.Height" Value="30"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="Button.Height" Value="30"/>
+            <Setter Property="Button.FontSize" Value="14"/>
+            <Setter Property="Button.Width" Value="100"/>
+            <Setter Property="Button.HorizontalAlignment" Value="Center"/>
+            <Setter Property="Button.VerticalAlignment" Value="Center"/>
         </Style>
 
         <Style x:Key="ColumnHeaderStyle_Custom" TargetType="{x:Type DataGridColumnHeader}">
@@ -24,6 +27,17 @@
             <Setter Property="Height" Value="30"/>
         </Style>
 
+        <Style TargetType="ComboBox">
+            <Setter Property="ComboBox.Height" Value="26"/>
+            <Setter Property="ComboBox.Width" Value="255"/>
+            <Setter Property="ComboBox.FontSize" Value="14"/>
+            <Setter Property="ComboBox.HorizontalAlignment" Value="Center"/>
+            <Setter Property="ComboBox.VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <SolidColorBrush x:Key="Color_Text" Color="#FFD2C25A"/>
+        <SolidColorBrush x:Key="Color_Bright_Text" Color="#FFE6AB44"/>
+        
     </Page.Resources>
 
 
@@ -39,14 +53,14 @@
 
             <TextBlock Text="Режим обмена данными:"
                        FontSize="16"
-                       Foreground="#FFD2C25A"
+                       Foreground="{StaticResource Color_Text}"
                        Margin="20,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
             <TextBlock x:Name="TextBlock_ModbusMode"
                        Text="{Binding ModbusMode_Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        FontSize="16"
-                       Foreground="#FFFFAD1B"
+                       Foreground="{StaticResource Color_Bright_Text}"
                        Margin="220,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
@@ -148,7 +162,7 @@
                 <TextBlock Text="Slave ID" Grid.Column="1"
                            Margin="0,1,0,0"
                            FontSize="16"
-                           Foreground="#FFD2C25A"
+                           Foreground="{StaticResource Color_Text}"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <TextBox x:Name="TextBox_SlaveID" Grid.Column="1"
@@ -162,7 +176,7 @@
                           IsChecked="{Binding CRC16_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           Content="CRC-16"
                           FontSize="14"
-                          Foreground="#FFD2C25A"
+                          Foreground="{StaticResource Color_Text}"
                           Margin="150,3,0,0"
                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 
@@ -188,21 +202,21 @@
 
                 <TextBlock Text="Формат числа:" Grid.Column="1"
                            FontSize="16"
-                           Foreground="#FFD2C25A"
+                           Foreground="{StaticResource Color_Text}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                 <RadioButton x:Name="RadioButton_NumFormat_Hex" Grid.Column="2"
                              Content="Шестнадцетиричный"
                              IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              FontSize="16"
-                             Foreground="#FFD2C25A"
+                             Foreground="{StaticResource Color_Text}"
                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                 <RadioButton x:Name="RadioButton_NumFormat_Dec" Grid.Column="3"
                              Content="Десятичный"
                              IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              FontSize="16"
-                             Foreground="#FFD2C25A"
+                             Foreground="{StaticResource Color_Text}"
                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
             </Grid>
@@ -227,13 +241,13 @@
                 <TextBlock Text="Адрес" Grid.Column="1" Grid.Row="0"
                            Margin="0,1,45,0"
                            FontSize="16"
-                           Foreground="#FFD2C25A"
+                           Foreground="{StaticResource Color_Text}"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock x:Name="TextBlock_Address_NumberFormat" Grid.Column="1" Grid.Row="0"
                            Text="(hex)"
                            FontSize="16"
-                           Foreground="#FFE6AB44"
+                           Foreground="{StaticResource Color_Bright_Text}"
                            Margin="0,1,5,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -246,7 +260,7 @@
 
                 <TextBlock Text="Кол-во регистров" Grid.Column="2" Grid.Row="0"
                            FontSize="16"
-                           Foreground="#FFD2C25A"
+                           Foreground="{StaticResource Color_Text}"
                            Margin="0,1,60,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -260,14 +274,14 @@
 
                 <TextBlock Text="Значение" Grid.Column="1" Grid.Row="1"
                            FontSize="16"
-                           Foreground="#FFD2C25A"
+                           Foreground="{StaticResource Color_Text}"
                            Margin="0,1,45,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock x:Name="TextBlock_Data_NumberFormat" Grid.Column="1" Grid.Row="1"
                            Text="(dec)"
                            FontSize="16"
-                           Foreground="#FFE6AB44"
+                           Foreground="{StaticResource Color_Bright_Text}"
                            Margin="0,1,5,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -280,31 +294,21 @@
 
                 <Button x:Name="Button_Read" Grid.Column="3" Grid.Row="0"
                         Template="{DynamicResource ButtonCommon}"
-                        Content="Прочитать"
-                        Width="100"
-                        HorizontalAlignment="Center" VerticalAlignment="Center" 
+                        Content="Прочитать" 
                         Command="{Binding Command_Read}"/>
 
                 <Button x:Name="Button_Write" Grid.Column="3" Grid.Row="1"
                         Template="{DynamicResource ButtonCommon}"
                         Content="Записать"
-                        Width="100"
-                        HorizontalAlignment="Center" VerticalAlignment="Center" 
                         Command="{Binding Command_Write}"/>
 
                 <ComboBox x:Name="ComboBox_ReadFunc" Grid.Column="4" Grid.Row="0"
-                          Height="26" Width="255"
                           ItemsSource="{Binding ReadFunctions}"
-                          SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          FontSize="14"
-                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <ComboBox x:Name="ComboBox_WriteFunc" Grid.Column="4" Grid.Row="1"
-                          Height="26" Width="255"
                           ItemsSource="{Binding WriteFunctions}"
-                          SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          FontSize="14"
-                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                          SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
             </Grid>
 

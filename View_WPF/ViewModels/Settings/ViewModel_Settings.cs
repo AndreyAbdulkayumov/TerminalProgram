@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Core.Models;
+using Microsoft.Win32;
 using ReactiveUI;
 using View_WPF.Properties;
 
@@ -15,20 +18,20 @@ namespace View_WPF.ViewModels.Settings
 {
     public class ViewModel_Settings : ReactiveObject
     {
-        private ObservableCollection<string> _devices = new ObservableCollection<string>();
+        private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
-        public ObservableCollection<string> Devices
+        public ObservableCollection<string> Presets
         {
-            get => _devices;
-            set => this.RaiseAndSetIfChanged(ref _devices, value);
+            get => _presets;
+            set => this.RaiseAndSetIfChanged(ref _presets, value);
         }
 
-        private string _selectedDevice = string.Empty;
+        private string _selectedPreset = string.Empty;
 
-        public string SelectedDevice
+        public string SelectedPreset
         {
-            get => _selectedDevice;
-            set => this.RaiseAndSetIfChanged(ref _selectedDevice, value);
+            get => _selectedPreset;
+            set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
 
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
@@ -84,8 +87,8 @@ namespace View_WPF.ViewModels.Settings
         
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
-        public ReactiveCommand<Unit, Unit> Command_File_AddNew { get; }
-        public ReactiveCommand<Unit, Unit> Command_File_AddExisting { get; }
+        public ReactiveCommand<Unit, Task> Command_File_AddNew { get; }
+        public ReactiveCommand<Unit, Task> Command_File_AddExisting { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
@@ -99,29 +102,41 @@ namespace View_WPF.ViewModels.Settings
         public readonly ViewModel_Settings_Ethernet Ethernet_VM;
         public readonly ViewModel_Settings_SerialPort SerialPort_VM;
 
+        private readonly Func<string, string?> Get_FilePath;
+        private readonly Func<string> Get_NewFileName;
+
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
-            Action File_AddExisting)
+            Func<string, string?> Get_FilePath_Handler,
+            Func<string> Get_NewFileName_Handler)
         {
             Message = MessageBox;
+            Get_FilePath = Get_FilePath_Handler;
+            Get_NewFileName = Get_NewFileName_Handler;
 
             Model = ConnectedHost.Model;
 
             Command_Loaded = ReactiveCommand.CreateFromTask(Loaded_EventHandler);
 
-            Command_File_AddExisting = ReactiveCommand.Create(File_AddExisting);
+            Command_File_AddNew = ReactiveCommand.Create(File_CreateNew_Handler);
+            Command_File_AddExisting = ReactiveCommand.Create(File_AddExisting_Handler);
+            Command_File_Delete = ReactiveCommand.Create(File_Delete_Handler);
+            Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
 
-            this.WhenAnyValue(x => x.SelectedDevice)
+            this.WhenAnyValue(x => x.SelectedPreset)
+                .Where(x => x != null)
                 .Where(x => x != string.Empty)
                 .Select(async value => await Model.ReadSettings(value))
                 .Subscribe(UpdateUI);
 
             this.WhenAnyValue(x => x.WriteTimeout)
+                .Where(x => x != null)
                 .Where(x => x != string.Empty)
                 .Select(CheckNumber)
                 .Subscribe(result => WriteTimeout = result);
             
             this.WhenAnyValue(x => x.ReadTimeout)
+                .Where(x => x != null)
                 .Where(x => x != string.Empty)
                 .Select(CheckNumber)
                 .Subscribe(result => ReadTimeout = result);
@@ -169,16 +184,73 @@ namespace View_WPF.ViewModels.Settings
 
         private async Task Loaded_EventHandler()
         {
+            await UpdateListOfPresets();
+
+            SelectedPreset = Presets.First();
+        }
+
+        private async Task UpdateListOfPresets()
+        {
             string[] FileNames = await Model.GetSettings_FileNames();
 
-            Devices.Clear();
+            Presets.Clear();
 
             foreach (string element in FileNames)
             {
-                Devices.Add(element);
+                Presets.Add(element);
             }
+        }
 
-            SelectedDevice = Devices.First();
+        private async Task File_CreateNew_Handler()
+        {
+            string FileName = Get_NewFileName.Invoke();
+
+            if (FileName != String.Empty)
+            {
+                await Model.SaveSettings(SystemOfSettings.GetDefault());
+
+                await UpdateListOfPresets();
+
+                SelectedPreset = Presets.Single(x => x == FileName);
+            }
+        }
+
+        private async Task File_AddExisting_Handler()
+        {
+            try
+            {
+                string? FilePath = Get_FilePath.Invoke("Добавление уже существующего файла настроек");
+
+                if (FilePath == null)
+                {
+                    return;
+                }
+
+                string destFilePath = SystemOfSettings.FolderPath_Settings + Path.GetFileName(FilePath);
+
+                string FileName = Path.GetFileNameWithoutExtension(FilePath);
+
+                File.Copy(FilePath, destFilePath);
+
+                await UpdateListOfPresets();
+
+                SelectedPreset = Presets.Single(x => x == FileName);
+            }
+            
+            catch (Exception error)
+            {
+                Message.Invoke("Ошибка при добавлении уже существующего файла.\n\n" + error.Message, MessageType.Error);
+            }
+        }
+
+        private void File_Delete_Handler()
+        {
+
+        }
+
+        private void File_Save_Handler()
+        {
+
         }
     }
 }

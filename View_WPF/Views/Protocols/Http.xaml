@@ -22,14 +22,9 @@
             <Setter Property="ItemsControl.FontSize" Value="16"/>
         </Style>
 
-        <Style TargetType="RadioButton">
-            <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
-        </Style>
-
         <Style TargetType="Button">
-            <Setter Property="ItemsControl.Height" Value="30"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="Button.Height" Value="30"/>
+            <Setter Property="Button.FontSize" Value="14"/>
         </Style>
 
     </Page.Resources>

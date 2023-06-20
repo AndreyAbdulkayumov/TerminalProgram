@@ -11,17 +11,24 @@
 
     <Page.Resources>
 
+        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
+        
         <Style TargetType="TextBlock">
-            <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.FontSize" Value="14"/>
+            <Setter Property="TextBlock.Margin" Value="0,0,7,2"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
+            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="TextBox">
-            <Setter Property="ItemsControl.Height" Value="24"/>
-            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
-            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="TextBox.Height" Value="24"/>
+            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextBox.FontSize" Value="14"/>
+            <Setter Property="TextBox.TextWrapping" Value="Wrap"/>
+            <Setter Property="TextBox.Margin" Value="7,0,0,0"/>
+            <Setter Property="TextBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextBox.VerticalAlignment" Value="Center"/>
         </Style>
 
     </Page.Resources>
@@ -42,34 +49,20 @@
         <!-- IP address -->
         
         <TextBlock Grid.Row="0" Grid.Column="0"
-                   Text="IP" 
-                   FontSize="14"
-                   Margin="0,0,7,2"
-                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                   Text="IP"/>
 
         <TextBox Grid.Row="0" Grid.Column="1"
-                 Margin="7,0,0,0"
                  Width="110" 
-                 TextWrapping="Wrap" 
-                 HorizontalAlignment="Left" VerticalAlignment="Center"
-                 Text="{Binding IP_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 TextChanged="TextBox_IP_Address_TextChanged"/>
+                 Text="{Binding IP_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         
         <!-- Port -->
         
         <TextBlock Grid.Row="1" Grid.Column="0"
-                   Text="Port"
-                   FontSize="14"
-                   Margin="0,0,7,2" 
-                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                   Text="Port"/>
 
         <TextBox Grid.Row="1" Grid.Column="1"
-                 Margin="7,0,0,0"
                  Width="50" 
-                 TextWrapping="Wrap" 
-                 HorizontalAlignment="Left" VerticalAlignment="Center"
-                 Text="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 TextChanged="TextBox_Port_TextChanged"/>
+                 Text="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         
     </Grid>
     

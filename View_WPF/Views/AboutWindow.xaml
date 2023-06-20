@@ -15,6 +15,20 @@
         WindowStartupLocation="CenterOwner"
         KeyDown="Window_KeyDown">
 
+    <Window.Resources>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <SolidColorBrush x:Key="Color_Text_Top" Color="#FFD2C25A"/>
+        <SolidColorBrush x:Key="Color_Text_Back" Color="#FFB1A972"/>
+
+    </Window.Resources>
+    
     <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
         
         <Grid>
@@ -50,50 +64,32 @@
 
                 <TextBlock Text="Разработал:"
                            Margin="0,0,0,150"
-                           Foreground="#FFB1A972"
-                           FontSize="18"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                           Foreground="{StaticResource Color_Text_Back}"
+                           FontSize="18"/>
 
                 <TextBlock Text="Абдулкаюмов Андрей Ренатович"
                            Margin="0,0,0,30"
                            Width="120"
-                           Foreground="#FFD2C25A"
-                           FontSize="18"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                           Foreground="{StaticResource Color_Text_Top}"
+                           FontSize="18"/>
 
                 <TextBlock Text="Версия:"
                            Margin="0,80,50,0"
-                           Foreground="#FFB1A972"
-                           FontSize="18"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                           Foreground="{StaticResource Color_Text_Back}"
+                           FontSize="18"/>
 
                 <TextBlock Text="2.0.0"
                            Margin="80,80,0,0"
-                           Foreground="#FFD2C25A"
-                           FontSize="18"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                           Foreground="{StaticResource Color_Text_Top}"
+                           FontSize="18"/>
 
                 <TextBlock Text="Картинки взяты с ресурса: "
                            Margin="0,160,80,0"
-                           Foreground="#FFB1A972"
-                           FontSize="14"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                           Foreground="{StaticResource Color_Text_Back}"
+                           FontSize="14"/>
 
                 <TextBlock Margin="140,160,0,0"
-                           FontSize="14"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap"
-                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                           FontSize="14">
                 
                     <Hyperlink NavigateUri="https://icons8.com" RequestNavigate="Hyperlink_RequestNavigate">
                         icons8

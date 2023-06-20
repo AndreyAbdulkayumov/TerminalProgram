@@ -19,6 +19,7 @@ using View_WPF.ViewModels;
 using System.Reactive;
 using System.Reactive.Linq;
 using View_WPF.ViewModels.Settings;
+using View_WPF.Views.ServiceWindows;
 
 namespace View_WPF.Views.Settings
 {
@@ -42,7 +43,11 @@ namespace View_WPF.Views.Settings
         {
             InitializeComponent();
 
-            ViewModel = new ViewModel_Settings(MessageBoxView, ToolBar_File_AddExisting);
+            ViewModel = new ViewModel_Settings(
+                MessageBoxView, 
+                Get_FilePath,
+                Get_NewFileName
+                );
 
             DataContext = ViewModel;
         }
@@ -155,11 +160,6 @@ namespace View_WPF.Views.Settings
             this.Close();
         }
 
-        private void TextBox_Timeout_Write_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
         private void CheckNumber(TextBox Box)
         {
             string Text = Box.Text;
@@ -177,16 +177,6 @@ namespace View_WPF.Views.Settings
                 MessageBox.Show("Разрешается вводить только неотрицательные целые числа.", "Предупреждение",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-        }
-
-        private void TextBox_Timeout_Read_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void ComboBox_SelectedEncoding_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            
         }
 
         private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)
@@ -207,49 +197,36 @@ namespace View_WPF.Views.Settings
             }
         }
 
-        private void File_Save()
+        private string Get_NewFileName()
         {
-
-        }
-
-        private void File_Delete()
-        {
-
-        }
-
-        private void ToolBar_File_AddExisting()
-        {
-            try
+            EnterTextWindow window = new EnterTextWindow()
             {
-                Microsoft.Win32.OpenFileDialog FileDialog = new Microsoft.Win32.OpenFileDialog
-                {
-                    Title = "Добавление уже существующего файла настроек подключения",
-                    Filter = "Файл настроек|*.xml" // Filter files by extension
-                };
+                Owner = this
+            };
 
-                // Show open file dialog box
-                Nullable<bool> result = FileDialog.ShowDialog();
+            window.ShowDialog();
 
-                // Process open file dialog box results
-                if (result == true)
-                {
+            return window.FileName;
+        }
 
+        private string? Get_FilePath(string Title)
+        {
+            Microsoft.Win32.OpenFileDialog FileDialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = Title,
+                Filter = "Файл настроек|*.json"
+            };
 
-                    string FileName = System.IO.Path.GetFileNameWithoutExtension(FileDialog.SafeFileName);
+            // Show open file dialog box
+            Nullable<bool> result = FileDialog.ShowDialog();
 
-                }
+            // Process open file dialog box results
+            if (result == true)
+            {
+                return FileDialog.FileName;
             }
 
-            catch (Exception error)
-            {
-                MessageBox.Show("Ошибка при добавлении уже существующего файла.\n\n" + error.Message,
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void File_AddNew()
-        {
-
+            return null;
         }
     }
 }

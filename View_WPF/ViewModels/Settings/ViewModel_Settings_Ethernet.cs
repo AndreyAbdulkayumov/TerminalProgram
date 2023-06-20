@@ -40,7 +40,8 @@ namespace View_WPF.ViewModels.Settings
             Model = ConnectedHost.Model;
 
             this.WhenAnyValue(x => x.Port)
-                .Where(x => x != string.Empty)
+                .Where(x => x != null)
+                .Where(x => x != string.Empty)                
                 .Select(Main_VM.CheckNumber)
                 .Subscribe(result => Port = result);
         }

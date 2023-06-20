@@ -20,33 +20,35 @@
 
     <Window.Resources>
 
+        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
+
         <Style TargetType="TextBlock">
-            <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.FontSize" Value="14"/>
         </Style>
 
         <Style TargetType="TextBox">
-            <Setter Property="ItemsControl.Height" Value="24"/>
-            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
-            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
+            <Setter Property="TextBox.Height" Value="24"/>
+            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextBox.FontSize" Value="14"/>
+            <Setter Property="TextBox.Width" Value="50"/>
+            <Setter Property="TextBox.Margin" Value="210,0,0,0"/>
+            <Setter Property="TextBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextBox.VerticalAlignment" Value="Center"/>
         </Style>
         
-        <Style TargetType="CheckBox">
-            <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
-        </Style>
-
         <Style TargetType="Button">
-            <Setter Property="ItemsControl.Background" Value="#FFB0B0B9"/>
-            <Setter Property="ItemsControl.BorderBrush" Value="{x:Null}"/>
-            <Setter Property="ItemsControl.BorderThickness" Value="0"/>
-            <Setter Property="ItemsControl.Foreground" Value="Black"/>
+            <Setter Property="Button.Background" Value="#FFB0B0B9"/>
+            <Setter Property="Button.BorderBrush" Value="{x:Null}"/>
+            <Setter Property="Button.BorderThickness" Value="0"/>
+            <Setter Property="Button.Foreground" Value="Black"/>
         </Style>
 
         <Style TargetType="RadioButton">
-            <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="RadioButton.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="RadioButton.FontSize" Value="14"/>
+            <Setter Property="RadioButton.HorizontalAlignment" Value="Center"/>
+            <Setter Property="RadioButton.VerticalAlignment" Value="Center"/>
         </Style>
 
     </Window.Resources>
@@ -89,16 +91,15 @@
                         Width="45" Height="30" 
                         Background="IndianRed"
                         Foreground="#FF3A3232"
-                        Margin="0,0,0,0"
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Click="Button_CloseApplication_Click"/>
+                
             </Grid>
 
             
             <!-- Row 1 -->
 
             <ToolBarPanel Grid.Row="1" 
-                          Margin="1,0,1,0"
                           ClipToBounds="True" 
                           Background="#FF404040">
 
@@ -107,10 +108,9 @@
                          Background="{x:Null}" 
                          ToolBarTray.IsLocked="True">
 
-                    <Button x:Name="Button_File_AddNew" 
-                            Width="35"
+                    <Button Width="35"
                             ToolTip="Создать новый файл"
-                            >
+                            Command="{Binding Command_File_AddNew}">
 
                         <Image Source="/Resources/File_AddNew.png" />
 
@@ -118,8 +118,7 @@
 
                     <Separator/>
 
-                    <Button x:Name="Button_File_AddExisting"
-                            Width="35"
+                    <Button Width="35"
                             ToolTip="Добавить существующий файл" 
                             Command="{Binding Command_File_AddExisting}">
 
@@ -129,10 +128,9 @@
 
                     <Separator/>
 
-                    <Button x:Name="Button_File_Delete" 
-                            Width="35"
-                            ToolTip="Удалить выбранный файл" 
-                            >
+                    <Button Width="35"
+                            ToolTip="Удалить выбранный файл"
+                            Command="{Binding Command_File_Delete}">
 
                         <Image Source="/Resources/File_Delete.png" />
 
@@ -140,10 +138,9 @@
 
                     <Separator/>
 
-                    <Button x:Name="Button_File_Save"
-                            Width="35"
+                    <Button Width="35"
                             ToolTip="Сохранить выбранный файл"
-                            >
+                            Command="{Binding Command_File_Save}">
 
                         <Image Source="/Resources/File_Save.png" />
 
@@ -162,13 +159,12 @@
                            Margin="70,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                <ComboBox x:Name="ComboBox_SelectedDevice"
-                          Margin="150,0,0,0" 
+                <ComboBox Margin="150,0,0,0"
                           Width="120" 
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Center" 
-                          ItemsSource="{Binding Devices}"
-                          SelectedItem="{Binding SelectedDevice}"/>
+                          ItemsSource="{Binding Presets}"
+                          SelectedItem="{Binding SelectedPreset}"/>
             </Grid>
             
 
@@ -187,8 +183,7 @@
                            Margin="90,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                <ComboBox x:Name="ComboBox_SelectedEncoding"
-                          Margin="180,0,0,0" 
+                <ComboBox Margin="180,0,0,0" 
                           Width="80" 
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -212,10 +207,8 @@
                            Margin="70,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                <TextBox x:Name="TextBox_Timeout_Write"
-                         Margin="210,0,0,0"
-                         Width="50"
-                         Text="{Binding WriteTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding WriteTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            
             </Grid>
             
 
@@ -227,10 +220,8 @@
                            Margin="70,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                <TextBox x:Name="TextBox_Timeout_Read"
-                         Margin="210,0,0,0"
-                         Width="50"
-                         Text="{Binding ReadTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox Text="{Binding ReadTimeout, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            
             </Grid>
             
 
@@ -243,13 +234,11 @@
 
                 <RadioButton x:Name="RadioButton_SerialPort" Content="Serial Port" 
                              Margin="20,0,0,0" 
-                             HorizontalAlignment="Center" VerticalAlignment="Center" 
                              IsChecked="{Binding Selected_SerialPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Checked="RadioButton_SerialPort_Checked"/>
 
                 <RadioButton x:Name="RadioButton_Ethernet" Content="Ethernet" 
                              Margin="30,0,0,0" 
-                             HorizontalAlignment="Center" VerticalAlignment="Center" 
                              IsChecked="{Binding Selected_Ethernet, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Checked="RadioButton_Ethernet_Checked"/>
 

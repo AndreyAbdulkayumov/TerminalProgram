@@ -21,17 +21,19 @@
     <Window.Resources>        
 
         <Style TargetType="TextBlock">
-            <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="TextBlock.Foreground" Value="#FFD2C25A"/>
         </Style>
 
         <Style TargetType="ComboBox">
-            <Setter Property="ItemsControl.Background" Value="Aqua"/>
-            <Setter Property="ItemsControl.BorderThickness" Value="0"/>
+            <Setter Property="ComboBox.Background" Value="Aqua"/>
+            <Setter Property="ComboBox.BorderThickness" Value="0"/>
         </Style>
 
         <Style TargetType="RadioButton">
-            <Setter Property="ItemsControl.Foreground" Value="#FFD2C25A"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="RadioButton.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="RadioButton.FontSize" Value="14"/>
+            <Setter Property="RadioButton.HorizontalAlignment" Value="Left"/>
+            <Setter Property="RadioButton.VerticalAlignment" Value="Top"/>
         </Style>
 
         <Style x:Key="Menu">
@@ -54,10 +56,10 @@
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
-            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Top"/>
+            <Setter Property="Button.Height" Value="30"/>
+            <Setter Property="Button.FontSize" Value="14"/>
+            <Setter Property="Button.HorizontalAlignment" Value="Left"/>
+            <Setter Property="Button.VerticalAlignment" Value="Top"/>
         </Style>
         
         
@@ -97,7 +99,6 @@
                         Width="45" Height="30" 
                         Background="IndianRed"
                         Foreground="#FF3A3232"
-                        Margin="0,0,0,0"
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Click="Button_CloseApplication_Click"/>
 
@@ -106,11 +107,11 @@
             <Menu Grid.Row="1"
                   HorizontalAlignment="Left" VerticalAlignment="Top">
 
-                <MenuItem Header="Настройки" Name="MenuSettings" 
+                <MenuItem Header="Настройки" Name="MenuItem_Settings" 
                           Click="MenuSettings_Click"
                           Style="{StaticResource Menu}"/>
 
-                <MenuItem Header="О программе" Name="MenuAbout"
+                <MenuItem Header="О программе"
                           Click="MenuAbout_Click" 
                           Style="{StaticResource Menu}"/>
 
@@ -121,21 +122,18 @@
                 <RadioButton x:Name="RadioButton_NoProtocol"
                              Content="Без протокола"
                              Margin="20,20,0,0"
-                             HorizontalAlignment="Left" VerticalAlignment="Top"
                              Command="{Binding Command_ProtocolMode_NoProtocol}"
                              Checked="RadioButton_NoProtocol_Checked"/>
 
                 <RadioButton x:Name="RadioButton_Protocol_Modbus"
                              Content="Modbus"
                              Margin="150,20,0,0"
-                             HorizontalAlignment="Left" VerticalAlignment="Top"
                              Command="{Binding Command_ProtocolMode_Modbus}"
                              Checked="RadioButton_Protocol_Modbus_Checked"/>
 
                 <RadioButton x:Name="RadioButton_Protocol_Http"
                              Content="Http"
                              Margin="250,20,0,0"
-                             HorizontalAlignment="Left" VerticalAlignment="Top"
                              Checked="RadioButton_Protocol_Http_Checked"/>
 
                 <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
@@ -147,8 +145,7 @@
                           Height="25" Width="160"
                           Margin="175,58,0,0"
                           FontSize="14"
-                          HorizontalAlignment="Left" VerticalAlignment="Top" 
-                          SelectionChanged="ComboBox_SelectedPreset_SelectionChanged"/>
+                          HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
                 <Button x:Name="Button_Connect" Template="{DynamicResource ButtonCommon}"
                         Margin="380,55,0,0"

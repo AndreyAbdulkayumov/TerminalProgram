@@ -11,34 +11,36 @@
 
     <Page.Resources>
 
+        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
+        
         <Style TargetType="TextBlock">
-            <Setter Property="ItemsControl.Margin" Value="0,0,7,0"/>
-            <Setter Property="ItemsControl.HorizontalAlignment" Value="Right"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.Foreground" Value="#FFCBBD5A"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="TextBlock.Margin" Value="0,0,7,0"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
+            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.FontSize" Value="14"/>
         </Style>
 
         <Style x:Key="ComboBox_SerialPort" TargetType="ComboBox">
-            <Setter Property="ItemsControl.Margin" Value="7,0,0,0"/>
-            <Setter Property="ItemsControl.Height" Value="24"/>
-            <Setter Property="ItemsControl.Width" Value="80"/>
-            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
-            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="ComboBox.Margin" Value="7,0,0,0"/>
+            <Setter Property="ComboBox.Height" Value="24"/>
+            <Setter Property="ComboBox.Width" Value="80"/>
+            <Setter Property="ComboBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="ComboBox.VerticalAlignment" Value="Center"/>
+            <Setter Property="ComboBox.FontSize" Value="14"/>
+            <Setter Property="ComboBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="ComboBox.HorizontalContentAlignment" Value="Left"/>
         </Style>
 
         <Style TargetType="TextBox">
-            <Setter Property="ItemsControl.Margin" Value="7,0,0,0"/>
-            <Setter Property="ItemsControl.Height" Value="24"/>
-            <Setter Property="ItemsControl.Width" Value="80"/>
-            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
-            <Setter Property="ItemsControl.VerticalAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.FontSize" Value="14"/>
-            <Setter Property="ItemsControl.VerticalContentAlignment" Value="Center"/>
-            <Setter Property="ItemsControl.HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="TextBox.Margin" Value="7,0,0,0"/>
+            <Setter Property="TextBox.Height" Value="24"/>
+            <Setter Property="TextBox.Width" Value="80"/>
+            <Setter Property="TextBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextBox.VerticalAlignment" Value="Center"/>
+            <Setter Property="TextBox.FontSize" Value="14"/>
+            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextBox.HorizontalContentAlignment" Value="Left"/>
         </Style>
 
     </Page.Resources>
@@ -107,7 +109,6 @@
                    Text="BaudRate"/>
 
         <ComboBox Grid.Row="1" Grid.Column="1"
-                  x:Name="ComboBox_BaudRate"
                   ItemsSource="{Binding BaudRate}"
                   SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 

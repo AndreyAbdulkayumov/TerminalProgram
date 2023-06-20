@@ -12,7 +12,7 @@ namespace Core.Models
 {
     public static class SystemOfSettings
     {
-        private readonly static string FolderPath_Settings = "Settings/";
+        public readonly static string FolderPath_Settings = "Settings/";
 
         public static string Settings_FilePath
         {

@@ -155,6 +155,22 @@ namespace Core.Models
             return await SystemOfSettings.FindFilesOfPresets();
         }
 
+        public async Task SaveSettings(DeviceData Data)
+        {
+            try
+            {
+                await SystemOfSettings.Save(Data);
+
+                Settings = (DeviceData)Data.Clone();
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка сохранения настроек. " +
+                    error.Message);
+            }
+        }
+
         public async Task ReadSettings(string DocumentName)
         {
             try

@@ -185,7 +185,8 @@ namespace View_WPF.ViewModels.Settings
             Command_ReScan_COMPorts.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.Custom_BaudRate_Value)
-                .Where(x => x != string.Empty)
+                .Where(x => x != null)
+                .Where(x => x != string.Empty)                
                 .Select(Main_VM.CheckNumber)
                 .Subscribe(result => Custom_BaudRate_Value = result);
         }
