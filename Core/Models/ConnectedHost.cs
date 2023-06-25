@@ -85,24 +85,24 @@ namespace Core.Models
         }
 
 
-        public async Task Connect(string FileName)
+        public void Connect(string FileName)
         {
             if (SelectedProtocol == null)
             {
                 throw new Exception("Не выбран протокол.");
             }
 
-            await ReadSettings(FileName);
+            ReadSettings(FileName);
 
             switch (Settings.TypeOfConnection)
             {
-                case "SerialPort":
+                case DeviceData.ConnectionName_SerialPort:
 
                     Client = new SerialPortClient();
 
                     Client.Connect(new ConnectionInfo(new SerialPortInfo(
                         Settings.Connection_SerialPort?.COMPort,
-                        Settings.Connection_SerialPort?.BaudRate_IsCustom == "Enable" ?
+                        Settings.Connection_SerialPort?.BaudRate_IsCustom == true ?
                            Settings.Connection_SerialPort?.BaudRate_Custom : Settings.Connection_SerialPort?.BaudRate,
                         Settings.Connection_SerialPort?.Parity,
                         Settings.Connection_SerialPort?.DataBits,
@@ -112,7 +112,7 @@ namespace Core.Models
 
                     break;
 
-                case "Ethernet":
+                case DeviceData.ConnectionName_Ethernet:
 
                     Client = new IPClient();
 
@@ -150,16 +150,16 @@ namespace Core.Models
         }
 
 
-        public async Task<string[]> GetSettings_FileNames()
+        public string[] GetSettings_FileNames()
         {
-            return await SystemOfSettings.FindFilesOfPresets();
+            return SystemOfSettings.FindFilesOfPresets();
         }
 
-        public async Task SaveSettings(DeviceData Data)
+        public void SaveSettings(string DocumentName, DeviceData Data)
         {
             try
             {
-                await SystemOfSettings.Save(Data);
+                SystemOfSettings.Save(DocumentName, Data);
 
                 Settings = (DeviceData)Data.Clone();
             }
@@ -171,13 +171,11 @@ namespace Core.Models
             }
         }
 
-        public async Task ReadSettings(string DocumentName)
+        public void ReadSettings(string DocumentName)
         {
             try
             {
-                SystemOfSettings.Settings_FileName = DocumentName;
-
-                DeviceData Device = await SystemOfSettings.Read();
+                DeviceData Device = SystemOfSettings.Read(DocumentName);
 
                 Settings = (DeviceData)Device.Clone();
 

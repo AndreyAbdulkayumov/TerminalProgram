@@ -10,7 +10,7 @@ namespace Core.Models
     {
         public string? COMPort { get; set; }
         public string? BaudRate { get; set; }
-        public string? BaudRate_IsCustom { get; set; }
+        public bool BaudRate_IsCustom { get; set; }
         public string? BaudRate_Custom { get; set; }
         public string? Parity { get; set; }
         public string? DataBits { get; set; }
@@ -25,6 +25,9 @@ namespace Core.Models
 
     public class DeviceData : ICloneable
     {
+        public const string ConnectionName_SerialPort = "SerialPort";
+        public const string ConnectionName_Ethernet = "Ethernet";
+
         public string? GlobalEncoding { get; set; }
 
         public string? TimeoutWrite { get; set; }
@@ -37,6 +40,43 @@ namespace Core.Models
 
         public object Clone()
         {
+            SerialPort_Info? SerialPort;
+
+            if (Connection_SerialPort != null)
+            {
+                SerialPort = new SerialPort_Info()
+                {
+                    COMPort = this.Connection_SerialPort.COMPort,
+                    BaudRate = this.Connection_SerialPort.BaudRate,
+                    BaudRate_IsCustom = this.Connection_SerialPort.BaudRate_IsCustom,
+                    BaudRate_Custom = this.Connection_SerialPort.BaudRate_Custom,
+                    Parity = this.Connection_SerialPort.Parity,
+                    DataBits = this.Connection_SerialPort.DataBits,
+                    StopBits = this.Connection_SerialPort.StopBits
+                };
+            }
+
+            else
+            {
+                SerialPort = null;
+            }
+
+            IP_Info? IP;
+
+            if (Connection_IP != null)
+            {
+                IP = new IP_Info()
+                {
+                    IP_Address = this.Connection_IP.IP_Address,
+                    Port = this.Connection_IP.Port
+                };
+            }
+
+            else
+            {
+                IP = null;
+            }
+
             return new DeviceData()
             {
                 GlobalEncoding = this.GlobalEncoding,
@@ -46,22 +86,9 @@ namespace Core.Models
 
                 TypeOfConnection = this.TypeOfConnection,
 
-                Connection_SerialPort = new SerialPort_Info()
-                {
-                    COMPort = this.Connection_SerialPort?.COMPort,
-                    BaudRate = this.Connection_SerialPort?.BaudRate,
-                    BaudRate_IsCustom = this.Connection_SerialPort?.BaudRate_IsCustom,
-                    BaudRate_Custom = this.Connection_SerialPort?.BaudRate_Custom,
-                    Parity = this.Connection_SerialPort?.Parity,
-                    DataBits = this.Connection_SerialPort?.DataBits,
-                    StopBits = this.Connection_SerialPort?.StopBits,
-                },
+                Connection_SerialPort = SerialPort,
 
-                Connection_IP = new IP_Info()
-                {
-                    IP_Address = this.Connection_IP?.IP_Address,
-                    Port = this.Connection_IP?.Port
-                }
+                Connection_IP = IP
             };
         }
     }

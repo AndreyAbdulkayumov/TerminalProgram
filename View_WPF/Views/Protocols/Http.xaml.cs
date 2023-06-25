@@ -31,33 +31,7 @@ namespace View_WPF.Views.Protocols
 
             MainWindowTitle = window.Title;
 
-            DataContext = new ViewModel_Http(MessageBoxView);
-        }
-
-        private void MessageBoxView(string Message, MessageType Type)
-        {
-            MessageBoxImage Image;
-
-            switch (Type)
-            {
-                case MessageType.Error:
-                    Image = MessageBoxImage.Error;
-                    break;
-
-                case MessageType.Warning:
-                    Image = MessageBoxImage.Warning;
-                    break;
-
-                case MessageType.Information:
-                    Image = MessageBoxImage.Information;
-                    break;
-
-                default:
-                    Image = MessageBoxImage.Information; 
-                    break;
-            }
-
-            MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
+            DataContext = new ViewModel_Http(MessageView.Show);
         }
 
         private void Page_KeyDown(object sender, KeyEventArgs e)

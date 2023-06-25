@@ -31,36 +31,10 @@ namespace View_WPF.Views.Protocols
             MainWindowTitle = window.Title;
 
             DataContext = new ViewModel_Modbus(
-                MessageBoxView,
+                MessageView.Show,
                 SetUI_Connected,
                 SetUI_Disconnected,
                 DataGrid_ScrollTo);
-        }
-
-        private void MessageBoxView(string Message, MessageType Type)
-        {
-            MessageBoxImage Image;
-
-            switch (Type)
-            {
-                case MessageType.Error:
-                    Image = MessageBoxImage.Error;
-                    break;
-
-                case MessageType.Warning:
-                    Image = MessageBoxImage.Warning;
-                    break;
-
-                case MessageType.Information:
-                    Image = MessageBoxImage.Information;
-                    break;
-
-                default:
-                    Image = MessageBoxImage.Information;
-                    break;
-            }
-
-            MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
         }
 
         private void SetUI_Connected()

@@ -115,10 +115,10 @@
             <ComboBox.Style>
                 <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_SerialPort}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding Selected_Custom_BaudRate}" Value="True">
+                        <DataTrigger Binding="{Binding BaudRate_IsCustom}" Value="True">
                             <Setter Property="FrameworkElement.IsEnabled" Value="False"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Selected_Custom_BaudRate}" Value="False">
+                        <DataTrigger Binding="{Binding BaudRate_IsCustom}" Value="False">
                             <Setter Property="FrameworkElement.IsEnabled" Value="True"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -133,13 +133,12 @@
                   Foreground="#FFCBBD5A"
                   Margin="0,0,7,0" FontSize="14"
                   HorizontalAlignment="Right" VerticalAlignment="Center" 
-                  IsChecked="{Binding Selected_Custom_BaudRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                  IsChecked="{Binding BaudRate_IsCustom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="TextBox_BaudRate_Custom"
                  Text="{Binding Custom_BaudRate_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding Selected_Custom_BaudRate}"
-                 SelectionChanged="TextBox_BaudRate_Custom_SelectionChanged"/>
+                 IsEnabled="{Binding BaudRate_IsCustom}"/>
 
         <!-- Parity -->
 

@@ -29,15 +29,5 @@ namespace View_WPF.Views.Settings
 
             DataContext = ViewModel;
         }
-
-        private void TextBox_IP_Address_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            
-        }
-
-        private void TextBox_Port_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            
-        }
     }
 }

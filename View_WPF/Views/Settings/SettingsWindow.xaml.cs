@@ -34,8 +34,6 @@ namespace View_WPF.Views.Settings
         private Page_IP? Settings_IP;
         private Page_SerialPort? Settings_SerialPort;
 
-        
-
         internal readonly ViewModel_Settings ViewModel;
 
 
@@ -44,39 +42,13 @@ namespace View_WPF.Views.Settings
             InitializeComponent();
 
             ViewModel = new ViewModel_Settings(
-                MessageBoxView, 
+                MessageView.Show,
+                MessageView.ShowDialog,
                 Get_FilePath,
                 Get_NewFileName
                 );
 
             DataContext = ViewModel;
-        }
-
-
-        private void MessageBoxView(string Message, MessageType Type)
-        {
-            MessageBoxImage Image;
-
-            switch (Type)
-            {
-                case MessageType.Error:
-                    Image = MessageBoxImage.Error;
-                    break;
-
-                case MessageType.Warning:
-                    Image = MessageBoxImage.Warning;
-                    break;
-
-                case MessageType.Information:
-                    Image = MessageBoxImage.Information;
-                    break;
-
-                default:
-                    Image = MessageBoxImage.Information;
-                    break;
-            }
-
-            MessageBox.Show(Message, this.Title, MessageBoxButton.OK, Image);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -103,45 +75,19 @@ namespace View_WPF.Views.Settings
             {
                 await ViewModel.Command_Loaded.Execute();
             }
-
-            if (await DisplaySettingsFile() == false)
-            {
-                Close();
-            }
         }
 
-        /// <summary>
-        /// Метод отображения содержимого файла настроек на UI.
-        /// </summary>
-        /// <returns>
-        /// true - если отображение прошло успешно, false - если пользователь проигнорировал все предупреждения.
-        /// </returns>
-        private async Task<bool> DisplaySettingsFile()
-        {
-            try
-            {
-                
-            }
-
-            catch (Exception error)
-            {
-                MessageBox.Show("Ошибка чтения данных из документа. " +
-                    "Проверьте его целостность или выберите другой файл настроек.\n\n" +
-                    error.Message, "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-
-                return false;
-            }
-
-            return true;
-        }
-
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        private async void Window_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
                 case Key.Enter:
-                    //Button_File_Save_Click(Button_File_Save, new RoutedEventArgs());
+
+                    if (ViewModel != null)
+                    {
+                        await ViewModel.Command_File_Save.Execute();
+                    }
+                    
                     break;
 
                 case Key.Escape:
@@ -158,25 +104,6 @@ namespace View_WPF.Views.Settings
         private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
-        }
-
-        private void CheckNumber(TextBox Box)
-        {
-            string Text = Box.Text;
-
-            if (Text == "")
-            {
-                return;
-            }
-
-            if (UInt32.TryParse(Text, out _) == false)
-            {
-                Box.Text = Text.Substring(0, Text.Length - 1);
-                Box.SelectionStart = Box.Text.Length;
-
-                MessageBox.Show("Разрешается вводить только неотрицательные целые числа.", "Предупреждение",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
         }
 
         private void RadioButton_SerialPort_Checked(object sender, RoutedEventArgs e)

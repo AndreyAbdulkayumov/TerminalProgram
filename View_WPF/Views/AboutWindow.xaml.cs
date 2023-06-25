@@ -39,6 +39,7 @@ namespace View_WPF.Views
                 Close();
             }
         }
+
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();

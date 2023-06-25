@@ -39,38 +39,12 @@ namespace View_WPF.Views.Protocols
             MainWindowTitle = window.Title;
 
             DataContext = new ViewModel_NoProtocol(
-                MessageBoxView, 
+                MessageView.Show,
                 SetUI_Connected, 
                 SetUI_Disconnected,
                 Action_Receive,
                 Action_Clear_ReceiveField
                 );
-        }
-
-        private void MessageBoxView(string Message, MessageType Type)
-        {
-            MessageBoxImage Image;
-
-            switch (Type)
-            {
-                case MessageType.Error:
-                    Image = MessageBoxImage.Error;
-                    break;
-
-                case MessageType.Warning:
-                    Image = MessageBoxImage.Warning;
-                    break;
-
-                case MessageType.Information:
-                    Image = MessageBoxImage.Information;
-                    break;
-
-                default:
-                    Image = MessageBoxImage.Information;
-                    break;
-            }
-
-            MessageBox.Show(Message, MainWindowTitle, MessageBoxButton.OK, Image);
         }
 
         private void SetUI_Connected()

@@ -9,10 +9,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Core.Models;
-using Microsoft.Win32;
 using ReactiveUI;
-using View_WPF.Properties;
+using Core.Models;
 
 namespace View_WPF.ViewModels.Settings
 {
@@ -87,13 +85,14 @@ namespace View_WPF.ViewModels.Settings
         
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
-        public ReactiveCommand<Unit, Task> Command_File_AddNew { get; }
-        public ReactiveCommand<Unit, Task> Command_File_AddExisting { get; }
+        public ReactiveCommand<Unit, Unit> Command_File_AddNew { get; }
+        public ReactiveCommand<Unit, Unit> Command_File_AddExisting { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
 
         private Action<string, MessageType> Message;
+        private Func<string, MessageType, bool> MessageDialog;
 
         private readonly ConnectedHost Model;
 
@@ -107,16 +106,18 @@ namespace View_WPF.ViewModels.Settings
 
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
+            Func<string, MessageType, bool> MessageBoxDialog,
             Func<string, string?> Get_FilePath_Handler,
             Func<string> Get_NewFileName_Handler)
         {
             Message = MessageBox;
+            MessageDialog = MessageBoxDialog;
             Get_FilePath = Get_FilePath_Handler;
             Get_NewFileName = Get_NewFileName_Handler;
 
             Model = ConnectedHost.Model;
 
-            Command_Loaded = ReactiveCommand.CreateFromTask(Loaded_EventHandler);
+            Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
             Command_File_AddNew = ReactiveCommand.Create(File_CreateNew_Handler);
             Command_File_AddExisting = ReactiveCommand.Create(File_AddExisting_Handler);
@@ -126,7 +127,6 @@ namespace View_WPF.ViewModels.Settings
             this.WhenAnyValue(x => x.SelectedPreset)
                 .Where(x => x != null)
                 .Where(x => x != string.Empty)
-                .Select(async value => await Model.ReadSettings(value))
                 .Subscribe(UpdateUI);
 
             this.WhenAnyValue(x => x.WriteTimeout)
@@ -157,9 +157,9 @@ namespace View_WPF.ViewModels.Settings
             return Text;
         }
 
-        private async void UpdateUI(Task task)
+        private void UpdateUI(string FileName)
         {
-            await task;
+            Model.ReadSettings(FileName);
 
             DeviceData Settings = Model.Settings;
 
@@ -170,11 +170,11 @@ namespace View_WPF.ViewModels.Settings
 
             switch (Settings.TypeOfConnection)
             {
-                case "SerialPort":
+                case DeviceData.ConnectionName_SerialPort:
                     Selected_SerialPort = true;
                     break;
 
-                case "Ethernet":
+                case DeviceData.ConnectionName_Ethernet:
                     Selected_Ethernet = true;
                     break;
             }
@@ -182,16 +182,16 @@ namespace View_WPF.ViewModels.Settings
             SettingsFileChanged?.Invoke(this, new EventArgs());
         }
 
-        private async Task Loaded_EventHandler()
+        private void Loaded_EventHandler()
         {
-            await UpdateListOfPresets();
+            UpdateListOfPresets();
 
             SelectedPreset = Presets.First();
         }
 
-        private async Task UpdateListOfPresets()
+        private void UpdateListOfPresets()
         {
-            string[] FileNames = await Model.GetSettings_FileNames();
+            string[] FileNames = Model.GetSettings_FileNames();
 
             Presets.Clear();
 
@@ -201,21 +201,21 @@ namespace View_WPF.ViewModels.Settings
             }
         }
 
-        private async Task File_CreateNew_Handler()
+        private void File_CreateNew_Handler()
         {
             string FileName = Get_NewFileName.Invoke();
 
             if (FileName != String.Empty)
             {
-                await Model.SaveSettings(SystemOfSettings.GetDefault());
+                Model.SaveSettings(FileName, SystemOfSettings.GetDefault());
 
-                await UpdateListOfPresets();
+                UpdateListOfPresets();
 
                 SelectedPreset = Presets.Single(x => x == FileName);
             }
         }
 
-        private async Task File_AddExisting_Handler()
+        private void File_AddExisting_Handler()
         {
             try
             {
@@ -232,7 +232,7 @@ namespace View_WPF.ViewModels.Settings
 
                 File.Copy(FilePath, destFilePath);
 
-                await UpdateListOfPresets();
+                UpdateListOfPresets();
 
                 SelectedPreset = Presets.Single(x => x == FileName);
             }
@@ -245,12 +245,76 @@ namespace View_WPF.ViewModels.Settings
 
         private void File_Delete_Handler()
         {
+            try
+            {
+                if (Presets.Count <= 1)
+                {
+                    Message.Invoke("Нельзя удалить единственный файл.\nПопробуйте его изменить.", MessageType.Warning);
+                    return;
+                }
 
+                bool DialogResult = MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+
+                if (DialogResult == false)
+                {
+                    return;
+                }
+
+                File.Delete(SystemOfSettings.FolderPath_Settings + SelectedPreset + SystemOfSettings.FileType);
+
+                UpdateListOfPresets();
+
+                SelectedPreset = Presets.First();
+            }
+
+            catch (Exception error)
+            {
+                Message.Invoke("Ошибка удаления файла настроек.\n\n" + error.Message, MessageType.Error);
+            }
         }
 
         private void File_Save_Handler()
         {
+            try
+            {
+                string ConnectionType = Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
 
+                DeviceData Data = new DeviceData()
+                {
+                    GlobalEncoding = this.SelectedEncoding,
+
+                    TimeoutWrite = this.WriteTimeout,
+                    TimeoutRead = this.ReadTimeout,
+
+                    TypeOfConnection = ConnectionType,
+
+                    Connection_SerialPort = new SerialPort_Info()
+                    {
+                        COMPort = SerialPort_VM.Selected_COM_Port,
+                        BaudRate = SerialPort_VM.Selected_BaudRate,
+                        BaudRate_IsCustom = SerialPort_VM.BaudRate_IsCustom,
+                        BaudRate_Custom = SerialPort_VM.Custom_BaudRate_Value,
+                        Parity = SerialPort_VM.Selected_Parity,
+                        DataBits = SerialPort_VM.Selected_DataBits,
+                        StopBits = SerialPort_VM.Selected_StopBits
+                    },
+
+                    Connection_IP = new IP_Info()
+                    {
+                        IP_Address = Ethernet_VM.IP_Address,
+                        Port = Ethernet_VM.Port
+                    }
+                };
+
+                Model.SaveSettings(SelectedPreset, Data);
+
+                Message.Invoke("Настройки успешно сохранены!", MessageType.Information);
+            }
+
+            catch (Exception error)
+            {
+                Message.Invoke("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
+            }
         }
     }
 }

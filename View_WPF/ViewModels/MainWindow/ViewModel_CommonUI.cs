@@ -17,7 +17,7 @@ namespace View_WPF.ViewModels.MainWindow
     {
         public bool IsConnect
         {
-            get { return Model.HostIsConnect; }
+            get => Model.HostIsConnect; 
         }
 
         public string SettingsDocument
@@ -77,7 +77,7 @@ namespace View_WPF.ViewModels.MainWindow
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(Model.SetProtocol_NoProtocol);
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(Model.SetProtocol_Modbus);
 
-            Command_Connect = ReactiveCommand.CreateFromTask(new Func<string, Task>(Model.Connect));
+            Command_Connect = ReactiveCommand.Create<string>(Model.Connect);
 
             Command_Connect.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
 

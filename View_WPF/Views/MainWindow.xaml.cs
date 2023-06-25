@@ -35,7 +35,7 @@ namespace View_WPF.Views
             InitializeComponent();
 
             DataContext = new ViewModel_CommonUI(
-                MessageBoxView,
+                MessageView.Show,
                 SetUI_Connected,
                 SetUI_Disconnected);
 
@@ -50,32 +50,6 @@ namespace View_WPF.Views
             ComboBox_SelectedPreset.Items.Add("Item_3.qw");
             ComboBox_SelectedPreset.Items.Add("Item_4.qw");
             ComboBox_SelectedPreset.SelectedIndex = 0;
-        }
-
-        private void MessageBoxView(string Message, MessageType Type)
-        {
-            MessageBoxImage Image;
-
-            switch (Type)
-            {
-                case MessageType.Error:
-                    Image = MessageBoxImage.Error;
-                    break;
-
-                case MessageType.Warning:
-                    Image = MessageBoxImage.Warning;
-                    break;
-
-                case MessageType.Information:
-                    Image = MessageBoxImage.Information;
-                    break;
-
-                default:
-                    Image = MessageBoxImage.Information;
-                    break;
-            }
-
-            MessageBox.Show(Message, this.Title, MessageBoxButton.OK, Image);
         }
 
         private void SetUI_Connected()

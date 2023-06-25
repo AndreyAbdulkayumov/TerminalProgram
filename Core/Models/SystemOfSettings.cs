@@ -12,14 +12,7 @@ namespace Core.Models
 {
     public static class SystemOfSettings
     {
-        public readonly static string FolderPath_Settings = "Settings/";
-
-        public static string Settings_FilePath
-        {
-            get { return FolderPath_Settings + Settings_FileName + FileType; }
-        }
-
-        public static string? Settings_FileName { get; set; }
+        public const string FolderPath_Settings = "Settings/";
 
         private const string DefaultFileName = "Unknown";
 
@@ -32,13 +25,13 @@ namespace Core.Models
             TimeoutWrite = "300",
             TimeoutRead = "300",
             
-            TypeOfConnection = "SerialPort",
+            TypeOfConnection = DeviceData.ConnectionName_SerialPort,
 
             Connection_SerialPort = new SerialPort_Info()
             {
                 COMPort = null,
                 BaudRate = null,
-                BaudRate_IsCustom = "Disable",
+                BaudRate_IsCustom = false,
                 BaudRate_Custom = null,
                 Parity = null,
                 DataBits = null,
@@ -57,57 +50,61 @@ namespace Core.Models
             return (DeviceData)DefaultSettings.Clone();
         }
 
-        public static async Task Save(DeviceData Settings)
+        public static void Save(string FileName, DeviceData Settings)
         {
-            if (Settings_FilePath == null || Settings_FilePath == String.Empty)
+            if (FileName == String.Empty)
             {
-                throw new Exception("Не задан путь к файлу настроек.");
+                throw new Exception("Не задано имя файла настроек.");
             }
 
-            if (File.Exists(Settings_FilePath) == false)
+            string FilePath = FolderPath_Settings + FileName + FileType;
+
+            if (File.Exists(FilePath) == false)
             {
-                File.Create(Settings_FilePath).Close();
+                File.Create(FilePath).Close();
             }
 
-            File.WriteAllText(Settings_FilePath, String.Empty);
+            File.WriteAllText(FilePath, String.Empty);
 
             var Options = new JsonSerializerOptions
             {
                 WriteIndented = true
             };
 
-            using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
+            using (FileStream Stream = new FileStream(FilePath, FileMode.Open))
             {
-                await JsonSerializer.SerializeAsync(Stream, Settings, Options);
+                JsonSerializer.Serialize(Stream, Settings, Options);
             }
         }
 
-        public static async Task<DeviceData> Read()
+        public static DeviceData Read(string FileName)
         {
-            if (Settings_FilePath == null || Settings_FilePath == String.Empty)
+            if (FileName == String.Empty)
             {
-                throw new Exception("Не задан путь к файлу настроек.");
+                throw new Exception("Не задано имя файла настроек.");
             }
 
-            if (File.Exists(Settings_FilePath) == false)
+            string FilePath = FolderPath_Settings + FileName + FileType;
+
+            if (File.Exists(FilePath) == false)
             {
-                throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + Settings_FilePath);
+                throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + FilePath);
             }
 
             DeviceData? Data;            
 
             try
             {
-                using (FileStream Stream = new FileStream(Settings_FilePath, FileMode.Open))
+                using (FileStream Stream = new FileStream(FilePath, FileMode.Open))
                 {
-                    Data = await JsonSerializer.DeserializeAsync<DeviceData>(Stream);
+                    Data = JsonSerializer.Deserialize<DeviceData>(Stream);
                 }
                 
                 if (Data == null)
                 {
                     Data = GetDefault();
 
-                    await Save(Data);
+                    Save(FileName, Data);
                 }
             }
 
@@ -115,7 +112,7 @@ namespace Core.Models
             {
                 Data = GetDefault();
 
-                await Save(Data);
+                Save(FileName, Data);
 
                 //MessageBox.Show("В файле заданы некоректные данные. Созданы настройки по умолчанию.",
                 //    "Предупреждение", MessageBoxButton.OK,
@@ -125,7 +122,7 @@ namespace Core.Models
             return Data;
         }
 
-        public static async Task<string[]> FindFilesOfPresets()
+        public static string[] FindFilesOfPresets()
         {
             if (Directory.Exists(FolderPath_Settings) == false)
             {
@@ -141,13 +138,11 @@ namespace Core.Models
                 //MessageBox.Show("Не найдено ни одного файла настроек. Будет создан файл с настройками по умолчанию.",
                 //    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
-                string NewFilePath = FolderPath_Settings + DefaultFileName + FileType;
+                string DefaultFilePath = FolderPath_Settings + DefaultFileName + FileType;
 
-                File.Create(NewFilePath).Close();
+                File.Create(DefaultFilePath).Close();
 
-                Settings_FileName = DefaultFileName;
-
-                await Save(GetDefault());
+                Save(DefaultFileName, GetDefault());
 
                 ArrayOfPresets = Directory.GetFiles(FolderPath_Settings, "*" + FileType);
             }

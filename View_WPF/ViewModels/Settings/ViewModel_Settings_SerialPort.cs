@@ -77,12 +77,12 @@ namespace View_WPF.ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref  _selected_BaudRate, value);
         }
 
-        private bool _selected_Custom_BaudRate = false;
+        private bool _baudRate_IsCustom = false;
 
-        public bool Selected_Custom_BaudRate
+        public bool BaudRate_IsCustom
         {
-            get => _selected_Custom_BaudRate;
-            set => this.RaiseAndSetIfChanged(ref _selected_Custom_BaudRate, value);
+            get => _baudRate_IsCustom;
+            set => this.RaiseAndSetIfChanged(ref _baudRate_IsCustom, value);
         }
 
         private string _custom_BaudRate_Value = String.Empty;
@@ -196,7 +196,7 @@ namespace View_WPF.ViewModels.Settings
             ReScan_COMPorts();
 
             Selected_BaudRate = Model.Settings.Connection_SerialPort.BaudRate;
-            Selected_Custom_BaudRate = Model.Settings.Connection_SerialPort.BaudRate_IsCustom == "Enable" ? true : false;
+            BaudRate_IsCustom = Model.Settings.Connection_SerialPort.BaudRate_IsCustom;
             Custom_BaudRate_Value = Model.Settings.Connection_SerialPort.BaudRate_Custom;
 
             Selected_Parity = Model.Settings.Connection_SerialPort.Parity;

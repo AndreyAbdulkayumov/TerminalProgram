@@ -29,10 +29,5 @@ namespace View_WPF.Views.Settings
 
             DataContext = ViewModel;
         }
-
-        private void TextBox_BaudRate_Custom_SelectionChanged(object sender, RoutedEventArgs e)
-        {
-            
-        }
     }
 }
