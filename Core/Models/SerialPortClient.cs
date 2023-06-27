@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
@@ -115,41 +116,43 @@ namespace Core.Models
             }
         }
 
-        public void Connect(ConnectionInfo Info)
+        public void Connect(ConnectionInfo Information)
         {
+            SerialPortInfo? PortInfo = Information.Info as SerialPortInfo;
+
             try
             {
-                if (Info.SerialPort == null)
+                if (PortInfo == null)
                 {
                     throw new Exception("Нет информации о настройках подключения по последовательному порту.");
                 }
 
-                if (Info.SerialPort.COM_Port == null ||
-                    Info.SerialPort.BaudRate == null ||
-                    Info.SerialPort.Parity == null ||
-                    Info.SerialPort.DataBits == null ||
-                    Info.SerialPort.StopBits == null)
+                if (PortInfo.COM_Port == null ||
+                    PortInfo.BaudRate == null ||
+                    PortInfo.Parity == null ||
+                    PortInfo.DataBits == null ||
+                    PortInfo.StopBits == null)
                 {
                     throw new Exception(
-                        (Info.SerialPort.COM_Port == null ? "Не задан СОМ порт.\n" : "") +
-                        (Info.SerialPort.BaudRate == null ? "Не задан BaudRate.\n" : "") +
-                        (Info.SerialPort.Parity == null ? "Не задан Parity.\n" : "") +
-                        (Info.SerialPort.DataBits == null ? "Не задан DataBits\n" : "") +
-                        (Info.SerialPort.StopBits == null ? "Не задан StopBits\n" : "")
+                        (PortInfo.COM_Port == null ? "Не задан СОМ порт.\n" : "") +
+                        (PortInfo.BaudRate == null ? "Не задан BaudRate.\n" : "") +
+                        (PortInfo.Parity == null ? "Не задан Parity.\n" : "") +
+                        (PortInfo.DataBits == null ? "Не задан DataBits\n" : "") +
+                        (PortInfo.StopBits == null ? "Не задан StopBits\n" : "")
                         );
                 }
 
                 DeviceSerialPort = new SerialPort();
 
-                if (Int32.TryParse(Info.SerialPort.BaudRate, out int BaudRate) == false)
+                if (Int32.TryParse(PortInfo.BaudRate, out int BaudRate) == false)
                 {
                     throw new Exception("Не удалось преобразовать значение BaudRate в целочисленное значение.\n" +
-                        "Полученное значение BaudRate: " + Info.SerialPort.BaudRate);
+                        "Полученное значение BaudRate: " + PortInfo.BaudRate);
                 }
 
                 Parity SelectedParity;
 
-                switch (Info.SerialPort.Parity)
+                switch (PortInfo.Parity)
                 {
                     case "None":
                         SelectedParity = Parity.None;
@@ -167,15 +170,15 @@ namespace Core.Models
                         throw new Exception("Неправильно задано значение Parity.");
                 }
 
-                if (Int32.TryParse(Info.SerialPort.DataBits, out int DataBits) == false)
+                if (Int32.TryParse(PortInfo.DataBits, out int DataBits) == false)
                 {
                     throw new Exception("Не удалось преобразовать значение DataBits в целочисленное значение.\n" +
-                        "Полученное значение DataBits: " + Info.SerialPort.DataBits);
+                        "Полученное значение DataBits: " + PortInfo.DataBits);
                 }
 
                 StopBits SelectedStopBits;
 
-                switch (Info.SerialPort.StopBits)
+                switch (PortInfo.StopBits)
                 {
                     case "0":
                         SelectedStopBits = StopBits.None;
@@ -197,7 +200,7 @@ namespace Core.Models
                         throw new Exception("Неправильно задано значение StopBits");
                 }
 
-                DeviceSerialPort.PortName = Info.SerialPort.COM_Port;
+                DeviceSerialPort.PortName = PortInfo.COM_Port;
                 DeviceSerialPort.BaudRate = BaudRate;
                 DeviceSerialPort.Parity = SelectedParity;
                 DeviceSerialPort.DataBits = DataBits;
@@ -212,15 +215,15 @@ namespace Core.Models
 
                 string CommonMessage = "Не удалось подключиться к СОМ порту.\n\n";
 
-                if (Info.SerialPort != null)
+                if (PortInfo != null)
                 {
                     throw new Exception(CommonMessage +
                         "Данные подключения:" + "\n" +
-                        "COM - Port: " + Info.SerialPort.COM_Port + "\n" +
-                        "BaudRate: " + Info.SerialPort.BaudRate + "\n" +
-                        "Parity: " + Info.SerialPort.Parity + "\n" +
-                        "DataBits: " + Info.SerialPort.DataBits + "\n" +
-                        "StopBits: " + Info.SerialPort.StopBits + "\n\n" +
+                        "COM - Port: " + PortInfo.COM_Port + "\n" +
+                        "BaudRate: " + PortInfo.BaudRate + "\n" +
+                        "Parity: " + PortInfo.Parity + "\n" +
+                        "DataBits: " + PortInfo.DataBits + "\n" +
+                        "StopBits: " + PortInfo.StopBits + "\n\n" +
                         error.Message);
                 }
 

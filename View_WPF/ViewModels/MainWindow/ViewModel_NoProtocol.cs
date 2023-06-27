@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,26 +23,12 @@ namespace View_WPF.ViewModels.MainWindow
     {
         #region Properties
 
-        private string tx = string.Empty;
+        private string _tx_String = String.Empty;
 
         public string TX_String
         {
-            get
-            {
-                return tx;
-            }
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref tx, value);
-
-                if (Model.HostIsConnect &&
-                    tx != string.Empty &&
-                    TypeOfSendMessage == SendMessageType.Char)
-                {
-                    Model.NoProtocol.Send(tx.Last().ToString(), CR_Enable, LF_Enable);
-                }
-            }
+            get => _tx_String;
+            set => this.RaiseAndSetIfChanged(ref _tx_String, value);
         }
 
         private bool _cr_enable;
@@ -74,6 +61,14 @@ namespace View_WPF.ViewModels.MainWindow
         {
             get => _messageIsString;
             set => this.RaiseAndSetIfChanged(ref _messageIsString, value);
+        }
+
+        private bool _rx_nextLine;
+
+        public bool RX_NextLine
+        {
+            get => _rx_nextLine;
+            set => this.RaiseAndSetIfChanged(ref _rx_nextLine, value);
         }
 
         #endregion
@@ -117,19 +112,47 @@ namespace View_WPF.ViewModels.MainWindow
 
             Model.NoProtocol.NoProtocol_DataReceived += NoProtocol_NoProtocol_DataReceived;
 
-            Command_Select_Char = ReactiveCommand.Create(Select_Char);
-            Command_Select_String = ReactiveCommand.Create(Select_String);
+            this.WhenAnyValue(x => x.TX_String)
+                .Where(x => x != null)
+                .Where(x => x != String.Empty)
+                .Subscribe(_ =>
+                {
+                    try
+                    {
+                        if (Model.HostIsConnect &&
+                            TX_String != String.Empty &&
+                            TypeOfSendMessage == SendMessageType.Char)
+                        {
+                            Model.NoProtocol.Send(TX_String.Last().ToString(), CR_Enable, LF_Enable);
+                        }
+                    }
+                    
+                    catch (Exception error)
+                    {
+                        Message.Invoke("Ошибка отправки данных\n\n" + error.Message, MessageType.Error);
+                    }
+                });
 
-            Command_Send = ReactiveCommand.Create(SendMessage);
+            Command_Select_Char = ReactiveCommand.Create(() =>
+            {
+                TypeOfSendMessage = SendMessageType.Char;
+                TX_String = String.Empty;
+            });
 
-            Command_Send.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
+            Command_Select_String = ReactiveCommand.Create(() =>
+            {
+                TypeOfSendMessage = SendMessageType.String;
+                TX_String = String.Empty;
+            });
+
+            Command_Send = ReactiveCommand.Create(() =>
+            {
+                Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
+            });
+
+            Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных\n\n" + error.Message, MessageType.Error));
 
             Command_ClearRX = ReactiveCommand.Create(Clear_ReceiveField);
-        }
-
-        private void NoProtocol_NoProtocol_DataReceived(object? sender, string e)
-        {
-            UI_Action_Receive.Invoke(e);
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -139,25 +162,18 @@ namespace View_WPF.ViewModels.MainWindow
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            TX_String = string.Empty;
+            TX_String = String.Empty;
             SetUI_Disconnected?.Invoke();
         }
 
-        public void Select_Char()
+        private void NoProtocol_NoProtocol_DataReceived(object? sender, string e)
         {
-            TypeOfSendMessage = SendMessageType.Char;
-            TX_String = string.Empty;
-        }
+            if (RX_NextLine)
+            {
+                e += "\n";
+            }
 
-        public void Select_String()
-        {
-            TypeOfSendMessage = SendMessageType.String;
-            TX_String = string.Empty;
-        }
-
-        public void SendMessage()
-        {
-            Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
+            UI_Action_Receive.Invoke(e);
         }
     }
 }

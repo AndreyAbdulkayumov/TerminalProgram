@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI;
 using Core.Models;
+using View_WPF.ViewModels.MainWindow;
 
 namespace View_WPF.ViewModels.Settings
 {
@@ -186,7 +187,7 @@ namespace View_WPF.ViewModels.Settings
         {
             UpdateListOfPresets();
 
-            SelectedPreset = Presets.First();
+            SelectedPreset = Presets.Single(x => x == ViewModel_CommonUI.SettingsDocument);
         }
 
         private void UpdateListOfPresets()
@@ -307,6 +308,8 @@ namespace View_WPF.ViewModels.Settings
                 };
 
                 Model.SaveSettings(SelectedPreset, Data);
+
+                ViewModel_CommonUI.SettingsDocument = SelectedPreset;
 
                 Message.Invoke("Настройки успешно сохранены!", MessageType.Information);
             }

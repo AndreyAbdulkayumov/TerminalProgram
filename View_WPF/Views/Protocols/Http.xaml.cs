@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,22 +26,35 @@ namespace View_WPF.Views.Protocols
     {
         private readonly string MainWindowTitle;
 
+        private readonly ViewModel_Http ViewModel;
+
         public Http(MainWindow window)
         {
             InitializeComponent();
 
             MainWindowTitle = window.Title;
 
-            DataContext = new ViewModel_Http(MessageView.Show);
+            ViewModel = new ViewModel_Http(MessageView.Show);
+
+            DataContext = ViewModel;
         }
 
-        private void Page_KeyDown(object sender, KeyEventArgs e)
+
+        private async void Page_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            try
             {
-                case Key.Enter:
-                    ((ViewModel_Http)DataContext).SendRequest_Command.Execute();
-                    break;
+                switch (e.Key)
+                {
+                    case Key.Enter:
+                        await ViewModel.Command_SendRequest.Execute();
+                        break;
+                }
+            }
+
+            catch (Exception)
+            {
+                // Ошибка обрабатывавется во ViewModel
             }
         }
 

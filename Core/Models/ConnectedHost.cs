@@ -84,49 +84,30 @@ namespace Core.Models
             SelectedProtocol = new ProtocolMode_Modbus(Client, Settings);
         }
 
-
-        public void Connect(string FileName)
+        public void Connect(ConnectionInfo Information)
         {
             if (SelectedProtocol == null)
             {
                 throw new Exception("Не выбран протокол.");
             }
 
-            ReadSettings(FileName);
-
-            switch (Settings.TypeOfConnection)
+            if (Information.Info as SerialPortInfo != null)
             {
-                case DeviceData.ConnectionName_SerialPort:
-
-                    Client = new SerialPortClient();
-
-                    Client.Connect(new ConnectionInfo(new SerialPortInfo(
-                        Settings.Connection_SerialPort?.COMPort,
-                        Settings.Connection_SerialPort?.BaudRate_IsCustom == true ?
-                           Settings.Connection_SerialPort?.BaudRate_Custom : Settings.Connection_SerialPort?.BaudRate,
-                        Settings.Connection_SerialPort?.Parity,
-                        Settings.Connection_SerialPort?.DataBits,
-                        Settings.Connection_SerialPort?.StopBits
-                        ),
-                        GlobalEncoding));
-
-                    break;
-
-                case DeviceData.ConnectionName_Ethernet:
-
-                    Client = new IPClient();
-
-                    Client.Connect(new ConnectionInfo(new SocketInfo(
-                        Settings.Connection_IP?.IP_Address,
-                        Settings.Connection_IP?.Port
-                        ),
-                        GlobalEncoding));
-
-                    break;
-
-                default:
-                    throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
+                Client = new SerialPortClient();
+                
             }
+
+            else if (Information.Info as SocketInfo != null)
+            {
+                Client = new IPClient();
+            }
+
+            else
+            {
+                throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
+            }
+
+            Client.Connect(Information);
 
             ProtocolMode_Modbus? ModbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
 
@@ -179,11 +160,6 @@ namespace Core.Models
 
                 Settings = (DeviceData)Device.Clone();
 
-                if (Settings.GlobalEncoding == null)
-                {
-                    throw new Exception("Не удалось обработать значение кодировки.");
-                }
-
                 GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
             }
 
@@ -196,8 +172,14 @@ namespace Core.Models
             }
         }
 
-        private Encoding GetEncoding(string EncodingName)
+        public Encoding GetEncoding(string? EncodingName)
         {
+            if (Settings.GlobalEncoding == null)
+            {
+                throw new Exception("Не удалось обработать значение кодировки.");
+            }
+
+
             switch (EncodingName)
             {
                 case "ASCII":

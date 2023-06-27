@@ -73,7 +73,12 @@ namespace Core.Models
         }
     }
 
-    public class SocketInfo
+    public interface ITypeOfInfo
+    {
+
+    }
+
+    public class SocketInfo : ITypeOfInfo
     {
         public string? IP;
         public string? Port;
@@ -85,7 +90,7 @@ namespace Core.Models
         }
     }
 
-    public class SerialPortInfo
+    public class SerialPortInfo : ITypeOfInfo
     {
         public string? COM_Port;
         public string? BaudRate;
@@ -105,20 +110,19 @@ namespace Core.Models
 
     public class ConnectionInfo
     {
-        public SocketInfo? Socket;
-        public SerialPortInfo? SerialPort;
+        public ITypeOfInfo Info;
 
         public readonly Encoding GlobalEncoding;
 
         public ConnectionInfo(SocketInfo Info, Encoding GlobalEncoding)
         {
-            Socket = Info;
+            this.Info = Info;
             this.GlobalEncoding = GlobalEncoding;
         }
 
         public ConnectionInfo(SerialPortInfo Info, Encoding GlobalEncoding) 
         { 
-            SerialPort = Info;
+            this.Info = Info;
             this.GlobalEncoding = GlobalEncoding;
         }
     }

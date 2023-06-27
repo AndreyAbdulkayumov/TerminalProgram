@@ -30,8 +30,8 @@ namespace View_WPF.ViewModels.MainWindow
             set { this.RaiseAndSetIfChanged(ref response, value); }
         }
 
-        public ReactiveCommand<string, string> SendRequest_Command { get; }
-        public ReactiveCommand<Unit, Unit> ClearResponse_Command { get; }
+        public ReactiveCommand<string, string> Command_SendRequest { get; }
+        public ReactiveCommand<Unit, Unit> Command_ClearResponse { get; }
 
 
         private readonly Model_Http Model = new Model_Http();
@@ -42,13 +42,12 @@ namespace View_WPF.ViewModels.MainWindow
         {
             Message = MessageBox;
 
-            SendRequest_Command = ReactiveCommand.CreateFromTask<string, string>(Model.SendRequest);
+            Command_SendRequest = ReactiveCommand.CreateFromTask<string, string>(Model.SendRequest);
+            Command_SendRequest.Subscribe(result => Response = result);
+            Command_SendRequest.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
-            SendRequest_Command.Subscribe(result => Response = result);
-
-            SendRequest_Command.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
-
-            ClearResponse_Command = ReactiveCommand.Create(new Action(() => Response = string.Empty));
+            Command_ClearResponse = ReactiveCommand.Create(new Action(() => Response = string.Empty));
+            Command_ClearResponse.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
         }
     }
 }

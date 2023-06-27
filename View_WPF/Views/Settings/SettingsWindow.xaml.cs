@@ -28,13 +28,10 @@ namespace View_WPF.Views.Settings
     /// </summary>
     public partial class SettingsWindow : Window
     {
-        public bool SettingsIsChanged { get; private set; } = false;
-        public string SettingsDocument { get; private set; }
-
         private Page_IP? Settings_IP;
         private Page_SerialPort? Settings_SerialPort;
 
-        internal readonly ViewModel_Settings ViewModel;
+        private readonly ViewModel_Settings ViewModel;
 
 
         public SettingsWindow()
@@ -79,20 +76,23 @@ namespace View_WPF.Views.Settings
 
         private async void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            try
             {
-                case Key.Enter:
-
-                    if (ViewModel != null)
-                    {
+                switch (e.Key)
+                {
+                    case Key.Enter:
                         await ViewModel.Command_File_Save.Execute();
-                    }
-                    
-                    break;
+                        break;
 
-                case Key.Escape:
-                    Close();
-                    break;
+                    case Key.Escape:
+                        Close();
+                        break;
+                }
+            }
+
+            catch (Exception)
+            {
+                // Ошибка обрабатывавется во ViewModel
             }
         }
 

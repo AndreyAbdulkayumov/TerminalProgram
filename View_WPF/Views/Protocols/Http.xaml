@@ -54,7 +54,7 @@
                     Width="90" 
                     Content="Отправить"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Command="{Binding SendRequest_Command}"
+                    Command="{Binding Command_SendRequest}"
                     CommandParameter="{Binding RequestURI}"/>
 
         </Grid>
@@ -96,7 +96,7 @@
                     Width="120" 
                     Content="Очистить поле"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Command="{Binding ClearResponse_Command}"/>
+                    Command="{Binding Command_ClearResponse}"/>
 
         </Grid>
 

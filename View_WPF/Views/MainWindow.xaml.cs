@@ -18,6 +18,7 @@ using View_WPF.ViewModels;
 using View_WPF.ViewModels.MainWindow;
 using View_WPF.Views.Protocols;
 using View_WPF.Views.Settings;
+using System.Reactive.Linq;
 
 namespace View_WPF.Views
 {
@@ -30,14 +31,18 @@ namespace View_WPF.Views
         private Modbus ModbusPage;
         private Http HttpPage;
 
+        private ViewModel_CommonUI ViewModel;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            DataContext = new ViewModel_CommonUI(
+            ViewModel = new ViewModel_CommonUI(
                 MessageView.Show,
                 SetUI_Connected,
                 SetUI_Disconnected);
+
+            DataContext = ViewModel;
 
             NoProtocolPage = new NoProtocol(this);
 
@@ -45,11 +50,11 @@ namespace View_WPF.Views
 
             HttpPage = new Http(this);
 
-            ComboBox_SelectedPreset.Items.Add("Item_1.qw");
-            ComboBox_SelectedPreset.Items.Add("Item_2.qw");
-            ComboBox_SelectedPreset.Items.Add("Item_3.qw");
-            ComboBox_SelectedPreset.Items.Add("Item_4.qw");
-            ComboBox_SelectedPreset.SelectedIndex = 0;
+            //ComboBox_SelectedPreset.Items.Add("Item_1.qw");
+            //ComboBox_SelectedPreset.Items.Add("Item_2.qw");
+            //ComboBox_SelectedPreset.Items.Add("Item_3.qw");
+            //ComboBox_SelectedPreset.Items.Add("Item_4.qw");
+            //ComboBox_SelectedPreset.SelectedIndex = 0;
         }
 
         private void SetUI_Connected()
@@ -72,9 +77,14 @@ namespace View_WPF.Views
             Button_Disconnect.IsEnabled = false;            
         }
 
-        private void SourceWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
             RadioButton_NoProtocol.IsChecked = true;
+
+            if (ViewModel != null)
+            {
+                await ViewModel.Command_UpdatePresets.Execute();
+            }
         }
 
         private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -97,7 +107,7 @@ namespace View_WPF.Views
             Application.Current.Shutdown();
         }
 
-        private void MenuSettings_Click(object sender, RoutedEventArgs e)
+        private async void MenuSettings_Click(object sender, RoutedEventArgs e)
         {
             SettingsWindow Window = new SettingsWindow()
             {
@@ -105,6 +115,11 @@ namespace View_WPF.Views
             };
 
             Window.ShowDialog();
+
+            if (ViewModel != null)
+            {
+                await ViewModel.Command_UpdatePresets.Execute();
+            }
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)

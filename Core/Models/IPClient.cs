@@ -102,30 +102,32 @@ namespace Core.Models
             }
         }
 
-        public void Connect(ConnectionInfo Info)
+        public void Connect(ConnectionInfo Information)
         {
-            if (Info.Socket == null)
+            SocketInfo? SocketInfo = Information.Info as SocketInfo;
+
+            if (SocketInfo == null)
             {
                 throw new Exception("Нет информации о настройках подключения по Ethernet.");
             }
 
-            if (Info.Socket.IP == null || Info.Socket.Port == null)
+            if (SocketInfo.IP == null || SocketInfo.Port == null)
             {
                 throw new Exception(
-                    (Info.Socket.IP == null ? "Не задан IP адрес.\n" : "") +
-                    (Info.Socket.Port == null ? "Не задан Порт." : "")
+                    (SocketInfo.IP == null ? "Не задан IP адрес.\n" : "") +
+                    (SocketInfo.Port == null ? "Не задан Порт." : "")
                     );
             }
 
-            if (Int32.TryParse(Info.Socket.Port, out int Port) == false)
+            if (Int32.TryParse(SocketInfo.Port, out int Port) == false)
             {
                 throw new Exception("Не удалось преобразовать номер порта в целочисленное значение.\n" +
-                    "Полученный номер порта: " + Info.Socket.Port);
+                    "Полученный номер порта: " + SocketInfo.Port);
             }
 
             Client = new TcpClient();
 
-            IAsyncResult result = Client.BeginConnect(Info.Socket.IP, Port, null, null);
+            IAsyncResult result = Client.BeginConnect(SocketInfo.IP, Port, null, null);
 
             bool SuccessConnect = result.AsyncWaitHandle.WaitOne(500, true);
 
@@ -139,8 +141,8 @@ namespace Core.Models
                 Client.Close();
 
                 throw new Exception("Не удалось подключиться к серверу.\n\n" +
-                    "IP адрес: " + Info.Socket.IP + "\n" +
-                    "Порт: " + Info.Socket.Port);
+                    "IP адрес: " + SocketInfo.IP + "\n" +
+                    "Порт: " + SocketInfo.Port);
             }
 
             Stream = Client.GetStream();

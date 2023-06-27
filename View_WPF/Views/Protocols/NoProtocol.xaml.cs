@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -32,19 +33,23 @@ namespace View_WPF.Views.Protocols
 
         private readonly string MainWindowTitle;
 
+        private readonly ViewModel_NoProtocol ViewModel;
+
         public NoProtocol(MainWindow window)
         {
             InitializeComponent();
 
             MainWindowTitle = window.Title;
 
-            DataContext = new ViewModel_NoProtocol(
+            ViewModel = new ViewModel_NoProtocol(
                 MessageView.Show,
                 SetUI_Connected, 
                 SetUI_Disconnected,
                 Action_Receive,
                 Action_Clear_ReceiveField
                 );
+
+            DataContext = ViewModel;
         }
 
         private void SetUI_Connected()
@@ -89,7 +94,6 @@ namespace View_WPF.Views.Protocols
                         TextBox_RX.LineDown();
                         ScrollViewer_RX.ScrollToEnd();
                     }));
-            
         }
 
         private void Action_Clear_ReceiveField()
@@ -109,13 +113,21 @@ namespace View_WPF.Views.Protocols
             TextBox_TX.Focus();
         }
 
-        private void Page_KeyDown(object sender, KeyEventArgs e)
+        private async void Page_KeyDown(object sender, KeyEventArgs e)
         {
-            switch (e.Key)
+            try
             {
-                case Key.Enter:
-                    ((ViewModel_NoProtocol)DataContext).Command_Send.Execute();
-                    break;
+                switch (e.Key)
+                {
+                    case Key.Enter:
+                        await ViewModel.Command_Send.Execute();
+                        break;
+                }
+            }
+
+            catch (Exception)
+            {
+                // Ошибка обрабатывавется во ViewModel
             }
         }
 
@@ -139,17 +151,7 @@ namespace View_WPF.Views.Protocols
             TextBox_TX.Focus();
         }
 
-        private void Button_Send_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void Button_SaveAs_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Button_ClearFieldRX_Click(object sender, RoutedEventArgs e)
         {
 
         }

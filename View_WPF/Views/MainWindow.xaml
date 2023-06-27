@@ -142,6 +142,8 @@
                            HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
                 <ComboBox x:Name="ComboBox_SelectedPreset" Template="{DynamicResource ComboBox_Common}"
+                          ItemsSource="{Binding Presets}"
+                          SelectedItem="{Binding SelectedPreset}"
                           Height="25" Width="160"
                           Margin="175,58,0,0"
                           FontSize="14"
@@ -151,8 +153,7 @@
                         Margin="380,55,0,0"
                         Width="100"
                         Content="Подключить"
-                        Command="{Binding Command_Connect}"
-                        CommandParameter="{Binding SettingsDocument}"/>
+                        Command="{Binding Command_Connect}"/>
 
                 <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
                         Margin="500,55,0,0"
