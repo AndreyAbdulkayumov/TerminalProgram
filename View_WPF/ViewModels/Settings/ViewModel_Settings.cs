@@ -129,18 +129,18 @@ namespace View_WPF.ViewModels.Settings
             Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
 
             this.WhenAnyValue(x => x.SelectedPreset)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != string.Empty)
                 .Subscribe(UpdateUI);
 
             this.WhenAnyValue(x => x.WriteTimeout)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != string.Empty)
                 .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
                 .Subscribe(result => WriteTimeout = result);
             
             this.WhenAnyValue(x => x.ReadTimeout)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != string.Empty)
                 .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
                 .Subscribe(result => ReadTimeout = result);

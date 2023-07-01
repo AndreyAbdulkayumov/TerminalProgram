@@ -29,10 +29,11 @@
 
         <Style TargetType="TextBox">
             <Setter Property="TextBox.Height" Value="24"/>
-            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
             <Setter Property="TextBox.FontSize" Value="14"/>
             <Setter Property="TextBox.Width" Value="50"/>
             <Setter Property="TextBox.Margin" Value="210,0,0,0"/>
+            <Setter Property="TextBox.Padding" Value="3,0,0,0"/>
+            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
             <Setter Property="TextBox.HorizontalAlignment" Value="Left"/>
             <Setter Property="TextBox.VerticalAlignment" Value="Center"/>
         </Style>

@@ -37,9 +37,9 @@ namespace View_WPF.ViewModels.MainWindow
 
         private const string ModbusMode_Name_Default = "не определен";
 
-        private string _modbusMode_Name;
+        private string? _modbusMode_Name;
 
-        public string ModbusMode_Name
+        public string? ModbusMode_Name
         {
             get => _modbusMode_Name;
             set => this.RaiseAndSetIfChanged(ref _modbusMode_Name, value);
@@ -53,9 +53,9 @@ namespace View_WPF.ViewModels.MainWindow
             get => _dataDisplayedList;
         }
 
-        private string _slaveID;
+        private string? _slaveID;
 
-        public string SlaveID
+        public string? SlaveID
         {
             get => _slaveID;
             set => this.RaiseAndSetIfChanged(ref _slaveID, value);
@@ -93,33 +93,33 @@ namespace View_WPF.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Dec, value);
         }
 
-        private string _numberFormat;
+        private string? _numberFormat;
 
-        public string NumberFormat
+        public string? NumberFormat
         {
             get => _numberFormat;
             set => this.RaiseAndSetIfChanged(ref _numberFormat, value);
         }
 
-        private string _address;
+        private string? _address;
 
-        public string Address
+        public string? Address
         {
             get => _address;
             set => this.RaiseAndSetIfChanged(ref _address, value);
         }
 
-        private string _numberOfRegisters;
+        private string? _numberOfRegisters;
 
-        public string NumberOfRegisters
+        public string? NumberOfRegisters
         {
             get => _numberOfRegisters;
             set => this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
         }
 
-        private string _writeData;
+        private string? _writeData;
 
-        public string WriteData
+        public string? WriteData
         {
             get => _writeData;
             set => this.RaiseAndSetIfChanged(ref _writeData, value);
@@ -133,9 +133,9 @@ namespace View_WPF.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _readFunctions, value);
         }
 
-        private string _selectedReadFunction;
+        private string? _selectedReadFunction;
 
-        public string SelectedReadFunction
+        public string? SelectedReadFunction
         {
             get => _selectedReadFunction;
             set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
@@ -149,9 +149,9 @@ namespace View_WPF.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _writeFunctions, value);
         }
 
-        private string _selectedWriteFunction;
+        private string? _selectedWriteFunction;
 
-        public string SelectedWriteFunction
+        public string? SelectedWriteFunction
         {
             get => _selectedWriteFunction;
             set => this.RaiseAndSetIfChanged(ref _selectedWriteFunction, value);
@@ -188,8 +188,6 @@ namespace View_WPF.ViewModels.MainWindow
 
         private const UInt16 CRC_Polynom = 0xA001;
 
-        private string WriteDataText;
-
         private ModbusFunction? CurrentFunction;
 
         public ViewModel_Modbus(
@@ -207,7 +205,7 @@ namespace View_WPF.ViewModels.MainWindow
 
             Model = ConnectedHost.Model;
 
-            SetUI_Disconnected?.Invoke();
+            SetUI_Disconnected.Invoke();
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -250,11 +248,14 @@ namespace View_WPF.ViewModels.MainWindow
 
 
             Command_ClearDataGrid = ReactiveCommand.Create(DataDisplayedList.Clear);
+            Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
+
             Command_Write = ReactiveCommand.Create(Modbus_Write);
             Command_Read = ReactiveCommand.Create(Modbus_Read);
 
+
             this.WhenAnyValue(x => x.SlaveID)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedSlaveID))
                 .Subscribe(x => SlaveID = x);
 
@@ -280,23 +281,23 @@ namespace View_WPF.ViewModels.MainWindow
                 });
 
             this.WhenAnyValue(x => x.Address)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedAddress))
                 .Subscribe(x => Address = x.ToUpper());
 
             this.WhenAnyValue(x => x.NumberOfRegisters)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedNumberOfRegisters))
                 .Subscribe(x => NumberOfRegisters = x);
 
             this.WhenAnyValue(x => x.SelectedWriteFunction)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != String.Empty)
                 .Subscribe(_ => WriteData = String.Empty);
 
             this.WhenAnyValue(x => x.WriteData)
-                .Where(x => x != null)
-                .Subscribe(WriteData_TextChanged);
+                .WhereNotNull()
+                .Subscribe(x => WriteData = WriteData_TextChanged(x));
         }
 
         private void SelectNumberFormat_Hex()
@@ -357,6 +358,44 @@ namespace View_WPF.ViewModels.MainWindow
             return DataString;
         }
 
+        private string WriteData_TextChanged(string EnteredText)
+        {
+            try
+            {
+                if (SelectedWriteFunction == Function.PresetMultipleRegister.DisplayedName)
+                {
+                    WriteBuffer.Clear();
+
+                    string[] SplitString = EnteredText.Split(' ');
+
+                    string[] Values = SplitString.Where(element => element != "").ToArray();
+
+                    UInt16 Buffer = 0;
+
+                    for (int i = 0; i < Values.Length; i++)
+                    {
+                        Values[i] = StringValue.CheckNumber(Values[i], NumberViewStyle, out Buffer);
+                        WriteBuffer.Add(Buffer);
+                    }
+
+                    return string.Join(" ", Values) + " ";
+                }
+
+                else
+                {
+                    return StringValue.CheckNumber(WriteData, NumberViewStyle, out UInt16 _).ToUpper();
+                }
+            }
+
+            catch (Exception error)
+            {
+                Message.Invoke("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
+                    error.Message, MessageType.Error);
+
+                return String.Empty;
+            }
+        }
+
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             if (e.ConnectedDevice is IPClient)
@@ -383,14 +422,14 @@ namespace View_WPF.ViewModels.MainWindow
 
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
-            SetUI_Connected?.Invoke();
+            SetUI_Connected.Invoke();
 
             DataDisplayedList.Clear();
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            SetUI_Disconnected?.Invoke();
+            SetUI_Disconnected.Invoke();
 
             CRC16_IsVisible = true;
 
@@ -637,67 +676,5 @@ namespace View_WPF.ViewModels.MainWindow
                 error.Message, 
                 MessageType.Error);
         }
-
-        private void WriteData_TextChanged(string EnteredText)
-        {
-            try
-            {
-                if (SelectedWriteFunction == Function.PresetMultipleRegister.DisplayedName)
-                {
-                    WriteBuffer.Clear();
-
-                    string[] SplitString = EnteredText.Split(' ');
-
-                    string[] Values = SplitString.Where(element => element != "").ToArray();
-
-                    UInt16 Buffer = 0;
-
-                    bool ParseError = false;
-
-                    for (int i = 0; i < Values.Length; i++)
-                    {
-                        Values[i] = StringValue.CheckNumber(Values[i], NumberViewStyle, out UInt16 _);
-                    }
-
-                    foreach (string element in Values)
-                    {
-                        if (UInt16.TryParse(element, NumberViewStyle, CultureInfo.InvariantCulture, out Buffer) == false)
-                        {
-                            Message.Invoke("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535 (0x0000 - 0xFFFF).", MessageType.Warning);
-
-                            WriteData = WriteDataText;
-
-                            ParseError = true;
-                        }
-
-                        else
-                        {
-                            WriteBuffer.Add(Buffer);
-                        }
-                    }
-                }
-
-                else
-                {
-                    WriteData = StringValue.CheckNumber(WriteData, NumberViewStyle, out UInt16 _);
-                }
-
-                //int CursorPosition = TextBox_Data.SelectionStart;
-                //TextBox_Data.Text = TextBox_Data.Text.ToUpper();
-                //TextBox_Data.SelectionStart = CursorPosition;
-                WriteData = WriteData.ToUpper();
-
-                WriteDataText = WriteData;
-            }
-
-            catch (Exception error)
-            {
-                Message.Invoke("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
-                    error.Message, MessageType.Error);
-            }
-        }
-
-
-        
     }
 }

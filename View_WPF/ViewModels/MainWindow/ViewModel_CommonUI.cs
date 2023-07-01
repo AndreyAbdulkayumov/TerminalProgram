@@ -94,7 +94,7 @@ namespace View_WPF.ViewModels.MainWindow
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             this.WhenAnyValue(x => x.SelectedPreset)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != string.Empty)
                 .Subscribe(PresetName =>
                 {

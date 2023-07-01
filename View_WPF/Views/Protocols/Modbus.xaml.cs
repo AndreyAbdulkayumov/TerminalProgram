@@ -65,6 +65,7 @@ namespace View_WPF.Views.Protocols
 
             TextBox_Address.Text = "";
             TextBox_Data.Text = "";
+            TextBox_NumberOfRegisters.Text = "";
 
             Button_Write.IsEnabled = false;
             Button_Read.IsEnabled = false;

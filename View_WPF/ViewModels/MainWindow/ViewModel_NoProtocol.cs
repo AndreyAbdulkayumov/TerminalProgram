@@ -114,7 +114,7 @@ namespace View_WPF.ViewModels.MainWindow
             Model.NoProtocol.NoProtocol_DataReceived += NoProtocol_NoProtocol_DataReceived;
 
             this.WhenAnyValue(x => x.TX_String)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != String.Empty)
                 .Subscribe(_ =>
                 {

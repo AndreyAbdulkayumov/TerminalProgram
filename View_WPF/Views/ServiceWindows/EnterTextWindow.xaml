@@ -57,7 +57,9 @@
                 <TextBox x:Name="TextBox_FileName" 
                          Margin="0,60,0,0" 
                          FontSize="14"
+                         Padding="3,0,0,0"
                          Height="25" Width="140" 
+                         VerticalContentAlignment="Center"
                          HorizontalAlignment="Center" VerticalAlignment="Top"
                          TextChanged="TextBox_FileName_TextChanged"/>
 

@@ -171,6 +171,8 @@
                          Text="{Binding SlaveID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="16"
                          Margin="70,0,0,0"
+                         HorizontalContentAlignment="Center"
+                         VerticalContentAlignment="Center"
                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <CheckBox x:Name="CheckBox_CRC_Enable" Grid.Column="1"
@@ -272,7 +274,8 @@
                          Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="16"
                          Margin="5,0,0,0"
-                         HorizontalContentAlignment="Center"
+                         Padding="5,0,0,0"
+                         VerticalContentAlignment="Center"
                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <TextBlock Text="Кол-во регистров" Grid.Column="2" Grid.Row="0"
@@ -287,6 +290,7 @@
                          FontSize="16"
                          Margin="0,0,5,0"
                          HorizontalContentAlignment="Center"
+                         VerticalContentAlignment="Center"
                          HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock Text="Значение" Grid.Column="1" Grid.Row="1"
@@ -307,6 +311,8 @@
                          Text="{Binding WriteData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          FontSize="16"
                          Margin="5,0,0,0"
+                         Padding="5,0,5,0"
+                         VerticalContentAlignment="Center"
                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <Button x:Name="Button_Read" Grid.Column="3" Grid.Row="0"

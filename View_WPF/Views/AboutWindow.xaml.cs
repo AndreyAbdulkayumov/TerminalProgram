@@ -28,8 +28,16 @@ namespace View_WPF.Views
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            e.Handled = true;
+            try
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+                e.Handled = true;
+            }
+            
+            catch (Exception error)
+            {
+                MessageView.Show("Ошибка перехода по ссылке.\n\n" + error.Message, MessageType.Error);
+            }
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)

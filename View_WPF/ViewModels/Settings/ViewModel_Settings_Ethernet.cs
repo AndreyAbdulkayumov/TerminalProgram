@@ -42,7 +42,7 @@ namespace View_WPF.ViewModels.Settings
             SettingsFile = Model_Settings.Model;
 
             this.WhenAnyValue(x => x.Port)
-                .Where(x => x != null)
+                .WhereNotNull()
                 .Where(x => x != String.Empty)
                 .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
                 .Subscribe(result => Port = result);

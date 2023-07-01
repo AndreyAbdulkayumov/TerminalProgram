@@ -137,6 +137,8 @@
 
         <TextBox Grid.Row="2" Grid.Column="1"
                  x:Name="TextBox_BaudRate_Custom"
+                 Padding="3,0,0,0"
+                 VerticalContentAlignment="Center"
                  Text="{Binding Custom_BaudRate_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  IsEnabled="{Binding BaudRate_IsCustom}"/>
 
