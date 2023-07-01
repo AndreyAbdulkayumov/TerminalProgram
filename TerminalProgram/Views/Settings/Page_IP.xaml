@@ -1,0 +1,70 @@
+﻿<Page x:Class="TerminalProgram.Views.Settings.Page_IP"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TerminalProgram.Views.Settings"
+      xmlns:ViewModel="clr-namespace:TerminalProgram.ViewModels.Settings"
+      mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Settings_Ethernet}"
+      d:DesignHeight="300" d:DesignWidth="350">
+
+    <Page.Resources>
+
+        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.FontSize" Value="14"/>
+            <Setter Property="TextBlock.Margin" Value="0,0,7,2"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
+            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="TextBox.Height" Value="24"/>
+            <Setter Property="TextBox.FontSize" Value="14"/>
+            <Setter Property="TextBox.TextWrapping" Value="Wrap"/>
+            <Setter Property="TextBox.Padding" Value="3,0,0,0"/>
+            <Setter Property="TextBox.Margin" Value="7,0,0,0"/>
+            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextBox.VerticalAlignment" Value="Center"/>
+        </Style>
+
+    </Page.Resources>
+    
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.7*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- IP address -->
+        
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Text="IP"/>
+
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Width="110" 
+                 Text="{Binding IP_Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        
+        <!-- Port -->
+        
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Port"/>
+
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 Width="50" 
+                 Text="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        
+    </Grid>
+    
+</Page>

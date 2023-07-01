@@ -1,0 +1,172 @@
+﻿<Window x:Name="SourceWindow" x:Class="TerminalProgram.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TerminalProgram.Views"
+        xmlns:ViewModel="clr-namespace:TerminalProgram.ViewModels.MainWindow"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_CommonUI}"
+        Title="Терминальная программа" 
+        Height="750" Width="850"
+        Background="#FF323232"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip"
+        Loaded="SourceWindow_Loaded"
+        Closing="SourceWindow_Closing">
+
+
+    <Window.Resources>        
+
+        <Style TargetType="TextBlock">
+            <Setter Property="TextBlock.Foreground" Value="#FFD2C25A"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="ComboBox.Background" Value="Aqua"/>
+            <Setter Property="ComboBox.BorderThickness" Value="0"/>
+        </Style>
+
+        <Style TargetType="RadioButton">
+            <Setter Property="RadioButton.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="RadioButton.FontSize" Value="14"/>
+            <Setter Property="RadioButton.HorizontalAlignment" Value="Left"/>
+            <Setter Property="RadioButton.VerticalAlignment" Value="Top"/>
+        </Style>
+
+        <Style x:Key="Menu">
+
+            <Style.Setters>
+                <Setter Property="MenuItem.Foreground" Value="#FFE6E6E6"/>
+                <Setter Property="MenuItem.FontSize" Value="12"/>
+                <Setter Property="MenuItem.Background" Value="#FF323232"/>
+                <Setter Property="MenuItem.BorderBrush" Value="{x:Null}"/>
+                <Setter Property="MenuItem.BorderThickness" Value="0"/>
+                <Setter Property="MenuItem.Height" Value="20"/>
+            </Style.Setters>
+
+            <Style.Triggers>
+                <Trigger Property="MenuItem.IsMouseOver" Value="True">
+                    <Setter Property="MenuItem.Foreground" Value="Black"/>
+                </Trigger>
+            </Style.Triggers>
+
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Button.Height" Value="30"/>
+            <Setter Property="Button.FontSize" Value="14"/>
+            <Setter Property="Button.HorizontalAlignment" Value="Left"/>
+            <Setter Property="Button.VerticalAlignment" Value="Top"/>
+        </Style>
+        
+        
+    </Window.Resources>
+
+    <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
+
+        <Grid>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition x:Name="GridRow_Header" Height="100"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+
+                <Border Background="#FF484848" 
+                        MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+                <TextBlock Text="{Binding ElementName=SourceWindow, Path=Title}"
+                           FontSize="14"
+                           Foreground="WhiteSmoke"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
+
+                <Button x:Name="Button_MinimizeApplication" Template="{DynamicResource Button_MinimizeApp}"
+                        Width="45" Height="30" 
+                        Background="Silver"
+                        Foreground="#FF3A3232"
+                        Margin="0,0,45,0"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Click="Button_MinimizeApplication_Click"/>
+
+                <Button x:Name="Button_CloseApplication" Template="{DynamicResource Button_CloseApp}"
+                        Width="45" Height="30" 
+                        Background="IndianRed"
+                        Foreground="#FF3A3232"
+                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Click="Button_CloseApplication_Click"/>
+
+            </Grid>
+
+            <Menu Grid.Row="1"
+                  HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                <MenuItem Header="Настройки" Name="MenuItem_Settings" 
+                          Click="MenuSettings_Click"
+                          Style="{StaticResource Menu}"/>
+
+                <MenuItem Header="О программе"
+                          Click="MenuAbout_Click" 
+                          Style="{StaticResource Menu}"/>
+
+            </Menu>
+
+            <Grid Grid.Row="2">
+
+                <RadioButton x:Name="RadioButton_NoProtocol"
+                             Content="Без протокола"
+                             Margin="20,20,0,0"
+                             Command="{Binding Command_ProtocolMode_NoProtocol}"
+                             Checked="RadioButton_NoProtocol_Checked"/>
+
+                <RadioButton x:Name="RadioButton_Protocol_Modbus"
+                             Content="Modbus"
+                             Margin="150,20,0,0"
+                             Command="{Binding Command_ProtocolMode_Modbus}"
+                             Checked="RadioButton_Protocol_Modbus_Checked"/>
+
+                <RadioButton x:Name="RadioButton_Protocol_Http"
+                             Content="Http"
+                             Margin="250,20,0,0"
+                             Checked="RadioButton_Protocol_Http_Checked"/>
+
+                <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
+                           Margin="20,59,0,0" 
+                           FontSize="16"
+                           HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+                <ComboBox x:Name="ComboBox_SelectedPreset" Template="{DynamicResource ComboBox_Common}"
+                          ItemsSource="{Binding Presets}"
+                          SelectedItem="{Binding SelectedPreset}"
+                          Height="25" Width="160"
+                          Margin="175,58,0,0"
+                          FontSize="14"
+                          HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+                <Button x:Name="Button_Connect" Template="{DynamicResource ButtonCommon}"
+                        Margin="380,55,0,0"
+                        Width="100"
+                        Content="Подключить"
+                        Command="{Binding Command_Connect}"/>
+
+                <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
+                        Margin="500,55,0,0"
+                        Width="100" 
+                        Content="Отключить"
+                        Command="{Binding Command_Disconnect}"/>
+            </Grid>
+
+            <Frame x:Name="Frame_ActionUI" Grid.Row="3"
+                   NavigationUIVisibility="Hidden"/>
+
+        </Grid>
+
+    </Border>    
+
+</Window>

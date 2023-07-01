@@ -1,0 +1,187 @@
+﻿<Page x:Class="TerminalProgram.Views.Settings.Page_SerialPort"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TerminalProgram.Views.Settings"
+      xmlns:ViewModel="clr-namespace:TerminalProgram.ViewModels.Settings"
+      mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Settings_SerialPort}"
+      d:DesignHeight="300" d:DesignWidth="350">
+
+    <Page.Resources>
+
+        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
+        
+        <Style TargetType="TextBlock">
+            <Setter Property="TextBlock.Margin" Value="0,0,7,0"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>
+            <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
+            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="ComboBox_SerialPort" TargetType="ComboBox">
+            <Setter Property="ComboBox.Margin" Value="7,0,0,0"/>
+            <Setter Property="ComboBox.Height" Value="24"/>
+            <Setter Property="ComboBox.Width" Value="80"/>
+            <Setter Property="ComboBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="ComboBox.VerticalAlignment" Value="Center"/>
+            <Setter Property="ComboBox.FontSize" Value="14"/>
+            <Setter Property="ComboBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="ComboBox.HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="TextBox.Margin" Value="7,0,0,0"/>
+            <Setter Property="TextBox.Height" Value="24"/>
+            <Setter Property="TextBox.Width" Value="80"/>
+            <Setter Property="TextBox.HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextBox.VerticalAlignment" Value="Center"/>
+            <Setter Property="TextBox.FontSize" Value="14"/>
+            <Setter Property="TextBox.VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextBox.HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- COM Port-->
+
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                Width="170" Height="24"
+                Margin="130,-48,0,0"
+                HorizontalAlignment="Left" VerticalAlignment="Center" 
+                Background="#FF587C8D" 
+                BorderBrush="NavajoWhite"
+                BorderThickness="1,1,1,1">
+
+            <Border.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Message_PortNotFound_IsVisible}" Value="True">
+                            <Setter Property="FrameworkElement.Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Message_PortNotFound_IsVisible}" Value="False">
+                            <Setter Property="FrameworkElement.Visibility" Value="Hidden"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            
+            
+            <TextBlock Text="{Binding Message_PortNotFound, Mode=OneWay}"
+                       TextWrapping="Wrap" 
+                       TextAlignment="Center"
+                       Foreground="#FFFAFAF0"
+                       Margin="0,0,0,0"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        </Border>
+        
+        <TextBlock Grid.Row="0" Grid.Column="0" 
+                   Text="COM - Port"/>
+
+        <ComboBox Grid.Row="0" Grid.Column="1"
+                  Style="{StaticResource ComboBox_SerialPort}"
+                  ItemsSource="{Binding COM_Ports}"
+                  SelectedItem="{Binding Selected_COM_Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- Baud Rate -->
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="BaudRate"/>
+
+        <ComboBox Grid.Row="1" Grid.Column="1"
+                  ItemsSource="{Binding BaudRate}"
+                  SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+            <ComboBox.Style>
+                <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource ComboBox_SerialPort}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding BaudRate_IsCustom}" Value="True">
+                            <Setter Property="FrameworkElement.IsEnabled" Value="False"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding BaudRate_IsCustom}" Value="False">
+                            <Setter Property="FrameworkElement.IsEnabled" Value="True"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+            
+        </ComboBox>
+
+        <CheckBox Grid.Row="2" Grid.Column="0"
+                  x:Name="CheckBox_Custom_BaudRate"
+                  Content="Custom BaudRate"
+                  Foreground="#FFCBBD5A"
+                  Margin="0,0,7,0" FontSize="14"
+                  HorizontalAlignment="Right" VerticalAlignment="Center" 
+                  IsChecked="{Binding BaudRate_IsCustom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 x:Name="TextBox_BaudRate_Custom"
+                 Padding="3,0,0,0"
+                 VerticalContentAlignment="Center"
+                 Text="{Binding Custom_BaudRate_Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 IsEnabled="{Binding BaudRate_IsCustom}"/>
+
+        <!-- Parity -->
+
+        <TextBlock Grid.Row="3" Grid.Column="0" 
+                   Text="Parity"/>
+
+        <ComboBox Grid.Row="3" Grid.Column="1"
+                  Style="{StaticResource ComboBox_SerialPort}"
+                  ItemsSource="{Binding Parity}"
+                  SelectedItem="{Binding Selected_Parity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- Data Bits -->
+
+        <TextBlock Grid.Row="4" Grid.Column="0"
+                   Text="DataBits"/>
+
+        <ComboBox Grid.Row="4" Grid.Column="1"
+                  Style="{StaticResource ComboBox_SerialPort}"
+                  ItemsSource="{Binding DataBits}"
+                  SelectedItem="{Binding Selected_DataBits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- Stop Bits -->
+
+        <TextBlock Grid.Row="5" Grid.Column="0"
+                   Text="StopBits"/>
+
+        <ComboBox Grid.Row="5" Grid.Column="1"
+                  Style="{StaticResource ComboBox_SerialPort}"
+                  ItemsSource="{Binding StopBits}"
+                  SelectedItem="{Binding Selected_StopBits, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <!-- Re-scan COM Ports -->
+
+        <Button Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                Template="{DynamicResource ButtonCommon}"
+                Content="Поиск СОМ портов"
+                FontSize="14"
+                Width="150" Height="28"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Command="{Binding Command_ReScan_COMPorts}"/>
+
+    </Grid>
+
+</Page>

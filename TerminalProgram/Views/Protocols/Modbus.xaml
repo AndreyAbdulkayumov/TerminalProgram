@@ -1,0 +1,342 @@
+﻿<Page x:Class="TerminalProgram.Views.Protocols.Modbus"
+      x:Name="Page_Modbus"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:TerminalProgram.Views.Protocols"
+      xmlns:ViewModel="clr-namespace:TerminalProgram.ViewModels.MainWindow"
+      mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus}"
+      d:DesignHeight="630" d:DesignWidth="850" 
+      Background="#FF323232"
+      Title="Modbus">
+
+
+    <Page.Resources>
+
+        <Style TargetType="Button">
+            <Setter Property="Button.Height" Value="30"/>
+            <Setter Property="Button.FontSize" Value="14"/>
+            <Setter Property="Button.Width" Value="100"/>
+            <Setter Property="Button.HorizontalAlignment" Value="Center"/>
+            <Setter Property="Button.VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ColumnHeaderStyle_Custom" TargetType="{x:Type DataGridColumnHeader}">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="ComboBox.Height" Value="26"/>
+            <Setter Property="ComboBox.Width" Value="255"/>
+            <Setter Property="ComboBox.FontSize" Value="14"/>
+            <Setter Property="ComboBox.HorizontalAlignment" Value="Center"/>
+            <Setter Property="ComboBox.VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <SolidColorBrush x:Key="Color_Text" Color="#FFD2C25A"/>
+        <SolidColorBrush x:Key="Color_Bright_Text" Color="#FFE6AB44"/>
+        
+    </Page.Resources>
+
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="1*" MinHeight="100"/>
+            <RowDefinition Height="220"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="Grid_CommonInfo" Grid.Row="0">
+
+            <TextBlock Text="Режим обмена данными:"
+                       FontSize="16"
+                       Foreground="{StaticResource Color_Text}"
+                       Margin="20,10,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+            <TextBlock x:Name="TextBlock_ModbusMode"
+                       Text="{Binding ModbusMode_Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       FontSize="16"
+                       Foreground="{StaticResource Color_Bright_Text}"
+                       Margin="220,10,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+        </Grid>
+
+        <DataGrid x:Name="DataGrid_ModbusData" Grid.Row="1" 
+                  Width="795"
+                  ItemsSource="{Binding DataDisplayedList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  FontSize="16"
+                  Background="#FF464646"
+                  BorderBrush="#FFABABAB"
+                  BorderThickness="1"
+                  RowBackground="#FFDFDFDF"
+                  AlternatingRowBackground="#FFBBBBBB"
+                  HorizontalGridLinesBrush="#FFABABAB"
+                  VerticalGridLinesBrush="#FFABABAB"
+                  VerticalScrollBarVisibility="Visible"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn 
+                    Header="ID" 
+                    Binding="{Binding Path=OperationID}"
+                    HeaderStyle="{StaticResource ColumnHeaderStyle_Custom}"
+                    Width="100">
+
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="5"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+
+                </DataGridTextColumn>
+
+                <DataGridTextColumn 
+                    Header="Функция"  
+                    Binding="{Binding Path=FuncNumber}" 
+                    HeaderStyle="{StaticResource ColumnHeaderStyle_Custom}"
+                    Width="160">
+
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="5"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+
+                </DataGridTextColumn>
+
+                <DataGridTextColumn
+                    Header="Адрес" 
+                    Binding="{Binding Path=ViewAddress}" 
+                    HeaderStyle="{StaticResource ColumnHeaderStyle_Custom}"
+                    Width="160">
+
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="5"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+
+                </DataGridTextColumn>
+
+                <DataGridTextColumn
+                    Header="Данные" 
+                    Binding="{Binding Path=ViewData}"
+                    HeaderStyle="{StaticResource ColumnHeaderStyle_Custom}"
+                    Width="350">
+
+                    <DataGridTextColumn.ElementStyle>
+                        <Style>
+                            <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                            <Setter Property="TextBlock.Margin" Value="5"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+
+                </DataGridTextColumn>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <DockPanel x:Name="DockPanel_Controls" Grid.Row="2">
+
+            <Grid DockPanel.Dock="Top" Height="50">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Slave ID" Grid.Column="1"
+                           Margin="0,1,0,0"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Text}"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <TextBox x:Name="TextBox_SlaveID" Grid.Column="1"
+                         Height="25" Width="40"
+                         Text="{Binding SlaveID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="16"
+                         Margin="70,0,0,0"
+                         HorizontalContentAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <CheckBox x:Name="CheckBox_CRC_Enable" Grid.Column="1"
+                          IsChecked="{Binding CRC16_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Content="CRC-16"
+                          FontSize="14"
+                          Foreground="{StaticResource Color_Text}"
+                          Margin="150,3,0,0"
+                          HorizontalAlignment="Left" VerticalAlignment="Center">
+
+                    <CheckBox.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CRC16_IsVisible}" Value="True">
+                                    <Setter Property="CheckBox.Visibility" Value="Visible"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding CRC16_IsVisible}" Value="False">
+                                    <Setter Property="CheckBox.Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </CheckBox.Style>
+                    
+                </CheckBox>
+
+                <Button x:Name="Button_ClearDataGrid" Grid.Column="2"
+                        Template="{DynamicResource ButtonCommon}"
+                        Width="130" 
+                        Content="Очистить таблицу"
+                        Margin="80,0,0,0"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Command="{Binding Command_ClearDataGrid}"/>
+
+            </Grid>
+
+            <Grid x:Name="Grid_NumberFormat" DockPanel.Dock="Top" Height="50">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Формат числа:" Grid.Column="1"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Text}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <RadioButton x:Name="RadioButton_NumFormat_Hex" Grid.Column="2"
+                             Content="Шестнадцетиричный"
+                             IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="16"
+                             Foreground="{StaticResource Color_Text}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <RadioButton x:Name="RadioButton_NumFormat_Dec" Grid.Column="3"
+                             Content="Десятичный"
+                             IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             FontSize="16"
+                             Foreground="{StaticResource Color_Text}"
+                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            </Grid>
+
+            <Grid x:Name="Grid_Controls" DockPanel.Dock="Bottom">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="280"/>
+                    <ColumnDefinition Width="130"/>
+                    <ColumnDefinition Width="270"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Адрес" Grid.Column="1" Grid.Row="0"
+                           Margin="0,1,45,0"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Text}"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock x:Name="TextBlock_Address_NumberFormat" Grid.Column="1" Grid.Row="0"
+                           Text="{Binding NumberFormat, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Bright_Text}"
+                           Margin="0,1,5,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBox x:Name="TextBox_Address" Grid.Column="2" Grid.Row="0"
+                         Height="25" Width="60"
+                         Text="{Binding Address, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="16"
+                         Margin="5,0,0,0"
+                         Padding="5,0,0,0"
+                         VerticalContentAlignment="Center"
+                         HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <TextBlock Text="Кол-во регистров" Grid.Column="2" Grid.Row="0"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Text}"
+                           Margin="0,1,60,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBox x:Name="TextBox_NumberOfRegisters" Grid.Column="2" Grid.Row="0"
+                         Height="25" Width="40"
+                         Text="{Binding NumberOfRegisters, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="16"
+                         Margin="0,0,5,0"
+                         HorizontalContentAlignment="Center"
+                         VerticalContentAlignment="Center"
+                         HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock Text="Значение" Grid.Column="1" Grid.Row="1"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Text}"
+                           Margin="0,1,45,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock x:Name="TextBlock_Data_NumberFormat" Grid.Column="1" Grid.Row="1"
+                           Text="{Binding NumberFormat, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           FontSize="16"
+                           Foreground="{StaticResource Color_Bright_Text}"
+                           Margin="0,1,5,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBox x:Name="TextBox_Data" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1"
+                         Height="25" Width="270"
+                         Text="{Binding WriteData, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="16"
+                         Margin="5,0,0,0"
+                         Padding="5,0,5,0"
+                         VerticalContentAlignment="Center"
+                         HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <Button x:Name="Button_Read" Grid.Column="3" Grid.Row="0"
+                        Template="{DynamicResource ButtonCommon}"
+                        Content="Прочитать" 
+                        Command="{Binding Command_Read}"/>
+
+                <Button x:Name="Button_Write" Grid.Column="3" Grid.Row="1"
+                        Template="{DynamicResource ButtonCommon}"
+                        Content="Записать"
+                        Command="{Binding Command_Write}"/>
+
+                <ComboBox x:Name="ComboBox_ReadFunc" Grid.Column="4" Grid.Row="0"
+                          ItemsSource="{Binding ReadFunctions}"
+                          SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <ComboBox x:Name="ComboBox_WriteFunc" Grid.Column="4" Grid.Row="1"
+                          ItemsSource="{Binding WriteFunctions}"
+                          SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </Grid>
+
+        </DockPanel>
+
+    </Grid>
+    
+</Page>
