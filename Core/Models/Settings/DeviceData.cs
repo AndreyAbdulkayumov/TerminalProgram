@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Models
+namespace Core.Models.Settings
 {
     public class SerialPort_Info
     {
@@ -46,13 +46,13 @@ namespace Core.Models
             {
                 SerialPort = new SerialPort_Info()
                 {
-                    COMPort = this.Connection_SerialPort.COMPort,
-                    BaudRate = this.Connection_SerialPort.BaudRate,
-                    BaudRate_IsCustom = this.Connection_SerialPort.BaudRate_IsCustom,
-                    BaudRate_Custom = this.Connection_SerialPort.BaudRate_Custom,
-                    Parity = this.Connection_SerialPort.Parity,
-                    DataBits = this.Connection_SerialPort.DataBits,
-                    StopBits = this.Connection_SerialPort.StopBits
+                    COMPort = Connection_SerialPort.COMPort,
+                    BaudRate = Connection_SerialPort.BaudRate,
+                    BaudRate_IsCustom = Connection_SerialPort.BaudRate_IsCustom,
+                    BaudRate_Custom = Connection_SerialPort.BaudRate_Custom,
+                    Parity = Connection_SerialPort.Parity,
+                    DataBits = Connection_SerialPort.DataBits,
+                    StopBits = Connection_SerialPort.StopBits
                 };
             }
 
@@ -67,8 +67,8 @@ namespace Core.Models
             {
                 IP = new IP_Info()
                 {
-                    IP_Address = this.Connection_IP.IP_Address,
-                    Port = this.Connection_IP.Port
+                    IP_Address = Connection_IP.IP_Address,
+                    Port = Connection_IP.Port
                 };
             }
 
@@ -79,12 +79,12 @@ namespace Core.Models
 
             return new DeviceData()
             {
-                GlobalEncoding = this.GlobalEncoding,
+                GlobalEncoding = GlobalEncoding,
 
-                TimeoutWrite = this.TimeoutWrite,
-                TimeoutRead = this.TimeoutRead,
+                TimeoutWrite = TimeoutWrite,
+                TimeoutRead = TimeoutRead,
 
-                TypeOfConnection = this.TypeOfConnection,
+                TypeOfConnection = TypeOfConnection,
 
                 Connection_SerialPort = SerialPort,
 

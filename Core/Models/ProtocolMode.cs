@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Models.Settings;
 
 namespace Core.Models
 {
     public abstract class ProtocolMode
     {
-        public int WriteTimeout { get; protected set; }
-        public int ReadTimeout { get; protected set; }
+        public int WriteTimeout { get; protected set; } = Timeout.Infinite;
+        public int ReadTimeout { get; protected set; } = Timeout.Infinite;
+
         public ReadMode CurrentReadMode { get; protected set; } = ReadMode.Async;
 
         public virtual void InitMode(IConnection? Client)
@@ -33,7 +35,7 @@ namespace Core.Models
             CurrentReadMode = ReadMode.Async;
 
             WriteTimeout = 500;
-            ReadTimeout = -1; // Бесконечно
+            ReadTimeout = Timeout.Infinite;
 
             InitMode(Client);
         }
@@ -41,7 +43,7 @@ namespace Core.Models
 
     public class ProtocolMode_Modbus : ProtocolMode
     {
-        public ProtocolMode_Modbus(IConnection? Client, DeviceData Settings)
+        public ProtocolMode_Modbus(IConnection? Client, DeviceData? Settings)
         {
             CurrentReadMode = ReadMode.Sync;
 
@@ -50,10 +52,13 @@ namespace Core.Models
             InitMode(Client);
         }
 
-        public void UpdateTimeouts(DeviceData Settings)
+        public void UpdateTimeouts(DeviceData? Settings)
         {
-            WriteTimeout = Convert.ToInt32(Settings.TimeoutWrite);
-            ReadTimeout = Convert.ToInt32(Settings.TimeoutRead);
+            if (Settings != null)
+            {
+                this.WriteTimeout = Convert.ToInt32(Settings.TimeoutWrite);
+                this.ReadTimeout = Convert.ToInt32(Settings.TimeoutRead);
+            }            
         }
     }
 }

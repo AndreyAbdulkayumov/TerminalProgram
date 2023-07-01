@@ -30,7 +30,7 @@ namespace View_WPF.Views.ServiceWindows
         {
             if (FileName == String.Empty)
             {
-                if (MessageBox.Show("Вы не ввели имя файла. Операция будет отменена. Выйти?", "Предупреждение",
+                if (MessageBox.Show("Вы не ввели имя файла. Операция будет отменена. Выйти?", this.Title,
                     MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
                 {
                     e.Cancel = true;

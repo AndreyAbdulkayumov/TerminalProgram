@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
@@ -29,17 +30,11 @@ namespace View_WPF.Views.Protocols
     /// </summary>
     public partial class NoProtocol : Page
     {
-        private TypeOfMessage SendMessageType;
-
-        private readonly string MainWindowTitle;
-
         private readonly ViewModel_NoProtocol ViewModel;
 
-        public NoProtocol(MainWindow window)
+        public NoProtocol()
         {
             InitializeComponent();
-
-            MainWindowTitle = window.Title;
 
             ViewModel = new ViewModel_NoProtocol(
                 MessageView.Show,
@@ -87,6 +82,9 @@ namespace View_WPF.Views.Protocols
 
         private void Action_Receive(string Data)
         {
+            // Ради повышения производительности
+            // в этом месте пришлось отказаться от конструкции try - catch
+
             Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Send,
                     new Action(delegate
                     {
@@ -107,7 +105,6 @@ namespace View_WPF.Views.Protocols
             RadioButton_String.IsChecked = true;
             RadioButton_String.Checked += RadioButton_String_Checked;
 
-            SendMessageType = TypeOfMessage.String;
             TextBox_TX.Text = String.Empty;
 
             TextBox_TX.Focus();
@@ -153,7 +150,42 @@ namespace View_WPF.Views.Protocols
 
         private void Button_SaveAs_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                if (TextBox_RX.Text == String.Empty)
+                {
+                    MessageView.Show("Поле приема не содержит данных.", MessageType.Warning);
 
+                    TextBox_TX.Focus();
+
+                    return;
+                }
+
+                Microsoft.Win32.SaveFileDialog dialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = "HostResponse", // Имя по умолчанию
+                    DefaultExt = ".txt",       // Расширение файла по умолчанию
+                    Filter = "Text Document|*.txt" // Допустимые форматы файла
+                };
+
+                Nullable<bool> result = dialog.ShowDialog();
+
+                if (result == true)
+                {
+                    using (FileStream Stream = new FileStream(dialog.FileName, FileMode.OpenOrCreate))
+                    {
+                        byte[] Data = Encoding.UTF8.GetBytes(TextBox_RX.Text);
+                        Stream.Write(Data, 0, Data.Length);
+                    }
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageView.Show("Ошибка при попытке сохранить данные поля приема в файл:\n\n" + error.Message, MessageType.Error);
+
+                TextBox_TX.Focus();
+            }
         }
     }
 }

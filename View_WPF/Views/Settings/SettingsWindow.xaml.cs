@@ -110,8 +110,7 @@ namespace View_WPF.Views.Settings
         {
             if (Frame_Settings.Navigate(Settings_SerialPort) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + Settings_SerialPort?.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageView.Show("Не удалось перейти на страницу " + Settings_SerialPort?.Name, MessageType.Error);
             }
         }
 
@@ -119,8 +118,7 @@ namespace View_WPF.Views.Settings
         {
             if (Frame_Settings.Navigate(Settings_IP) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + Settings_IP?.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                MessageView.Show("Не удалось перейти на страницу " + Settings_IP?.Name, MessageType.Error);
             }
         }
 

@@ -20,7 +20,7 @@ namespace Core.Models.NoProtocol
 
         private void Host_DeviceIsConnect(object? sender, ConnectArgs e)
         {
-            if (e.ConnectedDevice.IsConnected)
+            if (e.ConnectedDevice != null && e.ConnectedDevice.IsConnected)
             {
                 Client = e.ConnectedDevice;
 

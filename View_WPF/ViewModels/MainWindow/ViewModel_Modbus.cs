@@ -14,6 +14,10 @@ using Core.Models.Modbus;
 using Core.Models.Modbus.Message;
 using System.Globalization;
 using System.Reactive.Linq;
+using View_WPF.Views;
+using System.Windows;
+using System.Windows.Controls;
+using System.Text.RegularExpressions;
 
 namespace View_WPF.ViewModels.MainWindow
 {
@@ -30,6 +34,8 @@ namespace View_WPF.ViewModels.MainWindow
     internal class ViewModel_Modbus : ReactiveObject
     {
         #region Properties
+
+        private const string ModbusMode_Name_Default = "не определен";
 
         private string _modbusMode_Name;
 
@@ -63,6 +69,14 @@ namespace View_WPF.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _crc16_Enable, value);
         }
 
+        private bool _crc16_IsVisible;
+
+        public bool CRC16_IsVisible
+        {
+            get => _crc16_IsVisible;
+            set => this.RaiseAndSetIfChanged(ref _crc16_IsVisible, value);
+        }
+
         private bool _selectedNumberFormat_Hex;
 
         public bool SelectedNumberFormat_Hex
@@ -77,6 +91,14 @@ namespace View_WPF.ViewModels.MainWindow
         {
             get => _selectedNumberFormat_Dec;
             set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Dec, value);
+        }
+
+        private string _numberFormat;
+
+        public string NumberFormat
+        {
+            get => _numberFormat;
+            set => this.RaiseAndSetIfChanged(ref _numberFormat, value);
         }
 
         private string _address;
@@ -152,8 +174,11 @@ namespace View_WPF.ViewModels.MainWindow
         private readonly Action SetUI_Disconnected;
         private readonly Action<ModbusDataDisplayed> DataGrid_ScrollTo;
 
-        private NumberStyles Address_NumberStyle = NumberStyles.HexNumber;
-        private NumberStyles Data_NumberStyle = NumberStyles.HexNumber;
+        private ModbusMessage? ModbusMessageType;
+
+        private readonly List<UInt16> WriteBuffer = new List<UInt16>();
+
+        private NumberStyles NumberViewStyle;
 
         private UInt16 PackageNumber = 0;
 
@@ -162,14 +187,16 @@ namespace View_WPF.ViewModels.MainWindow
         private UInt16 SelectedNumberOfRegisters = 1;
 
         private const UInt16 CRC_Polynom = 0xA001;
-        private bool CRC_Enable = false;
+
+        private string WriteDataText;
+
+        private ModbusFunction? CurrentFunction;
 
         public ViewModel_Modbus(
             Action<string, MessageType> MessageBox,
             Action UI_Connected_Handler,
             Action UI_Disconnected_Handler,
             Action<ModbusDataDisplayed> UI_DataGrid_ScrollTo_Handler)
-            
         {
             Message = MessageBox;
 
@@ -182,12 +209,21 @@ namespace View_WPF.ViewModels.MainWindow
 
             SetUI_Disconnected?.Invoke();
 
-            ModbusMode_Name = "не определен";
-
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
+
+            /****************************************************/
+            //
+            // Первоначальная настройка UI
+            //
+            /****************************************************/
+
+
+            ModbusMode_Name = ModbusMode_Name_Default;
+
             CRC16_Enable = true;
+            CRC16_IsVisible = true;
 
             SelectedNumberFormat_Hex = true;
 
@@ -205,38 +241,160 @@ namespace View_WPF.ViewModels.MainWindow
 
             SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
 
+
+            /****************************************************/
+            //
+            // Настройка свойств и команд модели отображения
+            //
+            /****************************************************/
+
+
             Command_ClearDataGrid = ReactiveCommand.Create(DataDisplayedList.Clear);
             Command_Write = ReactiveCommand.Create(Modbus_Write);
             Command_Read = ReactiveCommand.Create(Modbus_Read);
 
             this.WhenAnyValue(x => x.SlaveID)
                 .Where(x => x != null)
-                .Select(x => CheckNumber(x, NumberStyles.Number, out SelectedSlaveID))
+                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedSlaveID))
                 .Subscribe(x => SlaveID = x);
+
+            this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
+                .Subscribe(values =>
+                {
+                    if (values.Item1 == true && values.Item2 == true)
+                    {
+                        return;
+                    }
+
+                    // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
+                    if (values.Item1)
+                    {
+                        SelectNumberFormat_Hex();
+                    }
+
+                    // Выбран десятичный формат числа в полях Адрес и Данные
+                    else if (values.Item2)
+                    {
+                        SelectNumberFormat_Dec();
+                    }
+                });
 
             this.WhenAnyValue(x => x.Address)
                 .Where(x => x != null)
-                .Select(x => CheckNumber(x, Address_NumberStyle, out SelectedAddress))
-                .Subscribe(x => Address = x);
+                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedAddress))
+                .Subscribe(x => Address = x.ToUpper());
 
             this.WhenAnyValue(x => x.NumberOfRegisters)
                 .Where(x => x != null)
-                .Select(x => CheckNumber(x, NumberStyles.Number, out SelectedNumberOfRegisters))
+                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedNumberOfRegisters))
                 .Subscribe(x => NumberOfRegisters = x);
+
+            this.WhenAnyValue(x => x.SelectedWriteFunction)
+                .Where(x => x != null)
+                .Where(x => x != String.Empty)
+                .Subscribe(_ => WriteData = String.Empty);
+
+            this.WhenAnyValue(x => x.WriteData)
+                .Where(x => x != null)
+                .Subscribe(WriteData_TextChanged);
+        }
+
+        private void SelectNumberFormat_Hex()
+        {
+            NumberFormat = "(hex)";
+            NumberViewStyle = NumberStyles.HexNumber;
+
+            if (Address != null)
+            {
+                Address = Convert.ToInt32(Address).ToString("X");
+            }            
+
+            WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
+        }
+
+        private void SelectNumberFormat_Dec()
+        {
+            NumberFormat = "(dec)";
+            NumberViewStyle = NumberStyles.Number;
+
+            if (Address != null)
+            {
+                Address = Int32.Parse(Address, NumberStyles.HexNumber).ToString();
+            }            
+
+            WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
+        }
+
+        private string ConvertDataTextIn(NumberStyles Style, string? Text)
+        {
+            if (Text == null)
+            {
+                return String.Empty;
+            }
+
+            string[] SplitString = Text.Split(' ');
+
+            string[] Values = SplitString.Where(element => element != "").ToArray();
+
+            string DataString = "";
+
+            if (Style == NumberStyles.Number)
+            {
+                foreach (string element in Values)
+                {
+                    DataString += Int32.Parse(element, NumberStyles.HexNumber).ToString() + " ";
+                }
+            }
+
+            else if (Style == NumberStyles.HexNumber)
+            {
+                foreach (string element in Values)
+                {
+                    DataString += Convert.ToInt32(element).ToString("X") + " ";
+                }
+            }
+
+            return DataString;
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
+            if (e.ConnectedDevice is IPClient)
+            {
+                ModbusMessageType = new ModbusTCP_Message();
+
+                CRC16_IsVisible = false;
+            }
+
+            else if (e.ConnectedDevice is SerialPortClient)
+            {
+                ModbusMessageType = new ModbusRTU_Message();
+
+                CRC16_IsVisible = true;
+            }
+
+            else
+            {
+                Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
+                return;
+            }
+
+            WriteBuffer.Clear();
+
+            ModbusMode_Name = ModbusMessageType.ProtocolName;
+
             SetUI_Connected?.Invoke();
 
-            ModbusMode_Name = "TEST";
+            DataDisplayedList.Clear();
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             SetUI_Disconnected?.Invoke();
 
-            ModbusMode_Name = "не определен";
+            CRC16_IsVisible = true;
+
+            ModbusMode_Name = ModbusMode_Name_Default;
         }
 
         private void Modbus_Write()
@@ -245,56 +403,75 @@ namespace View_WPF.ViewModels.MainWindow
             {
                 if (Model.Modbus == null)
                 {
-                    Message?.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
+                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
                     return;
                 }
 
-                //if (ModbusMessageType == null)
-                //{
-                //    Message?.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
-                //    return;
-                //}
-
-                if (SlaveID == String.Empty)
+                if (ModbusMessageType == null)
                 {
-                    Message?.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
                     return;
                 }
 
-                if (Address == String.Empty)
+                if (SlaveID == null || SlaveID == String.Empty)
                 {
-                    Message?.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
-                if (WriteData == String.Empty)
+                if (Address == null || Address == String.Empty)
                 {
-                    Message?.Invoke("Укажите данные для записи в Modbus регистр.", MessageType.Warning);
+                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
-                //MessageData Data = new WriteTypeMessage(
-                //    SelectedSlaveID,
-                //    SelectedAddress,
-                //    ModbusWriteData,
-                //    ModbusMessageType is ModbusTCP_Message ? false : CRC_Enable,
-                //    CRC_Polynom);
+                if (WriteData == null || WriteData == String.Empty)
+                {
+                    Message.Invoke("Укажите данные для записи в Modbus регистр.", MessageType.Warning);
+                    return;
+                }
 
-                //Model.Modbus.WriteRegister(
-                //    WriteFunction,
-                //    Data,
-                //    ModbusMessageType,
-                //    out CommonResponse);
+                ModbusWriteFunction WriteFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                //DataDisplayedList.Add(new ModbusDataDisplayed()
-                //{
-                //    OperationID = PackageNumber,
-                //    FuncNumber = WriteFunction.DisplayedNumber,
-                //    Address = SelectedAddress,
-                //    ViewAddress = CreateViewAddress(SelectedAddress, ModbusWriteData.Length),
-                //    Data = ModbusWriteData,
-                //    ViewData = CreateViewData(ModbusWriteData)
-                //});
+                CurrentFunction = WriteFunction;
+
+                UInt16[] ModbusWriteData;
+
+                if (WriteFunction == Function.PresetMultipleRegister)
+                {
+                    ModbusWriteData = WriteBuffer.ToArray();
+                }
+
+                else
+                {
+                    ModbusWriteData = new UInt16[1];
+
+                    StringValue.CheckNumber(WriteData, NumberViewStyle, out ModbusWriteData[0]);
+                }
+                                
+                MessageData Data = new WriteTypeMessage(
+                    SelectedSlaveID,
+                    SelectedAddress,
+                    ModbusWriteData,
+                    ModbusMessageType is ModbusTCP_Message ? false : CRC16_Enable,
+                    CRC_Polynom);
+
+
+                Model.Modbus.WriteRegister(
+                    WriteFunction, 
+                    Data,
+                    ModbusMessageType);
+
+
+                DataDisplayedList.Add(new ModbusDataDisplayed()
+                {
+                    OperationID = PackageNumber,
+                    FuncNumber = WriteFunction.DisplayedNumber,
+                    Address = SelectedAddress,
+                    ViewAddress = CreateViewAddress(SelectedAddress, ModbusWriteData.Length),
+                    Data = ModbusWriteData,
+                    ViewData = CreateViewData(ModbusWriteData)
+                });
 
                 DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
 
@@ -308,33 +485,152 @@ namespace View_WPF.ViewModels.MainWindow
 
             catch (Exception error)
             {
-                Message?.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" +
-                        error.Message + "\n\nКлиент не был отключен.", MessageType.Error);
+                Message.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" + error.Message, MessageType.Error);
             }
         }
 
         private void Modbus_Read()
         {
+            try
+            {
+                if (Model.Modbus == null)
+                {
+                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
+                    return;
+                }
 
+                if (ModbusMessageType == null)
+                {
+                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
+                    return;
+                }
+
+                if (SlaveID == null || SlaveID == String.Empty)
+                {
+                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    return;
+                }
+
+                if (Address == null || Address == String.Empty)
+                {
+                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    return;
+                }
+
+                if (NumberOfRegisters == null || NumberOfRegisters == String.Empty)
+                {
+                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                    return;
+                }
+
+                if (SelectedNumberOfRegisters < 1)
+                {
+                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
+                    return;
+                }
+
+                ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+
+                CurrentFunction = ReadFunction;
+
+
+                MessageData Data = new ReadTypeMessage(
+                    SelectedSlaveID,
+                    SelectedAddress,
+                    SelectedNumberOfRegisters,
+                    ModbusMessageType is ModbusTCP_Message ? false : CRC16_Enable,
+                    CRC_Polynom);
+
+
+                UInt16[] ModbusReadData = Model.Modbus.ReadRegister(
+                                ReadFunction,
+                                Data,
+                                ModbusMessageType);
+
+
+                DataDisplayedList.Add(new ModbusDataDisplayed()
+                {
+                    OperationID = PackageNumber,
+                    FuncNumber = ReadFunction.DisplayedNumber,
+                    Address = SelectedAddress,
+                    ViewAddress = CreateViewAddress(SelectedAddress, ModbusReadData.Length),
+                    Data = ModbusReadData,
+                    ViewData = CreateViewData(ModbusReadData)
+                });
+
+                DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
+
+                PackageNumber++;
+            }
+
+            catch (ModbusException error)
+            {
+                ModbusErrorHandler(error);
+            }
+
+            catch (Exception error)
+            {
+                Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
+            }
+        }
+
+        private string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)
+        {
+            string DisplayedString = String.Empty;
+
+            UInt16 CurrentAddress = StartAddress;
+
+            for (int i = 0; i < NumberOfRegisters; i++)
+            {
+                DisplayedString += "0x" + CurrentAddress.ToString("X") +
+                    " (" + CurrentAddress.ToString() + ")";
+
+                if (i != NumberOfRegisters - 1)
+                {
+                    DisplayedString += "\n";
+                }
+
+                CurrentAddress++;
+            }
+
+            return DisplayedString;
+        }
+
+        private string CreateViewData(UInt16[] ModbusData)
+        {
+            string DisplayedString = String.Empty;
+
+            for (int i = 0; i < ModbusData.Length; i++)
+            {
+                DisplayedString += "0x" + ModbusData[i].ToString("X") +
+                    " (" + ModbusData[i].ToString() + ")";
+
+                if (i != ModbusData.Length - 1)
+                {
+                    DisplayedString += "\n";
+                }
+            }
+
+            return DisplayedString;
         }
 
         private void ModbusErrorHandler(ModbusException error)
         {
-            //DataDisplayedList.Add(new ModbusDataDisplayed()
-            //{
-            //    OperationID = PackageNumber,
-            //    FuncNumber = ReadFunction.DisplayedNumber,
-            //    Address = SelectedAddress,
-            //    ViewAddress = CreateViewAddress(SelectedAddress, 1),
-            //    Data = new UInt16[1],
-            //    ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
-            //});
+            DataDisplayedList.Add(new ModbusDataDisplayed()
+            {
+                OperationID = PackageNumber,
+                FuncNumber = CurrentFunction?.DisplayedNumber,
+                Address = SelectedAddress,
+                ViewAddress = CreateViewAddress(SelectedAddress, 1),
+                Data = new UInt16[1],
+                ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
+            });
 
             DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
 
             PackageNumber++;
 
-            Message?.Invoke(
+            Message.Invoke(
                 "Ошибка Modbus.\n\n" +
                 "Код функции: " + error.FunctionCode.ToString() + "\n" +
                 "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
@@ -342,100 +638,66 @@ namespace View_WPF.ViewModels.MainWindow
                 MessageType.Error);
         }
 
-        private string CheckNumber(string StringNumber, NumberStyles Style, out Byte Number)
+        private void WriteData_TextChanged(string EnteredText)
         {
-            if (StringNumber == "")
+            try
             {
-                Number = 0;
-                return "";
-            }
-
-            string? str = StringNumber;
-
-            if (Byte.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out Number) == false)
-            {
-                str = new string(StringNumber.Where(char.IsDigit).ToArray());
-
-                Message?.Invoke("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 255.", MessageType.Warning);
-
-                if (str == null)
+                if (SelectedWriteFunction == Function.PresetMultipleRegister.DisplayedName)
                 {
-                    return "";
-                }
+                    WriteBuffer.Clear();
 
-                StringNumber = str;
-            }
+                    string[] SplitString = EnteredText.Split(' ');
 
-            return StringNumber;
-        }
+                    string[] Values = SplitString.Where(element => element != "").ToArray();
 
-        private string CheckNumber(string StringNumber, NumberStyles Style, out UInt16 Number)
-        {
-            if (StringNumber == "")
-            {
-                Number = 0;
-                return "";
-            }
+                    UInt16 Buffer = 0;
 
-            string? str = StringNumber;
+                    bool ParseError = false;
 
-            if (UInt16.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out Number) == false)
-            {
-                if (Style == NumberStyles.HexNumber)
-                {
-                    str = new string(StringNumber.Where(x => (char.IsDigit(x) || "ABCDEFabcdef".Contains(x))).ToArray());
-                    Message?.Invoke("Допустим только ввод чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x0000 до 0xFFFF.", MessageType.Warning);
+                    for (int i = 0; i < Values.Length; i++)
+                    {
+                        Values[i] = StringValue.CheckNumber(Values[i], NumberViewStyle, out UInt16 _);
+                    }
+
+                    foreach (string element in Values)
+                    {
+                        if (UInt16.TryParse(element, NumberViewStyle, CultureInfo.InvariantCulture, out Buffer) == false)
+                        {
+                            Message.Invoke("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535 (0x0000 - 0xFFFF).", MessageType.Warning);
+
+                            WriteData = WriteDataText;
+
+                            ParseError = true;
+                        }
+
+                        else
+                        {
+                            WriteBuffer.Add(Buffer);
+                        }
+                    }
                 }
 
                 else
                 {
-                    str = new string(StringNumber.Where(char.IsDigit).ToArray());
-                    Message?.Invoke("Допустим только ввод чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 65535.", MessageType.Warning);
-                }
-                
-
-                if (str == null)
-                {
-                    return "";
+                    WriteData = StringValue.CheckNumber(WriteData, NumberViewStyle, out UInt16 _);
                 }
 
-                StringNumber = str;
+                //int CursorPosition = TextBox_Data.SelectionStart;
+                //TextBox_Data.Text = TextBox_Data.Text.ToUpper();
+                //TextBox_Data.SelectionStart = CursorPosition;
+                WriteData = WriteData.ToUpper();
+
+                WriteDataText = WriteData;
             }
 
-            return StringNumber;
+            catch (Exception error)
+            {
+                Message.Invoke("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
+                    error.Message, MessageType.Error);
+            }
         }
 
-        //private UInt16 CheckNumber(string StringNumber, NumberStyles Style)
-        //{
-        //    if (StringNumber == String.Empty)
-        //    {
-        //        return 0;
-        //    }
 
-        //    UInt16 Number;
-
-        //    while (true)
-        //    {
-        //        if (UInt16.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out Number) == false)
-        //        {
-        //            StringNumber = StringNumber.Remove(StringNumber.Length - 1);
-        //            //StringNumber.SelectionStart = StringNumber.Length;
-
-        //            Message?.Invoke("Ввод букв и знаков не допустим.\n\nДиапазон чисел от 0 до 65 535 (0x0000 - 0xFFFF).", MessageType.Warning);
-        //        }
-
-        //        else
-        //        {
-        //            break;
-        //        }
-
-        //        if (StringNumber == String.Empty)
-        //        {
-        //            return 0;
-        //        }
-        //    }
-
-        //    return Number;
-        //}
+        
     }
 }

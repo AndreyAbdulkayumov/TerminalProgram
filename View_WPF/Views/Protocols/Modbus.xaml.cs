@@ -22,13 +22,9 @@ namespace View_WPF.Views.Protocols
     /// </summary>
     public partial class Modbus : Page
     {
-        private readonly string MainWindowTitle;
-
-        public Modbus(MainWindow window)
+        public Modbus()
         {
             InitializeComponent();
-
-            MainWindowTitle = window.Title;
 
             DataContext = new ViewModel_Modbus(
                 MessageView.Show,
@@ -78,8 +74,6 @@ namespace View_WPF.Views.Protocols
 
             TextBox_NumberOfRegisters.IsEnabled = false;
             CheckBox_CRC_Enable.IsEnabled = false;
-
-            CheckBox_CRC_Enable.Visibility = Visibility.Visible;
         }
 
         private void DataGrid_ScrollTo(ModbusDataDisplayed Item)

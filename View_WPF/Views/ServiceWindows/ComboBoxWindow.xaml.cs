@@ -22,7 +22,7 @@ namespace View_WPF.Views.ServiceWindows
         public string SelectedDocumentPath { get; private set; } = String.Empty;
 
 
-        public ComboBoxWindow(ref string[] ArrayOfDocuments)
+        public ComboBoxWindow(string[] ArrayOfDocuments)
         {
             InitializeComponent();
 
@@ -40,19 +40,18 @@ namespace View_WPF.Views.ServiceWindows
             {
                 MessageBox.Show("Список пуст.\n" +
                     "Закройте это окно.\n" +
-                    "Попробуйте вручную создать папку Settings и добавить туда файл с настройками.", "Ошибка", 
+                    "Попробуйте вручную создать папку Settings и добавить туда файл с настройками.", this.Title, 
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
 
                 Close();
             }
-            
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (SelectedDocumentPath == String.Empty)
             {
-                if (MessageBox.Show("Документ не выбран. Вы действительно хотите выйти?", "Предупреждение",
+                if (MessageBox.Show("Документ не выбран. Вы действительно хотите выйти?", this.Title,
                     MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
                 {
                     e.Cancel = true;
@@ -93,7 +92,7 @@ namespace View_WPF.Views.ServiceWindows
             {
                 SelectedDocumentPath = String.Empty;
 
-                MessageBox.Show("Не удалось выбрать документ.", "Ошибка",
+                MessageBox.Show("Не удалось выбрать документ.", this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
             }
 
@@ -102,7 +101,7 @@ namespace View_WPF.Views.ServiceWindows
                 SelectedDocumentPath = SelectedFile;
 
                 MessageBox.Show("Документ \"" + ComboBox_SelectedDocument.SelectedItem?.ToString() +
-                    "\" успешно выбран.", "Сообщение",
+                    "\" успешно выбран.", this.Title,
                     MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
             }
 

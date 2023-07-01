@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "View_WPF", "View_WPF\View_W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgram", "TerminalProgram\TerminalProgram.csproj", "{F3C7DC09-6B1E-4E6B-BBD5-65A35AD4E45C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3C7DC09-6B1E-4E6B-BBD5-65A35AD4E45C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3C7DC09-6B1E-4E6B-BBD5-65A35AD4E45C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3C7DC09-6B1E-4E6B-BBD5-65A35AD4E45C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3C7DC09-6B1E-4E6B-BBD5-65A35AD4E45C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

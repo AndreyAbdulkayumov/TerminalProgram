@@ -1,4 +1,5 @@
 ﻿using Core.Models;
+using Core.Models.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using View_WPF.Views;
 
 namespace View_WPF.ViewModels.Settings
 {
@@ -69,9 +71,9 @@ namespace View_WPF.ViewModels.Settings
             get => _baudRate;
         }
 
-        private string _selected_BaudRate = String.Empty;
+        private string? _selected_BaudRate = String.Empty;
 
-        public string Selected_BaudRate
+        public string? Selected_BaudRate
         {
             get => _selected_BaudRate;
             set => this.RaiseAndSetIfChanged(ref  _selected_BaudRate, value);
@@ -85,9 +87,9 @@ namespace View_WPF.ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _baudRate_IsCustom, value);
         }
 
-        private string _custom_BaudRate_Value = String.Empty;
+        private string? _custom_BaudRate_Value = String.Empty;
 
-        public string Custom_BaudRate_Value
+        public string? Custom_BaudRate_Value
         {
             get => _custom_BaudRate_Value;
             set => this.RaiseAndSetIfChanged(ref _custom_BaudRate_Value, value);
@@ -109,9 +111,9 @@ namespace View_WPF.ViewModels.Settings
             get => _parity; 
         }
 
-        private string _selected_Parity = String.Empty;
+        private string? _selected_Parity = String.Empty;
 
-        public string Selected_Parity
+        public string? Selected_Parity
         {
             get => _selected_Parity;
             set => this.RaiseAndSetIfChanged(ref _selected_Parity, value);
@@ -133,9 +135,9 @@ namespace View_WPF.ViewModels.Settings
             get => _dataBits;
         }
 
-        private string _selected_DataBits = String.Empty;
+        private string? _selected_DataBits = String.Empty;
 
-        public string Selected_DataBits
+        public string? Selected_DataBits
         {
             get => _selected_DataBits;
             set => this.RaiseAndSetIfChanged(ref _selected_DataBits, value);
@@ -157,9 +159,9 @@ namespace View_WPF.ViewModels.Settings
             get => _stopBits;
         }
 
-        private string _selected_StopBits = String.Empty;
+        private string? _selected_StopBits = String.Empty;
 
-        public string Selected_StopBits
+        public string? Selected_StopBits
         {
             get => _selected_StopBits;
             set => this.RaiseAndSetIfChanged(ref _selected_StopBits, value);
@@ -168,45 +170,77 @@ namespace View_WPF.ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_ReScan_COMPorts { get; }
 
 
-        private Action<string, MessageType> Message;
+        private readonly Action<string, MessageType> Message;
 
-        private readonly ConnectedHost Model;
+        private readonly Model_Settings SettingsFile;
 
-        public ViewModel_Settings_SerialPort(ViewModel_Settings Main_VM, Action<string, MessageType> MessageBox)
+
+        public ViewModel_Settings_SerialPort(ViewModel_Settings Main_VM)
         {
             Main_VM.SettingsFileChanged += Main_VM_SettingsFileChanged;
 
-            Message = MessageBox;
+            Message = Main_VM.Message;
 
-            Model = ConnectedHost.Model;
+            SettingsFile = Model_Settings.Model;
 
-            Command_ReScan_COMPorts = ReactiveCommand.Create(ReScan_COMPorts);
+            Command_ReScan_COMPorts = ReactiveCommand.Create(() =>
+            {
+                if (SettingsFile.Settings == null)
+                {
+                    throw new Exception("Не инициализирован файл настроек.");
+                }
 
-            Command_ReScan_COMPorts.ThrownExceptions.Subscribe(error => Message?.Invoke(error.Message, MessageType.Error));
+                if (SettingsFile.Settings.Connection_SerialPort == null)
+                {
+                    throw new Exception("Не инициализирован файл настроек.");
+                }
+
+                ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
+            });
+
+            Command_ReScan_COMPorts.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.Custom_BaudRate_Value)
                 .Where(x => x != null)
-                .Where(x => x != string.Empty)                
-                .Select(Main_VM.CheckNumber)
+                .Where(x => x != string.Empty)
+                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt32 _))
                 .Subscribe(result => Custom_BaudRate_Value = result);
         }
 
         private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
         {
-            ReScan_COMPorts();
+            try
+            {
+                if (SettingsFile.Settings == null)
+                {
+                    throw new Exception("Не инициализирован файл настроек.");
+                }
 
-            Selected_BaudRate = Model.Settings.Connection_SerialPort.BaudRate;
-            BaudRate_IsCustom = Model.Settings.Connection_SerialPort.BaudRate_IsCustom;
-            Custom_BaudRate_Value = Model.Settings.Connection_SerialPort.BaudRate_Custom;
+                if (SettingsFile.Settings.Connection_SerialPort == null)
+                {
+                    return;
+                }
 
-            Selected_Parity = Model.Settings.Connection_SerialPort.Parity;
+                ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
 
-            Selected_DataBits = Model.Settings.Connection_SerialPort.DataBits;
+                Selected_BaudRate = SettingsFile.Settings.Connection_SerialPort.BaudRate;
+                BaudRate_IsCustom = SettingsFile.Settings.Connection_SerialPort.BaudRate_IsCustom;
+                Custom_BaudRate_Value = SettingsFile.Settings.Connection_SerialPort.BaudRate_Custom;
 
-            Selected_StopBits = Model.Settings.Connection_SerialPort.StopBits;
+                Selected_Parity = SettingsFile.Settings.Connection_SerialPort.Parity;
+
+                Selected_DataBits = SettingsFile.Settings.Connection_SerialPort.DataBits;
+
+                Selected_StopBits = SettingsFile.Settings.Connection_SerialPort.StopBits;
+            }
+
+            catch (Exception error)
+            {
+                Message.Invoke("Ошибка обновления значений на странице SerialPort.\n\n" + error.Message, MessageType.Error);
+            }
         }
 
-        private void ReScan_COMPorts()
+        private void ReScan_COMPorts(SerialPort_Info Info)
         {
             string[] PortsList = SerialPort.GetPortNames();
 
@@ -217,7 +251,7 @@ namespace View_WPF.ViewModels.Settings
                 COM_Ports.Add(Port);
             }
 
-            if (Model.Settings.Connection_SerialPort == null || Model.Settings.Connection_SerialPort.COMPort == null)
+            if (Info.COMPort == null)
             {
                 Selected_COM_Port = String.Empty;
                 Message_PortNotFound = "Порт не задан";
@@ -226,7 +260,7 @@ namespace View_WPF.ViewModels.Settings
                 return;
             }
 
-            string SelectedPort = Model.Settings.Connection_SerialPort.COMPort;
+            string SelectedPort = Info.COMPort;
             string? FoundPort = null;
 
             foreach (string Port in COM_Ports)

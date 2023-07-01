@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Models.Http;
 using ReactiveUI;
+using View_WPF.Views;
 
 namespace View_WPF.ViewModels.MainWindow
 {

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Core.Models;
 using ReactiveUI;
+using View_WPF.Views;
 
 namespace View_WPF.ViewModels.MainWindow
 {

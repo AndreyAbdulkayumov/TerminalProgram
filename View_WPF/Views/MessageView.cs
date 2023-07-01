@@ -8,18 +8,28 @@ using View_WPF.ViewModels;
 
 namespace View_WPF.Views
 {
+    public enum MessageType
+    {
+        Error,
+        Warning,
+        Information
+    }
+
     internal static class MessageView
     {
+        // Должен быть указан при запуске программы
+        public static string Title = String.Empty;
+
         public static void Show(string Message, MessageType Type)
         {
-            MessageBoxImage Image = GetViewContent(Type, out string Title);            
+            MessageBoxImage Image = GetViewContent(Type);            
 
             MessageBox.Show(Message, Title, MessageBoxButton.OK, Image);
         }
 
         public static bool ShowDialog(string Message, MessageType Type)
         {
-            MessageBoxImage Image = GetViewContent(Type, out string Title);
+            MessageBoxImage Image = GetViewContent(Type);
 
             if (MessageBox.Show(Message, Title, MessageBoxButton.YesNo, Image) == MessageBoxResult.Yes)
             {
@@ -29,24 +39,20 @@ namespace View_WPF.Views
             return false;
         }
 
-        private static MessageBoxImage GetViewContent(MessageType Type, out string Title)
+        private static MessageBoxImage GetViewContent(MessageType Type)
         {
             switch (Type)
             {
                 case MessageType.Error:
-                    Title = "Ошибка";
                     return MessageBoxImage.Error;
 
                 case MessageType.Warning:
-                    Title = "Предупреждение";
                     return MessageBoxImage.Warning;
 
                 case MessageType.Information:
-                    Title = "Сообщение";
                     return MessageBoxImage.Information;
 
                 default:
-                    Title = "Сообщение";
                     return MessageBoxImage.Information;
             }
         }

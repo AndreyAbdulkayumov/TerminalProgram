@@ -24,21 +24,16 @@ namespace View_WPF.Views.Protocols
     /// </summary>
     public partial class Http : Page
     {
-        private readonly string MainWindowTitle;
-
         private readonly ViewModel_Http ViewModel;
 
-        public Http(MainWindow window)
+        public Http()
         {
             InitializeComponent();
-
-            MainWindowTitle = window.Title;
 
             ViewModel = new ViewModel_Http(MessageView.Show);
 
             DataContext = ViewModel;
         }
-
 
         private async void Page_KeyDown(object sender, KeyEventArgs e)
         {
@@ -64,8 +59,7 @@ namespace View_WPF.Views.Protocols
             {
                 if (TextBlock_RX.Text == "")
                 {
-                    MessageBox.Show("Поле приема не содержит данных.", MainWindowTitle,
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageView.Show("Поле приема не содержит данных.", MessageType.Warning);
 
                     TextBox_TX.Focus();
 
@@ -93,8 +87,7 @@ namespace View_WPF.Views.Protocols
 
             catch (Exception error)
             {
-                MessageBox.Show("Ошибка при попытке сохранить данные поля приема в файл:\n\n" + error.Message, MainWindowTitle,
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageView.Show("Ошибка при попытке сохранить данные поля приема в файл:\n\n" + error.Message, MessageType.Error);
 
                 TextBox_TX.Focus();
             }

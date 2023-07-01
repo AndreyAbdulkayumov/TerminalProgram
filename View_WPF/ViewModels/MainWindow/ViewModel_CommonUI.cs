@@ -1,25 +1,29 @@
 ﻿using Core.Models;
 using Core.Models.Http;
+using Core.Models.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using View_WPF.Views;
 
 namespace View_WPF.ViewModels.MainWindow
 {
     internal class ViewModel_CommonUI : ReactiveObject
     {
-        public bool IsConnect
+        public bool IsConnected
         {
-            get => Model.HostIsConnect; 
+            get => Model.HostIsConnect;
         }
 
         public static string SettingsDocument
@@ -60,27 +64,31 @@ namespace View_WPF.ViewModels.MainWindow
 
         public ReactiveCommand<Unit, Unit> Command_Connect { get; }
         public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
-            
+
 
         private readonly ConnectedHost Model;
+        private readonly Model_Settings SettingsFile;
 
         private readonly Action<string, MessageType> Message;
         private readonly Action SetUI_Connected;
         private readonly Action SetUI_Disconnected;
+        private readonly Func<string[], string> Select_AvailablePresetFile;
 
+        
 
         public ViewModel_CommonUI(
             Action<string, MessageType> MessageBox,
             Action UI_Connected_Handler,
-            Action UI_Disconnected_Handler)
+            Action UI_Disconnected_Handler,
+            Func<string[], string> Select_AvailablePresetFile_Handler)
         {
             Message = MessageBox;
             SetUI_Connected = UI_Connected_Handler;
             SetUI_Disconnected = UI_Disconnected_Handler;
+            Select_AvailablePresetFile = Select_AvailablePresetFile_Handler;
 
             Model = ConnectedHost.Model;
-
-            SetUI_Disconnected.Invoke();
+            SettingsFile = Model_Settings.Model;
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -92,7 +100,7 @@ namespace View_WPF.ViewModels.MainWindow
                 {
                     try
                     {
-                        Model.ReadSettings(PresetName);
+                        SettingsFile.Read(PresetName);
                         SettingsDocument = PresetName;
                     }
 
@@ -116,6 +124,11 @@ namespace View_WPF.ViewModels.MainWindow
 
             Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
             Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+
+
+            // Действия после запуска приложения
+
+            SetUI_Disconnected.Invoke();
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -130,7 +143,7 @@ namespace View_WPF.ViewModels.MainWindow
 
         private void UpdateListOfPresets()
         {
-            string[] FileNames = Model.GetSettings_FileNames();
+            string[] FileNames = SettingsFile.FindFilesOfPresets();
 
             Presets.Clear();
 
@@ -139,12 +152,25 @@ namespace View_WPF.ViewModels.MainWindow
                 Presets.Add(element);
             }
 
+            if (Presets.Contains(SettingsDocument) == false)
+            {
+                Message.Invoke("Файл настроек " + SettingsDocument + " не существует в папке " + Model_Settings.FolderPath_Settings +
+                    "\n\nНажмите ОК и выберите один из доступных файлов в появившемся окне.", MessageType.Warning);
+
+                SettingsDocument = Select_AvailablePresetFile(Presets.ToArray());
+            }
+
             SelectedPreset = Presets.Single(x => x == SettingsDocument);
         }
 
         private void Connect_Handler()
         {
-            DeviceData Settings = (DeviceData)Model.Settings.Clone();
+            if (SettingsFile.Settings == null)
+            {
+                throw new Exception("Настройки не инициализированы.");
+            }
+
+            DeviceData Settings = (DeviceData)SettingsFile.Settings.Clone();
 
             ConnectionInfo Info;
 
@@ -160,7 +186,7 @@ namespace View_WPF.ViewModels.MainWindow
                         Settings.Connection_SerialPort?.DataBits,
                         Settings.Connection_SerialPort?.StopBits
                         ),
-                        Model.GetEncoding(Settings.GlobalEncoding));
+                        GetEncoding(Settings.GlobalEncoding));
 
                     break;
 
@@ -170,7 +196,7 @@ namespace View_WPF.ViewModels.MainWindow
                         Settings.Connection_IP?.IP_Address,
                         Settings.Connection_IP?.Port
                         ),
-                        Model.GetEncoding(Settings.GlobalEncoding));
+                        GetEncoding(Settings.GlobalEncoding));
 
                     break;
 
@@ -179,6 +205,27 @@ namespace View_WPF.ViewModels.MainWindow
             }
 
             Model.Connect(Info);
+        }
+
+        public Encoding GetEncoding(string? EncodingName)
+        {
+            switch (EncodingName)
+            {
+                case "ASCII":
+                    return Encoding.ASCII;
+
+                case "Unicode":
+                    return Encoding.Unicode;
+
+                case "UTF-32":
+                    return Encoding.UTF32;
+
+                case "UTF-8":
+                    return Encoding.UTF8;
+
+                default:
+                    throw new Exception("Задан неизвестный тип кодировки: " + EncodingName);
+            }
         }
     }
 }

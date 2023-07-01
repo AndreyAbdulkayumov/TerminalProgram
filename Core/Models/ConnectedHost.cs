@@ -1,5 +1,6 @@
 ﻿using Core.Models.Modbus;
 using Core.Models.NoProtocol;
+using Core.Models.Settings;
 using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;
@@ -12,9 +13,9 @@ namespace Core.Models
 {
     public class ConnectArgs : EventArgs
     {
-        public IConnection ConnectedDevice;
+        public IConnection? ConnectedDevice;
 
-        public ConnectArgs(IConnection ConnectedDevice)
+        public ConnectArgs(IConnection? ConnectedDevice)
         {
             this.ConnectedDevice = ConnectedDevice;
         }
@@ -46,33 +47,26 @@ namespace Core.Models
             get => _model ?? (_model = new ConnectedHost());
         }
 
-
         public readonly Model_NoProtocol NoProtocol;
         public readonly Model_Modbus Modbus;
 
-        private IConnection? Client = null;
+        private IConnection? Client;
 
         public static ProtocolMode? SelectedProtocol { get; private set; }
-
-        public DeviceData Settings { get; private set; } = new DeviceData();
 
         // Значение кодировки по умолчанию
         public static Encoding GlobalEncoding { get; private set; } = Encoding.Default;
 
 
-
-
-
         public ConnectedHost()
         {
             NoProtocol = new Model_NoProtocol(this);
-            Modbus = new Model_Modbus();
+            Modbus = new Model_Modbus(this);
 
             SetProtocol_NoProtocol();
 
             DeviceIsDisconnected?.Invoke(this, new ConnectArgs(Client));
         }
-
 
         public void SetProtocol_NoProtocol()
         {
@@ -81,7 +75,7 @@ namespace Core.Models
 
         public void SetProtocol_Modbus()
         {
-            SelectedProtocol = new ProtocolMode_Modbus(Client, Settings);
+            SelectedProtocol = new ProtocolMode_Modbus(Client, Model_Settings.Model.Settings);
         }
 
         public void Connect(ConnectionInfo Information)
@@ -109,9 +103,11 @@ namespace Core.Models
 
             Client.Connect(Information);
 
+            GlobalEncoding = Information.GlobalEncoding;
+
             ProtocolMode_Modbus? ModbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
 
-            ModbusProtocol?.UpdateTimeouts(Settings);
+            ModbusProtocol?.UpdateTimeouts(Model_Settings.Model.Settings);
 
             SelectedProtocol.InitMode(Client);
 
@@ -128,75 +124,6 @@ namespace Core.Models
             await Client.Disconnect();
 
             DeviceIsDisconnected?.Invoke(this, new ConnectArgs(Client));
-        }
-
-
-        public string[] GetSettings_FileNames()
-        {
-            return SystemOfSettings.FindFilesOfPresets();
-        }
-
-        public void SaveSettings(string DocumentName, DeviceData Data)
-        {
-            try
-            {
-                SystemOfSettings.Save(DocumentName, Data);
-
-                Settings = (DeviceData)Data.Clone();
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception("Ошибка сохранения настроек. " +
-                    error.Message);
-            }
-        }
-
-        public void ReadSettings(string DocumentName)
-        {
-            try
-            {
-                DeviceData Device = SystemOfSettings.Read(DocumentName);
-
-                Settings = (DeviceData)Device.Clone();
-
-                GlobalEncoding = GetEncoding(Settings.GlobalEncoding);
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception("Ошибка чтения данных из документа. " +
-                    "Проверьте его целостность или выберите другой файл настроек. " +
-                    "Возможно данный файл не совместим с текущей версией программы.\n\n" +
-                    error.Message);
-            }
-        }
-
-        public Encoding GetEncoding(string? EncodingName)
-        {
-            if (Settings.GlobalEncoding == null)
-            {
-                throw new Exception("Не удалось обработать значение кодировки.");
-            }
-
-
-            switch (EncodingName)
-            {
-                case "ASCII":
-                    return Encoding.ASCII;
-
-                case "Unicode":
-                    return Encoding.Unicode;
-
-                case "UTF-32":
-                    return Encoding.UTF32;
-
-                case "UTF-8":
-                    return Encoding.UTF8;
-
-                default:
-                    throw new Exception("Задан неизвестный тип кодировки: " + EncodingName);
-            }
-        }
+        }        
     }
 }

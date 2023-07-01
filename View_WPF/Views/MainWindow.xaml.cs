@@ -19,6 +19,7 @@ using View_WPF.ViewModels.MainWindow;
 using View_WPF.Views.Protocols;
 using View_WPF.Views.Settings;
 using System.Reactive.Linq;
+using View_WPF.Views.ServiceWindows;
 
 namespace View_WPF.Views
 {
@@ -27,34 +28,31 @@ namespace View_WPF.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private NoProtocol NoProtocolPage;
-        private Modbus ModbusPage;
-        private Http HttpPage;
+        private readonly NoProtocol NoProtocolPage;
+        private readonly Modbus ModbusPage;
+        private readonly Http HttpPage;
 
-        private ViewModel_CommonUI ViewModel;
+        private readonly ViewModel_CommonUI ViewModel;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            MessageView.Title = this.Title; // Общий заголовок для всех диалоговых окон
+
             ViewModel = new ViewModel_CommonUI(
                 MessageView.Show,
                 SetUI_Connected,
-                SetUI_Disconnected);
+                SetUI_Disconnected,
+                Select_AvailablePresetFiles);
 
             DataContext = ViewModel;
 
-            NoProtocolPage = new NoProtocol(this);
+            NoProtocolPage = new NoProtocol();
 
-            ModbusPage = new Modbus(this);
+            ModbusPage = new Modbus();
 
-            HttpPage = new Http(this);
-
-            //ComboBox_SelectedPreset.Items.Add("Item_1.qw");
-            //ComboBox_SelectedPreset.Items.Add("Item_2.qw");
-            //ComboBox_SelectedPreset.Items.Add("Item_3.qw");
-            //ComboBox_SelectedPreset.Items.Add("Item_4.qw");
-            //ComboBox_SelectedPreset.SelectedIndex = 0;
+            HttpPage = new Http();
         }
 
         private void SetUI_Connected()
@@ -77,19 +75,55 @@ namespace View_WPF.Views
             Button_Disconnect.IsEnabled = false;            
         }
 
+        private string Select_AvailablePresetFiles(string[] Files)
+        {
+            ComboBoxWindow window = new ComboBoxWindow(Files)
+            {
+                Owner = this
+            };
+
+            window.ShowDialog();
+
+            if (window.SelectedDocumentPath != String.Empty)
+            {
+                return window.SelectedDocumentPath;
+            }
+
+            else
+            {
+                Application.Current.Shutdown();
+                return "";
+            }
+        }
+
         private async void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
             RadioButton_NoProtocol.IsChecked = true;
 
-            if (ViewModel != null)
-            {
-                await ViewModel.Command_UpdatePresets.Execute();
-            }
+            await ViewModel.Command_UpdatePresets.Execute();
         }
 
-        private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            try
+            {
+                if (ViewModel.IsConnected)
+                {
+                    if (MessageBox.Show("Клиент ещё подключен к хосту.\nЗакрыть программу?", MessageView.Title,
+                        MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
 
+                    await ViewModel.Command_Disconnect.Execute();
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageView.Show("Возникла ошибка во время закрытия программы.\n\n" + error.Message, MessageType.Error);
+            }
         }
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -104,7 +138,7 @@ namespace View_WPF.Views
 
         private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            this.Close();
         }
 
         private async void MenuSettings_Click(object sender, RoutedEventArgs e)
@@ -134,16 +168,9 @@ namespace View_WPF.Views
 
         private void RadioButton_NoProtocol_Checked(object sender, RoutedEventArgs e)
         {
-            if (NoProtocolPage == null)
-            {
-                return;
-            }
-
             if (Frame_ActionUI.Navigate(NoProtocolPage) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + NoProtocolPage.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-
+                MessageView.Show("Не удалось перейти на страницу " + NoProtocolPage.Name, MessageType.Error);
                 return;
             }
 
@@ -156,16 +183,9 @@ namespace View_WPF.Views
 
         private void RadioButton_Protocol_Modbus_Checked(object sender, RoutedEventArgs e)
         {
-            if (ModbusPage == null)
-            {
-                return;
-            }
-
             if (Frame_ActionUI.Navigate(ModbusPage) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + ModbusPage.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-
+                MessageView.Show("Не удалось перейти на страницу " + ModbusPage.Name, MessageType.Error);
                 return;
             }
 
@@ -178,16 +198,9 @@ namespace View_WPF.Views
 
         private void RadioButton_Protocol_Http_Checked(object sender, RoutedEventArgs e)
         {
-            if (HttpPage == null)
-            {
-                return;
-            }
-
             if (Frame_ActionUI.Navigate(HttpPage) == false)
             {
-                MessageBox.Show("Не удалось перейти на страницу " + HttpPage.Name, this.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-
+                MessageView.Show("Не удалось перейти на страницу " + HttpPage.Name, MessageType.Error);
                 return;
             }
 

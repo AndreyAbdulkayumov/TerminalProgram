@@ -12,6 +12,9 @@ using System.Windows;
 using ReactiveUI;
 using Core.Models;
 using View_WPF.ViewModels.MainWindow;
+using View_WPF.Views;
+using Core.Models.Settings;
+using System.Windows.Documents;
 
 namespace View_WPF.ViewModels.Settings
 {
@@ -92,18 +95,18 @@ namespace View_WPF.ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
 
-        private Action<string, MessageType> Message;
-        private Func<string, MessageType, bool> MessageDialog;
+        public readonly Action<string, MessageType> Message;
+        private readonly Func<string, MessageType, bool> MessageDialog;
+        private readonly Func<string, string?> Get_FilePath;
+        private readonly Func<string> Get_NewFileName;
 
-        private readonly ConnectedHost Model;
+        private readonly Model_Settings SettingsFile;
 
         public event EventHandler<EventArgs>? SettingsFileChanged;
 
         public readonly ViewModel_Settings_Ethernet Ethernet_VM;
         public readonly ViewModel_Settings_SerialPort SerialPort_VM;
-
-        private readonly Func<string, string?> Get_FilePath;
-        private readonly Func<string> Get_NewFileName;
+                
 
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
@@ -116,7 +119,7 @@ namespace View_WPF.ViewModels.Settings
             Get_FilePath = Get_FilePath_Handler;
             Get_NewFileName = Get_NewFileName_Handler;
 
-            Model = ConnectedHost.Model;
+            SettingsFile = Model_Settings.Model;
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
@@ -133,36 +136,22 @@ namespace View_WPF.ViewModels.Settings
             this.WhenAnyValue(x => x.WriteTimeout)
                 .Where(x => x != null)
                 .Where(x => x != string.Empty)
-                .Select(CheckNumber)
+                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
                 .Subscribe(result => WriteTimeout = result);
             
             this.WhenAnyValue(x => x.ReadTimeout)
                 .Where(x => x != null)
                 .Where(x => x != string.Empty)
-                .Select(CheckNumber)
+                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
                 .Subscribe(result => ReadTimeout = result);
 
-            Ethernet_VM = new ViewModel_Settings_Ethernet(this, MessageBox);
-            SerialPort_VM = new ViewModel_Settings_SerialPort(this, MessageBox);
-        }
-
-        public string CheckNumber(string Text)
-        {
-            if (UInt32.TryParse(Text, out _) == false)
-            {
-                Text = Text.Substring(0, Text.Length - 1);
-
-                Message?.Invoke("Разрешается вводить только неотрицательные целые числа.", MessageType.Warning);
-            }
-
-            return Text;
+            Ethernet_VM = new ViewModel_Settings_Ethernet(this);
+            SerialPort_VM = new ViewModel_Settings_SerialPort(this);
         }
 
         private void UpdateUI(string FileName)
         {
-            Model.ReadSettings(FileName);
-
-            DeviceData Settings = Model.Settings;
+            DeviceData Settings = SettingsFile.Read(FileName);
 
             SelectedEncoding = Settings.GlobalEncoding ?? string.Empty;
 
@@ -192,7 +181,7 @@ namespace View_WPF.ViewModels.Settings
 
         private void UpdateListOfPresets()
         {
-            string[] FileNames = Model.GetSettings_FileNames();
+            string[] FileNames = SettingsFile.FindFilesOfPresets();
 
             Presets.Clear();
 
@@ -208,7 +197,7 @@ namespace View_WPF.ViewModels.Settings
 
             if (FileName != String.Empty)
             {
-                Model.SaveSettings(FileName, SystemOfSettings.GetDefault());
+                SettingsFile.Save(FileName, Model_Settings.GetDefault());
 
                 UpdateListOfPresets();
 
@@ -227,7 +216,7 @@ namespace View_WPF.ViewModels.Settings
                     return;
                 }
 
-                string destFilePath = SystemOfSettings.FolderPath_Settings + Path.GetFileName(FilePath);
+                string destFilePath = Model_Settings.FolderPath_Settings + Path.GetFileName(FilePath);
 
                 string FileName = Path.GetFileNameWithoutExtension(FilePath);
 
@@ -261,7 +250,7 @@ namespace View_WPF.ViewModels.Settings
                     return;
                 }
 
-                File.Delete(SystemOfSettings.FolderPath_Settings + SelectedPreset + SystemOfSettings.FileType);
+                File.Delete(Model_Settings.FolderPath_Settings + SelectedPreset + Model_Settings.FileType);
 
                 UpdateListOfPresets();
 
@@ -307,7 +296,7 @@ namespace View_WPF.ViewModels.Settings
                     }
                 };
 
-                Model.SaveSettings(SelectedPreset, Data);
+                SettingsFile.Save(SelectedPreset, Data);
 
                 ViewModel_CommonUI.SettingsDocument = SelectedPreset;
 
