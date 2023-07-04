@@ -19,6 +19,28 @@ namespace TerminalProgram.ViewModels.Settings
 {
     public class ViewModel_Settings : ReactiveObject
     {
+        private const string ThemeName_Dark = "Темная";
+        private const string ThemeName_Light = "Светлая";
+
+        private ObservableCollection<string> _themes = new ObservableCollection<string>()
+        {
+            ThemeName_Dark, ThemeName_Light
+        };
+
+        public ObservableCollection<string> Themes
+        {
+            get => _themes;
+            set => this.RaiseAndSetIfChanged(ref _themes, value);
+        }
+
+        private string _selectedTheme = string.Empty;
+
+        public string SelectedTheme
+        {
+            get => _selectedTheme;
+            set => this.RaiseAndSetIfChanged(ref _selectedTheme, value);
+        }
+
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -127,6 +149,24 @@ namespace TerminalProgram.ViewModels.Settings
             Command_File_Delete = ReactiveCommand.Create(File_Delete_Handler);
             Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
 
+            this.WhenAnyValue(x => x.SelectedTheme)
+                .WhereNotNull()
+                .Subscribe(ThemeName =>
+                {
+                    switch (ThemeName)
+                    {
+                        case ThemeName_Dark:
+                            ThemesManager.Select(ThemeType.Dark);
+                            ViewModel_CommonUI.ThemeName = ThemesManager.ThemeTypeName_Dark;
+                            break;
+
+                        case ThemeName_Light:
+                            ThemesManager.Select(ThemeType.Light);
+                            ViewModel_CommonUI.ThemeName = ThemesManager.ThemeTypeName_Light;
+                            break;
+                    }
+                });
+
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
                 .Where(x => x != string.Empty)
@@ -173,6 +213,17 @@ namespace TerminalProgram.ViewModels.Settings
 
         private void Loaded_EventHandler()
         {
+            switch(ViewModel_CommonUI.ThemeName)
+            {
+                case ThemesManager.ThemeTypeName_Dark:
+                    SelectedTheme = ThemeName_Dark;
+                    break;
+
+                case ThemesManager.ThemeTypeName_Light:
+                    SelectedTheme = ThemeName_Light;
+                    break;
+            }
+
             UpdateListOfPresets();
 
             SelectedPreset = Presets.Single(x => x == ViewModel_CommonUI.SettingsDocument);

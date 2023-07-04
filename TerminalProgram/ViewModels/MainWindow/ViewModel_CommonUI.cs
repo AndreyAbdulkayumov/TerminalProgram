@@ -41,6 +41,21 @@ namespace TerminalProgram.ViewModels.MainWindow
             }
         }
 
+        public static string ThemeName
+        {
+            get
+            {
+                Properties.Settings.Default.Reload();
+                return Properties.Settings.Default.ThemeName;
+            }
+
+            set
+            {
+                Properties.Settings.Default.ThemeName = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -127,6 +142,15 @@ namespace TerminalProgram.ViewModels.MainWindow
 
 
             // Действия после запуска приложения
+
+            if (ThemeName == String.Empty)
+            {
+                ThemeName = ThemesManager.ThemeTypeName_Dark;
+            }
+
+            ThemeType SelectedTheme = ThemesManager.GetType(Properties.Settings.Default.ThemeName);
+
+            ThemesManager.Select(SelectedTheme);
 
             SetUI_Disconnected.Invoke();
         }

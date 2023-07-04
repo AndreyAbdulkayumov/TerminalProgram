@@ -24,12 +24,9 @@
             <Setter Property="TextBlock.VerticalAlignment" Value="Center"/>
         </Style>
 
-        <SolidColorBrush x:Key="Color_Text_Top" Color="#FFD2C25A"/>
-        <SolidColorBrush x:Key="Color_Text_Back" Color="#FFB1A972"/>
-
     </Window.Resources>
-    
-    <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
+
+    <Border BorderBrush="{DynamicResource Window_Color_BorderBrush}" BorderThickness="3,3,3,3">
         
         <Grid>
 
@@ -40,12 +37,12 @@
 
             <Grid Grid.Row="0">
 
-                <Border Background="#FF484848"
+                <Border Background="{DynamicResource WindowChrome_Color}"
                         MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <TextBlock Text="{Binding ElementName=Window_About, Path=Title}"
                            FontSize="14"
-                           Foreground="WhiteSmoke"
+                           Foreground="{DynamicResource WindowChrome_Color_Title}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
@@ -60,32 +57,32 @@
 
             <Grid Grid.Row="1">
 
-                <Border Background="#FF323232"/>
+                <Border Background="{DynamicResource ServiceWindow_Color_Background}"/>
 
                 <TextBlock Text="Разработал:"
                            Margin="0,0,0,150"
-                           Foreground="{StaticResource Color_Text_Back}"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
                            FontSize="18"/>
 
                 <TextBlock Text="Абдулкаюмов Андрей Ренатович"
                            Margin="0,0,0,30"
                            Width="120"
-                           Foreground="{StaticResource Color_Text_Top}"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
                            FontSize="18"/>
 
                 <TextBlock Text="Версия:"
                            Margin="0,80,50,0"
-                           Foreground="{StaticResource Color_Text_Back}"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
                            FontSize="18"/>
 
                 <TextBlock Text="2.0.0"
                            Margin="80,80,0,0"
-                           Foreground="{StaticResource Color_Text_Top}"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
                            FontSize="18"/>
 
                 <TextBlock Text="Картинки взяты с ресурса: "
                            Margin="0,160,80,0"
-                           Foreground="{StaticResource Color_Text_Back}"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
                            FontSize="14"/>
 
                 <TextBlock Margin="140,160,0,0"

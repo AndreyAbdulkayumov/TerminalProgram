@@ -53,6 +53,9 @@ namespace TerminalProgram.Views
             ModbusPage = new Modbus();
 
             HttpPage = new Http();
+
+            
+
         }
 
         private void SetUI_Connected()

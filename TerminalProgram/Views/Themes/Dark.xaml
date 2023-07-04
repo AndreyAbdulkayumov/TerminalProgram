@@ -1,0 +1,47 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="Button_Color_Enabled_Background" Color="#FFBABABA"/>
+    <SolidColorBrush x:Key="Button_Color_Enabled_Border" Color="#FFBABABA"/>
+
+    <SolidColorBrush x:Key="Button_Color_MouseOver_Background" Color="#FFD4D4D4"/>
+    <SolidColorBrush x:Key="Button_Color_MouseOver_Border" Color="#FFD4D4D4"/>
+    
+    <SolidColorBrush x:Key="Button_Color_Pressed_Background" Color="#FFF0F0F0"/>
+    <SolidColorBrush x:Key="Button_Color_Pressed_Border" Color="#FFF0F0F0"/>
+    
+    <SolidColorBrush x:Key="Button_Color_Disabled_Background" Color="#FFA0A0A0"/>
+    <SolidColorBrush x:Key="Button_Color_Disabled_Border" Color="#FFA0A0A0"/>
+    <SolidColorBrush x:Key="Button_Color_Disabled_Foreground" Color="#FF505050"/>
+    
+
+    <SolidColorBrush x:Key="WindowChrome_Color" Color="#FF484848"/>
+    <SolidColorBrush x:Key="WindowChrome_Color_Title" Color="WhiteSmoke"/>
+    
+    <SolidColorBrush x:Key="Settings_Color_Text" Color="#FFCBBD5A"/>
+    <SolidColorBrush x:Key="Settings_Color_ToolBar" Color="#FF404040"/>
+    <SolidColorBrush x:Key="Settings_Color_Background" Color="#FF3A3A3A"/>
+
+    <SolidColorBrush x:Key="MainWindow_Color_Text" Color="#FFD2C25A"/>
+    <SolidColorBrush x:Key="MainWindow_Color_Text_Bright" Color="#FFE6AB44"/>
+    <SolidColorBrush x:Key="MainWindow_Color_Background" Color="#FF323232"/>
+    
+    <SolidColorBrush x:Key="Window_Color_BorderBrush" Color="#FF6B6B6B"/>
+    
+    <SolidColorBrush x:Key="MenuItem_Color_Foreground" Color="#FFE6E6E6"/>
+    
+    <SolidColorBrush x:Key="TX_RX_Field_Background" Color="#FF464646"/>
+    <SolidColorBrush x:Key="TX_RX_Field_Foreground" Color="WhiteSmoke"/>
+    <SolidColorBrush x:Key="TX_RX_Field_BorderBrush" Color="#FFABABAB"/>
+
+    <SolidColorBrush x:Key="DataGrid_Color_Background" Color="#FF464646"/>
+    <SolidColorBrush x:Key="DataGrid_Color_BorderBrush" Color="#FFABABAB"/>
+    <SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#FFDFDFDF"/>
+    <SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#FFBBBBBB"/>
+    <SolidColorBrush x:Key="DataGrid_Color_GridLinesBrush" Color="#FFABABAB"/>
+
+    <SolidColorBrush x:Key="ServiceWindow_Color_Background" Color="#FF323232"/>
+    <SolidColorBrush x:Key="ServiceWindow_Color_Text_Top" Color="#FFD2C25A"/>
+    <SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#FFB1A972"/>    
+
+</ResourceDictionary>

@@ -10,11 +10,9 @@
       d:DesignHeight="300" d:DesignWidth="350">
 
     <Page.Resources>
-
-        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
         
         <Style TargetType="TextBlock">
-            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource Settings_Color_Text}"/>
             <Setter Property="TextBlock.FontSize" Value="14"/>
             <Setter Property="TextBlock.Margin" Value="0,0,7,2"/>
             <Setter Property="TextBlock.HorizontalAlignment" Value="Right"/>

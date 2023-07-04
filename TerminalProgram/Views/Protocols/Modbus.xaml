@@ -9,7 +9,7 @@
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus}"
       d:DesignHeight="630" d:DesignWidth="850" 
-      Background="#FF323232"
+      Background="{DynamicResource MainWindow_Color_Background}"
       Title="Modbus">
 
 
@@ -29,15 +29,13 @@
         </Style>
 
         <Style TargetType="ComboBox">
+            <Setter Property="ComboBox.BorderThickness" Value="0"/>
             <Setter Property="ComboBox.Height" Value="26"/>
             <Setter Property="ComboBox.Width" Value="255"/>
             <Setter Property="ComboBox.FontSize" Value="14"/>
             <Setter Property="ComboBox.HorizontalAlignment" Value="Center"/>
             <Setter Property="ComboBox.VerticalAlignment" Value="Center"/>
         </Style>
-
-        <SolidColorBrush x:Key="Color_Text" Color="#FFD2C25A"/>
-        <SolidColorBrush x:Key="Color_Bright_Text" Color="#FFE6AB44"/>
         
     </Page.Resources>
 
@@ -54,14 +52,14 @@
 
             <TextBlock Text="Режим обмена данными:"
                        FontSize="16"
-                       Foreground="{StaticResource Color_Text}"
+                       Foreground="{DynamicResource MainWindow_Color_Text}"
                        Margin="20,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
             <TextBlock x:Name="TextBlock_ModbusMode"
                        Text="{Binding ModbusMode_Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        FontSize="16"
-                       Foreground="{StaticResource Color_Bright_Text}"
+                       Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
                        Margin="220,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
@@ -73,13 +71,13 @@
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   FontSize="16"
-                  Background="#FF464646"
-                  BorderBrush="#FFABABAB"
                   BorderThickness="1"
-                  RowBackground="#FFDFDFDF"
-                  AlternatingRowBackground="#FFBBBBBB"
-                  HorizontalGridLinesBrush="#FFABABAB"
-                  VerticalGridLinesBrush="#FFABABAB"
+                  Background="{DynamicResource DataGrid_Color_Background}"
+                  BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"                  
+                  RowBackground="{DynamicResource DataGrid_Color_RowBackground}"
+                  AlternatingRowBackground="{DynamicResource DataGrid_Color_AlternatingRowBackground}"
+                  HorizontalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
+                  VerticalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
                   VerticalScrollBarVisibility="Visible"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
@@ -163,7 +161,7 @@
                 <TextBlock Text="Slave ID" Grid.Column="1"
                            Margin="0,1,0,0"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <TextBox x:Name="TextBox_SlaveID" Grid.Column="1"
@@ -179,7 +177,7 @@
                           IsChecked="{Binding CRC16_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           Content="CRC-16"
                           FontSize="14"
-                          Foreground="{StaticResource Color_Text}"
+                          Foreground="{DynamicResource MainWindow_Color_Text}"
                           Margin="150,3,0,0"
                           HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -220,21 +218,21 @@
 
                 <TextBlock Text="Формат числа:" Grid.Column="1"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                 <RadioButton x:Name="RadioButton_NumFormat_Hex" Grid.Column="2"
                              Content="Шестнадцетиричный"
                              IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              FontSize="16"
-                             Foreground="{StaticResource Color_Text}"
+                             Foreground="{DynamicResource MainWindow_Color_Text}"
                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                 <RadioButton x:Name="RadioButton_NumFormat_Dec" Grid.Column="3"
                              Content="Десятичный"
                              IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              FontSize="16"
-                             Foreground="{StaticResource Color_Text}"
+                             Foreground="{DynamicResource MainWindow_Color_Text}"
                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
             </Grid>
@@ -259,13 +257,13 @@
                 <TextBlock Text="Адрес" Grid.Column="1" Grid.Row="0"
                            Margin="0,1,45,0"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock x:Name="TextBlock_Address_NumberFormat" Grid.Column="1" Grid.Row="0"
                            Text="{Binding NumberFormat, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Bright_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
                            Margin="0,1,5,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -280,7 +278,7 @@
 
                 <TextBlock Text="Кол-во регистров" Grid.Column="2" Grid.Row="0"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
                            Margin="0,1,60,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -295,14 +293,14 @@
 
                 <TextBlock Text="Значение" Grid.Column="1" Grid.Row="1"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
                            Margin="0,1,45,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock x:Name="TextBlock_Data_NumberFormat" Grid.Column="1" Grid.Row="1"
                            Text="{Binding NumberFormat, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            FontSize="16"
-                           Foreground="{StaticResource Color_Bright_Text}"
+                           Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
                            Margin="0,1,5,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -325,11 +323,13 @@
                         Content="Записать"
                         Command="{Binding Command_Write}"/>
 
-                <ComboBox x:Name="ComboBox_ReadFunc" Grid.Column="4" Grid.Row="0"
+                <ComboBox x:Name="ComboBox_ReadFunc" Grid.Column="4" Grid.Row="0" 
+                          Template="{DynamicResource ComboBox_Common}"
                           ItemsSource="{Binding ReadFunctions}"
                           SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <ComboBox x:Name="ComboBox_WriteFunc" Grid.Column="4" Grid.Row="1"
+                          Template="{DynamicResource ComboBox_Common}"
                           ItemsSource="{Binding WriteFunctions}"
                           SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 

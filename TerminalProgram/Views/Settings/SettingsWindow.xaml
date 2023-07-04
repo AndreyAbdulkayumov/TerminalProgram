@@ -20,10 +20,8 @@
 
     <Window.Resources>
 
-        <SolidColorBrush x:Key="Color_Text" Color="#FFCBBD5A"/>
-
         <Style TargetType="TextBlock">
-            <Setter Property="TextBlock.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource Settings_Color_Text}"/>
             <Setter Property="TextBlock.FontSize" Value="14"/>
         </Style>
 
@@ -46,7 +44,7 @@
         </Style>
 
         <Style TargetType="RadioButton">
-            <Setter Property="RadioButton.Foreground" Value="{StaticResource Color_Text}"/>
+            <Setter Property="RadioButton.Foreground" Value="{DynamicResource Settings_Color_Text}"/>
             <Setter Property="RadioButton.FontSize" Value="14"/>
             <Setter Property="RadioButton.HorizontalAlignment" Value="Center"/>
             <Setter Property="RadioButton.VerticalAlignment" Value="Center"/>
@@ -54,8 +52,8 @@
 
     </Window.Resources>
 
-    <Border Background="#FF3A3A3A"
-            BorderBrush="#FF6B6B6B" 
+    <Border Background="{DynamicResource Settings_Color_Background}"
+            BorderBrush="{DynamicResource Window_Color_BorderBrush}"
             BorderThickness="3,3,3,3">
         
         <Grid x:Name="Grid_Main">
@@ -79,12 +77,12 @@
             
             <Grid Grid.Row="0">
                 
-                <Border Background="#FF484848"
+                <Border Background="{DynamicResource WindowChrome_Color}"
                         MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <TextBlock Text="{Binding ElementName=Window_Settings, Path=Title}"
                            FontSize="14"
-                           Foreground="WhiteSmoke"
+                           Foreground="{DynamicResource WindowChrome_Color_Title}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
@@ -102,7 +100,7 @@
 
             <ToolBarPanel Grid.Row="1" 
                           ClipToBounds="True" 
-                          Background="#FF404040">
+                          Background="{DynamicResource Settings_Color_ToolBar}">
 
                 <ToolBar Height="35" 
                          Margin="0,0,-18,0" 
@@ -147,6 +145,20 @@
 
                     </Button>
 
+                    <Separator/>
+
+                    <TextBlock Text="Тема" 
+                               Margin="30,0,0,0"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                    <ComboBox Height="24" Width="100"
+                              FontSize="12"
+                              Padding="5,0,0,0"
+                              Margin="10,0,0,0"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                              ItemsSource="{Binding Themes}"
+                              SelectedItem="{Binding SelectedTheme}"/>
+
                 </ToolBar>
 
             </ToolBarPanel>
@@ -161,6 +173,8 @@
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <ComboBox Margin="150,0,0,0"
+                          Template="{DynamicResource ComboBox_Common}"
+                          BorderThickness="0"
                           Width="120" 
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -185,6 +199,8 @@
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <ComboBox Margin="180,0,0,0" 
+                          Template="{DynamicResource ComboBox_Common}"
+                          BorderThickness="0"
                           Width="80" 
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Center" 
@@ -255,15 +271,15 @@
             <!-- Borders -->
 
             <Border Grid.Row="2" 
-                    BorderBrush="#FF6B6B6B" 
+                    BorderBrush="{DynamicResource Window_Color_BorderBrush}" 
                     BorderThickness="0,1,0,0"/>
 
             <Border Grid.Row="3" Grid.RowSpan="2" 
-                    BorderBrush="#FF6B6B6B" 
+                    BorderBrush="{DynamicResource Window_Color_BorderBrush}" 
                     BorderThickness="0,1,0,0"/>
 
             <Border Grid.Row="5" Grid.RowSpan="3" 
-                    BorderBrush="#FF6B6B6B" 
+                    BorderBrush="{DynamicResource Window_Color_BorderBrush}" 
                     BorderThickness="0,1,0,1"/>
 
         </Grid>

@@ -15,7 +15,7 @@
         KeyDown="Window_KeyDown"         
         Closing="Window_Closing">
 
-    <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
+    <Border BorderBrush="{DynamicResource Window_Color_BorderBrush}" BorderThickness="3,3,3,3">
 
         <Grid>
 
@@ -26,12 +26,12 @@
 
             <Grid Grid.Row="0">
 
-                <Border Background="#FF484848"
+                <Border Background="{DynamicResource WindowChrome_Color}"
                         MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <TextBlock Text="{Binding ElementName=Window_EnterText, Path=Title}"
                            FontSize="14"
-                           Foreground="WhiteSmoke"
+                           Foreground="{DynamicResource WindowChrome_Color_Title}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
@@ -46,12 +46,12 @@
             
             <Grid Grid.Row="1">
 
-                <Border Background="#FF323232"/>
+                <Border Background="{DynamicResource ServiceWindow_Color_Background}"/>
 
                 <TextBlock Text="Введите имя файла" 
                            Margin="0,25,0,0"
                            FontSize="14"
-                           Foreground="#FFD2C25A"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
                            HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
                 <TextBox x:Name="TextBox_FileName" 

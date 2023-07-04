@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_CommonUI}"
         Title="Терминальная программа" 
         Height="750" Width="850"
-        Background="#FF323232"
+        Background="{DynamicResource MainWindow_Color_Background}"
         AllowsTransparency="True"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
@@ -21,7 +21,7 @@
     <Window.Resources>        
 
         <Style TargetType="TextBlock">
-            <Setter Property="TextBlock.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="TextBlock.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
         </Style>
 
         <Style TargetType="ComboBox">
@@ -30,7 +30,7 @@
         </Style>
 
         <Style TargetType="RadioButton">
-            <Setter Property="RadioButton.Foreground" Value="#FFD2C25A"/>
+            <Setter Property="RadioButton.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
             <Setter Property="RadioButton.FontSize" Value="14"/>
             <Setter Property="RadioButton.HorizontalAlignment" Value="Left"/>
             <Setter Property="RadioButton.VerticalAlignment" Value="Top"/>
@@ -39,9 +39,9 @@
         <Style x:Key="Menu">
 
             <Style.Setters>
-                <Setter Property="MenuItem.Foreground" Value="#FFE6E6E6"/>
+                <Setter Property="MenuItem.Foreground" Value="{DynamicResource MenuItem_Color_Foreground}"/>
                 <Setter Property="MenuItem.FontSize" Value="12"/>
-                <Setter Property="MenuItem.Background" Value="#FF323232"/>
+                <Setter Property="MenuItem.Background" Value="{DynamicResource MainWindow_Color_Background}"/>
                 <Setter Property="MenuItem.BorderBrush" Value="{x:Null}"/>
                 <Setter Property="MenuItem.BorderThickness" Value="0"/>
                 <Setter Property="MenuItem.Height" Value="20"/>
@@ -65,7 +65,7 @@
         
     </Window.Resources>
 
-    <Border BorderBrush="#FF6B6B6B" BorderThickness="3,3,3,3">
+    <Border BorderBrush="{DynamicResource Window_Color_BorderBrush}" BorderThickness="3,3,3,3">
 
         <Grid>
 
@@ -78,12 +78,12 @@
 
             <Grid Grid.Row="0">
 
-                <Border Background="#FF484848" 
+                <Border Background="{DynamicResource WindowChrome_Color}" 
                         MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <TextBlock Text="{Binding ElementName=SourceWindow, Path=Title}"
                            FontSize="14"
-                           Foreground="WhiteSmoke"
+                           Foreground="{DynamicResource WindowChrome_Color_Title}"
                            HorizontalAlignment="Center" VerticalAlignment="Center"
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 

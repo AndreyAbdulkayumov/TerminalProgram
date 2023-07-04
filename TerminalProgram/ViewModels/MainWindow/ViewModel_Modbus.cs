@@ -15,9 +15,6 @@ using Core.Models.Modbus.Message;
 using System.Globalization;
 using System.Reactive.Linq;
 using TerminalProgram.Views;
-//using System.Windows;
-//using System.Windows.Controls;
-//using System.Text.RegularExpressions;
 
 namespace TerminalProgram.ViewModels.MainWindow
 {
