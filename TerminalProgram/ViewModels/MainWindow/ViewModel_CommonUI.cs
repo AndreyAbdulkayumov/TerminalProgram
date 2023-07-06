@@ -1,5 +1,5 @@
-﻿using Core.Models;
-using Core.Models.Http;
+﻿using Core.Clients;
+using Core.Models;
 using Core.Models.Settings;
 using ReactiveUI;
 using System;

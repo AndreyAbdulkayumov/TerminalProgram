@@ -111,7 +111,8 @@ namespace TerminalProgram.ViewModels.MainWindow
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Model.NoProtocol.NoProtocol_DataReceived += NoProtocol_NoProtocol_DataReceived;
+            Model.NoProtocol.Model_DataReceived += NoProtocol_Model_DataReceived;
+            Model.NoProtocol.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
 
             this.WhenAnyValue(x => x.TX_String)
                 .WhereNotNull()
@@ -154,7 +155,7 @@ namespace TerminalProgram.ViewModels.MainWindow
             Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных\n\n" + error.Message, MessageType.Error));
 
             Command_ClearRX = ReactiveCommand.Create(Clear_ReceiveField);
-        }
+        }        
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
@@ -167,7 +168,7 @@ namespace TerminalProgram.ViewModels.MainWindow
             SetUI_Disconnected?.Invoke();
         }
 
-        private void NoProtocol_NoProtocol_DataReceived(object? sender, string e)
+        private void NoProtocol_Model_DataReceived(object? sender, string e)
         {
             if (RX_NextLine)
             {
@@ -175,6 +176,11 @@ namespace TerminalProgram.ViewModels.MainWindow
             }
 
             UI_Action_Receive.Invoke(e);
+        }
+
+        private void NoProtocol_Model_ErrorInReadThread(object? sender, string e)
+        {
+            Message.Invoke(e, MessageType.Error);
         }
     }
 }

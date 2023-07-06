@@ -47,10 +47,7 @@
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <Button x:Name="Button_CloseApplication" Template="{DynamicResource Button_CloseApp}"
-                        Width="45" Height="30" 
-                        Background="IndianRed"
-                        Foreground="#FF3A3232"
-                        Margin="0,0,0,0"
+                        Width="45" Height="30"
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Click="Button_CloseApplication_Click"/>
             </Grid>

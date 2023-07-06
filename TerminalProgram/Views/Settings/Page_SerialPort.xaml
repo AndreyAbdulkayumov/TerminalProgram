@@ -67,8 +67,8 @@
                 Width="170" Height="24"
                 Margin="130,-48,0,0"
                 HorizontalAlignment="Left" VerticalAlignment="Center" 
-                Background="#FF587C8D" 
-                BorderBrush="NavajoWhite"
+                Background="{DynamicResource Settings_Color_PortNotFound_Background}" 
+                BorderBrush="{DynamicResource Settings_Color_PortNotFound_BorderBrush}"
                 BorderThickness="1,1,1,1">
 
             <Border.Style>

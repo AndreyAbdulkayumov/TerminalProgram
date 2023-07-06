@@ -15,6 +15,7 @@ using Core.Models.Modbus.Message;
 using System.Globalization;
 using System.Reactive.Linq;
 using TerminalProgram.Views;
+using Core.Clients;
 
 namespace TerminalProgram.ViewModels.MainWindow
 {
@@ -375,7 +376,9 @@ namespace TerminalProgram.ViewModels.MainWindow
                         WriteBuffer.Add(Buffer);
                     }
 
-                    return string.Join(" ", Values) + " ";
+                    // Если при второй итерации последний элемент в SplitString равен "",
+                    // то в конце был пробел.
+                    return string.Join(" ", Values).ToUpper() + (SplitString.Last() == "" ? " " : "");
                 }
 
                 else
@@ -431,6 +434,8 @@ namespace TerminalProgram.ViewModels.MainWindow
             CRC16_IsVisible = true;
 
             ModbusMode_Name = ModbusMode_Name_Default;
+
+            PackageNumber = 0;
         }
 
         private void Modbus_Write()

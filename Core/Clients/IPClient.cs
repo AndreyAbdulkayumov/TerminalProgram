@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Sockets;
-using System.Windows;
+using Core.Models;
 
-namespace Core.Models
+namespace Core.Clients
 {
     public class IPClient : IConnection
     {
         public event EventHandler<DataFromDevice>? DataReceived;
+        public event EventHandler<string>? ErrorInReadThread;
 
         public bool IsConnected { get; private set; } = false;
 
@@ -75,7 +76,7 @@ namespace Core.Models
                         ReadCancelSource = new CancellationTokenSource();
 
                         ReadThread = Task.Run(() => AsyncThread_Read(Stream, ReadCancelSource.Token));
-                    }                    
+                    }
 
                     break;
 
@@ -92,9 +93,9 @@ namespace Core.Models
                             Task FlushTask = Stream.FlushAsync();
 
                             Task.WaitAll(WaitCancel, FlushTask);
-                        }                        
+                        }
                     }
-                    
+
                     break;
 
                 default:
@@ -119,7 +120,7 @@ namespace Core.Models
                     );
             }
 
-            if (Int32.TryParse(SocketInfo.Port, out int Port) == false)
+            if (int.TryParse(SocketInfo.Port, out int Port) == false)
             {
                 throw new Exception("Не удалось преобразовать номер порта в целочисленное значение.\n" +
                     "Полученный номер порта: " + SocketInfo.Port);
@@ -168,7 +169,7 @@ namespace Core.Models
 
             Client?.Close();
 
-            IsConnected = false;                
+            IsConnected = false;
         }
 
         public void Send(byte[] Message, int NumberOfBytes)
@@ -190,8 +191,8 @@ namespace Core.Models
             {
                 throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут передачи: " +
-                    (Stream.WriteTimeout == Timeout.Infinite ? 
-                    "бесконечно" : (Stream.WriteTimeout.ToString() + " мс.")));
+                    (Stream.WriteTimeout == Timeout.Infinite ?
+                    "бесконечно" : Stream.WriteTimeout.ToString() + " мс."));
             }
         }
 
@@ -226,7 +227,7 @@ namespace Core.Models
                 throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут приема: " +
                     (Stream.ReadTimeout == Timeout.Infinite ?
-                    "бесконечно" : (Stream.ReadTimeout.ToString() + " мс.")));
+                    "бесконечно" : Stream.ReadTimeout.ToString() + " мс."));
             }
         }
 
@@ -250,7 +251,7 @@ namespace Core.Models
 
                 Task CompletedTask;
 
-                while(true)
+                while (true)
                 {
                     ReadCancel.ThrowIfCancellationRequested();
 
@@ -261,7 +262,7 @@ namespace Core.Models
                         /// Судя по формумам это происходит из - за того что внутри метода происходят 
                         /// неуправляемые вызовы никоуровневого API (в MSDN об этом не сказано).
                         /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
-                        
+
                         ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
 
                         CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
@@ -280,7 +281,7 @@ namespace Core.Models
                         {
                             Data.RX[i] = BufferRX[i];
                         }
-                                                
+
                         DataReceived?.Invoke(this, Data);
 
                         Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
@@ -294,25 +295,10 @@ namespace Core.Models
                 //  По правилам отмены асинхронных задач это исключение можно игнорировать.
             }
 
-            catch (System.IO.IOException error)
-            {
-                //MessageBox.Show(
-                //    "Возникла ошибка при асинхронном чтении у IP клиента.\n\n" + 
-                //    error.Message +
-                //    "\n\nТаймаут чтения: " + CurrentStream.ReadTimeout + " мс." +
-                //    "\n\nЧтение данных прекращено. Возможно вам стоит изменить настройки и переподключиться.",
-                //    "Ошибка",
-                //    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
             catch (Exception error)
             {
-                // TODO: Как правильно обработать это исключение?
-
-                //MessageBox.Show("Возникла НЕОБРАБОТАННАЯ ошибка " +
-                //    "при асинхронном чтении у IP клиента.\n\n" + error.Message +
-                //    "\n\nКлиент был отключен.", "Ошибка",
-                //    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorInReadThread?.Invoke(this, "Возникла ошибка при асинхронном чтении у IP клиента.\n\n" +
+                    "Прием данных прекращен.\n\n" + error.Message);
             }
         }
     }

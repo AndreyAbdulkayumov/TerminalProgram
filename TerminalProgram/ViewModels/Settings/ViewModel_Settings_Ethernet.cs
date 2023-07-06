@@ -1,5 +1,4 @@
-﻿using Core.Models;
-using Core.Models.Settings;
+﻿using Core.Models.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;

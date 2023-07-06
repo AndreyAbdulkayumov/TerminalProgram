@@ -1,48 +1,74 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="Button_Color_Enabled_Background" Color="#FFC3C3C3"/>
-    <SolidColorBrush x:Key="Button_Color_Enabled_Border" Color="#FFA0A0A0"/>
+    <!-- All Buttons -->
     
-    <SolidColorBrush x:Key="Button_Color_MouseOver_Background" Color="#FFD4D4D4"/>
+    <SolidColorBrush x:Key="Button_Color_Enabled_Background" Color="#FF7B9BC8"/>
+    <SolidColorBrush x:Key="Button_Color_Enabled_Border" Color="#FFA0A0A0"/>
+    <SolidColorBrush x:Key="Button_Color_Enabled_Foreground" Color="WhiteSmoke"/>
+
+    <SolidColorBrush x:Key="Button_Color_MouseOver_Background" Color="#FF5E8AC6"/>
     <SolidColorBrush x:Key="Button_Color_MouseOver_Border" Color="#FF606060"/>
 
-    <SolidColorBrush x:Key="Button_Color_Pressed_Background" Color="#FFF0F0F0"/>
+    <SolidColorBrush x:Key="Button_Color_Pressed_Background" Color="#FF649BE6"/>
     <SolidColorBrush x:Key="Button_Color_Pressed_Border" Color="#FF606060"/>
 
     <SolidColorBrush x:Key="Button_Color_Disabled_Background" Color="#FFBDBDBD"/>
     <SolidColorBrush x:Key="Button_Color_Disabled_Border" Color="#FFADB2B5"/>
     <SolidColorBrush x:Key="Button_Color_Disabled_Foreground" Color="#FF505050"/>
+
+    <!-- All ComboBoxes -->
     
+    <SolidColorBrush x:Key="ComboBox_Color_Enabled_Background" Color="White"/>
+    <SolidColorBrush x:Key="ComboBox_Color_Disabled_Background" Color="#FFBDBDBD"/>
+
+    <!-- WindowChrome -->
     
-    <SolidColorBrush x:Key="WindowChrome_Color" Color="#FFC8D2DD"/>
+    <SolidColorBrush x:Key="WindowChrome_Color" Color="#FFBFD3E9"/>
     <SolidColorBrush x:Key="WindowChrome_Color_Title" Color="Black"/>
 
-    <SolidColorBrush x:Key="Settings_Color_Text" Color="Black"/>
-    <SolidColorBrush x:Key="Settings_Color_ToolBar" Color="#FFF0F0F0"/>
-    <SolidColorBrush x:Key="Settings_Color_Background" Color="#FFE6E6E6"/>
+    <SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_Background" Color="Silver"/>
+    <SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_Foreground" Color="#FF202020"/>
+
+    <SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Background" Color="IndianRed"/>
+    <SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Foreground" Color="#FF202020"/>
+
+    <!-- MainWindow -->
 
     <SolidColorBrush x:Key="MainWindow_Color_Text" Color="Black"/>
-    <!-- <SolidColorBrush x:Key="MainWindow_Color_Text_Bright" Color="#FF014888"/> -->
     <SolidColorBrush x:Key="MainWindow_Color_Text_Bright" Color="#FF0066CC"/>
-    <!-- <SolidColorBrush x:Key="MainWindow_Color_Background" Color="#FFDADADA"/> -->
-    <SolidColorBrush x:Key="MainWindow_Color_Background" Color="#FFBEBBB8"/>
+    <SolidColorBrush x:Key="MainWindow_Color_Background" Color="#FFD5D5D5"/>
     
     <SolidColorBrush x:Key="Window_Color_BorderBrush" Color="#FFABABAB"/>
 
     <SolidColorBrush x:Key="MenuItem_Color_Foreground" Color="Black"/>
 
+    <!-- TX RX Field in MainWindow -->
+    
     <SolidColorBrush x:Key="TX_RX_Field_Background" Color="FloralWhite"/>
     <SolidColorBrush x:Key="TX_RX_Field_Foreground" Color="Black"/>
     <SolidColorBrush x:Key="TX_RX_Field_BorderBrush" Color="#FFCBCBCB"/>
 
+    <!-- DataGrid in MainWindow -->
+    
     <SolidColorBrush x:Key="DataGrid_Color_Background" Color="Silver"/>
     <SolidColorBrush x:Key="DataGrid_Color_BorderBrush" Color="#FFABABAB"/>
     <SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#FFEFEFEF"/>
     <SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#FFDADADA"/>
     <SolidColorBrush x:Key="DataGrid_Color_GridLinesBrush" Color="#FFABABAB"/>
 
-    <SolidColorBrush x:Key="ServiceWindow_Color_Background" Color="#FFDADADA"/>
+    <!-- Settings Window -->
+
+    <SolidColorBrush x:Key="Settings_Color_Text" Color="Black"/>
+    <SolidColorBrush x:Key="Settings_Color_ToolBar" Color="#FFF0F0F0"/>
+    <SolidColorBrush x:Key="Settings_Color_Background" Color="#FFE6E6E6"/>
+
+    <SolidColorBrush x:Key="Settings_Color_PortNotFound_Background" Color="#FFD68A96"/>
+    <SolidColorBrush x:Key="Settings_Color_PortNotFound_BorderBrush" Color="#FF565656"/>
+
+    <!-- Service Windows -->
+    
+    <SolidColorBrush x:Key="ServiceWindow_Color_Background" Color="#FFEDEDED"/>
     <SolidColorBrush x:Key="ServiceWindow_Color_Text_Top" Color="Black"/>
     <SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#FF5A5A5A"/>
 

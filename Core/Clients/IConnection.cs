@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Models
+namespace Core.Clients
 {
     public enum ReadMode
     {
@@ -18,6 +18,12 @@ namespace Core.Models
         /// Событие получения данных в режиме асинхронного чтения.
         /// </summary>
         event EventHandler<DataFromDevice> DataReceived;
+
+        /// <summary>
+        /// Событие ошибки в потоке чтения (асинхронный режим). 
+        /// После появления события чтение заканчивается.
+        /// </summary>
+        event EventHandler<string> ErrorInReadThread;
 
         /// <summary>
         /// Возращает значение указывающее на то, подключен ли сейчас клиент к какому либо хосту или нетю
@@ -120,8 +126,8 @@ namespace Core.Models
             this.GlobalEncoding = GlobalEncoding;
         }
 
-        public ConnectionInfo(SerialPortInfo Info, Encoding GlobalEncoding) 
-        { 
+        public ConnectionInfo(SerialPortInfo Info, Encoding GlobalEncoding)
+        {
             this.Info = Info;
             this.GlobalEncoding = GlobalEncoding;
         }

@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
@@ -8,13 +7,14 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
+using Core.Models;
 
-namespace Core.Models
+namespace Core.Clients
 {
     public class SerialPortClient : IConnection
     {
         public event EventHandler<DataFromDevice>? DataReceived;
+        public event EventHandler<string>? ErrorInReadThread;
 
         public bool IsConnected
         {
@@ -76,9 +76,10 @@ namespace Core.Models
         private Task? ReadThread = null;
         private CancellationTokenSource? ReadCancelSource = null;
 
+
         public void SetReadMode(ReadMode Mode)
         {
-            switch(Mode)
+            switch (Mode)
             {
                 case ReadMode.Async:
 
@@ -103,7 +104,7 @@ namespace Core.Models
                         if (ReadThread != null)
                         {
                             Task.WaitAll(ReadThread);
-                        }                        
+                        }
 
                         DeviceSerialPort.DiscardInBuffer();
                         DeviceSerialPort.DiscardOutBuffer();
@@ -144,7 +145,7 @@ namespace Core.Models
 
                 DeviceSerialPort = new SerialPort();
 
-                if (Int32.TryParse(PortInfo.BaudRate, out int BaudRate) == false)
+                if (int.TryParse(PortInfo.BaudRate, out int BaudRate) == false)
                 {
                     throw new Exception("Не удалось преобразовать значение BaudRate в целочисленное значение.\n" +
                         "Полученное значение BaudRate: " + PortInfo.BaudRate);
@@ -170,7 +171,7 @@ namespace Core.Models
                         throw new Exception("Неправильно задано значение Parity.");
                 }
 
-                if (Int32.TryParse(PortInfo.DataBits, out int DataBits) == false)
+                if (int.TryParse(PortInfo.DataBits, out int DataBits) == false)
                 {
                     throw new Exception("Не удалось преобразовать значение DataBits в целочисленное значение.\n" +
                         "Полученное значение DataBits: " + PortInfo.DataBits);
@@ -255,11 +256,11 @@ namespace Core.Models
                 }
             }
 
-            catch(Exception error)
+            catch (Exception error)
             {
                 throw new Exception("Не удалось отключиться от СОМ порта.\n\n" + error.Message);
             }
-         }
+        }
 
         public void Send(byte[] Message, int NumberOfBytes)
         {
@@ -273,7 +274,7 @@ namespace Core.Models
                 if (IsConnected)
                 {
                     DeviceSerialPort.Write(Message, 0, NumberOfBytes);
-                }                
+                }
             }
 
             catch (Exception error)
@@ -281,7 +282,7 @@ namespace Core.Models
                 throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут передачи: " +
                     (DeviceSerialPort.WriteTimeout == Timeout.Infinite ?
-                    "бесконечно" : (DeviceSerialPort.WriteTimeout.ToString() + " мс.")));
+                    "бесконечно" : DeviceSerialPort.WriteTimeout.ToString() + " мс."));
             }
         }
 
@@ -309,11 +310,13 @@ namespace Core.Models
                     DeviceSerialPort.Read(Data, 0, Data.Length);
 
                     ReadTimeout = SavedTimeout;
-                }                
+                }
             }
 
             catch (Exception error)
             {
+                ReadTimeout = SavedTimeout;
+
                 throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут приема: " + SavedTimeout + " мс.");
             }
@@ -351,7 +354,7 @@ namespace Core.Models
                         /// Возможно это происходит из - за того что внутри метода происходят 
                         /// неуправляемые вызовы никоуровневого API.
                         /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
-                        
+
                         ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
 
                         CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
@@ -362,7 +365,7 @@ namespace Core.Models
                         {
                             throw new OperationCanceledException();
                         }
-                                                
+
                         NumberOfReceiveBytes = ReadResult.Result;
 
                         DataFromDevice Data = new DataFromDevice(NumberOfReceiveBytes);
@@ -387,26 +390,10 @@ namespace Core.Models
                 //  По правилам отмены асинхронных задач это исключение можно игнорировать.
             }
 
-            catch (IOException error)
-            {
-                //MessageBox.Show(
-                //    "Возникла ошибка при асинхронном чтении у SerialPort клиента.\n\n" +
-                //    error.Message +
-                //    "\n\nТаймаут чтения: " + CurrentStream.ReadTimeout + " мс." +
-                //    "\n\nЧтение данных прекращено. Возможно вам стоит изменить настройки и переподключиться.",
-                //    "Ошибка",
-                //    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
             catch (Exception error)
             {
-                // TODO: Как правильно обработать это исключение?
-
-                //MessageBox.Show("Возникла НЕОБРАБОТАННАЯ ошибка " +
-                //    "при асинхронном чтении у SerialPort клиента.\n\n" + 
-                //     (error.InnerException == null ? error.Message : error.InnerException.Message) +
-                //    "\n\nКлиент был отключен.", "Ошибка",
-                //    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorInReadThread?.Invoke(this, "Возникла ошибка при асинхронном чтении у SerialPort клиента.\n\n" +
+                    "Прием данных прекращен.\n\n" + error.Message);
             }
         }
     }

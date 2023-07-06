@@ -1,5 +1,4 @@
-﻿using Core.Models;
-using Core.Models.Settings;
+﻿using Core.Models.Settings;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -251,7 +250,7 @@ namespace TerminalProgram.ViewModels.Settings
                 COM_Ports.Add(Port);
             }
 
-            if (Info.COMPort == null)
+            if (Info.COMPort == null || Info.COMPort == String.Empty)
             {
                 Selected_COM_Port = String.Empty;
                 Message_PortNotFound = "Порт не задан";
@@ -275,6 +274,7 @@ namespace TerminalProgram.ViewModels.Settings
             if (FoundPort == null)
             {
                 Selected_COM_Port = String.Empty;
+
                 Message_PortNotFound = "Порт " + SelectedPort + " не найден";
                 Message_PortNotFound_IsVisible = true;
             }

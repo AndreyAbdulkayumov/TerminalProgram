@@ -8,13 +8,13 @@
 
     <ControlTemplate x:Key="Button_MinimizeApp" TargetType="{x:Type ButtonBase}">
 
-        <Border x:Name="border" Background="{TemplateBinding Background}">
+        <Border x:Name="border" Background="{DynamicResource WindowChrome_Color_MinimizeApp_Background}">
 
             <Grid>
 
                 <Line X1="15" Y1="23" 
                       X2="30" Y2="23"
-                      Stroke="{TemplateBinding Foreground}"/>
+                      Stroke="{DynamicResource WindowChrome_Color_MinimizeApp_Foreground}"/>
 
                 <ContentPresenter x:Name="contentPresenter" Focusable="False" 
                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

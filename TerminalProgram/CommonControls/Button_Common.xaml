@@ -7,7 +7,7 @@
 
         <Border x:Name="border" CornerRadius="10" 
                 Background="{DynamicResource Button_Color_Enabled_Background}"
-                BorderBrush="{DynamicResource Button_Color_Enabled_Border}" BorderThickness="2"
+                BorderBrush="{DynamicResource Button_Color_Enabled_Border}" BorderThickness="0"
                 SnapsToDevicePixels="True">
 
             <ContentPresenter x:Name="contentPresenter" Focusable="False" 
@@ -15,7 +15,8 @@
                               Margin="{TemplateBinding Padding}"
                               RecognizesAccessKey="True"
                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              TextElement.Foreground="{DynamicResource Button_Color_Enabled_Foreground}"/>
         </Border>
 
         <ControlTemplate.Triggers>

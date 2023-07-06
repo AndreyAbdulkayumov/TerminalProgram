@@ -88,17 +88,13 @@
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <Button x:Name="Button_MinimizeApplication" Template="{DynamicResource Button_MinimizeApp}"
-                        Width="45" Height="30" 
-                        Background="Silver"
-                        Foreground="#FF3A3232"
+                        Width="45" Height="30"
                         Margin="0,0,45,0"
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Click="Button_MinimizeApplication_Click"/>
 
                 <Button x:Name="Button_CloseApplication" Template="{DynamicResource Button_CloseApp}"
-                        Width="45" Height="30" 
-                        Background="IndianRed"
-                        Foreground="#FF3A3232"
+                        Width="45" Height="30"
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Click="Button_CloseApplication_Click"/>
 

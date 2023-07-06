@@ -87,9 +87,7 @@
                            MouseLeftButtonDown="Border_MouseLeftButtonDown"/>
 
                 <Button x:Name="Button_CloseApplication" Template="{DynamicResource Button_CloseApp}"
-                        Width="45" Height="30" 
-                        Background="IndianRed"
-                        Foreground="#FF3A3232"
+                        Width="45" Height="30"
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
                         Click="Button_CloseApplication_Click"/>
                 
@@ -148,7 +146,7 @@
                     <Separator/>
 
                     <TextBlock Text="Тема" 
-                               Margin="30,0,0,0"
+                               Margin="30,0,0,2"
                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                     <ComboBox Height="24" Width="100"

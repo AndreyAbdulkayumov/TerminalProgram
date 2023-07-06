@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI;
-using Core.Models;
 using TerminalProgram.ViewModels.MainWindow;
 using TerminalProgram.Views;
 using Core.Models.Settings;
@@ -327,7 +326,7 @@ namespace TerminalProgram.ViewModels.Settings
                     TimeoutRead = this.ReadTimeout,
 
                     TypeOfConnection = ConnectionType,
-
+                                        
                     Connection_SerialPort = new SerialPort_Info()
                     {
                         COMPort = SerialPort_VM.Selected_COM_Port,
@@ -349,6 +348,11 @@ namespace TerminalProgram.ViewModels.Settings
                 SettingsFile.Save(SelectedPreset, Data);
 
                 ViewModel_CommonUI.SettingsDocument = SelectedPreset;
+
+                if (SerialPort_VM.Selected_COM_Port != String.Empty)
+                {
+                    SerialPort_VM.Message_PortNotFound_IsVisible = false;
+                }
 
                 Message.Invoke("Настройки успешно сохранены!", MessageType.Information);
             }

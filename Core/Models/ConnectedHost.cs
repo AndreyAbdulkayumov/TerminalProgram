@@ -1,4 +1,5 @@
-﻿using Core.Models.Modbus;
+﻿using Core.Clients;
+using Core.Models.Modbus;
 using Core.Models.NoProtocol;
 using Core.Models.Settings;
 using System;
@@ -88,7 +89,6 @@ namespace Core.Models
             if (Information.Info as SerialPortInfo != null)
             {
                 Client = new SerialPortClient();
-                
             }
 
             else if (Information.Info as SocketInfo != null)

@@ -1,4 +1,5 @@
-﻿using Core.Models.Modbus.Message;
+﻿using Core.Clients;
+using Core.Models.Modbus.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;

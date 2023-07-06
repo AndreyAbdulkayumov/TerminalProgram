@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Core.Clients;
 
 namespace Core.Models.NoProtocol
 {
     public class Model_NoProtocol
     {
-        public event EventHandler<string>? NoProtocol_DataReceived;
+        public event EventHandler<string>? Model_DataReceived;
+        public event EventHandler<string>? Model_ErrorInReadThread;
 
         private IConnection? Client;
 
@@ -25,12 +27,18 @@ namespace Core.Models.NoProtocol
                 Client = e.ConnectedDevice;
 
                 Client.DataReceived += Client_DataReceived;
+                Client.ErrorInReadThread += Client_ErrorInReadThread;
             }
+        }
+
+        private void Client_ErrorInReadThread(object? sender, string e)
+        {
+            Model_ErrorInReadThread?.Invoke(this, e);
         }
 
         private void Client_DataReceived(object? sender, DataFromDevice e)
         {
-            NoProtocol_DataReceived?.Invoke(this, ConnectedHost.GlobalEncoding.GetString(e.RX));
+            Model_DataReceived?.Invoke(this, ConnectedHost.GlobalEncoding.GetString(e.RX));
         }
 
         private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
