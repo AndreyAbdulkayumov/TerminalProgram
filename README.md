@@ -4,6 +4,10 @@
 
 https://jrsoftware.org/isdl.php
 
+Для упрощения работы с паттерном MVVM использован ReactiveUI
+
+https://www.reactiveui.net/
+
 ## *Терминальная программа*
 Проект написан с использованием WPF.
 
@@ -17,6 +21,10 @@ https://jrsoftware.org/isdl.php
 1. Обмен данными по *стандартным* протоколам, которые поддерживает .NET.
 2. Обмен данными по *специальным* протоколам.
 
+Приложение поддерживает следующие темы оформления:
+1. Темная.
+2. Светлая.
+
 # Краткое описание режимов работы
 ## *"Без протокола"*
 В поле передачи пользователь пишет данные, которые нужно отправить. В поле приема находятся данные, которые прислал сервер или внешнее устройство.
@@ -26,7 +34,11 @@ https://jrsoftware.org/isdl.php
 	- TCP
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/86914394/220906424-6b901530-f951-4d5c-be10-871a10aea202.PNG" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/89350536-c9a7-4c56-b453-7645ce9696cd" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/817c8071-438a-463e-ac92-250eb52f6b5a" />
 </p>
 
 ## *"Modbus"*
@@ -37,14 +49,22 @@ https://jrsoftware.org/isdl.php
 	- Modbus RTU
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/86914394/227567508-d5e4754e-da06-4527-af9d-995bbb450129.PNG" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/96b47588-22c9-4b17-a8d2-54109071e306" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/7b8d0533-9483-4ce5-a9af-a25207a15f91" />
 </p>
 
 ## *"Http"*
 В верхнем поле пользователь пишет http или https запрос. 
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/86914394/220907786-e31e111b-855d-44b7-a443-99947973853f.PNG" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/30b7b3d7-ab76-4793-ac34-3f2fb9036720" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/90967104-9518-41cf-acdf-f7e668d54765" />
 </p>
 
 # Система сохранений настроек
@@ -56,8 +76,13 @@ https://jrsoftware.org/isdl.php
 Настройки можно изменить в соответствующем пункте меню.
 
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/86914394/220910112-a3dd74d7-ff94-4d0a-8ea6-e2a6e13968c8.PNG" />
-  <img src="https://user-images.githubusercontent.com/86914394/220910147-737b9835-0225-4192-b44d-bac598e86745.PNG" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/4eb62085-2d01-4dc4-8369-d5b4736a9646" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/f6c5a88b-2aa2-4a6a-912d-1d9c33c9d3e5" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/e794d857-cebb-4337-86da-e0e587024c76" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/a54abbfb-7634-4c89-9b55-21d9accd2062" />
 </p>
 
 # *Система версирования* Global.Major.Minor
