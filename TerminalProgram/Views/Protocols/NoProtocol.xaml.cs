@@ -187,5 +187,48 @@ namespace TerminalProgram.Views.Protocols
                 TextBox_TX.Focus();
             }
         }
+
+        private void SendUI_Enable()
+        {
+            TextBox_TX.IsEnabled = true;
+
+            CheckBox_CR.IsEnabled = true;
+            CheckBox_LF.IsEnabled = true;
+            RadioButton_Char.IsEnabled = true;
+            RadioButton_String.IsEnabled = true;
+
+            if (RadioButton_String.IsChecked == true)
+            {
+                Button_Send.IsEnabled = true;
+            }
+
+            else
+            {
+                Button_Send.IsEnabled = false;
+            }
+
+            TextBox_TX.Focus();
+        }
+
+        private void SendUI_Disable()
+        {
+            TextBox_TX.Text = "";
+            TextBox_TX.IsEnabled = false;
+
+            CheckBox_CR.IsEnabled = false;
+            CheckBox_LF.IsEnabled = false;
+            RadioButton_Char.IsEnabled = false;
+            RadioButton_String.IsEnabled = false;
+            Button_Send.IsEnabled = false;
+        }
+
+        private void Button_CycleMode_Click(object sender, RoutedEventArgs e)
+        {
+            NoProtocol_CycleMode window = new NoProtocol_CycleMode(SendUI_Enable);
+
+            window.Show();
+
+            SendUI_Disable();
+        }
     }
 }

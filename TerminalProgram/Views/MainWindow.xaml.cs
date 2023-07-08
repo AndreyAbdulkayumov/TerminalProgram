@@ -174,7 +174,7 @@ namespace TerminalProgram.Views
                 return;
             }
 
-            GridRow_Header.Height = new GridLength(100);
+            GridRow_Connection.Height = new GridLength(50);
             TextBlock_SelectedPreset.Visibility = Visibility.Visible;
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
@@ -189,7 +189,7 @@ namespace TerminalProgram.Views
                 return;
             }
 
-            GridRow_Header.Height = new GridLength(100);
+            GridRow_Connection.Height = new GridLength(50);
             TextBlock_SelectedPreset.Visibility = Visibility.Visible;
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
@@ -204,7 +204,7 @@ namespace TerminalProgram.Views
                 return;
             }
 
-            GridRow_Header.Height = new GridLength(50);
+            GridRow_Connection.Height = new GridLength(0);
             TextBlock_SelectedPreset.Visibility = Visibility.Hidden;
             ComboBox_SelectedPreset.Visibility = Visibility.Hidden;
             Button_Connect.Visibility = Visibility.Hidden;

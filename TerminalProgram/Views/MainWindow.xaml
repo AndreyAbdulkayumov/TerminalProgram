@@ -72,7 +72,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="20"/>
-                <RowDefinition x:Name="GridRow_Header" Height="100"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition x:Name="GridRow_Connection" Height="50"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
@@ -132,8 +133,13 @@
                              Margin="250,20,0,0"
                              Checked="RadioButton_Protocol_Http_Checked"/>
 
+                
+            </Grid>
+
+            <Grid Grid.Row="3">
+
                 <TextBlock x:Name="TextBlock_SelectedPreset" Text="Выбранный пресет:" 
-                           Margin="20,59,0,0" 
+                           Margin="20,10,0,0" 
                            FontSize="16"
                            HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
@@ -141,24 +147,25 @@
                           ItemsSource="{Binding Presets}"
                           SelectedItem="{Binding SelectedPreset}"
                           Height="25" Width="160"
-                          Margin="175,58,0,0"
+                          Margin="175,9,0,0"
                           FontSize="14"
                           HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
                 <Button x:Name="Button_Connect" Template="{DynamicResource ButtonCommon}"
-                        Margin="380,55,0,0"
+                        Margin="380,6,0,0"
                         Width="100"
                         Content="Подключить"
                         Command="{Binding Command_Connect}"/>
 
                 <Button x:Name="Button_Disconnect" Template="{DynamicResource ButtonCommon}"
-                        Margin="500,55,0,0"
+                        Margin="500,6,0,0"
                         Width="100" 
                         Content="Отключить"
                         Command="{Binding Command_Disconnect}"/>
-            </Grid>
 
-            <Frame x:Name="Frame_ActionUI" Grid.Row="3"
+            </Grid>
+            
+            <Frame x:Name="Frame_ActionUI" Grid.Row="4"
                    NavigationUIVisibility="Hidden"/>
 
         </Grid>
