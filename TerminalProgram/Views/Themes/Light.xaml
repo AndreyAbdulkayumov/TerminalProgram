@@ -72,4 +72,10 @@
     <SolidColorBrush x:Key="ServiceWindow_Color_Text_Top" Color="Black"/>
     <SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#FF5A5A5A"/>
 
+    <!-- NoProtocol Cycle Mode Window -->
+
+    <SolidColorBrush x:Key="NoProtocolCycleModeWindow_Color_Background" Color="#FFD5D5D5"/>
+    <SolidColorBrush x:Key="NoProtocolCycleModeWindow_Color_Message" Color="#FFDDDDDD"/>
+    <SolidColorBrush x:Key="NoProtocolCycleModeWindow_Color_Response" Color="#FFDADADA"/>
+    
 </ResourceDictionary>

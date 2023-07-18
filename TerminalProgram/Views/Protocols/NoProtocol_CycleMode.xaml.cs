@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TerminalProgram.ViewModels;
+using TerminalProgram.ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -26,6 +28,51 @@ namespace TerminalProgram.Views.Protocols
             InitializeComponent();
 
             SendUI_Enable = SendUI_Enable_Handler;
+
+            DataContext = new ViewModel_NoProtocol_CycleMode(
+                MessageView.Show,
+                UI_State_Work,
+                UI_State_Wait
+                );
+        }
+
+        private void UI_State_Work()
+        {
+            foreach (UIElement element in Grid_Controls.Children)
+            {
+                element.Visibility = Visibility.Hidden;
+            }
+
+            TextBlock_Info.Text = "Каждые " + TextBox_Message_Period.Text + " " + TextBlock_Period_Unit.Text + 
+                " отправляется сообщение";
+
+            TextBlock_SendMessage.Text = TextBox_Message_Content.Text;
+
+            if (CheckBox_Message_CR.IsChecked == true)
+            {
+                TextBlock_SendMessage.Text += "\\r";
+            }
+
+            if (CheckBox_Message_LF.IsChecked == true)
+            {
+                TextBlock_SendMessage.Text += "\\n";
+            }
+
+            TextBlock_Info.Visibility = Visibility.Visible;
+            TextBlock_SendMessage.Visibility = Visibility.Visible;
+
+            Button_Start_Stop_Polling.Visibility = Visibility.Visible;
+        }
+
+        private void UI_State_Wait()
+        {
+            foreach (UIElement element in Grid_Controls.Children)
+            {
+                element.Visibility = Visibility.Visible;
+            }
+
+            TextBlock_Info.Visibility = Visibility.Hidden;
+            TextBlock_SendMessage.Visibility = Visibility.Hidden;
         }
 
         private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
