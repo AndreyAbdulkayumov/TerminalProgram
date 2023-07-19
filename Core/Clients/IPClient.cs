@@ -264,13 +264,14 @@ namespace Core.Clients
                         /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
 
                         ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
-
+                        
                         CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
-
+                        
                         if (CompletedTask == WaitCancel)
                         {
                             throw new OperationCanceledException();
                         }
+
                         ReadCancel.ThrowIfCancellationRequested();
 
                         NumberOfReceiveBytes = ReadResult.Result;

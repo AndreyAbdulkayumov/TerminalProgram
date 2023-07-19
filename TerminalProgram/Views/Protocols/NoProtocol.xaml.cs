@@ -32,6 +32,8 @@ namespace TerminalProgram.Views.Protocols
     {
         private readonly ViewModel_NoProtocol ViewModel;
 
+        private bool UI_State_IsConnected = false;
+
         public NoProtocol()
         {
             InitializeComponent();
@@ -66,7 +68,11 @@ namespace TerminalProgram.Views.Protocols
                 Button_Send.IsEnabled = false;
             }
 
+            Button_CycleMode.IsEnabled = true;
+
             TextBox_TX.Focus();
+
+            UI_State_IsConnected = true;
         }
 
         private void SetUI_Disconnected()
@@ -78,6 +84,9 @@ namespace TerminalProgram.Views.Protocols
             RadioButton_Char.IsEnabled = false;
             RadioButton_String.IsEnabled = false;
             Button_Send.IsEnabled = false;
+            Button_CycleMode.IsEnabled = false;
+
+            UI_State_IsConnected = false;
         }
 
         private void Action_Receive(string Data)
@@ -190,6 +199,13 @@ namespace TerminalProgram.Views.Protocols
 
         private void SendUI_Enable()
         {
+            Button_CycleMode.IsEnabled = true;
+
+            if (UI_State_IsConnected == false)
+            {
+                return;
+            }            
+
             TextBox_TX.IsEnabled = true;
 
             CheckBox_CR.IsEnabled = true;
@@ -212,6 +228,13 @@ namespace TerminalProgram.Views.Protocols
 
         private void SendUI_Disable()
         {
+            Button_CycleMode.IsEnabled = false;            
+
+            if (UI_State_IsConnected == false)
+            {
+                return;
+            }            
+
             TextBox_TX.Text = "";
             TextBox_TX.IsEnabled = false;
 
@@ -226,7 +249,9 @@ namespace TerminalProgram.Views.Protocols
         {
             NoProtocol_CycleMode window = new NoProtocol_CycleMode(SendUI_Enable);
 
-            window.Show();
+            Application.Current.MainWindow.Closing += (sender, e) => window.Close();
+
+            window.Show();        
 
             SendUI_Disable();
         }

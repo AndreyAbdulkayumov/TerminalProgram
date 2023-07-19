@@ -30,6 +30,7 @@ namespace TerminalProgram.Views.Protocols
             SendUI_Enable = SendUI_Enable_Handler;
 
             DataContext = new ViewModel_NoProtocol_CycleMode(
+                this,
                 MessageView.Show,
                 UI_State_Work,
                 UI_State_Wait
@@ -38,12 +39,10 @@ namespace TerminalProgram.Views.Protocols
 
         private void UI_State_Work()
         {
-            foreach (UIElement element in Grid_Controls.Children)
-            {
-                element.Visibility = Visibility.Hidden;
-            }
+            Grid_Controls.Visibility = Visibility.Hidden;
+            Grid_WorkInfo.Visibility = Visibility.Visible;
 
-            TextBlock_Info.Text = "Каждые " + TextBox_Message_Period.Text + " " + TextBlock_Period_Unit.Text + 
+            TextBlock_Info.Text = "Каждые " + TextBox_Message_Period.Text + " " + TextBlock_Period_Unit.Text +
                 " отправляется сообщение";
 
             TextBlock_SendMessage.Text = TextBox_Message_Content.Text;
@@ -57,22 +56,14 @@ namespace TerminalProgram.Views.Protocols
             {
                 TextBlock_SendMessage.Text += "\\n";
             }
-
-            TextBlock_Info.Visibility = Visibility.Visible;
-            TextBlock_SendMessage.Visibility = Visibility.Visible;
-
-            Button_Start_Stop_Polling.Visibility = Visibility.Visible;
         }
 
         private void UI_State_Wait()
         {
-            foreach (UIElement element in Grid_Controls.Children)
-            {
-                element.Visibility = Visibility.Visible;
-            }
+            Grid_Controls.Visibility = Visibility.Visible;
+            Grid_WorkInfo.Visibility = Visibility.Hidden;
 
-            TextBlock_Info.Visibility = Visibility.Hidden;
-            TextBlock_SendMessage.Visibility = Visibility.Hidden;
+            TextBox_Message_Content.Focus();
         }
 
         private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)

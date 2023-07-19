@@ -8,7 +8,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Core.Clients;
 using Core.Models;
+using Core.Models.Modbus.Message;
 using ReactiveUI;
 using TerminalProgram.Views;
 
@@ -23,6 +25,18 @@ namespace TerminalProgram.ViewModels.MainWindow
     internal class ViewModel_NoProtocol : ReactiveObject
     {
         #region Properties
+
+        private const string InterfaceType_Default = "не определен";
+        private const string InterfaceType_SerialPort = "Serial Port";
+        private const string InterfaceType_Ethernet = "Ethernet";
+
+        private string _interfaceType = InterfaceType_Default;
+
+        public string InterfaceType
+        {
+            get => _interfaceType;
+            set => this.RaiseAndSetIfChanged(ref _interfaceType, value);
+        }
 
         private string _tx_String = String.Empty;
 
@@ -159,12 +173,31 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
+            if (e.ConnectedDevice is IPClient)
+            {
+                InterfaceType = InterfaceType_Ethernet;
+            }
+
+            else if (e.ConnectedDevice is SerialPortClient)
+            {
+                InterfaceType = InterfaceType_SerialPort;
+            }
+
+            else
+            {
+                Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
+                return;
+            }
+
             SetUI_Connected?.Invoke();
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
+            InterfaceType = InterfaceType_Default;
+
             TX_String = String.Empty;
+
             SetUI_Disconnected?.Invoke();
         }
 

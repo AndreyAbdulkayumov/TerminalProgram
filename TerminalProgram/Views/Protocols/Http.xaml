@@ -7,7 +7,7 @@
       xmlns:ViewModel="clr-namespace:TerminalProgram.ViewModels.MainWindow" 
       mc:Ignorable="d"
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Http}"
-      d:DesignHeight="670" d:DesignWidth="850"
+      d:DesignHeight="630" d:DesignWidth="850"
       Title="Http"
       Background="{DynamicResource MainWindow_Color_Background}"
       KeyDown="Page_KeyDown">

@@ -37,6 +37,7 @@ namespace Core.Models.NoProtocol
 
         public event EventHandler<string>? Model_DataReceived;
         public event EventHandler<string>? Model_ErrorInReadThread;
+        public event EventHandler<string>? Model_ErrorInCycleMode;
 
         private IConnection? Client;
 
@@ -45,16 +46,18 @@ namespace Core.Models.NoProtocol
 
         private CycleModeParameters? CycleModeInfo;
 
+        private const string SpaceString = "  ";
+
         private string[]? OutputArray;
         private int ResultIndex;
 
         private DateTime OutputDateTime;
 
-        private bool DateTime_IsNeed = false;
+        private bool DateTime_IsUsed = false;
 
-        private bool Output_Date = false;
+        private bool Date_IsUsed = false;
 
-        private bool Output_Time = false;
+        private bool Time_IsUsed = false;
         private int TimeIndex;
 
         public Model_NoProtocol(ConnectedHost Host)
@@ -77,25 +80,25 @@ namespace Core.Models.NoProtocol
             }
         }
 
-        private void Client_ErrorInReadThread(object? sender, string e)
+        private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            Model_ErrorInReadThread?.Invoke(this, e);
-        }
+            Client = null;
+        }     
 
         private void Client_DataReceived(object? sender, DataFromDevice e)
         {
             if (OutputArray != null)
             {
-                if (DateTime_IsNeed)
+                if (DateTime_IsUsed)
                 {
                     OutputDateTime = DateTime.Now;
 
-                    if (Output_Date)
+                    if (Date_IsUsed)
                     {
                         OutputArray[0] = OutputDateTime.ToShortDateString();
                     }
 
-                    if (Output_Time)
+                    if (Time_IsUsed)
                     {
                         OutputArray[TimeIndex] = OutputDateTime.ToLongTimeString();
                     }
@@ -104,12 +107,19 @@ namespace Core.Models.NoProtocol
                 OutputArray[ResultIndex] = ConnectedHost.GlobalEncoding.GetString(e.RX);
 
                 Model_DataReceived?.Invoke(this, string.Concat(OutputArray));
-            }            
+            }
+
+            else
+            {
+                Model_DataReceived?.Invoke(this, ConnectedHost.GlobalEncoding.GetString(e.RX));
+            }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Client_ErrorInReadThread(object? sender, string e)
         {
-            Client = null;
+            CycleMode_Stop();
+
+            Model_ErrorInReadThread?.Invoke(this, e);            
         }
 
         public void Send(string? StringMessage, bool CR_Enable, bool LF_Enable)
@@ -143,55 +153,69 @@ namespace Core.Models.NoProtocol
         {
             CycleModeInfo = Info;
 
+            OutputArray = CreateOutputBuffer(Info);
+
+            Send(Info.Message,
+                Info.Message_CR_Enable,
+                Info.Message_LF_Enable);
+
+            CycleModeTimer.Start();
+        }
+
+        private string[] CreateOutputBuffer(CycleModeParameters Info)
+        {
             List<string> RX = new List<string>();
 
             ResultIndex = 0;
 
-            Output_Date = false;
+            Date_IsUsed = false;
 
-            Output_Time = false;
-            TimeIndex = 0;
-
-            string SpaceString = "  ";
+            Time_IsUsed = false;
+            TimeIndex = 0;                       
 
             if (Info.Response_Date_Enable)
             {
-                RX.Add(String.Empty);
+                RX.Add(String.Empty);   // Элемент для даты
                 RX.Add(SpaceString);
 
                 ResultIndex += 2;
 
-                DateTime_IsNeed = true;
+                DateTime_IsUsed = true;
 
-                Output_Date = true;
+                Date_IsUsed = true;
 
                 TimeIndex += 2;
             }
 
             if (Info.Response_Time_Enable)
             {
-                RX.Add(String.Empty);
+                RX.Add(String.Empty);   // Элемент для времени
                 RX.Add(SpaceString);
 
                 ResultIndex += 2;
 
-                DateTime_IsNeed = true;
+                DateTime_IsUsed = true;
 
-                Output_Time = true;
+                Time_IsUsed = true;
             }
 
             if (Info.Response_String_Start_Enable)
             {
-                RX.Add((Info.Response_String_Start == null ? "" : Info.Response_String_Start) + SpaceString);
+                // Элемент для пользовательской строки в начале
+                RX.Add((Info.Response_String_Start == null ? String.Empty : Info.Response_String_Start) + SpaceString);
                 ResultIndex++;
             }
 
-            RX.Add("");
+            // Элемент для принимаемых данных
+            RX.Add(String.Empty);
 
             if (Info.Response_String_End_Enable)
             {
-                RX.Add(SpaceString + (Info.Response_String_End == null ? "" : Info.Response_String_End));
+                // Элемент для пользовательской строки в конце
+                RX.Add(SpaceString + (Info.Response_String_End == null ? String.Empty : Info.Response_String_End));
             }
+
+            // Два элемента для специальных символов
 
             if (Info.Response_CR_Enable)
             {
@@ -203,28 +227,35 @@ namespace Core.Models.NoProtocol
                 RX.Add("\n");
             }
 
-            OutputArray = RX.ToArray();
-
-            Send(Info.Message,
-                Info.Message_CR_Enable,
-                Info.Message_LF_Enable);
-                        
-            CycleModeTimer.Start();
+            return RX.ToArray();
         }
 
         public void CycleMode_Stop()
         {
             CycleModeTimer.Stop();
+
+            OutputArray = null;
         }
 
         private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            if (CycleModeInfo != null)
+            try
             {
-                Send(CycleModeInfo.Message,
-                    CycleModeInfo.Message_CR_Enable,
-                    CycleModeInfo.Message_LF_Enable);
-            }            
+                if (CycleModeInfo != null)
+                {
+                    Send(CycleModeInfo.Message,
+                        CycleModeInfo.Message_CR_Enable,
+                        CycleModeInfo.Message_LF_Enable);
+                }
+            }
+
+            catch(Exception error)
+            {
+                CycleMode_Stop();
+
+                Model_ErrorInCycleMode?.Invoke(this, "Ошибка отправки команды в цикличном опросе.\n\n" + error.Message +
+                    "\n\nОпрос остановлен.");
+            }                        
         }
     }
 }
