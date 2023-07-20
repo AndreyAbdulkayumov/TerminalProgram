@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Core.Models.Modbus.Message
 {
-    public static class CRC_16
+    public static class CheckSum
     {
         /* Принцип расчета CRC:
         * 1) задаем значение из единиц регистру Register = 0xFFFF, в этом значении будет сохраняться наш рассчитанный по каждому байту сообщения CRC.
@@ -25,10 +25,8 @@ namespace Core.Models.Modbus.Message
         /// </summary>
         /// <param name="Message"></param>
         /// <returns></returns>
-        public static byte[] Calculate(byte[] Message, ushort Polynom)
-        {
-            // выдаваемый массив CRC
-            byte[] CRC = new byte[2];
+        public static byte[] Calculate_CRC16(byte[] Message, ushort Polynom)
+        {            
             ushort Register = 0xFFFF; // создаем регистр, в котором будем сохранять высчитанный CRC
             //ushort Polynom = 0xA001; // Указываем полином, он может быть как 0xA001(старший бит справа), так и его реверс 0x8005(старший бит слева, здесь не рассматривается), при сдвиге вправо используется 0xA001
 
@@ -51,11 +49,35 @@ namespace Core.Models.Modbus.Message
                     }
                 }
             }
-                        
-            CRC[0] = (byte)(Register & 0x00FF); // присваеваем младший байт 
-            CRC[1] = (byte)(Register >> 8); // присваеваем старший байт
 
-            return CRC;
+            // выдаваемый массив CRC
+            byte[] CRC16 = new byte[2];
+
+            CRC16[0] = (byte)(Register & 0x00FF); // присваеваем младший байт 
+            CRC16[1] = (byte)(Register >> 8); // присваеваем старший байт
+
+            return CRC16;
+        }
+
+        public static byte[] Calculate_LRC8(byte[] MainPart)
+        {
+            byte LRC8 = 0;
+
+            foreach (byte Element in MainPart)
+            {
+                LRC8 += Element;
+            }
+
+            LRC8 = (byte)((LRC8 ^ 0xFF) + 1);
+
+            string LRC8_String = LRC8.ToString("X2");
+
+            char[] LRC8_Array = new char[2];
+
+            LRC8_Array[0] = LRC8_String.First();
+            LRC8_Array[1] = LRC8_String.Last();
+
+            return Encoding.ASCII.GetBytes(LRC8_Array);
         }
     }
 }

@@ -32,12 +32,12 @@ namespace Core.Models.Modbus.Message
 
             Array.Copy(PDU, 0, TX, 1, PDU.Length);
 
-            // CRC
+            // CRC16
             if (Data.CRC_IsEnable)
             {
-                byte[] CRC = CRC_16.Calculate(TX, Data.Polynom);
-                TX[TX.Length - 2] = CRC[0];  // Предпоследний элемент
-                TX[TX.Length - 1] = CRC[1];  // Последний элемент
+                byte[] CRC16 = CheckSum.Calculate_CRC16(TX, Data.Polynom);
+                TX[TX.Length - 2] = CRC16[0];  // Предпоследний элемент
+                TX[TX.Length - 1] = CRC16[1];  // Последний элемент
             }
 
             return TX;

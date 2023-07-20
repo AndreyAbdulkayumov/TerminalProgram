@@ -31,9 +31,17 @@ namespace Core.Models.Modbus.Message
 
     public abstract class ModbusMessage
     {
+        /***********************************************/
+
+        // Должны быть определены в наследниках:
+        // реализациях протокола Modbus RTU, ASCII, TCP
+
         public abstract string ProtocolName { get; }
+
         public abstract byte[] CreateMessage(ModbusFunction Function, MessageData Data);
         public abstract ModbusResponse DecodingMessage(ModbusFunction Function, byte[] SourceArray);
+
+        /***********************************************/
 
         protected ulong PackageNumber = 0;
 

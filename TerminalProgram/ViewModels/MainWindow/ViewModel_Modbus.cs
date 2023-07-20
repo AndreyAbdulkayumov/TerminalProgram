@@ -43,6 +43,36 @@ namespace TerminalProgram.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _modbusMode_Name, value);
         }
 
+        private const string Modbus_RTU_Name = "Modbus RTU";
+        private const string Modbus_ASCII_Name = "Modbus ASCII";
+
+        private readonly ObservableCollection<string> _modbus_RTU_ASCII =
+            new ObservableCollection<string>()
+            {
+                Modbus_RTU_Name, Modbus_ASCII_Name
+            };
+
+        public ObservableCollection<string> Modbus_RTU_ASCII
+        {
+            get => _modbus_RTU_ASCII;
+        }
+
+        private string? _selected_Modbus_RTU_ASCII;
+
+        public string? Selected_Modbus_RTU_ASCII
+        {
+            get => _selected_Modbus_RTU_ASCII;
+            set => this.RaiseAndSetIfChanged(ref _selected_Modbus_RTU_ASCII, value);
+        }
+
+        private bool _connection_IsSerialPort = false;
+
+        public bool Connection_IsSerialPort
+        {
+            get => _connection_IsSerialPort;
+            set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
+        }
+
         private readonly ObservableCollection<ModbusDataDisplayed> _dataDisplayedList =
             new ObservableCollection<ModbusDataDisplayed>();
 
@@ -59,20 +89,20 @@ namespace TerminalProgram.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _slaveID, value);
         }
 
-        private bool _crc16_Enable;
+        private bool _checkSum_Enable;
 
-        public bool CRC16_Enable
+        public bool CheckSum_Enable
         {
-            get => _crc16_Enable;
-            set => this.RaiseAndSetIfChanged(ref _crc16_Enable, value);
+            get => _checkSum_Enable;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_Enable, value);
         }
 
-        private bool _crc16_IsVisible;
+        private bool _checkSum_IsVisible;
 
-        public bool CRC16_IsVisible
+        public bool CheckSum_IsVisible
         {
-            get => _crc16_IsVisible;
-            set => this.RaiseAndSetIfChanged(ref _crc16_IsVisible, value);
+            get => _checkSum_IsVisible;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsVisible, value);
         }
 
         private bool _selectedNumberFormat_Hex;
@@ -215,11 +245,12 @@ namespace TerminalProgram.ViewModels.MainWindow
             //
             /****************************************************/
 
+            Selected_Modbus_RTU_ASCII = Modbus_RTU_ASCII.First();
 
             ModbusMode_Name = ModbusMode_Name_Default;
 
-            CRC16_Enable = true;
-            CRC16_IsVisible = true;
+            CheckSum_Enable = true;
+            CheckSum_IsVisible = true;
 
             SelectedNumberFormat_Hex = true;
 
@@ -251,6 +282,29 @@ namespace TerminalProgram.ViewModels.MainWindow
             Command_Write = ReactiveCommand.Create(Modbus_Write);
             Command_Read = ReactiveCommand.Create(Modbus_Read);
 
+            this.WhenAnyValue(x => x.Selected_Modbus_RTU_ASCII)
+                .WhereNotNull()
+                .Subscribe(x =>
+                {
+                    if (Model.HostIsConnect)
+                    {
+                        if (Selected_Modbus_RTU_ASCII == Modbus_RTU_Name)
+                        {
+                            ModbusMessageType = new ModbusRTU_Message();
+                        }
+
+                        else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
+                        {
+                            ModbusMessageType = new ModbusASCII_Message();
+                        }
+
+                        else
+                        {
+                            Message.Invoke("Задан неизвестный тип Modbus протокола: " + Selected_Modbus_RTU_ASCII, MessageType.Error);
+                            return;
+                        }
+                    }
+                });
 
             this.WhenAnyValue(x => x.SlaveID)
                 .WhereNotNull()
@@ -402,14 +456,32 @@ namespace TerminalProgram.ViewModels.MainWindow
             {
                 ModbusMessageType = new ModbusTCP_Message();
 
-                CRC16_IsVisible = false;
+                CheckSum_IsVisible = false;
+
+                Connection_IsSerialPort = false;
             }
 
             else if (e.ConnectedDevice is SerialPortClient)
             {
-                ModbusMessageType = new ModbusRTU_Message();
+                if (Selected_Modbus_RTU_ASCII == Modbus_RTU_Name)
+                {
+                    ModbusMessageType = new ModbusRTU_Message();
+                }
+                
+                else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
+                {
+                    ModbusMessageType = new ModbusASCII_Message();
+                }
 
-                CRC16_IsVisible = true;
+                else
+                {
+                    Message.Invoke("Задан неизвестный тип Modbus протокола: " + Selected_Modbus_RTU_ASCII, MessageType.Error);
+                    return;
+                }
+
+                CheckSum_IsVisible = true;
+
+                Connection_IsSerialPort = true;
             }
 
             else
@@ -431,7 +503,9 @@ namespace TerminalProgram.ViewModels.MainWindow
         {
             SetUI_Disconnected.Invoke();
 
-            CRC16_IsVisible = true;
+            CheckSum_IsVisible = true;
+
+            Connection_IsSerialPort = false;
 
             ModbusMode_Name = ModbusMode_Name_Default;
 
@@ -494,7 +568,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                     SelectedSlaveID,
                     SelectedAddress,
                     ModbusWriteData,
-                    ModbusMessageType is ModbusTCP_Message ? false : CRC16_Enable,
+                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
                     CRC_Polynom);
 
 
@@ -579,7 +653,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                     SelectedSlaveID,
                     SelectedAddress,
                     SelectedNumberOfRegisters,
-                    ModbusMessageType is ModbusTCP_Message ? false : CRC16_Enable,
+                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
                     CRC_Polynom);
 
 

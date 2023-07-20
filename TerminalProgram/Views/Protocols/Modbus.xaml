@@ -61,7 +61,46 @@
                        FontSize="16"
                        Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
                        Margin="220,10,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                       HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                <TextBlock.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Connection_IsSerialPort}" Value="True">
+                                <Setter Property="TextBlock.Visibility" Value="Hidden"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Connection_IsSerialPort}" Value="False">
+                                <Setter Property="TextBlock.Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+                
+            </TextBlock>
+
+            <ComboBox x:Name="ComboBox_Modbus_RTU_ASCII"
+                      Template="{DynamicResource ComboBox_Common}"
+                      ItemsSource="{Binding Modbus_RTU_ASCII}"
+                      SelectedItem="{Binding Selected_Modbus_RTU_ASCII, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      FontSize="16"
+                      Width="130"                      
+                      Margin="220,8,0,0"
+                      HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                <ComboBox.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Connection_IsSerialPort}" Value="True">
+                                <Setter Property="ComboBox.Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Connection_IsSerialPort}" Value="False">
+                                <Setter Property="ComboBox.Visibility" Value="Hidden"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ComboBox.Style>
+                
+            </ComboBox>
 
         </Grid>
 
@@ -173,9 +212,9 @@
                          VerticalContentAlignment="Center"
                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-                <CheckBox x:Name="CheckBox_CRC_Enable" Grid.Column="1"
-                          IsChecked="{Binding CRC16_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          Content="CRC-16"
+                <CheckBox x:Name="CheckBox_CheckSum_Enable" Grid.Column="1"
+                          IsChecked="{Binding CheckSum_Enable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Content="Контрольная сумма"
                           FontSize="14"
                           Foreground="{DynamicResource MainWindow_Color_Text}"
                           Margin="150,3,0,0"
@@ -184,10 +223,10 @@
                     <CheckBox.Style>
                         <Style>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding CRC16_IsVisible}" Value="True">
+                                <DataTrigger Binding="{Binding CheckSum_IsVisible}" Value="True">
                                     <Setter Property="CheckBox.Visibility" Value="Visible"/>
                                 </DataTrigger>
-                                <DataTrigger Binding="{Binding CRC16_IsVisible}" Value="False">
+                                <DataTrigger Binding="{Binding CheckSum_IsVisible}" Value="False">
                                     <Setter Property="CheckBox.Visibility" Value="Hidden"/>
                                 </DataTrigger>
                             </Style.Triggers>

@@ -50,7 +50,7 @@ namespace TerminalProgram.Views.Protocols
             ComboBox_WriteFunc.IsEnabled = true;
 
             TextBox_NumberOfRegisters.IsEnabled = true;
-            CheckBox_CRC_Enable.IsEnabled = true;
+            CheckBox_CheckSum_Enable.IsEnabled = true;
         }
 
         private void SetUI_Disconnected()
@@ -74,7 +74,7 @@ namespace TerminalProgram.Views.Protocols
             ComboBox_WriteFunc.IsEnabled = false;
 
             TextBox_NumberOfRegisters.IsEnabled = false;
-            CheckBox_CRC_Enable.IsEnabled = false;
+            CheckBox_CheckSum_Enable.IsEnabled = false;
         }
 
         private void DataGrid_ScrollTo(ModbusDataDisplayed Item)
