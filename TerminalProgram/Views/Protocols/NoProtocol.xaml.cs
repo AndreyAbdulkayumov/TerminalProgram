@@ -199,12 +199,12 @@ namespace TerminalProgram.Views.Protocols
 
         private void SendUI_Enable()
         {
-            Button_CycleMode.IsEnabled = true;
-
             if (UI_State_IsConnected == false)
             {
                 return;
-            }            
+            }
+
+            Button_CycleMode.IsEnabled = true;
 
             TextBox_TX.IsEnabled = true;
 
@@ -228,12 +228,12 @@ namespace TerminalProgram.Views.Protocols
 
         private void SendUI_Disable()
         {
-            Button_CycleMode.IsEnabled = false;            
-
             if (UI_State_IsConnected == false)
             {
                 return;
-            }            
+            }
+
+            Button_CycleMode.IsEnabled = false;
 
             TextBox_TX.Text = "";
             TextBox_TX.IsEnabled = false;

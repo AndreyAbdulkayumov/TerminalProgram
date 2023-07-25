@@ -102,6 +102,13 @@
                 
             </ComboBox>
 
+            <Button x:Name="Button_CycleMode" Template="{DynamicResource ButtonCommon}"
+                    Margin="0,7,20,0"
+                    Width="160"
+                    Content="Цикличный опрос"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Click="Button_CycleMode_Click"/>
+            
         </Grid>
 
         <DataGrid x:Name="DataGrid_ModbusData" Grid.Row="1" 

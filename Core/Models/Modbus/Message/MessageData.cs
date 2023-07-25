@@ -10,7 +10,7 @@ namespace Core.Models.Modbus.Message
     {
         public byte SlaveID;
         public UInt16 Address;
-        public bool CRC_IsEnable;
+        public bool CheckSum_IsEnable;
         public UInt16 Polynom;
     }
 
@@ -18,12 +18,12 @@ namespace Core.Models.Modbus.Message
     {
         public int NumberOfRegisters;
 
-        public ReadTypeMessage(byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CRC_IsEnable, UInt16 Polynom)
+        public ReadTypeMessage(byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CheckSum_IsEnable, UInt16 Polynom)
         {
             this.SlaveID = SlaveID;
             this.Address = Address;
             this.NumberOfRegisters = NumberOfRegisters;
-            this.CRC_IsEnable = CRC_IsEnable;
+            this.CheckSum_IsEnable = CheckSum_IsEnable;
             this.Polynom = Polynom;
         }
     }
@@ -32,12 +32,12 @@ namespace Core.Models.Modbus.Message
     {
         public UInt16[] WriteData;
 
-        public WriteTypeMessage(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CRC_IsEnable, UInt16 Polynom)
+        public WriteTypeMessage(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable, UInt16 Polynom)
         {
             this.SlaveID = SlaveID;
             this.Address = Address;
             this.WriteData = WriteData;
-            this.CRC_IsEnable = CRC_IsEnable;
+            this.CheckSum_IsEnable = CheckSum_IsEnable;
             this.Polynom = Polynom;
         }
     }

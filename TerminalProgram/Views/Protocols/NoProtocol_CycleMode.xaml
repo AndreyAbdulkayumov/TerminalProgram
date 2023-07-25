@@ -14,7 +14,8 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
-        ResizeMode="NoResize" Closing="SourceWindow_Closing">
+        ResizeMode="NoResize" 
+        Closing="SourceWindow_Closing">
 
     <Window.Resources>
         

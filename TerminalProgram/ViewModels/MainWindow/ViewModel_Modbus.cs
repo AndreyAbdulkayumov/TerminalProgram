@@ -16,6 +16,7 @@ using System.Globalization;
 using System.Reactive.Linq;
 using TerminalProgram.Views;
 using Core.Clients;
+using System.Windows.Threading;
 
 namespace TerminalProgram.ViewModels.MainWindow
 {
@@ -73,10 +74,10 @@ namespace TerminalProgram.ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
         }
 
-        private readonly ObservableCollection<ModbusDataDisplayed> _dataDisplayedList =
+        private static readonly ObservableCollection<ModbusDataDisplayed> _dataDisplayedList =
             new ObservableCollection<ModbusDataDisplayed>();
 
-        public ObservableCollection<ModbusDataDisplayed> DataDisplayedList
+        public static ObservableCollection<ModbusDataDisplayed> DataDisplayedList
         {
             get => _dataDisplayedList;
         }
@@ -200,9 +201,9 @@ namespace TerminalProgram.ViewModels.MainWindow
         private readonly Action<string, MessageType> Message;
         private readonly Action SetUI_Connected;
         private readonly Action SetUI_Disconnected;
-        private readonly Action<ModbusDataDisplayed> DataGrid_ScrollTo;
+        private static Action<ModbusDataDisplayed>? DataGrid_ScrollTo;
 
-        private ModbusMessage? ModbusMessageType;
+        public static ModbusMessage? ModbusMessageType { get; private set; }
 
         private readonly List<UInt16> WriteBuffer = new List<UInt16>();
 
@@ -214,7 +215,7 @@ namespace TerminalProgram.ViewModels.MainWindow
         private UInt16 SelectedAddress = 0;
         private UInt16 SelectedNumberOfRegisters = 1;
 
-        private const UInt16 CRC_Polynom = 0xA001;
+        public const UInt16 CRC16_Polynom = 0xA001;
 
         private ModbusFunction? CurrentFunction;
 
@@ -352,7 +353,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                 .Subscribe(x => WriteData = WriteData_TextChanged(x));
         }
 
-        private void SelectNumberFormat_Hex()
+        public void SelectNumberFormat_Hex()
         {
             NumberFormat = "(hex)";
             NumberViewStyle = NumberStyles.HexNumber;
@@ -569,7 +570,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                     SelectedAddress,
                     ModbusWriteData,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
-                    CRC_Polynom);
+                    CRC16_Polynom);
 
 
                 Model.Modbus.WriteRegister(
@@ -654,7 +655,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                     SelectedAddress,
                     SelectedNumberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
-                    CRC_Polynom);
+                    CRC16_Polynom);
 
 
                 UInt16[] ModbusReadData = Model.Modbus.ReadRegister(
@@ -662,8 +663,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                                 Data,
                                 ModbusMessageType);
 
-
-                DataDisplayedList.Add(new ModbusDataDisplayed()
+                AddResponseInDataGrid(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
@@ -672,8 +672,6 @@ namespace TerminalProgram.ViewModels.MainWindow
                     Data = ModbusReadData,
                     ViewData = CreateViewData(ModbusReadData)
                 });
-
-                DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
 
                 PackageNumber++;
             }
@@ -687,46 +685,6 @@ namespace TerminalProgram.ViewModels.MainWindow
             {
                 Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
             }
-        }
-
-        private string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)
-        {
-            string DisplayedString = String.Empty;
-
-            UInt16 CurrentAddress = StartAddress;
-
-            for (int i = 0; i < NumberOfRegisters; i++)
-            {
-                DisplayedString += "0x" + CurrentAddress.ToString("X") +
-                    " (" + CurrentAddress.ToString() + ")";
-
-                if (i != NumberOfRegisters - 1)
-                {
-                    DisplayedString += "\n";
-                }
-
-                CurrentAddress++;
-            }
-
-            return DisplayedString;
-        }
-
-        private string CreateViewData(UInt16[] ModbusData)
-        {
-            string DisplayedString = String.Empty;
-
-            for (int i = 0; i < ModbusData.Length; i++)
-            {
-                DisplayedString += "0x" + ModbusData[i].ToString("X") +
-                    " (" + ModbusData[i].ToString() + ")";
-
-                if (i != ModbusData.Length - 1)
-                {
-                    DisplayedString += "\n";
-                }
-            }
-
-            return DisplayedString;
         }
 
         private void ModbusErrorHandler(ModbusException error)
@@ -749,8 +707,62 @@ namespace TerminalProgram.ViewModels.MainWindow
                 "Ошибка Modbus.\n\n" +
                 "Код функции: " + error.FunctionCode.ToString() + "\n" +
                 "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
-                error.Message, 
+                error.Message,
                 MessageType.Error);
         }
+
+        /*************************************************************************/
+        //
+        // Следующие три метода используются в ViewModel_Modbus_CycleMode
+        //
+        /*************************************************************************/
+
+        public static void AddResponseInDataGrid(ModbusDataDisplayed Data)
+        {
+            
+            DataDisplayedList.Add(Data);
+
+            DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
+        }
+
+        public static string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)
+        {
+            string DisplayedString = String.Empty;
+
+            UInt16 CurrentAddress = StartAddress;
+
+            for (int i = 0; i < NumberOfRegisters; i++)
+            {
+                DisplayedString += "0x" + CurrentAddress.ToString("X") +
+                    " (" + CurrentAddress.ToString() + ")";
+
+                if (i != NumberOfRegisters - 1)
+                {
+                    DisplayedString += "\n";
+                }
+
+                CurrentAddress++;
+            }
+
+            return DisplayedString;
+        }
+
+        public static string CreateViewData(UInt16[] ModbusData)
+        {
+            string DisplayedString = String.Empty;
+
+            for (int i = 0; i < ModbusData.Length; i++)
+            {
+                DisplayedString += "0x" + ModbusData[i].ToString("X") +
+                    " (" + ModbusData[i].ToString() + ")";
+
+                if (i != ModbusData.Length - 1)
+                {
+                    DisplayedString += "\n";
+                }
+            }
+
+            return DisplayedString;
+        }        
     }
 }

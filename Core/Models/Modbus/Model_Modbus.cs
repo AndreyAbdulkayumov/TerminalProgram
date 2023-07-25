@@ -1,5 +1,6 @@
 ﻿using Core.Clients;
 using Core.Models.Modbus.Message;
+using Core.Models.NoProtocol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,14 +28,30 @@ namespace Core.Models.Modbus
 
     public class Model_Modbus
     {
-        private static bool IsBusy = false;
+        public double CycleMode_Period
+        {
+            get => CycleModeTimer.Interval;
+            set => CycleModeTimer.Interval = value;
+        }
+
+        public event EventHandler<string>? Model_ErrorInCycleMode;
+
+        private static bool IsBusy = false;       
 
         private IConnection? Device;
+
+        private readonly System.Timers.Timer CycleModeTimer;
+        private const double IntervalDefault = 100;
+
+        private Action? ReadRegisterInCycleMode;
 
         public Model_Modbus(ConnectedHost Host)
         {
             Host.DeviceIsConnect += Host_DeviceIsConnect;
             Host.DeviceIsDisconnected += Host_DeviceIsDisconnected;
+
+            CycleModeTimer = new System.Timers.Timer(IntervalDefault);
+            CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
 
         private void Host_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -63,7 +80,7 @@ namespace Core.Models.Modbus
 
                 IsBusy = true;
 
-                byte[] RX = new byte[20];
+                byte[] RX = new byte[30];
 
                 byte[] TX = Message.CreateMessage(WriteFunction, DataForWrite);
 
@@ -146,6 +163,34 @@ namespace Core.Models.Modbus
             {
                 IsBusy = false;
                 throw new Exception(error.Message);
+            }
+        }
+
+        public void CycleMode_Start(Action ReadRegister_Handler)
+        {
+            ReadRegisterInCycleMode = ReadRegister_Handler;
+
+            CycleModeTimer.Start();
+        }
+
+        public void CycleMode_Stop()
+        {
+            CycleModeTimer.Stop();
+        }
+
+        private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            try
+            {
+                ReadRegisterInCycleMode?.Invoke();
+            }
+
+            catch (Exception error)
+            {
+                CycleMode_Stop();
+
+                Model_ErrorInCycleMode?.Invoke(this, "Ошибка отправки команды в цикличном опросе.\n\n" + error.Message +
+                    "\n\nОпрос остановлен.");
             }
         }
     }

@@ -17,7 +17,7 @@ namespace Core.Models.Modbus.Message
 
             byte[] TX;
 
-            if (Data.CRC_IsEnable)
+            if (Data.CheckSum_IsEnable)
             {
                 TX = new byte[3 + PDU.Length];
             }
@@ -33,7 +33,7 @@ namespace Core.Models.Modbus.Message
             Array.Copy(PDU, 0, TX, 1, PDU.Length);
 
             // CRC16
-            if (Data.CRC_IsEnable)
+            if (Data.CheckSum_IsEnable)
             {
                 byte[] CRC16 = CheckSum.Calculate_CRC16(TX, Data.Polynom);
                 TX[TX.Length - 2] = CRC16[0];  // Предпоследний элемент

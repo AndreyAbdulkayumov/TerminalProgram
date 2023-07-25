@@ -37,6 +37,19 @@ namespace Core.Models
             }
         }
 
+        public int Host_ReadTimeout
+        {
+            get
+            {
+                if (Client == null)
+                {
+                    return 0;
+                }
+
+                return Client.ReadTimeout;
+            }
+        }
+
         public event EventHandler<ConnectArgs>? DeviceIsConnect;
         public event EventHandler<ConnectArgs>? DeviceIsDisconnected;
 

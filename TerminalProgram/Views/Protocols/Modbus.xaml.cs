@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +23,8 @@ namespace TerminalProgram.Views.Protocols
     /// </summary>
     public partial class Modbus : Page
     {
+        private bool UI_State_IsConnected = false;
+
         public Modbus()
         {
             InitializeComponent();
@@ -37,6 +40,8 @@ namespace TerminalProgram.Views.Protocols
         {
             TextBox_SlaveID.IsEnabled = true;
 
+            Button_CycleMode.IsEnabled = true;
+
             RadioButton_NumFormat_Hex.IsEnabled = true;
             RadioButton_NumFormat_Dec.IsEnabled = true;
 
@@ -51,11 +56,15 @@ namespace TerminalProgram.Views.Protocols
 
             TextBox_NumberOfRegisters.IsEnabled = true;
             CheckBox_CheckSum_Enable.IsEnabled = true;
+
+            UI_State_IsConnected = true;
         }
 
         private void SetUI_Disconnected()
         {
             TextBox_SlaveID.IsEnabled = false;
+
+            Button_CycleMode.IsEnabled = false;
 
             RadioButton_NumFormat_Hex.IsEnabled = false;
             RadioButton_NumFormat_Dec.IsEnabled = false;
@@ -75,11 +84,53 @@ namespace TerminalProgram.Views.Protocols
 
             TextBox_NumberOfRegisters.IsEnabled = false;
             CheckBox_CheckSum_Enable.IsEnabled = false;
+
+            UI_State_IsConnected = false;
         }
 
         private void DataGrid_ScrollTo(ModbusDataDisplayed Item)
         {
-            DataGrid_ModbusData.ScrollIntoView(Item);
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                DataGrid_ModbusData.ScrollIntoView(Item);
+            }));            
+        }
+
+        private void SendUI_Enable()
+        {
+            if (UI_State_IsConnected == false)
+            {
+                return;
+            }
+
+            Button_CycleMode.IsEnabled = true;
+
+            DockPanel_Controls.IsEnabled = true;
+        }
+
+        private void SendUI_Disable()
+        {
+            if (UI_State_IsConnected == false)
+            {
+                return;
+            }
+
+            Button_CycleMode.IsEnabled = false;
+
+            DockPanel_Controls.IsEnabled = false;
+
+            Button_ClearDataGrid.IsEnabled = true; 
+        }
+
+        private void Button_CycleMode_Click(object sender, RoutedEventArgs e)
+        {
+            Modbus_CycleMode window = new Modbus_CycleMode(SendUI_Enable);
+
+            Application.Current.MainWindow.Closing += (sender, e) => window.Close();
+
+            window.Show();
+
+            SendUI_Disable();
         }
     }
 }

@@ -72,7 +72,7 @@
                            Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
                            FontSize="18"/>
 
-                <TextBlock Text="2.0.0"
+                <TextBlock Text="2.1.0"
                            Margin="80,80,0,0"
                            Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
                            FontSize="18"/>

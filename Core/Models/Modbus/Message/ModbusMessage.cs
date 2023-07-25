@@ -72,9 +72,9 @@ namespace Core.Models.Modbus.Message
                     Decoding.Data[0] = massive[8];
                 }
 
-                // Modbus RTU 
+                // Modbus RTU / ASCII 
                 // [0] - Slave ID, [1] - Command, [2] - Error code,
-                // [3] - CRC_low, [4] - CRC_high
+                // [3] - CheckSum_low, [4] - CheckSum_high
                 else
                 {
                     Decoding.Data[0] = massive[2];

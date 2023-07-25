@@ -26,7 +26,7 @@ namespace Core.Models.Modbus.Message
 
             byte[] TX;
 
-            if (Data.CRC_IsEnable)
+            if (Data.CheckSum_IsEnable)
             {
                 TX = new byte[5 + MainPart_ASCII.Length];
             }
@@ -42,7 +42,7 @@ namespace Core.Models.Modbus.Message
             Array.Copy(MainPart_ASCII, 0, TX, 1, MainPart_ASCII.Length);
 
             // LRC8
-            if (Data.CRC_IsEnable)
+            if (Data.CheckSum_IsEnable)
             {
                 byte[] LRC8 = CheckSum.Calculate_LRC8(MainPart);
                 TX[TX.Length - 4] = LRC8[0];
@@ -64,6 +64,7 @@ namespace Core.Models.Modbus.Message
             {
                 if (i + 1 <= SourceArray.Length)
                 {
+                    // Спец. символы 0x0D и 0x0A встречаются только в конце значимой части массива
                     if (SourceArray[i] == 0x0D && SourceArray[i + 1] == 0x0A) 
                     {
                         SizeOfArray = i + 2;
@@ -90,8 +91,8 @@ namespace Core.Models.Modbus.Message
 
             ModbusResponse DecodingResponse = new ModbusResponse
             {
-                SlaveID = SourceArray[0],
-                Command = SourceArray[1]
+                SlaveID = ConvertedArray[0],
+                Command = ConvertedArray[1]
             };
 
             CheckErrorCode(TypeOfModbus.ASCII, ref DecodingResponse, ConvertedArray);
@@ -104,13 +105,13 @@ namespace Core.Models.Modbus.Message
                 {
                     throw new Exception("Длина информационной части пакета равна 0.\n" +
                         "Код функции: " + Function.Number.ToString() + "\n" +
-                        "Возможно нарушение целостности пакета Modbus RTU.");
+                        "Возможно нарушение целостности пакета Modbus ASCII.");
                 }
 
                 DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
 
                 // Согласно документации на протокол Modbus:
-                // В ответном пакете Modbus RTU на команды чтения
+                // В ответном пакете Modbus ASCII на команды чтения
                 // информационная часть начинается с 3 байта.
 
                 Array.Copy(ConvertedArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
@@ -133,7 +134,7 @@ namespace Core.Models.Modbus.Message
 
         private byte[] ConvertArrayToASCII(byte[] Bytes_Array)
         {
-            // Каждый элемент исходного архива должнен быть представлен двумя ASCII символами.
+            // В Modbus ASCII один байт представлен двумя ASCII символами
             char[] ASCII_Array = new char[Bytes_Array.Length * 2];
 
             string Element;
@@ -151,12 +152,18 @@ namespace Core.Models.Modbus.Message
 
         private byte[] ConvertArrayToBytes(byte[] Array)
         {
-            byte[] Bytes_Array = new byte[Array.Length / 2];
+            char[] Chars_Array = Encoding.ASCII.GetChars(Array);
 
-            for (int i = 0; i < Bytes_Array.Length; i++)
+            string[] JoinChars_Array = new string[Chars_Array.Length / 2];
+
+            // В Modbus ASCII один байт представлен двумя ASCII символами
+            for (int i = 0; i < JoinChars_Array.Length; i++)
             {
-                Bytes_Array[i] = (byte)((Array[i * 2] << 8 | Array[i * 2 + 1]) - 0x30);
+                JoinChars_Array[i] = string.Concat(Chars_Array[i * 2], Chars_Array[i * 2 + 1]);
             }
+
+            byte[] Bytes_Array = JoinChars_Array.Where(x => x != null)
+                .Select(x => byte.Parse(x, System.Globalization.NumberStyles.HexNumber)).ToArray();
 
             return Bytes_Array;
         }
