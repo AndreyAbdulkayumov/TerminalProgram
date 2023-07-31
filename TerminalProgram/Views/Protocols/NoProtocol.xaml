@@ -11,7 +11,8 @@
       Background="{DynamicResource MainWindow_Color_Background}"
       Title="NoProtocol"
       KeyDown="Page_KeyDown"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      IsVisibleChanged="Page_IsVisibleChanged">
 
     <Page.Resources>
 

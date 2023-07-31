@@ -10,7 +10,8 @@
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus}"
       d:DesignHeight="630" d:DesignWidth="850" 
       Background="{DynamicResource MainWindow_Color_Background}"
-      Title="Modbus">
+      Title="Modbus" 
+      IsVisibleChanged="Page_Modbus_IsVisibleChanged">
 
 
     <Page.Resources>

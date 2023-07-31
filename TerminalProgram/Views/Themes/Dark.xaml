@@ -72,10 +72,10 @@
     <SolidColorBrush x:Key="ServiceWindow_Color_Text_Top" Color="#FFD2C25A"/>
     <SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#FFB1A972"/>
 
-    <!-- NoProtocol Cycle Mode Window -->
+    <!-- Cycle Mode Window -->
 
-    <SolidColorBrush x:Key="NoProtocolCycleModeWindow_Color_Background" Color="#FF323232"/>
-    <SolidColorBrush x:Key="NoProtocolCycleModeWindow_Color_Message" Color="#FF3A3A3A"/>
-    <SolidColorBrush x:Key="NoProtocolCycleModeWindow_Color_Response" Color="#FF383838"/>
+    <SolidColorBrush x:Key="CycleModeWindow_Color_Background" Color="#FF323232"/>
+    <SolidColorBrush x:Key="CycleModeWindow_Color_Message" Color="#FF3A3A3A"/>
+    <SolidColorBrush x:Key="CycleModeWindow_Color_Response" Color="#FF383838"/>
     
 </ResourceDictionary>

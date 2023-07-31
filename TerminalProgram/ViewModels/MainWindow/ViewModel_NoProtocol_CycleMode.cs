@@ -163,15 +163,27 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             Model = ConnectedHost.Model;
 
+            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
             Model.NoProtocol.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
 
-            ParentWindow.Closing += (sender, e) => { Model.NoProtocol.CycleMode_Stop(); };
+            ParentWindow.Closing += (sender, e) => 
+            { 
+                Model.NoProtocol.CycleMode_Stop();
+                Model.NoProtocol.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
+            };
+
             ParentWindow.KeyDown += ParentWindow_KeyDown_Handler;
 
             Command_Start_Stop_Polling = ReactiveCommand.Create(Start_Stop_Handler);
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
             this.UI_State_Wait.Invoke();
+        }
+
+        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        {
+            ParentWindow.Close();
         }
 
         private void ParentWindow_KeyDown_Handler(object sender, KeyEventArgs e)

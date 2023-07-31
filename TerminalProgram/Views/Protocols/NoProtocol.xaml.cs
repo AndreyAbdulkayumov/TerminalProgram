@@ -14,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TerminalProgram.ViewModels;
 using TerminalProgram.ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
@@ -30,6 +29,8 @@ namespace TerminalProgram.Views.Protocols
     /// </summary>
     public partial class NoProtocol : Page
     {
+        private NoProtocol_CycleMode? CycleMode_Window;
+
         private readonly ViewModel_NoProtocol ViewModel;
 
         private bool UI_State_IsConnected = false;
@@ -247,13 +248,18 @@ namespace TerminalProgram.Views.Protocols
 
         private void Button_CycleMode_Click(object sender, RoutedEventArgs e)
         {
-            NoProtocol_CycleMode window = new NoProtocol_CycleMode(SendUI_Enable);
+            CycleMode_Window = new NoProtocol_CycleMode(SendUI_Enable);
 
-            Application.Current.MainWindow.Closing += (sender, e) => window.Close();
+            Application.Current.MainWindow.Closing += (sender, e) => CycleMode_Window.Close();
 
-            window.Show();        
+            CycleMode_Window.Show();        
 
             SendUI_Disable();
+        }
+
+        private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            CycleMode_Window?.Close();
         }
     }
 }

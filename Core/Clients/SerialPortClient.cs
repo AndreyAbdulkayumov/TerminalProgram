@@ -293,32 +293,39 @@ namespace Core.Clients
                 return;
             }
 
-            int SavedTimeout = ReadTimeout;
-
             try
             {
                 if (IsConnected)
                 {
-                    // Если ожидать ответа с помощью таймаута, то в случае получения данных примется
-                    // только несколько первых байт. Поэтому таймаут реализуется с помощью задержки.
-                    // Таким образом, буфер приема успеет заполниться.
+                    // т.к. передача данных по СОМ порту медленная, то
+                    // в первый раз метод Read примет только часть сообщения.
+                    // Оставшаяся часть сообщения будет считана повторным вызовом метода Read.
+                    // Задержка нужна для того, чтобы буфер приема успел заполниться данными.
+                    // Для использования небольших скоростей передачи данных (Baud Rate)
+                    // значение задержки взято с запасом.
 
-                    ReadTimeout = 10;
+                    int FirstBytes = DeviceSerialPort.BytesToRead;
 
-                    Thread.Sleep(SavedTimeout);
+                    if (Data.Length > FirstBytes)
+                    {
+                        DeviceSerialPort.Read(Data, 0, FirstBytes);
 
-                    DeviceSerialPort.Read(Data, 0, Data.Length);
+                        Thread.Sleep(50);
 
-                    ReadTimeout = SavedTimeout;
+                        DeviceSerialPort.Read(Data, FirstBytes, Data.Length);
+                    }
+                    
+                    else
+                    {
+                        DeviceSerialPort.Read(Data, 0, Data.Length);
+                    }
                 }
             }
 
             catch (Exception error)
             {
-                ReadTimeout = SavedTimeout;
-
                 throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
-                    "Таймаут приема: " + SavedTimeout + " мс.");
+                    "Таймаут приема: " + DeviceSerialPort.ReadTimeout + " мс.");
             }
         }
 

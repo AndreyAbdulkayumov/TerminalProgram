@@ -10,7 +10,7 @@
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_NoProtocol_CycleMode}"
         Title="Цикличный опрос в режиме &quot;Без протокола&quot;" 
         Height="420" Width="550"
-        Background="{DynamicResource NoProtocolCycleModeWindow_Color_Background}"
+        Background="{DynamicResource CycleModeWindow_Color_Background}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -100,10 +100,10 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Row="0" Grid.RowSpan="3"
-                        Background="{DynamicResource NoProtocolCycleModeWindow_Color_Message}"/>
+                        Background="{DynamicResource CycleModeWindow_Color_Message}"/>
                 
                 <Border Grid.Row="3" Grid.RowSpan="4"
-                        Background="{DynamicResource NoProtocolCycleModeWindow_Color_Response}"
+                        Background="{DynamicResource CycleModeWindow_Color_Response}"
                         BorderBrush="{DynamicResource Window_Color_BorderBrush}"
                         BorderThickness="0,2,0,2"/>
 

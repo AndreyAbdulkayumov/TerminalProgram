@@ -209,7 +209,7 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         private NumberStyles NumberViewStyle;
 
-        private UInt16 PackageNumber = 0;
+        public static UInt16 PackageNumber { get; private set; } = 0;
 
         private byte SelectedSlaveID = 0;
         private UInt16 SelectedAddress = 0;
@@ -218,6 +218,8 @@ namespace TerminalProgram.ViewModels.MainWindow
         public const UInt16 CRC16_Polynom = 0xA001;
 
         private ModbusFunction? CurrentFunction;
+
+        private static Dispatcher? CurrentDispatcher;
 
         public ViewModel_Modbus(
             Action<string, MessageType> MessageBox,
@@ -239,6 +241,7 @@ namespace TerminalProgram.ViewModels.MainWindow
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
+            CurrentDispatcher = Dispatcher.CurrentDispatcher;
 
             /****************************************************/
             //
@@ -579,7 +582,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                     ModbusMessageType);
 
 
-                DataDisplayedList.Add(new ModbusDataDisplayed()
+                AddResponseInDataGrid(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
                     FuncNumber = WriteFunction.DisplayedNumber,
@@ -588,10 +591,6 @@ namespace TerminalProgram.ViewModels.MainWindow
                     Data = ModbusWriteData,
                     ViewData = CreateViewData(ModbusWriteData)
                 });
-
-                DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
-
-                PackageNumber++;
             }
 
             catch (ModbusException error)
@@ -663,6 +662,7 @@ namespace TerminalProgram.ViewModels.MainWindow
                                 Data,
                                 ModbusMessageType);
 
+
                 AddResponseInDataGrid(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
@@ -672,8 +672,6 @@ namespace TerminalProgram.ViewModels.MainWindow
                     Data = ModbusReadData,
                     ViewData = CreateViewData(ModbusReadData)
                 });
-
-                PackageNumber++;
             }
 
             catch (ModbusException error)
@@ -689,7 +687,7 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         private void ModbusErrorHandler(ModbusException error)
         {
-            DataDisplayedList.Add(new ModbusDataDisplayed()
+            AddResponseInDataGrid(new ModbusDataDisplayed()
             {
                 OperationID = PackageNumber,
                 FuncNumber = CurrentFunction?.DisplayedNumber,
@@ -698,10 +696,6 @@ namespace TerminalProgram.ViewModels.MainWindow
                 Data = new UInt16[1],
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             });
-
-            DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
-
-            PackageNumber++;
 
             Message.Invoke(
                 "Ошибка Modbus.\n\n" +
@@ -719,10 +713,14 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         public static void AddResponseInDataGrid(ModbusDataDisplayed Data)
         {
-            
-            DataDisplayedList.Add(Data);
+            CurrentDispatcher?.BeginInvoke(new Action(() =>
+            {
+                DataDisplayedList.Add(Data);
 
-            DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
+                DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
+
+                PackageNumber++;
+            }));
         }
 
         public static string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)

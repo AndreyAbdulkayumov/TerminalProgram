@@ -116,10 +116,12 @@ namespace TerminalProgram.ViewModels.MainWindow
         private NumberStyles NumberViewStyle;
         private UInt16 SelectedAddress = 0;
 
-        private UInt16 PackageNumber = 0;
-
         private ModbusReadFunction? ReadFunction;
         private MessageData? Data;
+
+        // Время в мс. взято с запасом.
+        // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
+        private const int TimeForReadHandler = 100;
 
         public ViewModel_Modbus_CycleMode(
             Modbus_CycleMode ParentWindow,
@@ -137,11 +139,18 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             Model = ConnectedHost.Model;
 
+            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Period_ms = Model.Host_ReadTimeout + 50;
+            Period_ms = Model.Host_ReadTimeout + TimeForReadHandler;
 
-            ParentWindow.Closing += (sender, e) => { Model.NoProtocol.CycleMode_Stop(); };
+            ParentWindow.Closing += (sender, e) => 
+            { 
+                Model.NoProtocol.CycleMode_Stop();
+                Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
+            };
+
             ParentWindow.KeyDown += ParentWindow_KeyDown_Handler;
                         
             Command_Start_Stop_Polling = ReactiveCommand.Create(Start_Stop_Handler);
@@ -184,6 +193,11 @@ namespace TerminalProgram.ViewModels.MainWindow
                 });           
 
             this.UI_State_Wait.Invoke();
+        }
+
+        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        {
+            ParentWindow.Close();
         }
 
         private void Modbus_Model_ErrorInCycleMode(object? sender, string e)
@@ -255,21 +269,28 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             else
             {
-                if (Model.Modbus == null)
+                if (Model.HostIsConnect == false)
                 {
-                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
+                    Message.Invoke("Modbus клиент отключен.", MessageType.Error);
                     return;
                 }
+
+                if (Model.Modbus == null)
+                {
+                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Error);
+                    return;
+                }                
 
                 if (ViewModel_Modbus.ModbusMessageType == null)
                 {
-                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
+                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Error);
                     return;
                 }
 
-                if (Period_ms < Model.Host_ReadTimeout + 20)
+                if (Period_ms < Model.Host_ReadTimeout + TimeForReadHandler)
                 {
-                    Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и 20 мс.\n" +
+                    Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " + 
+                        TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
                         "Таймаут чтения: " + Model.Host_ReadTimeout + " мс.", MessageType.Warning);
 
                     return;
@@ -333,15 +354,32 @@ namespace TerminalProgram.ViewModels.MainWindow
 
                 ViewModel_Modbus.AddResponseInDataGrid(new ModbusDataDisplayed()
                 {
-                    OperationID = PackageNumber,
+                    OperationID = ViewModel_Modbus.PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
                     Address = SelectedAddress,
                     ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, ModbusReadData.Length),
                     Data = ModbusReadData,
                     ViewData = ViewModel_Modbus.CreateViewData(ModbusReadData)
                 });
+            }
 
-                PackageNumber++;
+            catch (ModbusException error)
+            {
+                ViewModel_Modbus.AddResponseInDataGrid(new ModbusDataDisplayed()
+                {
+                    OperationID = ViewModel_Modbus.PackageNumber,
+                    FuncNumber = ReadFunction?.DisplayedNumber,
+                    Address = SelectedAddress,
+                    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, 1),
+                    Data = new UInt16[1],
+                    ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
+                });
+
+                throw new Exception(
+                    "Ошибка Modbus.\n\n" +
+                    "Код функции: " + error.FunctionCode.ToString() + "\n" +
+                    "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
+                    error.Message);
             }
 
             catch (Exception error)

@@ -10,7 +10,7 @@
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus_CycleMode}"
         Title="Цикличный опрос в режиме &quot;Modbus&quot;" 
         Height="330" Width="460"
-        Background="{DynamicResource NoProtocolCycleModeWindow_Color_Background}"
+        Background="{DynamicResource CycleModeWindow_Color_Background}"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
