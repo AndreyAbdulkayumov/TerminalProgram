@@ -34,11 +34,11 @@ https://www.reactiveui.net/
 	- TCP
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/89350536-c9a7-4c56-b453-7645ce9696cd" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/a74c5b98-5a3b-4da4-b6ad-1f3b46d8fc7e" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/817c8071-438a-463e-ac92-250eb52f6b5a" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/65b4722b-66ac-48ed-84c0-8019ac69780c" />
 </p>
 
 ## *"Modbus"*
@@ -49,11 +49,11 @@ https://www.reactiveui.net/
 	- Modbus RTU
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/96b47588-22c9-4b17-a8d2-54109071e306" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/732d95ab-bf4f-418d-9fa9-9e877d12a50a" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/7b8d0533-9483-4ce5-a9af-a25207a15f91" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/320ea0a0-f206-4fdc-81d8-e2bd48847e64" />
 </p>
 
 ## *"Http"*
@@ -65,6 +65,44 @@ https://www.reactiveui.net/
 
 <p align="center">
   <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/90967104-9518-41cf-acdf-f7e668d54765" />
+</p>
+
+# Цикличный опрос
+
+Суть этой возможности заключается в том, что через заданный промежуток времени на хост отправляется сообщение. 
+Но важно помнить, что каждый режим накладывает некоторые ограничения на работу цикличного опроса.
+
+Эта возможность доступна для следующих режимов работы:
+
+## *"Без протокола"*
+
+В поле ввода пользователь вводит сообщение, которое будет отправляться на хост с заданным периодом.
+При этом не важно ответит ли хост или нет.
+
+Ответ хоста можно "запаковать" в диагностические данные. 
+Формат отображаемой строки настраивается с помощью выставления соответствующих галочек.
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/a2bc2a14-ee9a-4910-a340-39e85e082fbf" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/f9d8e90c-53b3-4885-8f33-a81059fa6d03" />
+</p>
+
+## *"Modbus"*
+
+В режиме "Modbus" при цикличном опросе возможно использование только функций чтения. 
+При этом, если хост не ответит за указанный в настройках таймаут, то опрос прекратится.
+
+Если в качестве интерфейса связи выбран последовательный порт, то выбор между протоколами Modbus ASCII и Modbus RTU происходит в главном окне.
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/83407b72-c01a-4b0e-9b43-590eac31ce74" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/9da913a8-7e5a-4de1-b653-3d8036e63be6" />
 </p>
 
 # Система сохранений настроек
