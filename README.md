@@ -47,6 +47,7 @@ https://www.reactiveui.net/
 	Поддерживаются протоколы: 
 	- Modbus TCP
 	- Modbus RTU
+ 	- Modbus ASCII
 
 <p align="center">
   <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/732d95ab-bf4f-418d-9fa9-9e877d12a50a" />
