@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\MainLogo.ico</ApplicationIcon>
-    <Version>2.1.0</Version>
+    <Version>2.2.0</Version>
     <Company>XSoft</Company>
     <Authors>Abdulkayumov Andrey</Authors>
   </PropertyGroup>
