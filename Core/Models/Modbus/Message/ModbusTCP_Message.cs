@@ -19,6 +19,7 @@ namespace Core.Models.Modbus.Message
             TX = new byte[7 + PDU.Length];
 
             byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
+            byte[] PDU_Length_Array = BitConverter.GetBytes((UInt16)PDU.Length);
 
             PackageNumber++;
 
@@ -29,8 +30,8 @@ namespace Core.Models.Modbus.Message
             TX[2] = 0x00;
             TX[3] = 0x00;
             // Длина PDU
-            TX[4] = 0x00;
-            TX[5] = 0x06;
+            TX[4] = PDU_Length_Array[1];
+            TX[5] = PDU_Length_Array[0];
             // Slave ID
             TX[6] = Data.SlaveID;
 
@@ -39,7 +40,7 @@ namespace Core.Models.Modbus.Message
             return TX;
         }
 
-        public override ModbusResponse DecodingMessage(ModbusFunction Function, byte[] SourceArray)
+        public override ModbusResponse DecodingMessage(ModbusFunction CurrentFunction, byte[] SourceArray)
         {
             ModbusResponse DecodingResponse = new ModbusResponse();
 
@@ -59,14 +60,14 @@ namespace Core.Models.Modbus.Message
 
             CheckErrorCode(TypeOfModbus.TCP, ref DecodingResponse, SourceArray);
 
-            if (Function is ModbusReadFunction)
+            if (CurrentFunction is ModbusReadFunction)
             {
                 DecodingResponse.LengthOfData = SourceArray[8];
 
                 if (DecodingResponse.LengthOfData == 0)
                 {
                     throw new Exception("Длина информационной части пакета равна 0.\n" +
-                        "Код функции: " + Function.Number.ToString() + "\n" +
+                        "Код функции: " + CurrentFunction.Number.ToString() + "\n" +
                         "Возможно нарушение целостности пакета Modbus TCP.");
                 }
 
@@ -77,17 +78,22 @@ namespace Core.Models.Modbus.Message
                 // информационная часть начинается с 9 байта.
                 Array.Copy(SourceArray, 9, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
 
-                DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
+                // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
+                if (CurrentFunction != Function.ReadCoilStatus &&
+                    CurrentFunction != Function.ReadDiscreteInputs)
+                {
+                    DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
+                }
             }
 
-            else if (Function is ModbusWriteFunction)
+            else if (CurrentFunction is ModbusWriteFunction)
             {
                 DecodingResponse.LengthOfData = -1;
             }
 
             else
             {
-                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + Function.Number + ")");
+                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CurrentFunction.Number + ")");
             }
 
             return DecodingResponse;

@@ -3,7 +3,7 @@ using Core.Models.Modbus.Message;
 
 namespace Core.Tests.Modbus
 {
-    public class Protocol_RTU_Test
+    public class Protocol_RTU_CreateTest
     {
         private ModbusMessage Message = new ModbusRTU_Message();
 
@@ -92,6 +92,8 @@ namespace Core.Tests.Modbus
                 CheckSum_IsEnable: true
                 );
         }
+
+
 
         // Общий функционал
 

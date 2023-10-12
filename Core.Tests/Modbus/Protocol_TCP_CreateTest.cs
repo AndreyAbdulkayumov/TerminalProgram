@@ -3,7 +3,7 @@ using Core.Models.Modbus.Message;
 
 namespace Core.Tests.Modbus
 {
-    public class Protocol_TCP_Test
+    public class Protocol_TCP_CreateTest
     {
         private ModbusMessage Message = new ModbusTCP_Message();
 
@@ -87,13 +87,14 @@ namespace Core.Tests.Modbus
         public void Test_Func_16()
         {
             CheckMultiplyWriteFunction(
-                SelectedFunction:  Function.PresetSingleRegister,
+                SelectedFunction:  Function.PresetMultipleRegister,
                 PackageNumber:     0,
                 SlaveID:           18,
                 Address:           63,
                 WriteData:         new UInt16[] { 0xFFFF, 0x4586, 0x4000, 0x0568, 0xFAFD }
                 );
         }
+
 
 
         // Общий функционал
@@ -122,9 +123,9 @@ namespace Core.Tests.Modbus
             // Modbus ID
             BytesArray_Expected[2] = 0;
             BytesArray_Expected[3] = 0;
-            // Длина PDU в байтах
+            // Длина PDU в байтах (Количество байт после SlaveID)
             BytesArray_Expected[4] = 0;
-            BytesArray_Expected[5] = 6;
+            BytesArray_Expected[5] = 5;
             BytesArray_Expected[6] = SlaveID;
             BytesArray_Expected[7] = SelectedFunction.Number;
             BytesArray_Expected[8] = AddressBytes[1];
@@ -166,9 +167,9 @@ namespace Core.Tests.Modbus
             // Modbus ID
             BytesArray_Expected[2] = 0;
             BytesArray_Expected[3] = 0;
-            // Длина PDU в байтах
+            // Длина PDU в байтах (Количество байт после SlaveID)
             BytesArray_Expected[4] = 0;
-            BytesArray_Expected[5] = 6;
+            BytesArray_Expected[5] = 5;
             BytesArray_Expected[6] = SlaveID;
             BytesArray_Expected[7] = SelectedFunction.Number;
             BytesArray_Expected[8] = AddressBytes[1];
@@ -196,7 +197,9 @@ namespace Core.Tests.Modbus
             byte[] AddressBytes = ModbusField.Get_Address(Address);
             byte[] NumberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)WriteData.Length);
             byte[] WriteDataBytes = ModbusField.Get_WriteData(WriteData);
-            byte[] PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(7 + WriteDataBytes.Length));
+
+            // PDU - 6 байт + байты данных
+            byte[] PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(6 + WriteDataBytes.Length));
 
             if (WriteDataBytes.Length != WriteData.Length * 2)
             {

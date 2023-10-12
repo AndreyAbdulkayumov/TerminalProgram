@@ -56,7 +56,7 @@ namespace Core.Models.Modbus.Message
             return TX;
         }
 
-        public override ModbusResponse DecodingMessage(ModbusFunction Function, byte[] SourceArray)
+        public override ModbusResponse DecodingMessage(ModbusFunction CurrentFunction, byte[] SourceArray)
         {
             int SizeOfArray = 0;
 
@@ -97,14 +97,14 @@ namespace Core.Models.Modbus.Message
 
             CheckErrorCode(TypeOfModbus.ASCII, ref DecodingResponse, ConvertedArray);
 
-            if (Function is ModbusReadFunction)
+            if (CurrentFunction is ModbusReadFunction)
             {
                 DecodingResponse.LengthOfData = ConvertedArray[2];
 
                 if (DecodingResponse.LengthOfData == 0)
                 {
                     throw new Exception("Длина информационной части пакета равна 0.\n" +
-                        "Код функции: " + Function.Number.ToString() + "\n" +
+                        "Код функции: " + CurrentFunction.Number.ToString() + "\n" +
                         "Возможно нарушение целостности пакета Modbus ASCII.");
                 }
 
@@ -116,23 +116,28 @@ namespace Core.Models.Modbus.Message
 
                 Array.Copy(ConvertedArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
 
-                DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
+                // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
+                if (CurrentFunction != Function.ReadCoilStatus &&
+                    CurrentFunction != Function.ReadDiscreteInputs)
+                {
+                    DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
+                }
             }
 
-            else if (Function is ModbusWriteFunction)
+            else if (CurrentFunction is ModbusWriteFunction)
             {
                 DecodingResponse.LengthOfData = -1;
             }
 
             else
             {
-                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + Function.Number + ")");
+                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CurrentFunction.Number + ")");
             }
 
             return DecodingResponse;
         }
 
-        private byte[] ConvertArrayToASCII(byte[] Bytes_Array)
+        public static byte[] ConvertArrayToASCII(byte[] Bytes_Array)
         {
             // В Modbus ASCII один байт представлен двумя ASCII символами
             char[] ASCII_Array = new char[Bytes_Array.Length * 2];
@@ -150,7 +155,7 @@ namespace Core.Models.Modbus.Message
             return Encoding.ASCII.GetBytes(ASCII_Array);
         }
 
-        private byte[] ConvertArrayToBytes(byte[] Array)
+        public static byte[] ConvertArrayToBytes(byte[] Array)
         {
             char[] Chars_Array = Encoding.ASCII.GetChars(Array);
 
