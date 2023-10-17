@@ -6,9 +6,10 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Views.Protocols"
       xmlns:ViewModel="clr-namespace:TerminalProgram.ViewModels.MainWindow"
+      xmlns:CustomControls="clr-namespace:TerminalProgram.Views.CustomControls"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus}"
-      d:DesignHeight="630" d:DesignWidth="850" 
+      d:DesignHeight="730" d:DesignWidth="850" 
       Background="{DynamicResource MainWindow_Color_Background}"
       Title="Modbus" 
       IsVisibleChanged="Page_Modbus_IsVisibleChanged">
@@ -46,6 +47,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="1*" MinHeight="100"/>
+            <RowDefinition Height="120"/>
             <RowDefinition Height="220"/>
         </Grid.RowDefinitions>
 
@@ -195,7 +197,46 @@
 
         </DataGrid>
 
-        <DockPanel x:Name="DockPanel_Controls" Grid.Row="2">
+        <Border Grid.Row="2" 
+                Background="{DynamicResource ModbusDataField_Color_BorderBackground}"
+                BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
+                BorderThickness="1"
+                Width="700" Height="100"
+                CornerRadius="10"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <CustomControls:ModbusDataField Grid.Row="0"
+                                                FieldTitle="Запрос"
+                                                FieldTitle_Foreground="{DynamicResource MainWindow_Color_Text}"
+                                                Field_Background="{DynamicResource ModbusDataField_Color_DataBackground}"
+                                                Data="{Binding RequestBytesDisplayed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Data_Foreground="Black"
+                                                FontSize="16"
+                                                Height="30" Width="600"
+                                                HorizontalAlignment="Center"/>
+
+                <CustomControls:ModbusDataField Grid.Row="1"
+                                                FieldTitle="Ответ"
+                                                FieldTitle_Foreground="{DynamicResource MainWindow_Color_Text}"
+                                                Field_Background="{DynamicResource DataGrid_Color_RowBackground}"
+                                                Data="{Binding ResponseBytesDisplayed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                Data_Foreground="Black"
+                                                FontSize="16" 
+                                                Height="30" Width="600"
+                                                HorizontalAlignment="Center"/>
+
+            </Grid>
+
+        </Border>
+
+        <DockPanel x:Name="DockPanel_Controls" Grid.Row="3">
 
             <Grid DockPanel.Dock="Top" Height="50">
 

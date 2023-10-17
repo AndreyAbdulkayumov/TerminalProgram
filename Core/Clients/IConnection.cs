@@ -63,10 +63,10 @@ namespace Core.Clients
         /// <param name="NumberOfBytes"></param>
         void Send(byte[] Message, int NumberOfBytes);
         /// <summary>
-        /// Сихронно считывает данные из соединения.
+        /// Сихронно считывает данные из соединения. Возвращает количество принятых байт.
         /// </summary>
         /// <param name="Data"></param>
-        void Receive(byte[] Data);
+        int Receive(byte[] Data);
     }
 
     public class DataFromDevice : EventArgs

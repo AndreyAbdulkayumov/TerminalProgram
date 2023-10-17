@@ -147,7 +147,7 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             ParentWindow.Closing += (sender, e) => 
             { 
-                Model.NoProtocol.CycleMode_Stop();
+                Model.Modbus.CycleMode_Stop();
                 Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
             };
 
@@ -349,7 +349,9 @@ namespace TerminalProgram.ViewModels.MainWindow
                 UInt16[] ModbusReadData = Model.Modbus.ReadRegister(
                                 ReadFunction,
                                 Data,
-                                ViewModel_Modbus.ModbusMessageType);
+                                ViewModel_Modbus.ModbusMessageType,
+                                out _,
+                                out _);
 
 
                 ViewModel_Modbus.AddResponseInDataGrid(new ModbusDataDisplayed()

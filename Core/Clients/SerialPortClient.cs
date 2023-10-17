@@ -286,12 +286,14 @@ namespace Core.Clients
             }
         }
 
-        public void Receive(byte[] Data)
+        public int Receive(byte[] Data)
         {
             if (DeviceSerialPort == null)
             {
-                return;
+                return 0;
             }
+
+            int NumberOfReceivedBytes = 0;
 
             try
             {
@@ -308,18 +310,26 @@ namespace Core.Clients
 
                     if (Data.Length > FirstBytes)
                     {
+                        NumberOfReceivedBytes = FirstBytes;
+
                         DeviceSerialPort.Read(Data, 0, FirstBytes);
 
                         Thread.Sleep(50);
+
+                        NumberOfReceivedBytes += DeviceSerialPort.BytesToRead;
 
                         DeviceSerialPort.Read(Data, FirstBytes, Data.Length);
                     }
                     
                     else
                     {
+                        NumberOfReceivedBytes = Data.Length;
+
                         DeviceSerialPort.Read(Data, 0, Data.Length);
                     }
                 }
+
+                return NumberOfReceivedBytes;
             }
 
             catch (Exception error)

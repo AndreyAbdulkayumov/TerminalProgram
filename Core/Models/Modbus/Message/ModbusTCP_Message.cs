@@ -19,7 +19,9 @@ namespace Core.Models.Modbus.Message
             TX = new byte[7 + PDU.Length];
 
             byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
-            byte[] PDU_Length_Array = BitConverter.GetBytes((UInt16)PDU.Length);
+
+            // 1 байт SlaveID + байты PDU
+            byte[] SlaveID_PDU_Length_Array = BitConverter.GetBytes((UInt16)(1 + PDU.Length));
 
             PackageNumber++;
 
@@ -29,9 +31,9 @@ namespace Core.Models.Modbus.Message
             // Modbus ID
             TX[2] = 0x00;
             TX[3] = 0x00;
-            // Длина PDU
-            TX[4] = PDU_Length_Array[1];
-            TX[5] = PDU_Length_Array[0];
+            // Количество байт далее (SlaveID + PDU)
+            TX[4] = SlaveID_PDU_Length_Array[1];
+            TX[5] = SlaveID_PDU_Length_Array[0];
             // Slave ID
             TX[6] = Data.SlaveID;
 
@@ -82,7 +84,7 @@ namespace Core.Models.Modbus.Message
                 if (CurrentFunction != Function.ReadCoilStatus &&
                     CurrentFunction != Function.ReadDiscreteInputs)
                 {
-                    DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
+                    DecodingResponse.Data = ReverseLowAndHighBytesInWords(DecodingResponse.Data);
                 }
             }
 

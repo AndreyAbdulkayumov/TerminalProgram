@@ -82,6 +82,22 @@ namespace TerminalProgram.ViewModels.MainWindow
             get => _dataDisplayedList;
         }
 
+        private string? _requestBytesDisplayed;
+
+        public string? RequestBytesDisplayed
+        {
+            get => _requestBytesDisplayed;
+            set => this.RaiseAndSetIfChanged(ref _requestBytesDisplayed, value);
+        }
+
+        private string? _responseBytesDisplayed;
+
+        public string? ResponseBytesDisplayed
+        {
+            get => _responseBytesDisplayed;
+            set => this.RaiseAndSetIfChanged(ref _responseBytesDisplayed, value);
+        }
+
         private string? _slaveID;
 
         public string? SlaveID
@@ -496,6 +512,9 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             WriteBuffer.Clear();
 
+            RequestBytesDisplayed = String.Empty;
+            ResponseBytesDisplayed = String.Empty;
+
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
             SetUI_Connected.Invoke();
@@ -518,6 +537,9 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         private void Modbus_Write()
         {
+            byte[] RequestBytes = new byte[0];
+            byte[] ResponseBytes = new byte[0];
+
             try
             {
                 if (Model.Modbus == null)
@@ -573,14 +595,16 @@ namespace TerminalProgram.ViewModels.MainWindow
                     SelectedAddress,
                     ModbusWriteData,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
-                    CRC16_Polynom);
-
+                    CRC16_Polynom);                                
 
                 Model.Modbus.WriteRegister(
                     WriteFunction, 
                     Data,
-                    ModbusMessageType);
+                    ModbusMessageType,
+                    out RequestBytes,
+                    out ResponseBytes);
 
+                ViewRequestAndResponse(RequestBytes, ResponseBytes);
 
                 AddResponseInDataGrid(new ModbusDataDisplayed()
                 {
@@ -595,17 +619,27 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             catch (ModbusException error)
             {
+                ViewRequestAndResponse(RequestBytes, ResponseBytes);
+
                 ModbusErrorHandler(error);
             }
 
             catch (Exception error)
             {
+                if (RequestBytes.Length > 0 || ResponseBytes.Length > 0)
+                {
+                    ViewRequestAndResponse(RequestBytes, ResponseBytes);
+                }
+
                 Message.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" + error.Message, MessageType.Error);
             }
         }
 
         private void Modbus_Read()
         {
+            byte[] RequestBytes = new byte[0];
+            byte[] ResponseBytes = new byte[0];
+
             try
             {
                 if (Model.Modbus == null)
@@ -646,8 +680,7 @@ namespace TerminalProgram.ViewModels.MainWindow
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-                CurrentFunction = ReadFunction;
-
+                CurrentFunction = ReadFunction;               
 
                 MessageData Data = new ReadTypeMessage(
                     SelectedSlaveID,
@@ -660,8 +693,11 @@ namespace TerminalProgram.ViewModels.MainWindow
                 UInt16[] ModbusReadData = Model.Modbus.ReadRegister(
                                 ReadFunction,
                                 Data,
-                                ModbusMessageType);
+                                ModbusMessageType,
+                                out RequestBytes,
+                                out ResponseBytes);
 
+                ViewRequestAndResponse(RequestBytes, ResponseBytes);
 
                 AddResponseInDataGrid(new ModbusDataDisplayed()
                 {
@@ -676,13 +712,41 @@ namespace TerminalProgram.ViewModels.MainWindow
 
             catch (ModbusException error)
             {
+                ViewRequestAndResponse(RequestBytes, ResponseBytes);
+
                 ModbusErrorHandler(error);
             }
 
             catch (Exception error)
             {
+                if (RequestBytes.Length > 0 || ResponseBytes.Length > 0)
+                {
+                    ViewRequestAndResponse(RequestBytes, ResponseBytes);
+                }
+
                 Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
             }
+        }
+
+        private void ViewRequestAndResponse(byte[] RequestBytes, byte[] ResponseBytes)
+        {
+            string Request = String.Empty;
+
+            foreach (var element in RequestBytes)
+            {
+                Request += element.ToString("X2") + " ";
+            }
+
+            RequestBytesDisplayed = Request;
+
+            string Response = String.Empty;
+
+            foreach (var element in ResponseBytes)
+            {
+                Response += element.ToString("X2") + " ";
+            }
+
+            ResponseBytesDisplayed = Response;
         }
 
         private void ModbusErrorHandler(ModbusException error)

@@ -84,7 +84,7 @@ namespace Core.Models.Modbus.Message
             }
         }
 
-        protected byte[] ReverseLowAndHighBytes(byte[] SourceArray)
+        protected byte[] ReverseLowAndHighBytesInWords(byte[] SourceArray)
         {
             if (SourceArray.Length < 2)
             {

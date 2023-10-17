@@ -123,9 +123,9 @@ namespace Core.Tests.Modbus
             // Modbus ID
             BytesArray_Expected[2] = 0;
             BytesArray_Expected[3] = 0;
-            // Длина PDU в байтах (Количество байт после SlaveID)
+            // Количество байт далее (байт SlaveID + байты PDU)
             BytesArray_Expected[4] = 0;
-            BytesArray_Expected[5] = 5;
+            BytesArray_Expected[5] = 6;
             BytesArray_Expected[6] = SlaveID;
             BytesArray_Expected[7] = SelectedFunction.Number;
             BytesArray_Expected[8] = AddressBytes[1];
@@ -167,9 +167,9 @@ namespace Core.Tests.Modbus
             // Modbus ID
             BytesArray_Expected[2] = 0;
             BytesArray_Expected[3] = 0;
-            // Длина PDU в байтах (Количество байт после SlaveID)
+            // Количество байт далее (байт SlaveID + байты PDU)
             BytesArray_Expected[4] = 0;
-            BytesArray_Expected[5] = 5;
+            BytesArray_Expected[5] = 6;
             BytesArray_Expected[6] = SlaveID;
             BytesArray_Expected[7] = SelectedFunction.Number;
             BytesArray_Expected[8] = AddressBytes[1];
@@ -198,8 +198,8 @@ namespace Core.Tests.Modbus
             byte[] NumberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)WriteData.Length);
             byte[] WriteDataBytes = ModbusField.Get_WriteData(WriteData);
 
-            // PDU - 6 байт + байты данных
-            byte[] PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(6 + WriteDataBytes.Length));
+            // PDU - 6 байт + байт SlaveID + байты данных
+            byte[] SlaveID_PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(7 + WriteDataBytes.Length));
 
             if (WriteDataBytes.Length != WriteData.Length * 2)
             {
@@ -213,9 +213,9 @@ namespace Core.Tests.Modbus
             // Modbus ID
             BytesArray_Expected[2] = 0;
             BytesArray_Expected[3] = 0;
-            // Длина PDU в байтах
-            BytesArray_Expected[4] = PDU_Size_Bytes[1];
-            BytesArray_Expected[5] = PDU_Size_Bytes[0];
+            // Количество байт далее (байт SlaveID + байты PDU)
+            BytesArray_Expected[4] = SlaveID_PDU_Size_Bytes[1];
+            BytesArray_Expected[5] = SlaveID_PDU_Size_Bytes[0];
             BytesArray_Expected[6] = SlaveID;
             BytesArray_Expected[7] = SelectedFunction.Number;
             BytesArray_Expected[8] = AddressBytes[1];

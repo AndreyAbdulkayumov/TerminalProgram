@@ -77,7 +77,7 @@ namespace Core.Models.Modbus.Message
                 if (CurrentFunction != Function.ReadCoilStatus &&
                     CurrentFunction != Function.ReadDiscreteInputs)
                 {
-                    DecodingResponse.Data = ReverseLowAndHighBytes(DecodingResponse.Data);
+                    DecodingResponse.Data = ReverseLowAndHighBytesInWords(DecodingResponse.Data);
                 }
             }
 

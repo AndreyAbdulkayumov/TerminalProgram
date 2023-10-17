@@ -196,30 +196,32 @@ namespace Core.Clients
             }
         }
 
-        public void Receive(byte[] RX)
+        public int Receive(byte[] RX)
         {
             if (Stream == null)
             {
-                return;
+                return 0;
             }
+
+            int NumberOfReceivedBytes = 0;
 
             try
             {
                 if (IsConnected)
                 {
-                    int NumberOfReceivedBytes = 0;
-
                     do
                     {
                         if (NumberOfReceivedBytes > RX.Length)
                         {
-                            break;
+                            return RX.Length;
                         }
 
-                        NumberOfReceivedBytes = Stream.Read(RX, NumberOfReceivedBytes, RX.Length);
+                        NumberOfReceivedBytes += Stream.Read(RX, NumberOfReceivedBytes, RX.Length);
 
                     } while (Stream.DataAvailable);
                 }
+
+                return NumberOfReceivedBytes;
             }
 
             catch (Exception error)

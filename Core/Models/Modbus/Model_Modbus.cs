@@ -1,8 +1,8 @@
 ﻿using Core.Clients;
 using Core.Models.Modbus.Message;
-using Core.Models.NoProtocol;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,8 +67,19 @@ namespace Core.Models.Modbus
             Device = null;
         }
 
-        public void WriteRegister(ModbusWriteFunction WriteFunction, MessageData DataForWrite, ModbusMessage Message)
+        public void WriteRegister(ModbusWriteFunction WriteFunction, MessageData DataForWrite, ModbusMessage Message,
+            out byte[] Request, out byte[] Response)
         {
+            while (IsBusy) ;
+
+            IsBusy = true;
+
+            byte[] RX = new byte[30];
+
+            byte[] TX = new byte[0];
+
+            int NumberOfReceivedBytes = 0;
+
             try
             {
                 if (Device == null)
@@ -76,94 +87,130 @@ namespace Core.Models.Modbus
                     throw new Exception("Хост не инициализирован.");
                 }
 
-                while (IsBusy) ;
-
-                IsBusy = true;
-
-                byte[] RX = new byte[30];
-
-                byte[] TX = Message.CreateMessage(WriteFunction, DataForWrite);
+                TX = Message.CreateMessage(WriteFunction, DataForWrite);
 
                 Device.Send(TX, TX.Length);
 
-                Device.Receive(RX);
+                NumberOfReceivedBytes = Device.Receive(RX);
 
-                Message.DecodingMessage(WriteFunction, RX);
-
-                IsBusy = false;
+                ModbusResponse Data = Message.DecodingMessage(WriteFunction, RX);
             }
 
             catch (ModbusException error)
             {
-                IsBusy = false;
                 throw new ModbusException(error);
             }
 
             catch (Exception error)
             {
-                IsBusy = false;
                 throw new Exception(error.Message);
             }
-        }
 
-        public UInt16[] ReadRegister(ModbusReadFunction ReadFunction, MessageData DataForRead, ModbusMessage Message)
-        {
-            try
+            finally
             {
-                if (Device == null)
+                if (TX.Length != 0)
                 {
-                    throw new Exception("Хост не инициализирован.");
-                }
+                    Request = TX;
 
-                while (IsBusy) ;
-
-                IsBusy = true;
-
-                byte[] RX = new byte[100];
-
-                byte[] TX = Message.CreateMessage(ReadFunction, DataForRead);
-
-                Device.Send(TX, TX.Length);
-
-                Device.Receive(RX);
-
-                ModbusResponse Response = Message.DecodingMessage(ReadFunction, RX);
-
-                UInt16[] result;
-
-                if (Response.Data.Length < 2)
-                {
-                    result = new UInt16[1];
-
-                    result[0] = Response.Data[0];
+                    Response = GetOutputRX(RX, NumberOfReceivedBytes);
                 }
 
                 else
                 {
-                    result = new UInt16[Response.Data.Length / 2];
+                    Request = new byte[0];
+                    Response = new byte[0];
+                }
+                
+                IsBusy = false;
+            }
+        }
 
-                    for (int i = 0; i < result.Length; i++)
-                    {
-                        result[i] = BitConverter.ToUInt16(Response.Data, i * 2);
-                    }
+        private byte[] GetOutputRX(byte[] RX, int Length)
+        {
+            byte[] OutputArray = new byte[Length];
+
+            Array.Copy(RX, 0, OutputArray, 0, OutputArray.Length);
+
+            return OutputArray;
+        }
+
+        public UInt16[] ReadRegister(ModbusReadFunction ReadFunction, MessageData DataForRead, ModbusMessage Message,
+            out byte[] Request, out byte[] Response)
+        {
+            while (IsBusy) ;
+
+            IsBusy = true;
+
+            byte[] RX = new byte[100];
+
+            byte[] TX = new byte[0];
+
+            int NumberOfReceivedBytes = 0;
+
+            UInt16[] Result;
+
+            try
+            {
+                if (Device == null)
+                {
+                    throw new Exception("Хост не инициализирован.");
                 }
 
-                IsBusy = false;
+                TX = Message.CreateMessage(ReadFunction, DataForRead);
 
-                return result;
+                Device.Send(TX, TX.Length);
+
+                NumberOfReceivedBytes = Device.Receive(RX);
+
+                ModbusResponse DeviceResponse = Message.DecodingMessage(ReadFunction, RX);
+                                
+                if (DeviceResponse.Data.Length < 2)
+                {
+                    Result = new UInt16[1];
+
+                    Result[0] = DeviceResponse.Data[0];
+                }
+
+                else
+                {
+                    Result = new UInt16[DeviceResponse.Data.Length / 2];
+
+                    for (int i = 0; i < Result.Length; i++)
+                    {
+                        Result[i] = BitConverter.ToUInt16(DeviceResponse.Data, i * 2);
+                    }
+                }
             }
 
             catch (ModbusException error)
             {
-                IsBusy = false;
                 throw new ModbusException(error);
             }
 
             catch (Exception error)
             {
-                IsBusy = false;
                 throw new Exception(error.Message);
             }
+
+            finally
+            {
+                if (TX.Length != 0)
+                {
+                    Request = TX;
+
+                    Response = GetOutputRX(RX, NumberOfReceivedBytes);
+                }
+
+                else
+                {
+                    Request = new byte[0];
+                    Response = new byte[0];
+                }
+
+                IsBusy = false;
+            }
+
+            return Result;
         }
 
         public void CycleMode_Start(Action ReadRegister_Handler)
