@@ -8,6 +8,10 @@ https://jrsoftware.org/isdl.php
 
 https://www.reactiveui.net/
 
+Для тестирования используется xUnit
+
+https://xunit.net/
+
 ## *Терминальная программа*
 Проект написан с использованием WPF.
 
@@ -34,15 +38,17 @@ https://www.reactiveui.net/
 	- TCP
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/a74c5b98-5a3b-4da4-b6ad-1f3b46d8fc7e" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/a8d5b1a8-f71f-4ae6-84fa-592ba245c8ca" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/65b4722b-66ac-48ed-84c0-8019ac69780c" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/18f2041a-b02a-43b5-a9cb-8c6afe642a75" />
 </p>
 
+
 ## *"Modbus"*
-Пользователь может взаимодействовать с выбранными регистрами Modbus в соответствующих полях. История действий отображается в таблице.
+Пользователь может взаимодействовать с выбранными регистрами Modbus в соответствующих полях. История действий отображается в таблице. 
+В полях "Запрос" и "Ответ" тображается последняя транзакция. Содержимое этих пакетов выводится в байтах.
 
 	Поддерживаются протоколы: 
 	- Modbus TCP
@@ -50,22 +56,22 @@ https://www.reactiveui.net/
  	- Modbus ASCII
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/732d95ab-bf4f-418d-9fa9-9e877d12a50a" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/c6ab7512-f16e-4ae2-bf02-25aae08107c2" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/320ea0a0-f206-4fdc-81d8-e2bd48847e64" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/1b385679-ee56-4719-8cee-50d11578afde" />
 </p>
 
 ## *"Http"*
 В верхнем поле пользователь пишет http или https запрос. 
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/30b7b3d7-ab76-4793-ac34-3f2fb9036720" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/6e98a8a6-d83e-4f65-a088-43d20e21b24e" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/90967104-9518-41cf-acdf-f7e668d54765" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/58f122b2-4c35-4725-b921-cdc336344dce" />
 </p>
 
 # Цикличный опрос
