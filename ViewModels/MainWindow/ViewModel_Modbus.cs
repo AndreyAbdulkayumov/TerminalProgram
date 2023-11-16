@@ -14,11 +14,10 @@ using Core.Models.Modbus;
 using Core.Models.Modbus.Message;
 using System.Globalization;
 using System.Reactive.Linq;
-using TerminalProgram.Views;
 using Core.Clients;
-using System.Windows.Threading;
+using MessageBox_Core;
 
-namespace TerminalProgram.ViewModels.MainWindow
+namespace ViewModels.MainWindow
 {
     public class ModbusDataDisplayed
     {
@@ -30,7 +29,7 @@ namespace TerminalProgram.ViewModels.MainWindow
         public string? ViewData { get; set; }
     }
 
-    internal class ViewModel_Modbus : ReactiveObject
+    public class ViewModel_Modbus : ReactiveObject
     {
         #region Properties
 
@@ -235,7 +234,6 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         private ModbusFunction? CurrentFunction;
 
-        private static Dispatcher? CurrentDispatcher;
 
         public ViewModel_Modbus(
             Action<string, MessageType> MessageBox,
@@ -257,7 +255,6 @@ namespace TerminalProgram.ViewModels.MainWindow
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            CurrentDispatcher = Dispatcher.CurrentDispatcher;
 
             /****************************************************/
             //
@@ -777,14 +774,14 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         public static void AddResponseInDataGrid(ModbusDataDisplayed Data)
         {
-            CurrentDispatcher?.BeginInvoke(new Action(() =>
-            {
-                DataDisplayedList.Add(Data);
+            //CurrentDispatcher?.BeginInvoke(new Action(() =>
+            //{
+            //    DataDisplayedList.Add(Data);
 
-                DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
+            //    DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
 
-                PackageNumber++;
-            }));
+            //    PackageNumber++;
+            //}));
         }
 
         public static string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)

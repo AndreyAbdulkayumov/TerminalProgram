@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MessageBox_Core;
+using MessageBox_WPF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using TerminalProgram.ViewModels;
-using TerminalProgram.ViewModels.MainWindow;
+using ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -23,18 +24,32 @@ namespace TerminalProgram.Views.Protocols
     {
         private readonly Action SendUI_Enable;
 
-        public NoProtocol_CycleMode(Action SendUI_Enable_Handler)
+        private readonly ViewModel_NoProtocol_CycleMode ViewModel;
+
+        private readonly WPF_MessageView MessageView;
+
+        public NoProtocol_CycleMode(WPF_MessageView MessageView, Action SendUI_Enable_Handler)
         {
             InitializeComponent();
 
             SendUI_Enable = SendUI_Enable_Handler;
 
-            DataContext = new ViewModel_NoProtocol_CycleMode(
-                this,
+            ViewModel = new ViewModel_NoProtocol_CycleMode(
                 MessageView.Show,
                 UI_State_Work,
                 UI_State_Wait
                 );
+
+            ViewModel.DeviceIsDisconnected += ViewModel_DeviceIsDisconnected;
+
+            DataContext = ViewModel;
+
+            this.MessageView = MessageView;
+        }
+
+        private void ViewModel_DeviceIsDisconnected(object? sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void UI_State_Work()
@@ -68,6 +83,8 @@ namespace TerminalProgram.Views.Protocols
 
         private void SourceWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            ViewModel.SourceWindowClosingAction();
+
             SendUI_Enable.Invoke();
         }
 
@@ -84,6 +101,28 @@ namespace TerminalProgram.Views.Protocols
         private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void SourceWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                switch (e.Key)
+                {
+                    case Key.Enter:
+                        ViewModel.Start_Stop_Handler();
+                        break;
+
+                    case Key.Escape:
+                        this.Close();
+                        break;
+                }
+            }
+
+            catch (Exception error)
+            {
+                MessageView.Show(error.Message, MessageType.Error);
+            }
         }
     }
 }

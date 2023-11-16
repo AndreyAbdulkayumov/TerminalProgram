@@ -1,33 +1,30 @@
-﻿using System;
+﻿using MessageBox_Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using TerminalProgram.ViewModels;
 
-namespace TerminalProgram.Views
+namespace MessageBox_WPF
 {
-    public enum MessageType
+    public class WPF_MessageView : IMessageBox
     {
-        Error,
-        Warning,
-        Information
-    }
+        public string Title = String.Empty;
 
-    internal static class MessageView
-    {
-        // Должен быть указан при запуске программы
-        public static string Title = String.Empty;
-
-        public static void Show(string Message, MessageType Type)
+        public WPF_MessageView(string Title)
         {
-            MessageBoxImage Image = GetViewContent(Type);            
+            this.Title = Title;
+        }
+
+        public void Show(string Message, MessageType Type)
+        {
+            MessageBoxImage Image = GetViewContent(Type);
 
             MessageBox.Show(Message, Title, MessageBoxButton.OK, Image);
         }
 
-        public static bool ShowDialog(string Message, MessageType Type)
+        public bool ShowDialog(string Message, MessageType Type)
         {
             MessageBoxImage Image = GetViewContent(Type);
 
@@ -39,7 +36,7 @@ namespace TerminalProgram.Views
             return false;
         }
 
-        private static MessageBoxImage GetViewContent(MessageType Type)
+        private MessageBoxImage GetViewContent(MessageType Type)
         {
             switch (Type)
             {
@@ -56,5 +53,6 @@ namespace TerminalProgram.Views
                     return MessageBoxImage.Information;
             }
         }
+
     }
 }

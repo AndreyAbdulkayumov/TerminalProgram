@@ -7,21 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TerminalProgram.Views.Protocols;
-using TerminalProgram.Views;
 using System.Reactive;
 using System.Collections.ObjectModel;
 using Core.Models.Modbus;
 using System.Globalization;
 using System.Reactive.Linq;
 using Core.Models.Modbus.Message;
-using System.Windows.Threading;
-using System.Diagnostics;
+using MessageBox_Core;
 
-namespace TerminalProgram.ViewModels.MainWindow
+namespace ViewModels.MainWindow
 {
-    internal class ViewModel_Modbus_CycleMode : ReactiveObject
+    public class ViewModel_Modbus_CycleMode : ReactiveObject, ICycleMode
     {
+        public event EventHandler<EventArgs>? DeviceIsDisconnected;
+
         private byte _slaveID = 1;
 
         public byte SlaveID
@@ -108,7 +107,6 @@ namespace TerminalProgram.ViewModels.MainWindow
 
         private readonly ConnectedHost Model;
 
-        private readonly Modbus_CycleMode ParentWindow;
         private readonly Action<string, MessageType> Message;
         private readonly Action UI_State_Work;
         private readonly Action UI_State_Wait;
@@ -124,14 +122,11 @@ namespace TerminalProgram.ViewModels.MainWindow
         private const int TimeForReadHandler = 100;
 
         public ViewModel_Modbus_CycleMode(
-            Modbus_CycleMode ParentWindow,
             Action<string, MessageType> MessageBox,
             Action UI_State_Work,
             Action UI_State_Wait
             )
         {
-            this.ParentWindow = ParentWindow;
-
             Message = MessageBox;
 
             this.UI_State_Work = UI_State_Work;
@@ -144,15 +139,7 @@ namespace TerminalProgram.ViewModels.MainWindow
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
             Period_ms = Model.Host_ReadTimeout + TimeForReadHandler;
-
-            ParentWindow.Closing += (sender, e) => 
-            { 
-                Model.Modbus.CycleMode_Stop();
-                Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
-            };
-
-            ParentWindow.KeyDown += ParentWindow_KeyDown_Handler;
-                        
+            
             Command_Start_Stop_Polling = ReactiveCommand.Create(Start_Stop_Handler);
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -195,9 +182,15 @@ namespace TerminalProgram.ViewModels.MainWindow
             this.UI_State_Wait.Invoke();
         }
 
+        public void SourceWindowClosingAction()
+        {
+            Model.Modbus.CycleMode_Stop();
+            Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
+        }
+
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            ParentWindow.Close();
+            DeviceIsDisconnected?.Invoke(this, e);
         }
 
         private void Modbus_Model_ErrorInCycleMode(object? sender, string e)
@@ -233,29 +226,7 @@ namespace TerminalProgram.ViewModels.MainWindow
             }           
         }        
 
-        private void ParentWindow_KeyDown_Handler(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                switch (e.Key)
-                {
-                    case Key.Enter:
-                        Start_Stop_Handler();
-                        break;
-
-                    case Key.Escape:
-                        ParentWindow.Close();
-                        break;
-                }
-            }
-
-            catch (Exception error)
-            {
-                Message.Invoke(error.Message, MessageType.Error);
-            }
-        }
-
-        private void Start_Stop_Handler()
+        public void Start_Stop_Handler()
         {
             if (IsStart)
             {

@@ -7,14 +7,12 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using Core.Clients;
 using Core.Models;
-using Core.Models.Modbus.Message;
 using ReactiveUI;
-using TerminalProgram.Views;
+using MessageBox_Core;
 
-namespace TerminalProgram.ViewModels.MainWindow
+namespace ViewModels.MainWindow
 {
     internal enum SendMessageType
     {
@@ -22,7 +20,7 @@ namespace TerminalProgram.ViewModels.MainWindow
         Char
     }
 
-    internal class ViewModel_NoProtocol : ReactiveObject
+    public class ViewModel_NoProtocol : ReactiveObject
     {
         #region Properties
 

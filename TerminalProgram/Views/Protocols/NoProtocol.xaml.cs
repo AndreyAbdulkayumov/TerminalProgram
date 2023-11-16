@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MessageBox_Core;
+using MessageBox_WPF;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TerminalProgram.ViewModels.MainWindow;
+using ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -35,7 +37,9 @@ namespace TerminalProgram.Views.Protocols
 
         private bool UI_State_IsConnected = false;
 
-        public NoProtocol()
+        private readonly WPF_MessageView MessageView;
+
+        public NoProtocol(WPF_MessageView MessageView)
         {
             InitializeComponent();
 
@@ -48,6 +52,8 @@ namespace TerminalProgram.Views.Protocols
                 );
 
             DataContext = ViewModel;
+
+            this.MessageView = MessageView;
         }
 
         private void SetUI_Connected()
@@ -248,7 +254,7 @@ namespace TerminalProgram.Views.Protocols
 
         private void Button_CycleMode_Click(object sender, RoutedEventArgs e)
         {
-            CycleMode_Window = new NoProtocol_CycleMode(SendUI_Enable);
+            CycleMode_Window = new NoProtocol_CycleMode(MessageView, SendUI_Enable);
 
             Application.Current.MainWindow.Closing += (sender, e) => CycleMode_Window.Close();
 

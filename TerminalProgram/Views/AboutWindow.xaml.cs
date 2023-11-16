@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MessageBox_Core;
+using MessageBox_WPF;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -21,9 +23,13 @@ namespace TerminalProgram.Views
     /// </summary>
     public partial class AboutWindow : Window
     {
-        public AboutWindow()
+        private readonly WPF_MessageView MessageView;
+
+        public AboutWindow(WPF_MessageView MessageView)
         {
             InitializeComponent();
+
+            this.MessageView = MessageView;
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

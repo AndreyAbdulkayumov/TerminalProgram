@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\MainLogo.ico</ApplicationIcon>
-    <Version>2.2.0</Version>
+    <Version>2.2.1</Version>
     <Company>XSoft</Company>
     <Authors>Abdulkayumov Andrey</Authors>
   </PropertyGroup>
@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\MessageBox_WPF\MessageBox_WPF.csproj" />
+    <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

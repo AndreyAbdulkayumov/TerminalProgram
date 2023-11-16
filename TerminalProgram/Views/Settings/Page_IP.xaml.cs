@@ -13,8 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TerminalProgram.ViewModels;
-using TerminalProgram.ViewModels.Settings;
+using ViewModels;
+using ViewModels.Settings;
 
 namespace TerminalProgram.Views.Settings
 {

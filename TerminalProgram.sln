@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgram", "TerminalProgram\TerminalProgram.csproj", "{2B82A257-BB2B-460F-A9B6-C330ED087620}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModels", "ViewModels\ViewModels.csproj", "{7AD5CBD3-5143-4630-80B0-A40A385DDB3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBox_Core", "MessageBox_Core\MessageBox_Core.csproj", "{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageBox_WPF", "MessageBox_WPF\MessageBox_WPF.csproj", "{0CB95075-D562-4C0F-A4CB-7178AC58D723}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +33,18 @@ Global
 		{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AD5CBD3-5143-4630-80B0-A40A385DDB3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AD5CBD3-5143-4630-80B0-A40A385DDB3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AD5CBD3-5143-4630-80B0-A40A385DDB3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AD5CBD3-5143-4630-80B0-A40A385DDB3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

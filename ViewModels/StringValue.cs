@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MessageBox_Core;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -6,10 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace TerminalProgram.Views
+namespace ViewModels
 {
     internal static class StringValue
     {
+        public static Action<string, MessageType>? ShowMessageView;
+
         public static string CheckNumber(string? StringNumber, NumberStyles Style, out Byte Number)
         {
             if (StringNumber == null || StringNumber == String.Empty)
@@ -22,12 +25,12 @@ namespace TerminalProgram.Views
             {
                 if (Style == NumberStyles.HexNumber)
                 {
-                    MessageView.Show("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x00 до 0xFF.", MessageType.Warning);
+                    ShowMessageView?.Invoke("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x00 до 0xFF.", MessageType.Warning);
                 }
 
                 else
                 {
-                    MessageView.Show("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 255.", MessageType.Warning);
+                    ShowMessageView?.Invoke("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 255.", MessageType.Warning);
                 }
 
                 StringNumber = CorrectString(StringNumber, Style, 2, 3);
@@ -58,12 +61,12 @@ namespace TerminalProgram.Views
             {
                 if (Style == NumberStyles.HexNumber)
                 {
-                    MessageView.Show("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x0000 до 0xFFFF.", MessageType.Warning);
+                    ShowMessageView?.Invoke("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x0000 до 0xFFFF.", MessageType.Warning);
                 }
 
                 else
                 {
-                    MessageView.Show("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 65535.", MessageType.Warning);
+                    ShowMessageView?.Invoke("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 65535.", MessageType.Warning);
                 }
 
                 StringNumber = CorrectString(StringNumber, Style, 4, 5);
@@ -94,12 +97,12 @@ namespace TerminalProgram.Views
             {
                 if (Style == NumberStyles.HexNumber)
                 {
-                    MessageView.Show("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x00000000 до 0xFFFFFFFF.", MessageType.Warning);
+                    ShowMessageView?.Invoke("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x00000000 до 0xFFFFFFFF.", MessageType.Warning);
                 }
 
                 else
                 {
-                    MessageView.Show("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 2^32.", MessageType.Warning);
+                    ShowMessageView?.Invoke("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 2^32.", MessageType.Warning);
                 }
 
                 StringNumber = CorrectString(StringNumber, Style, 8, 10);

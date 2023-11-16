@@ -1,14 +1,14 @@
 ﻿using Core.Models.Settings;
 using ReactiveUI;
+using MessageBox_Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TerminalProgram.Views;
 
-namespace TerminalProgram.ViewModels.Settings
+namespace ViewModels.Settings
 {
     public class ViewModel_Settings_Ethernet : ReactiveObject
     {

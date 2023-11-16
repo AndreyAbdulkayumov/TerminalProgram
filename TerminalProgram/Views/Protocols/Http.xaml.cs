@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MessageBox_Core;
+using MessageBox_WPF;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,8 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TerminalProgram.ViewModels;
-using TerminalProgram.ViewModels.MainWindow;
+using ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -26,13 +27,17 @@ namespace TerminalProgram.Views.Protocols
     {
         private readonly ViewModel_Http ViewModel;
 
-        public Http()
+        private readonly WPF_MessageView MessageView;
+
+        public Http(WPF_MessageView MessageView)
         {
             InitializeComponent();
 
             ViewModel = new ViewModel_Http(MessageView.Show);
 
             DataContext = ViewModel;
+
+            this.MessageView = MessageView;
         }
 
         private async void Page_KeyDown(object sender, KeyEventArgs e)

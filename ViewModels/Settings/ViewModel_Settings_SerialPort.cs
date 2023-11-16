@@ -1,5 +1,6 @@
 ﻿using Core.Models.Settings;
 using ReactiveUI;
+using MessageBox_Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,9 +11,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using TerminalProgram.Views;
 
-namespace TerminalProgram.ViewModels.Settings
+namespace ViewModels.Settings
 {
     public class ViewModel_Settings_SerialPort : ReactiveObject
     {

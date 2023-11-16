@@ -15,11 +15,12 @@ using System.IO;
 using System.Windows.Markup.Localizer;
 using System.IO.Ports;
 using ReactiveUI;
-using TerminalProgram.ViewModels;
 using System.Reactive;
 using System.Reactive.Linq;
-using TerminalProgram.ViewModels.Settings;
+using ViewModels.Settings;
 using TerminalProgram.Views.ServiceWindows;
+using MessageBox_Core;
+using MessageBox_WPF;
 
 namespace TerminalProgram.Views.Settings
 {
@@ -33,8 +34,9 @@ namespace TerminalProgram.Views.Settings
 
         private readonly ViewModel_Settings ViewModel;
 
+        private readonly WPF_MessageView MessageView;
 
-        public SettingsWindow()
+        public SettingsWindow(WPF_MessageView MessageView)
         {
             InitializeComponent();
 
@@ -46,6 +48,8 @@ namespace TerminalProgram.Views.Settings
                 );
 
             DataContext = ViewModel;
+
+            this.MessageView = MessageView;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)

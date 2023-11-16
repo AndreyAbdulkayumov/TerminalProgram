@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Core.Models.Http;
 using ReactiveUI;
-using TerminalProgram.Views;
+using MessageBox_Core;
 
-namespace TerminalProgram.ViewModels.MainWindow
+namespace ViewModels.MainWindow
 {
     public class ViewModel_Http : ReactiveObject
     {

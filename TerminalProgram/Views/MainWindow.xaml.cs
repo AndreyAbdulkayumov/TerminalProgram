@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.IO;
-using System.IO.Ports;
-using TerminalProgram.ViewModels;
-using TerminalProgram.ViewModels.MainWindow;
+using ViewModels.MainWindow;
 using TerminalProgram.Views.Protocols;
 using TerminalProgram.Views.Settings;
 using System.Reactive.Linq;
 using TerminalProgram.Views.ServiceWindows;
+using MessageBox_WPF;
+using MessageBox_Core;
+using TerminalProgram.Themes;
 
 namespace TerminalProgram.Views
 {
@@ -34,26 +34,62 @@ namespace TerminalProgram.Views
 
         private readonly ViewModel_CommonUI ViewModel;
 
+        private readonly WPF_MessageView MessageView;
+
         public MainWindow()
         {
             InitializeComponent();
 
-            MessageView.Title = this.Title; // Общий заголовок для всех диалоговых окон
+            MessageView = new WPF_MessageView(this.Title); ; // Общий заголовок для всех диалоговых окон
+
+            Properties.Settings.Default.Reload();
 
             ViewModel = new ViewModel_CommonUI(
                 MessageView.Show,
                 SetUI_Connected,
                 SetUI_Disconnected,
-                Select_AvailablePresetFiles);
+                Select_AvailablePresetFiles,
+                Properties.Settings.Default.SettingsDocument,
+                Properties.Settings.Default.ThemeName,
+                ThemesManager.ThemeTypeName_Dark,
+                ThemesManager.ThemeTypeName_Light
+                );
 
-            DataContext = ViewModel;
+            ViewModel_CommonUI.SettingsDocument_Changed += ViewModel_CommonUI_SettingsDocument_Changed;
+            ViewModel_CommonUI.ThemeName_Changed += ViewModel_CommonUI_ThemeName_Changed;
 
-            NoProtocolPage = new NoProtocol();
+            DataContext = ViewModel;           
 
-            ModbusPage = new Modbus();
+            NoProtocolPage = new NoProtocol(MessageView);
 
-            HttpPage = new Http();
+            ModbusPage = new Modbus(MessageView);
+
+            HttpPage = new Http(MessageView);
         }
+
+        private void ViewModel_CommonUI_SettingsDocument_Changed(object? sender, DocArgs e)
+        {
+            if (e.FilePath == null)
+            {
+                return;
+            }
+
+            Properties.Settings.Default.SettingsDocument = e.FilePath;
+            Properties.Settings.Default.Save();
+        }
+
+        private void ViewModel_CommonUI_ThemeName_Changed(object? sender, DocArgs e)
+        {
+            if (e.FilePath == null)
+            {
+                return;
+            }
+
+            Properties.Settings.Default.ThemeName = e.FilePath;
+            Properties.Settings.Default.Save();
+
+            ThemesManager.Select(e.FilePath);
+        }        
 
         private void SetUI_Connected()
         {
@@ -98,6 +134,10 @@ namespace TerminalProgram.Views
 
         private async void SourceWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            Properties.Settings.Default.Reload();
+
+            ThemesManager.Select(Properties.Settings.Default.ThemeName);
+
             RadioButton_NoProtocol.IsChecked = true;
 
             await ViewModel.Command_UpdatePresets.Execute();
@@ -143,7 +183,7 @@ namespace TerminalProgram.Views
 
         private async void MenuSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow Window = new SettingsWindow()
+            SettingsWindow Window = new SettingsWindow(MessageView)
             {
                 Owner = this
             };
@@ -158,7 +198,7 @@ namespace TerminalProgram.Views
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
         {
-            AboutWindow window = new AboutWindow()
+            AboutWindow window = new AboutWindow(MessageView)
             {
                 Owner = this
             };

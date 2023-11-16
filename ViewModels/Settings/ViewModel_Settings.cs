@@ -10,11 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using ReactiveUI;
-using TerminalProgram.ViewModels.MainWindow;
-using TerminalProgram.Views;
 using Core.Models.Settings;
+using MessageBox_Core;
+using ViewModels.MainWindow;
 
-namespace TerminalProgram.ViewModels.Settings
+namespace ViewModels.Settings
 {
     public class ViewModel_Settings : ReactiveObject
     {
@@ -155,13 +155,11 @@ namespace TerminalProgram.ViewModels.Settings
                     switch (ThemeName)
                     {
                         case ThemeName_Dark:
-                            ThemesManager.Select(ThemeType.Dark);
-                            ViewModel_CommonUI.ThemeName = ThemesManager.ThemeTypeName_Dark;
+                            ViewModel_CommonUI.ThemeName = ViewModel_CommonUI.ThemeName_Dark;
                             break;
 
                         case ThemeName_Light:
-                            ThemesManager.Select(ThemeType.Light);
-                            ViewModel_CommonUI.ThemeName = ThemesManager.ThemeTypeName_Light;
+                            ViewModel_CommonUI.ThemeName = ViewModel_CommonUI.ThemeName_Light;
                             break;
                     }
                 });
@@ -212,15 +210,14 @@ namespace TerminalProgram.ViewModels.Settings
 
         private void Loaded_EventHandler()
         {
-            switch(ViewModel_CommonUI.ThemeName)
+            if (ViewModel_CommonUI.ThemeName == ViewModel_CommonUI.ThemeName_Dark)
             {
-                case ThemesManager.ThemeTypeName_Dark:
-                    SelectedTheme = ThemeName_Dark;
-                    break;
+                SelectedTheme = ThemeName_Dark;
+            }
 
-                case ThemesManager.ThemeTypeName_Light:
-                    SelectedTheme = ThemeName_Light;
-                    break;
+            else if (ViewModel_CommonUI.ThemeName == ViewModel_CommonUI.ThemeName_Light)
+            {
+                SelectedTheme = ThemeName_Light;
             }
 
             UpdateListOfPresets();
