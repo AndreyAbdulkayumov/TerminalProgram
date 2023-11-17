@@ -32,6 +32,7 @@ namespace ViewModels.Settings
 
         private readonly Action<string, MessageType> Message;
 
+
         public ViewModel_Settings_Ethernet(ViewModel_Settings Main_VM)
         {
             Main_VM.SettingsFileChanged += Main_VM_SettingsFileChanged;

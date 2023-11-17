@@ -31,6 +31,8 @@ namespace ViewModels.MainWindow
 
     public class ViewModel_Modbus : ReactiveObject
     {
+        public static event EventHandler<ModbusDataDisplayed>? AddDataInView;
+
         #region Properties
 
         private const string ModbusMode_Name_Default = "не определен";
@@ -71,14 +73,6 @@ namespace ViewModels.MainWindow
         {
             get => _connection_IsSerialPort;
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
-        }
-
-        private static readonly ObservableCollection<ModbusDataDisplayed> _dataDisplayedList =
-            new ObservableCollection<ModbusDataDisplayed>();
-
-        public static ObservableCollection<ModbusDataDisplayed> DataDisplayedList
-        {
-            get => _dataDisplayedList;
         }
 
         private string? _requestBytesDisplayed;
@@ -214,9 +208,9 @@ namespace ViewModels.MainWindow
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
+
         private readonly Action SetUI_Connected;
         private readonly Action SetUI_Disconnected;
-        private static Action<ModbusDataDisplayed>? DataGrid_ScrollTo;
 
         public static ModbusMessage? ModbusMessageType { get; private set; }
 
@@ -237,16 +231,15 @@ namespace ViewModels.MainWindow
 
         public ViewModel_Modbus(
             Action<string, MessageType> MessageBox,
+            Action ClearDataGrid_Handler,
             Action UI_Connected_Handler,
-            Action UI_Disconnected_Handler,
-            Action<ModbusDataDisplayed> UI_DataGrid_ScrollTo_Handler)
+            Action UI_Disconnected_Handler
+            )
         {
             Message = MessageBox;
 
             SetUI_Connected = UI_Connected_Handler;
             SetUI_Disconnected = UI_Disconnected_Handler;
-
-            DataGrid_ScrollTo = UI_DataGrid_ScrollTo_Handler;
 
             Model = ConnectedHost.Model;
 
@@ -293,7 +286,7 @@ namespace ViewModels.MainWindow
             /****************************************************/
 
 
-            Command_ClearDataGrid = ReactiveCommand.Create(DataDisplayedList.Clear);
+            Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler.Invoke);
             Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.Create(Modbus_Write);
@@ -515,8 +508,6 @@ namespace ViewModels.MainWindow
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
             SetUI_Connected.Invoke();
-
-            DataDisplayedList.Clear();
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
@@ -774,14 +765,9 @@ namespace ViewModels.MainWindow
 
         public static void AddResponseInDataGrid(ModbusDataDisplayed Data)
         {
-            //CurrentDispatcher?.BeginInvoke(new Action(() =>
-            //{
-            //    DataDisplayedList.Add(Data);
+            AddDataInView?.Invoke(null, Data);
 
-            //    DataGrid_ScrollTo?.Invoke(DataDisplayedList.Last());
-
-            //    PackageNumber++;
-            //}));
+            PackageNumber++;
         }
 
         public static string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)

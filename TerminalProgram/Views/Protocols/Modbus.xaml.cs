@@ -1,5 +1,4 @@
-﻿using MessageBox_WPF;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -14,7 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 using ViewModels.MainWindow;
+using MessageBox_WPF;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -29,17 +30,40 @@ namespace TerminalProgram.Views.Protocols
 
         private readonly WPF_MessageView MessageView;
 
+        private readonly ObservableCollection<ModbusDataDisplayed> ViewData;
+
+
         public Modbus(WPF_MessageView MessageView)
         {
             InitializeComponent();
 
+            ViewData = new ObservableCollection<ModbusDataDisplayed>();
+
+            DataGrid_ModbusData.ItemsSource = ViewData;
+
             DataContext = new ViewModel_Modbus(
                 MessageView.Show,
+                ClearDataGrid,
                 SetUI_Connected,
-                SetUI_Disconnected,
-                DataGrid_ScrollTo);
+                SetUI_Disconnected);
+
+            ViewModel_Modbus.AddDataInView += ViewModel_Modbus_AddDataInView;
 
             this.MessageView = MessageView;
+        }
+
+        private void ViewModel_Modbus_AddDataInView(object? sender, ModbusDataDisplayed e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ViewData.Add(e);
+                DataGrid_ModbusData.ScrollIntoView(e);
+            }));            
+        }
+
+        private void ClearDataGrid()
+        {
+            Dispatcher.BeginInvoke(new Action(ViewData.Clear));
         }
 
         private void SetUI_Connected()
@@ -64,6 +88,8 @@ namespace TerminalProgram.Views.Protocols
             CheckBox_CheckSum_Enable.IsEnabled = true;
 
             UI_State_IsConnected = true;
+
+            ClearDataGrid();
         }
 
         private void SetUI_Disconnected()
@@ -92,14 +118,6 @@ namespace TerminalProgram.Views.Protocols
             CheckBox_CheckSum_Enable.IsEnabled = false;
 
             UI_State_IsConnected = false;
-        }
-
-        private void DataGrid_ScrollTo(ModbusDataDisplayed Item)
-        {
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                DataGrid_ModbusData.ScrollIntoView(Item);
-            }));            
         }
 
         private void SendUI_Enable()

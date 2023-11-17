@@ -29,6 +29,7 @@ namespace TerminalProgram.Views.Protocols
 
         private readonly WPF_MessageView MessageView;
 
+
         public Http(WPF_MessageView MessageView)
         {
             InitializeComponent();

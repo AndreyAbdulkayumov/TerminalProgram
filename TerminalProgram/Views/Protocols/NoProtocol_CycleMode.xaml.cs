@@ -28,6 +28,7 @@ namespace TerminalProgram.Views.Protocols
 
         private readonly WPF_MessageView MessageView;
 
+
         public NoProtocol_CycleMode(WPF_MessageView MessageView, Action SendUI_Enable_Handler)
         {
             InitializeComponent();

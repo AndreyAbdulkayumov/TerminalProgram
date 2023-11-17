@@ -102,12 +102,14 @@ namespace ViewModels.MainWindow
         private readonly Action SetUI_Disconnected;
         private readonly Action<string> UI_Action_Receive;
 
+
         public ViewModel_NoProtocol(
             Action<string, MessageType> MessageBox,
             Action UI_Connected_Handler,
             Action UI_Disconnected_Handler,
             Action<string> Action_Receive_Handler,
-            Action Clear_ReceiveField)
+            Action Clear_ReceiveField
+            )
         {
             Message = MessageBox;
 

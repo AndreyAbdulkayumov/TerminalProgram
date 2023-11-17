@@ -12,14 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Reactive.Linq;
 using ViewModels.MainWindow;
 using TerminalProgram.Views.Protocols;
 using TerminalProgram.Views.Settings;
-using System.Reactive.Linq;
 using TerminalProgram.Views.ServiceWindows;
+using TerminalProgram.Themes;
 using MessageBox_WPF;
 using MessageBox_Core;
-using TerminalProgram.Themes;
 
 namespace TerminalProgram.Views
 {
@@ -36,6 +36,7 @@ namespace TerminalProgram.Views
 
         private readonly WPF_MessageView MessageView;
 
+
         public MainWindow()
         {
             InitializeComponent();
@@ -43,6 +44,13 @@ namespace TerminalProgram.Views
             MessageView = new WPF_MessageView(this.Title); ; // Общий заголовок для всех диалоговых окон
 
             Properties.Settings.Default.Reload();
+
+            // Темная тема по умолчанию
+            if (Properties.Settings.Default.ThemeName == String.Empty)
+            {
+                Properties.Settings.Default.ThemeName = ThemesManager.ThemeTypeName_Dark;
+                Properties.Settings.Default.Save();
+            }
 
             ViewModel = new ViewModel_CommonUI(
                 MessageView.Show,
@@ -74,6 +82,7 @@ namespace TerminalProgram.Views
                 return;
             }
 
+            Properties.Settings.Default.Reload();
             Properties.Settings.Default.SettingsDocument = e.FilePath;
             Properties.Settings.Default.Save();
         }
@@ -85,6 +94,7 @@ namespace TerminalProgram.Views
                 return;
             }
 
+            Properties.Settings.Default.Reload();
             Properties.Settings.Default.ThemeName = e.FilePath;
             Properties.Settings.Default.Save();
 

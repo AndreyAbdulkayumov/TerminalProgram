@@ -76,7 +76,7 @@ namespace TerminalProgram.Themes
                     break;
 
                 default:
-                    ThemePath += "Light.xaml";
+                    ThemePath += "Dark.xaml";
                     break;
             }
 

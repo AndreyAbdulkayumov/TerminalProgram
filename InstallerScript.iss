@@ -5,9 +5,9 @@
 
 
 ; Менять версии тут
-#define MyAppVersion "2.2.0"
-#define InstallDirectory "D:\XSoft\TerminalProgram_2.2.0"
-#define OutputFileName "TerminalProgram_2.2.0_installer"
+#define MyAppVersion "2.3.0"
+#define InstallDirectory "D:\XSoft\TerminalProgram_2.3.0"
+#define OutputFileName "TerminalProgram_2.3.0_installer"
 
 
 #define MyAppPublisher "XSoft"

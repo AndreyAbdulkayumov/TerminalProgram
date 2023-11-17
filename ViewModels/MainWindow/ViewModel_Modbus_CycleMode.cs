@@ -121,6 +121,7 @@ namespace ViewModels.MainWindow
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
         private const int TimeForReadHandler = 100;
 
+
         public ViewModel_Modbus_CycleMode(
             Action<string, MessageType> MessageBox,
             Action UI_State_Work,

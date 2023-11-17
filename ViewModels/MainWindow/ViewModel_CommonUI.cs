@@ -107,8 +107,7 @@ namespace ViewModels.MainWindow
         private readonly Action SetUI_Connected;
         private readonly Action SetUI_Disconnected;
         private readonly Func<string[], string> Select_AvailablePresetFile;
-
-        
+                
 
         public ViewModel_CommonUI(
             Action<string, MessageType> MessageBox,

@@ -105,7 +105,6 @@ namespace ViewModels.Settings
             get => _selected_Ethernet;
             set => this.RaiseAndSetIfChanged(ref _selected_Ethernet, value);
         }
-
         
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
@@ -113,7 +112,6 @@ namespace ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_AddExisting { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
-
 
         public readonly Action<string, MessageType> Message;
         private readonly Func<string, MessageType, bool> MessageDialog;
@@ -132,7 +130,8 @@ namespace ViewModels.Settings
             Action<string, MessageType> MessageBox,
             Func<string, MessageType, bool> MessageBoxDialog,
             Func<string, string?> Get_FilePath_Handler,
-            Func<string> Get_NewFileName_Handler)
+            Func<string> Get_NewFileName_Handler
+            )
         {
             Message = MessageBox;
             MessageDialog = MessageBoxDialog;

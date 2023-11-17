@@ -25,6 +25,7 @@ namespace TerminalProgram.Views
     {
         private readonly WPF_MessageView MessageView;
 
+
         public AboutWindow(WPF_MessageView MessageView)
         {
             InitializeComponent();

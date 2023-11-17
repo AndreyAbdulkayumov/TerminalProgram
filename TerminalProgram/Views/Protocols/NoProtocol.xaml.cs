@@ -39,6 +39,7 @@ namespace TerminalProgram.Views.Protocols
 
         private readonly WPF_MessageView MessageView;
 
+
         public NoProtocol(WPF_MessageView MessageView)
         {
             InitializeComponent();

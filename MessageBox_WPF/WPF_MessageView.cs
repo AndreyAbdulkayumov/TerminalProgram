@@ -1,16 +1,17 @@
-﻿using MessageBox_Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MessageBox_Core;
 
 namespace MessageBox_WPF
 {
     public class WPF_MessageView : IMessageBox
     {
         public string Title = String.Empty;
+
 
         public WPF_MessageView(string Title)
         {
@@ -53,6 +54,5 @@ namespace MessageBox_WPF
                     return MessageBoxImage.Information;
             }
         }
-
     }
 }

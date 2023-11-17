@@ -39,6 +39,7 @@ namespace ViewModels.MainWindow
 
         private readonly Action<string, MessageType> Message;
 
+
         public ViewModel_Http(Action<string, MessageType> MessageBox)
         {
             Message = MessageBox;

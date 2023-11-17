@@ -147,6 +147,7 @@ namespace ViewModels.MainWindow
         private readonly Action UI_State_Work;
         private readonly Action UI_State_Wait;
 
+
         public ViewModel_NoProtocol_CycleMode(
             Action<string, MessageType> MessageBox,
             Action UI_State_Work,

@@ -168,7 +168,6 @@ namespace ViewModels.Settings
 
         public ReactiveCommand<Unit, Unit> Command_ReScan_COMPorts { get; }
 
-
         private readonly Action<string, MessageType> Message;
 
         private readonly Model_Settings SettingsFile;
