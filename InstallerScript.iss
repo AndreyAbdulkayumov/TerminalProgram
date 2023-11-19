@@ -17,7 +17,7 @@
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 ; Относительный путь
-#define PublishDirectory 'TerminalProgram\bin\Release\net7.0-windows\publish\win-x64'
+#define PublishDirectory 'TerminalProgram\bin\Release\net8.0-windows7.0\publish\win-x64'
 
 #define OutputDirectory 'D:\0_Compiled_Installers\TerminalProgram'
 
