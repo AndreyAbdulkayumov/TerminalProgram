@@ -38,6 +38,36 @@ namespace Core.Models.Settings
         public SerialPort_Info? Connection_SerialPort { get; set; }
         public IP_Info? Connection_IP { get; set; }
 
+        public static DeviceData GetDefault()
+        {
+            return new DeviceData()
+            {
+                GlobalEncoding = "UTF-8",
+
+                TimeoutWrite = "300",
+                TimeoutRead = "300",
+
+                TypeOfConnection = DeviceData.ConnectionName_SerialPort,
+
+                Connection_SerialPort = new SerialPort_Info()
+                {
+                    COMPort = null,
+                    BaudRate = null,
+                    BaudRate_IsCustom = false,
+                    BaudRate_Custom = null,
+                    Parity = null,
+                    DataBits = null,
+                    StopBits = null
+                },
+
+                Connection_IP = new IP_Info()
+                {
+                    IP_Address = null,
+                    Port = null
+                }
+            };
+        }
+
         public object Clone()
         {
             SerialPort_Info? SerialPort;

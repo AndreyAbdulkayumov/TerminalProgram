@@ -106,14 +106,14 @@ namespace ViewModels.MainWindow
         private readonly Action<string, MessageType> Message;
         private readonly Action SetUI_Connected;
         private readonly Action SetUI_Disconnected;
-        private readonly Func<string[], string> Select_AvailablePresetFile;
+        private readonly Func<string[], string?> Select_AvailablePresetFile;
                 
 
         public ViewModel_CommonUI(
             Action<string, MessageType> MessageBox,
             Action UI_Connected_Handler,
             Action UI_Disconnected_Handler,
-            Func<string[], string> Select_AvailablePresetFile_Handler,
+            Func<string[], string?> Select_AvailablePresetFile_Handler,
             string? SettingsDocument,
             string? CurrentThemeName,
             string? ThemeName_Dark,
@@ -198,13 +198,16 @@ namespace ViewModels.MainWindow
 
             if (SettingsDocument == null || Presets.Contains(SettingsDocument) == false)
             {
-                Message.Invoke("Файл настроек " + SettingsDocument + " не существует в папке " + Model_Settings.FolderPath_Settings +
+                Message.Invoke("Файл настроек \"" + SettingsDocument + "\" не существует в папке " + SettingsFile.FolderPath_Settings +
                     "\n\nНажмите ОК и выберите один из доступных файлов в появившемся окне.", MessageType.Warning);
 
                 SettingsDocument = Select_AvailablePresetFile(Presets.ToArray());
             }
 
-            SelectedPreset = Presets.Single(x => x == SettingsDocument);
+            if (SettingsDocument != null)
+            {
+                SelectedPreset = Presets.Single(x => x == SettingsDocument);
+            }            
         }
 
         private void Connect_Handler()

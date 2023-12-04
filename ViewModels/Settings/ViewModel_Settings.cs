@@ -242,7 +242,7 @@ namespace ViewModels.Settings
 
             if (FileName != String.Empty)
             {
-                SettingsFile.Save(FileName, Model_Settings.GetDefault());
+                SettingsFile.Save(FileName, DeviceData.GetDefault());
 
                 UpdateListOfPresets();
 
@@ -261,11 +261,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                string destFilePath = Model_Settings.FolderPath_Settings + Path.GetFileName(FilePath);
-
-                string FileName = Path.GetFileNameWithoutExtension(FilePath);
-
-                File.Copy(FilePath, destFilePath);
+                string FileName = SettingsFile.CopyFrom(FilePath);
 
                 UpdateListOfPresets();
 
@@ -295,7 +291,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                File.Delete(Model_Settings.FolderPath_Settings + SelectedPreset + Model_Settings.FileType);
+                SettingsFile.Delete(SelectedPreset);
 
                 UpdateListOfPresets();
 

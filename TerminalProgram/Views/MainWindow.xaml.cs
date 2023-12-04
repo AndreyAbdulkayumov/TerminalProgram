@@ -121,7 +121,7 @@ namespace TerminalProgram.Views
             Button_Disconnect.IsEnabled = false;            
         }
 
-        private string Select_AvailablePresetFiles(string[] Files)
+        private string? Select_AvailablePresetFiles(string[] Files)
         {
             ComboBoxWindow window = new ComboBoxWindow(Files)
             {
@@ -138,7 +138,7 @@ namespace TerminalProgram.Views
             else
             {
                 Application.Current.Shutdown();
-                return "";
+                return null;
             }
         }
 

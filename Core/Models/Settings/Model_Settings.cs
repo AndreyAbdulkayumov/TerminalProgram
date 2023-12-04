@@ -18,44 +18,22 @@ namespace Core.Models.Settings
             get => _model ?? (_model = new Model_Settings());
         }
 
-        public const string FolderPath_Settings = "Settings/";
+        public string FolderPath_Settings
+        {
+            get => AppDirectoryManager.SettingsFiles_Directory;
+        }
 
         private const string DefaultFileName = "Unknown";
 
-        public const string FileType = ".json";
+        private const string FileExtension = ".json";
 
-        private static DeviceData DefaultSettings = new DeviceData()
-        {
-            GlobalEncoding = "UTF-8",
 
-            TimeoutWrite = "300",
-            TimeoutRead = "300",
-
-            TypeOfConnection = DeviceData.ConnectionName_SerialPort,
-
-            Connection_SerialPort = new SerialPort_Info()
-            {
-                COMPort = null,
-                BaudRate = null,
-                BaudRate_IsCustom = false,
-                BaudRate_Custom = null,
-                Parity = null,
-                DataBits = null,
-                StopBits = null
-            },
-
-            Connection_IP = new IP_Info()
-            {
-                IP_Address = null,
-                Port = null
-            }
-        };
-
-        public static DeviceData GetDefault()
-        {
-            return (DeviceData)DefaultSettings.Clone();
-        }
-
+        /// <summary>
+        /// Сохранение данных в файл. Если файл с таким именем не найден, то он создается.
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <param name="Data"></param>
+        /// <exception cref="Exception"></exception>
         public void Save(string FileName, DeviceData Data)
         {
             try
@@ -65,7 +43,7 @@ namespace Core.Models.Settings
                     throw new Exception("Не задано имя файла настроек.");
                 }
 
-                string FilePath = FolderPath_Settings + FileName + FileType;
+                string FilePath = Path.Combine(FolderPath_Settings, FileName + FileExtension);
 
                 if (File.Exists(FilePath) == false)
                 {
@@ -89,11 +67,16 @@ namespace Core.Models.Settings
 
             catch (Exception error)
             {
-                throw new Exception("Ошибка сохранения настроек. " +
-                    error.Message);
+                throw new Exception("Ошибка сохранения настроек.\n\n" + error.Message);
             }
         }
 
+        /// <summary>
+        /// Чтение настроек из файла. Если файл содержит битые данные, то он перезаписывается значениями по умолчанию.
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public DeviceData Read(string FileName)
         {
             try
@@ -103,7 +86,7 @@ namespace Core.Models.Settings
                     throw new Exception("Не задано имя файла настроек.");
                 }
 
-                string FilePath = FolderPath_Settings + FileName + FileType;
+                string FilePath = Path.Combine(FolderPath_Settings, FileName + FileExtension);
 
                 if (File.Exists(FilePath) == false)
                 {
@@ -121,7 +104,7 @@ namespace Core.Models.Settings
 
                     if (Data == null)
                     {
-                        Data = GetDefault();
+                        Data = DeviceData.GetDefault();
 
                         Save(FileName, Data);
                     }
@@ -130,7 +113,7 @@ namespace Core.Models.Settings
                 // Создание настроек по умолчанию, если в файле некоректные данные.
                 catch (JsonException)
                 {
-                    Data = GetDefault();
+                    Data = DeviceData.GetDefault();
 
                     Save(FileName, Data);
                 }
@@ -149,33 +132,55 @@ namespace Core.Models.Settings
             }
         }
 
+        /// <summary>
+        /// Удаляет файл по указанному пути, если он существует.
+        /// </summary>
+        /// <param name="FileName"></param>
+        public void Delete(string FileName)
+        {
+            string[] ArrayOfFiles = Directory.GetFiles(AppDirectoryManager.SettingsFiles_Directory);
+
+            string SelectedFile_FullPath = Path.Combine(AppDirectoryManager.SettingsFiles_Directory, FileName + FileExtension);
+
+            if (ArrayOfFiles.Contains(SelectedFile_FullPath))
+            {
+                File.Delete(Path.Combine(AppDirectoryManager.SettingsFiles_Directory, FileName) + FileExtension);
+            }
+
+            else
+            {
+                throw new Exception("Не удалось найти файл \"" + FileName + "\" в папке " + AppDirectoryManager.SettingsFiles_Directory);
+            }
+        }
+
+        /// <summary>
+        /// Копирует файл с указанным путем в директорию приложения.
+        /// </summary>
+        /// <param name="FilePath"></param>
+        /// <returns>Имя скопированного файла без расширения.</returns>
+        public string CopyFrom(string FilePath)
+        {
+            string destFilePath = Path.Combine(AppDirectoryManager.SettingsFiles_Directory, Path.GetFileName(FilePath));
+
+            string FileName = Path.GetFileNameWithoutExtension(FilePath);
+
+            File.Copy(FilePath, destFilePath);
+
+            return FileName;
+        }
+
+        /// <summary>
+        /// Возвращает имена всех доступных файлов настроек.
+        /// </summary>
+        /// <returns></returns>
         public string[] FindFilesOfPresets()
         {
-            if (Directory.Exists(FolderPath_Settings) == false)
-            {
-                Directory.CreateDirectory(FolderPath_Settings);
-            }
-
-            string[] ArrayOfPresets;
-
-            ArrayOfPresets = Directory.GetFiles(FolderPath_Settings, "*" + FileType);
-
-            // Создание файла настроек по умолчанию, если в папке нет ни одного файла.
-            if (ArrayOfPresets.Length == 0)
-            {
-                string DefaultFilePath = FolderPath_Settings + DefaultFileName + FileType;
-
-                File.Create(DefaultFilePath).Close();
-
-                Save(DefaultFileName, GetDefault());
-
-                ArrayOfPresets = Directory.GetFiles(FolderPath_Settings, "*" + FileType);
-            }
-
-            for (int i = 0; i < ArrayOfPresets.Length; i++)
-            {
-                ArrayOfPresets[i] = Path.GetFileNameWithoutExtension(ArrayOfPresets[i]);
-            }
+            string[] ArrayOfPresets = AppDirectoryManager.CheckFiles(
+                AppDirectoryManager.SettingsFiles_Directory, 
+                DefaultFileName, 
+                FileExtension, 
+                DeviceData.GetDefault()
+                );
 
             return ArrayOfPresets;
         }
