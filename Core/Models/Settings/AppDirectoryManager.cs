@@ -9,25 +9,44 @@ namespace Core.Models.Settings
 {
     internal class AppDirectoryManager
     {
+        // Имя корневой папки (имя разработчика ПО)
         private const string CommonFolderName = "XSoft";
+
+        // Имя папки приложения
         private const string ProgramFolderName = "TerminalProgram";
 
-        public static readonly string SettingsFiles_Directory;
+        /*******************************************************/
+        //
+        // Константы с определением имен папок приложения
+        //
+        /*******************************************************/
 
+        // Папка с файлами настроек
         private const string SettingsFiles_FolderName = "Settings";
 
+        /*******************************************************/
+        //
+        // Полные пути к папкам приложения
+        //
+        /*******************************************************/
 
-        static AppDirectoryManager()
+        // Полный путь к папке настроек
+        public readonly string SettingsFiles_Directory;
+
+
+        public AppDirectoryManager()
         {
             string FolderInDocuments = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal),
                 CommonFolderName,
                 ProgramFolderName);
 
+            // Создание путей к папкам приложения
+
             SettingsFiles_Directory = Path.Combine(FolderInDocuments, SettingsFiles_FolderName);
         }
 
-        public static string[] CheckFiles(string SelectedDirectory, string DefaultFileName, string Extension, object DefaultData)
+        public string[] CheckFiles(string SelectedDirectory, string DefaultFileName, string Extension, object DefaultData)
         {
             if (Directory.Exists(SelectedDirectory) == false)
             {

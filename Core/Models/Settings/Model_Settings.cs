@@ -18,14 +18,17 @@ namespace Core.Models.Settings
             get => _model ?? (_model = new Model_Settings());
         }
 
+        // Путь к папке с файлами настроек
         public string FolderPath_Settings
         {
-            get => AppDirectoryManager.SettingsFiles_Directory;
+            get => DirectoryManager.SettingsFiles_Directory;
         }
 
         private const string DefaultFileName = "Unknown";
 
         private const string FileExtension = ".json";
+
+        private readonly AppDirectoryManager DirectoryManager = new AppDirectoryManager();
 
 
         /// <summary>
@@ -138,18 +141,18 @@ namespace Core.Models.Settings
         /// <param name="FileName"></param>
         public void Delete(string FileName)
         {
-            string[] ArrayOfFiles = Directory.GetFiles(AppDirectoryManager.SettingsFiles_Directory);
+            string[] ArrayOfFiles = Directory.GetFiles(DirectoryManager.SettingsFiles_Directory);
 
-            string SelectedFile_FullPath = Path.Combine(AppDirectoryManager.SettingsFiles_Directory, FileName + FileExtension);
+            string SelectedFile_FullPath = Path.Combine(DirectoryManager.SettingsFiles_Directory, FileName + FileExtension);
 
             if (ArrayOfFiles.Contains(SelectedFile_FullPath))
             {
-                File.Delete(Path.Combine(AppDirectoryManager.SettingsFiles_Directory, FileName) + FileExtension);
+                File.Delete(Path.Combine(DirectoryManager.SettingsFiles_Directory, FileName) + FileExtension);
             }
 
             else
             {
-                throw new Exception("Не удалось найти файл \"" + FileName + "\" в папке " + AppDirectoryManager.SettingsFiles_Directory);
+                throw new Exception("Не удалось найти файл \"" + FileName + "\" в папке " + DirectoryManager.SettingsFiles_Directory);
             }
         }
 
@@ -160,7 +163,7 @@ namespace Core.Models.Settings
         /// <returns>Имя скопированного файла без расширения.</returns>
         public string CopyFrom(string FilePath)
         {
-            string destFilePath = Path.Combine(AppDirectoryManager.SettingsFiles_Directory, Path.GetFileName(FilePath));
+            string destFilePath = Path.Combine(DirectoryManager.SettingsFiles_Directory, Path.GetFileName(FilePath));
 
             string FileName = Path.GetFileNameWithoutExtension(FilePath);
 
@@ -175,8 +178,8 @@ namespace Core.Models.Settings
         /// <returns></returns>
         public string[] FindFilesOfPresets()
         {
-            string[] ArrayOfPresets = AppDirectoryManager.CheckFiles(
-                AppDirectoryManager.SettingsFiles_Directory, 
+            string[] ArrayOfPresets = DirectoryManager.CheckFiles(
+                DirectoryManager.SettingsFiles_Directory, 
                 DefaultFileName, 
                 FileExtension, 
                 DeviceData.GetDefault()

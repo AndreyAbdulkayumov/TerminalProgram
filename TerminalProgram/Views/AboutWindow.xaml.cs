@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,6 +30,13 @@ namespace TerminalProgram.Views
         public AboutWindow(WPF_MessageView MessageView)
         {
             InitializeComponent();
+
+            char[] VersionChars = new char[20];
+
+            if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(VersionChars, 3, out int NumberOfChars) == true)
+            {
+                TextBlock_Version.Text = new string(VersionChars, 0, NumberOfChars);
+            }            
 
             this.MessageView = MessageView;
         }

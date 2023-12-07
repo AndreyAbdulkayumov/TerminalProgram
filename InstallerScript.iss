@@ -4,10 +4,14 @@
 #define MyAppName "Терминал"
 
 
-; Менять версии тут
-#define MyAppVersion "2.3.0"
-#define InstallDirectory "D:\XSoft\TerminalProgram_2.3.0"
-#define OutputFileName "TerminalProgram_2.3.0_installer"
+; Менять версию тут
+#define MyAppVersion "2.3.1"
+
+; Директория установки приложения по умолчанию
+#define InstallDirectory "C:\Program Files\XSoft\TerminalProgram"
+
+; Имя файла установщика
+#define OutputFileName "TerminalProgram_" + MyAppVersion + "_installer"
 
 
 #define MyAppPublisher "XSoft"
@@ -17,7 +21,7 @@
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 ; Относительный путь
-#define PublishDirectory 'TerminalProgram\bin\Release\net8.0-windows7.0\publish\win-x64'
+#define PublishDirectory 'TerminalProgram\bin\Release\net8.0-windows\publish\win-x64'
 
 #define OutputDirectory 'D:\0_Compiled_Installers\TerminalProgram'
 
@@ -84,3 +88,48 @@ Name: "{autodesktop}\{#MyAppName} {#MyAppVersion}"; Filename: "{app}\{#MyAppExeN
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Code]
+function InitializeSetup: Boolean;
+var
+  InstalledVersion: string;
+begin
+  // Получаем текущую версию установленного приложения
+  if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', InstalledVersion) then
+  begin
+    // Проверяем версию и обновляем, если необходимо
+    if CompareStr(InstalledVersion, '{#SetupSetting("AppVersion")}') <> 0 then
+    begin
+      MsgBox('Сейчас установлена версия ' + InstalledVersion + #13#10 +
+             'Приложение будет обновлено до версии ' + '{#SetupSetting("AppVersion")}',
+             mbInformation, MB_OK);
+      Result := True; // Продолжаем установку
+    end
+    else
+    begin
+      MsgBox('Версия приложения ' + '{#SetupSetting("AppVersion")}' + ' уже установлена.', mbInformation, MB_OK);
+      Result := False; // Останавливаем установку
+    end;
+  end
+  else
+  begin
+    // Приложение не установлено, продолжаем установку
+    Result := True;
+  end;
+end;
+
+// Обновление версии приложения в реестре (срабатывает при обновлении)
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+    // Обновляем версию в реестре
+    RegWriteStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1', 'DisplayVersion', '{#SetupSetting("AppVersion")}');
+  end;
+end;
+
+// Удаление записи из реестра при удалении приложения
+procedure DeinitializeUninstall();
+begin              
+  RegDeleteKeyIncludingSubkeys(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1');
+end;
