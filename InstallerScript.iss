@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "2.3.1"
+#define MyAppVersion "2.3.2"
 
 ; Директория установки приложения по умолчанию
 #define InstallDirectory "C:\Program Files\XSoft\TerminalProgram"
@@ -51,6 +51,9 @@ LicenseFile={#LicenseFileDirectory}
 ; 1. Для всех как админ
 ; 2. Только для текущего пользователя
 PrivilegesRequiredOverridesAllowed=dialog
+
+; Добавляем ярлык приложения в Панели управления
+UninstallDisplayIcon={app}\{#MyAppExeName}
 
 OutputDir={#OutputDirectory}\{#MyAppVersion}
 OutputBaseFilename={#OutputFileName}
@@ -107,13 +110,19 @@ begin
     end
     else
     begin
-      MsgBox('Версия приложения ' + '{#SetupSetting("AppVersion")}' + ' уже установлена.', mbInformation, MB_OK);
-      Result := False; // Останавливаем установку
+      if MsgBox('Версия приложения ' + '{#SetupSetting("AppVersion")}' + ' уже установлена.' + #13#10#13#10 + 'Переустановить?', mbInformation, MB_YesNo) = IDYES then
+      begin
+        Result := True; // Продолжаем установку
+      end
+      else
+      begin
+        Result := False; // Отменяем установку
+      end      
     end;
   end
   else
   begin
-    // Приложение не установлено, продолжаем установку
+    // Продолжаем установку
     Result := True;
   end;
 end;
