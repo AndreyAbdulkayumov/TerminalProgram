@@ -128,18 +128,18 @@ namespace Core.Clients
                     throw new Exception("Нет информации о настройках подключения по последовательному порту.");
                 }
 
-                if (PortInfo.COM_Port == null ||
-                    PortInfo.BaudRate == null ||
-                    PortInfo.Parity == null ||
-                    PortInfo.DataBits == null ||
-                    PortInfo.StopBits == null)
+                if (PortInfo.COM_Port == null || PortInfo.COM_Port == String.Empty ||
+                    PortInfo.BaudRate == null || PortInfo.BaudRate == String.Empty ||
+                    PortInfo.Parity == null || PortInfo.Parity == String.Empty ||
+                    PortInfo.DataBits == null || PortInfo.DataBits == String.Empty ||
+                    PortInfo.StopBits == null || PortInfo.StopBits == String.Empty)
                 {
                     throw new Exception(
-                        (PortInfo.COM_Port == null ? "Не задан СОМ порт.\n" : "") +
-                        (PortInfo.BaudRate == null ? "Не задан BaudRate.\n" : "") +
-                        (PortInfo.Parity == null ? "Не задан Parity.\n" : "") +
-                        (PortInfo.DataBits == null ? "Не задан DataBits\n" : "") +
-                        (PortInfo.StopBits == null ? "Не задан StopBits\n" : "")
+                        (PortInfo.COM_Port == null || PortInfo.COM_Port == String.Empty ? "Не задан СОМ порт.\n" : "") +
+                        (PortInfo.BaudRate == null || PortInfo.BaudRate == String.Empty ? "Не задан BaudRate.\n" : "") +
+                        (PortInfo.Parity == null || PortInfo.Parity == String.Empty ? "Не задан Parity.\n" : "") +
+                        (PortInfo.DataBits == null || PortInfo.DataBits == String.Empty ? "Не задан DataBits\n" : "") +
+                        (PortInfo.StopBits == null || PortInfo.StopBits == String.Empty ? "Не задан StopBits\n" : "")
                         );
                 }
 

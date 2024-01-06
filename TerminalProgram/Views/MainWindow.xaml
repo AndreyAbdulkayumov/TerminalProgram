@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TerminalProgram.Views"
         xmlns:ViewModel="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
+        xmlns:Converters="clr-namespace:TerminalProgram.ValueConverters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_CommonUI}"
         Title="Терминальная программа" 
@@ -170,7 +171,7 @@
                    NavigationUIVisibility="Hidden"/>
 
             <Grid Grid.Row="5"
-                  Background="#FF464646">
+                  Background="{DynamicResource ConnectionString_Background}">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
@@ -178,20 +179,27 @@
                 </Grid.RowDefinitions>
 
                 <Border BorderThickness="0,2,0,0"
-                        BorderBrush="#FF6B6B6B"/>
+                        BorderBrush="{DynamicResource ConnectionString_BorderBrush}"/>
                 
                 <TextBlock Grid.Row="0"
-                           Text="COM6 : 115 200 : None : 8 : 1"
+                           Text="{Binding ConnectionString, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            FontSize="16"
                            Margin="20,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
                 <TextBlock Grid.Row="1"
-                           Text="Подключено"
+                           Text="{Binding ConnectionStatus, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                            FontSize="16"
                            Margin="20,0,0,0"
                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
+                <TextBlock Grid.Row="1"
+                           Text="{Binding ConnectionTimer_View, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           FontSize="16"
+                           Visibility="{Binding ConnectionTimer_IsVisible, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:VisibilityConverter}}"
+                           Margin="130,0,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                
                 <Ellipse Grid.Row="0" Grid.RowSpan="2"
                          Width="20" Height="20"
                          Fill="Green"

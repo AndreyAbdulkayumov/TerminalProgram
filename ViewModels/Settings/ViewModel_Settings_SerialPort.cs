@@ -216,6 +216,10 @@ namespace ViewModels.Settings
 
                 if (SettingsFile.Settings.Connection_SerialPort == null)
                 {
+                    Selected_COM_Port = String.Empty;
+                    Message_PortNotFound = "Порт не задан";
+                    Message_PortNotFound_IsVisible = true;
+
                     return;
                 }
 

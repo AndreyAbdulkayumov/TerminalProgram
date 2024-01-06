@@ -49,22 +49,8 @@ namespace Core.Models.Settings
 
                 TypeOfConnection = DeviceData.ConnectionName_SerialPort,
 
-                Connection_SerialPort = new SerialPort_Info()
-                {
-                    COMPort = null,
-                    BaudRate = null,
-                    BaudRate_IsCustom = false,
-                    BaudRate_Custom = null,
-                    Parity = null,
-                    DataBits = null,
-                    StopBits = null
-                },
-
-                Connection_IP = new IP_Info()
-                {
-                    IP_Address = null,
-                    Port = null
-                }
+                Connection_SerialPort = null,
+                Connection_IP = null
             };
         }
 

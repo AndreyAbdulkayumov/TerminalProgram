@@ -100,6 +100,46 @@ namespace ViewModels.MainWindow
         public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
 
 
+        private string? _connectionString;
+
+        public string? ConnectionString
+        {
+            get => _connectionString;
+            set => this.RaiseAndSetIfChanged(ref _connectionString, value);
+        }
+
+        private const string ConnectionStatus_Connected = "Подключено";
+        private const string ConnectionStatus_Disconnected = "Отключено";
+
+        private string _connectionStatus = ConnectionStatus_Disconnected;
+
+        public string ConnectionStatus
+        {
+            get => _connectionStatus;
+            set => this.RaiseAndSetIfChanged(ref _connectionStatus, value);
+        }
+
+        private bool _connectionTimer_IsVisible = false;
+
+        public bool ConnectionTimer_IsVisible
+        {
+            get => _connectionTimer_IsVisible;
+            set => this.RaiseAndSetIfChanged(ref _connectionTimer_IsVisible, value);
+        }
+
+        private string _connectionTimer_View = "";
+
+        public string ConnectionTimer_View
+        {
+            get => _connectionTimer_View;
+            set => this.RaiseAndSetIfChanged(ref _connectionTimer_View, value);
+        }
+
+        private const int ConnectionTimer_Interval_ms = 1000;
+        private readonly System.Timers.Timer ConnectionTimer;
+
+        private TimeSpan ConnectionTime = new TimeSpan();
+
         private readonly ConnectedHost Model;
         private readonly Model_Settings SettingsFile;
 
@@ -136,6 +176,10 @@ namespace ViewModels.MainWindow
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
+            ConnectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
+
+            ConnectionTimer.Elapsed += ConnectionTimer_Elapsed;
 
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
@@ -175,14 +219,43 @@ namespace ViewModels.MainWindow
             SetUI_Disconnected.Invoke();
         }
 
+        private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        {
+            ConnectionTime = ConnectionTime.Add(new TimeSpan(0, 0, 0, 0, ConnectionTimer_Interval_ms));
+
+            ConnectionTimer_View = string.Format("{0:D2} : {1:D2} : {2:D2}", 
+                ConnectionTime.Days * 24 + ConnectionTime.Hours, 
+                ConnectionTime.Minutes, 
+                ConnectionTime.Seconds);
+        }
+
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             SetUI_Connected.Invoke();
+
+            ConnectionStatus = ConnectionStatus_Connected;
+
+            ConnectionTimer_IsVisible = true;
+
+            ConnectionTime = new TimeSpan();
+
+            ConnectionTimer_View = string.Format("{0:D2} : {1:D2} : {2:D2}",
+                ConnectionTime.Days * 24 + ConnectionTime.Hours,
+                ConnectionTime.Minutes,
+                ConnectionTime.Seconds);
+
+            ConnectionTimer.Start();
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
+            ConnectionTimer.Stop();
+
             SetUI_Disconnected.Invoke();
+
+            ConnectionStatus = ConnectionStatus_Disconnected;
+
+            ConnectionTimer_IsVisible = false;
         }
 
         private void UpdateListOfPresets()
@@ -207,7 +280,75 @@ namespace ViewModels.MainWindow
             if (SettingsDocument != null)
             {
                 SelectedPreset = Presets.Single(x => x == SettingsDocument);
-            }            
+            }
+
+            ConnectionString = GetConnectionString();
+        }
+
+        private string GetConnectionString()
+        {
+            if (SettingsFile.Settings == null)
+            {
+                throw new Exception("Настройки не инициализированы.");
+            }
+
+            DeviceData Settings = (DeviceData)SettingsFile.Settings.Clone();
+
+            string Separator = " : ";
+
+            string ConnectionString;
+
+            switch (Settings.TypeOfConnection)
+            {
+                case DeviceData.ConnectionName_SerialPort:
+
+                    if (Settings.Connection_SerialPort != null)
+                    {
+                        ConnectionString = 
+                            (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == String.Empty ? 
+                                "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
+                            Separator +
+                            (Settings.Connection_SerialPort.BaudRate_IsCustom == true ? 
+                                Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate) +
+                            Separator +
+                            Settings.Connection_SerialPort.Parity +
+                            Separator +
+                            Settings.Connection_SerialPort.DataBits +
+                            Separator +
+                            Settings.Connection_SerialPort.StopBits;
+                    }
+
+                    else
+                    {
+                        ConnectionString = "Настройки не заданы";
+                    }
+                    
+                    break;
+
+                case DeviceData.ConnectionName_Ethernet:
+
+                    if (Settings.Connection_IP != null)
+                    {
+                        ConnectionString = 
+                            (Settings.Connection_IP.IP_Address == null || Settings.Connection_IP.IP_Address == String.Empty ?
+                                "IP адрес не задан" : Settings.Connection_IP.IP_Address) +
+                            Separator +
+                            (Settings.Connection_IP.Port == null || Settings.Connection_IP.Port == String.Empty ?
+                                "Порт не задан" : Settings.Connection_IP.Port);
+                    }
+
+                    else
+                    {
+                        ConnectionString = "Настройки не заданы";
+                    }
+                    
+                    break;
+
+                default:
+                    throw new Exception("Задан неизвестный тип подключения: " + Settings.TypeOfConnection);
+            }
+
+            return ConnectionString;
         }
 
         private void Connect_Handler()

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\MainLogo.ico</ApplicationIcon>
-    <Version>2.3.2</Version>
+    <Version>2.4.0</Version>
     <Company>XSoft</Company>
     <Authors>Abdulkayumov Andrey</Authors>
   </PropertyGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ReactiveUI.WPF" Version="19.5.31" />
+    <PackageReference Include="ReactiveUI.WPF" Version="19.5.39" />
   </ItemGroup>
 
   <ItemGroup>
