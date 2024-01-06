@@ -76,7 +76,7 @@
                 <RowDefinition Height="50"/>
                 <RowDefinition x:Name="GridRow_Connection" Height="50"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="60"/>
+                <RowDefinition x:Name="GridRow_Info" Height="60"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">

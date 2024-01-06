@@ -36,6 +36,8 @@ namespace TerminalProgram.Views
 
         private readonly WPF_MessageView MessageView;
 
+        private readonly GridLength RowLength_Connection;
+        private readonly GridLength RowLength_Info;
 
         public MainWindow()
         {
@@ -73,6 +75,9 @@ namespace TerminalProgram.Views
             ModbusPage = new Modbus(MessageView);
 
             HttpPage = new Http(MessageView);
+
+            RowLength_Connection = GridRow_Connection.Height;
+            RowLength_Info = GridRow_Info.Height;
         }
 
         private void ViewModel_CommonUI_SettingsDocument_Changed(object? sender, DocArgs e)
@@ -224,7 +229,9 @@ namespace TerminalProgram.Views
                 return;
             }
 
-            GridRow_Connection.Height = new GridLength(50);
+            GridRow_Connection.Height = RowLength_Connection;
+            GridRow_Info.Height = RowLength_Info;
+
             TextBlock_SelectedPreset.Visibility = Visibility.Visible;
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
@@ -239,7 +246,9 @@ namespace TerminalProgram.Views
                 return;
             }
 
-            GridRow_Connection.Height = new GridLength(50);
+            GridRow_Connection.Height = RowLength_Connection;
+            GridRow_Info.Height = RowLength_Info;
+
             TextBlock_SelectedPreset.Visibility = Visibility.Visible;
             ComboBox_SelectedPreset.Visibility = Visibility.Visible;
             Button_Connect.Visibility = Visibility.Visible;
@@ -255,6 +264,8 @@ namespace TerminalProgram.Views
             }
 
             GridRow_Connection.Height = new GridLength(0);
+            GridRow_Info.Height = new GridLength(0);
+
             TextBlock_SelectedPreset.Visibility = Visibility.Hidden;
             ComboBox_SelectedPreset.Visibility = Visibility.Hidden;
             Button_Connect.Visibility = Visibility.Hidden;
