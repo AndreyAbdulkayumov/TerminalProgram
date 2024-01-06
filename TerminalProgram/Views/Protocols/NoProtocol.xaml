@@ -41,9 +41,9 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition Height="0.3*"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="0.4*"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
@@ -54,7 +54,6 @@
                        Margin="20,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-            
             <TextBlock x:Name="TextBlock_InterfaceType"
                        Text="{Binding InterfaceType, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        FontSize="16"
@@ -69,16 +68,66 @@
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Click="Button_CycleMode_Click"/>
         </Grid>
-        
+
         <Grid Grid.Row="1" MinHeight="100">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="60"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Margin="10,0,10,0">
+
+                <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
+
+                    <TextBox x:Name="TextBox_RX" Style="{StaticResource TX_RX_Field}"
+                             IsReadOnly="True"
+                             IsReadOnlyCaretVisible="True" IsUndoEnabled="False"
+                             MaxLines="50"
+                             MaxLength="300"
+                             TextAlignment="Left" TextWrapping="Wrap"/>
+
+                </ScrollViewer>
+
+            </Border>
+
+            <Button x:Name="Button_SaveAs" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
+                    Margin="20,0,0,0" 
+                    Width="120" 
+                    Content="Сохранить как..."
+                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Click="Button_SaveAs_Click"/>
+
+            <CheckBox x:Name="CheckBox_NextLine" Grid.Row="1"
+                      Foreground="{DynamicResource MainWindow_Color_Text}"
+                      FontSize="14"
+                      Margin="180,0,0,0"
+                      Content="Переходить на новую строку в конце полученного сообщения"
+                      HorizontalAlignment="Left" VerticalAlignment="Center"
+                      IsChecked="{Binding RX_NextLine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Button x:Name="Button_ClearFieldRX" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
+                    Margin="0,0,20,0"
+                    Width="120" 
+                    Content="Очистить поле"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Command="{Binding Command_ClearRX}"/>
+
+        </Grid>
+
+        <GridSplitter Grid.Row="2" Height="2" ShowsPreview="False"
+                      Background="#FF6B6B6B"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+        
+        <Grid Grid.Row="3" MinHeight="100">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
             <TextBox x:Name="TextBox_TX" Grid.Row="0" 
-                     Margin="10,0,10,0"
+                     Margin="10,10,10,0"
                      Style="{StaticResource TX_RX_Field}"
                      TextWrapping="Wrap"
                      Text="{Binding TX_String, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -125,57 +174,7 @@
                     Command="{Binding Command_Send}"/>
 
         </Grid>
-
-        <GridSplitter Grid.Row="2" Height="2" ShowsPreview="False"
-                      Background="#FF6B6B6B"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
-
-        <Grid Grid.Row="3" MinHeight="100">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="60"/>
-            </Grid.RowDefinitions>
-
-            <Border Grid.Row="0" Margin="10,10,10,0">
-
-                <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
-
-                    <TextBox x:Name="TextBox_RX" Style="{StaticResource TX_RX_Field}"
-                             IsReadOnly="True"
-                             IsReadOnlyCaretVisible="True" IsUndoEnabled="False"
-                             MaxLines="50"
-                             MaxLength="300"
-                             TextAlignment="Left" TextWrapping="Wrap"/>
-                    
-                </ScrollViewer>
-
-            </Border>
-
-            <Button x:Name="Button_SaveAs" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
-                    Margin="20,0,0,0" 
-                    Width="120" 
-                    Content="Сохранить как..."
-                    HorizontalAlignment="Left" VerticalAlignment="Center"
-                    Click="Button_SaveAs_Click"/>
-
-            <CheckBox x:Name="CheckBox_NextLine" Grid.Row="1"
-                      Foreground="{DynamicResource MainWindow_Color_Text}"
-                      FontSize="14"
-                      Margin="180,0,0,0"
-                      Content="Переходить на новую строку в конце полученного сообщения"
-                      HorizontalAlignment="Left" VerticalAlignment="Center"
-                      IsChecked="{Binding RX_NextLine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-            <Button x:Name="Button_ClearFieldRX" Grid.Row="1" Template="{DynamicResource ButtonCommon}"
-                    Margin="0,0,20,0"
-                    Width="120" 
-                    Content="Очистить поле"
-                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Command="{Binding Command_ClearRX}"/>
-
-        </Grid>
-
+        
     </Grid>
     
 </Page>

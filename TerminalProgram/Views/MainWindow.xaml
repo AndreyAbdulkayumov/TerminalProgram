@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_CommonUI}"
         Title="Терминальная программа" 
-        Height="850" Width="850"
+        Height="910" Width="850"
         Background="{DynamicResource MainWindow_Color_Background}"
         AllowsTransparency="True"
         WindowStyle="None"
@@ -75,6 +75,7 @@
                 <RowDefinition Height="50"/>
                 <RowDefinition x:Name="GridRow_Connection" Height="50"/>
                 <RowDefinition Height="1*"/>
+                <RowDefinition Height="60"/>
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
@@ -167,6 +168,59 @@
             
             <Frame x:Name="Frame_ActionUI" Grid.Row="4"
                    NavigationUIVisibility="Hidden"/>
+
+            <Grid Grid.Row="5"
+                  Background="#FF464646">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+
+                <Border BorderThickness="0,2,0,0"
+                        BorderBrush="#FF6B6B6B"/>
+                
+                <TextBlock Grid.Row="0"
+                           Text="COM6 : 115 200 : None : 8 : 1"
+                           FontSize="16"
+                           Margin="20,0,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="1"
+                           Text="Подключено"
+                           FontSize="16"
+                           Margin="20,0,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+                <Ellipse Grid.Row="0" Grid.RowSpan="2"
+                         Width="20" Height="20"
+                         Fill="Green"
+                         Stroke="#FF909090"
+                         StrokeThickness="1.5"
+                         Margin="0,0,110,0"
+                         HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="0" Grid.RowSpan="2"
+                           Text="TX"
+                           FontSize="18"
+                           Margin="0,0,80,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <Ellipse Grid.Row="0" Grid.RowSpan="2"
+                         Width="20" Height="20"
+                         Fill="Silver"
+                         Stroke="#FF909090"
+                         StrokeThickness="1.5"
+                         Margin="0,0,45,0"
+                         HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Row="0" Grid.RowSpan="2"
+                           Text="RX"
+                           FontSize="18"
+                           Margin="0,0,15,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+            </Grid>
 
         </Grid>
 
