@@ -63,7 +63,7 @@ namespace Core.Models
         public readonly Model_NoProtocol NoProtocol;
         public readonly Model_Modbus Modbus;
 
-        private IConnection? Client;
+        public IConnection? Client { get; private set; }
 
         public static ProtocolMode? SelectedProtocol { get; private set; }
 

@@ -166,7 +166,7 @@ namespace ViewModels.MainWindow
                 Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
             });
 
-            Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных\n\n" + error.Message, MessageType.Error));
+            Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
 
             Command_ClearRX = ReactiveCommand.Create(Clear_ReceiveField);
         }        

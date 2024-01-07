@@ -9,7 +9,7 @@ using Core.Models;
 
 namespace Core.Clients
 {
-    public class IPClient : IConnection
+    public class IPClient : IConnection, INotifications_TX_RX
     {
         public event EventHandler<DataFromDevice>? DataReceived;
         public event EventHandler<string>? ErrorInReadThread;
@@ -64,6 +64,92 @@ namespace Core.Clients
         private Task? ReadThread = null;
         private CancellationTokenSource? ReadCancelSource = null;
 
+
+        public event EventHandler<NotificationArgs>? TX_Notification;
+
+        public ulong TX_Counter { get; private set; }
+
+        public Task TX_Notification_ControlTask { get; private set; }
+
+
+        public event EventHandler<NotificationArgs>? RX_Notification;
+
+        public ulong RX_Counter { get; private set; }
+
+        public Task RX_Notification_ControlTask { get; private set; }
+
+
+        public IPClient()
+        {
+            TX_Notification_ControlTask  = Task.Run(TX_Notification_Control);
+            RX_Notification_ControlTask = Task.Run(RX_Notification_Control);
+        }
+
+        private async Task TX_Notification_Control()
+        {
+            int TX_ViewLatency_ms = 100;
+
+            bool IsStarted = false;
+
+            while (true)
+            {
+                if (TX_Counter > 0)
+                {
+                    TX_Counter = 0;
+
+                    if (IsStarted == false)
+                    {
+                        TX_Notification?.Invoke(null, new NotificationArgs(true));
+
+                        IsStarted = true;
+                    }                    
+                }
+
+                else if (IsStarted)
+                {
+                    await Task.Delay(TX_ViewLatency_ms);
+
+                    TX_Notification?.Invoke(null, new NotificationArgs(false));
+
+                    IsStarted = false;
+                }
+
+                await Task.Delay(5);
+            }
+        }
+
+        private async Task RX_Notification_Control()
+        {
+            int RX_ViewLatency_ms = 100;
+
+            bool IsStarted = false;
+
+            while (true)
+            {
+                if (RX_Counter > 0)
+                {
+                    RX_Counter = 0;
+
+                    if (IsStarted == false)
+                    {
+                        RX_Notification?.Invoke(null, new NotificationArgs(true));
+
+                        IsStarted = true;
+                    }
+                }
+
+                else if (IsStarted)
+                {
+                    await Task.Delay(RX_ViewLatency_ms);
+
+                    RX_Notification?.Invoke(null, new NotificationArgs(false));
+
+                    IsStarted = false;
+                }
+
+                await Task.Delay(5);
+            }
+        }
 
         public void SetReadMode(ReadMode Mode)
         {
@@ -185,6 +271,8 @@ namespace Core.Clients
                 if (IsConnected)
                 {
                     Stream.Write(Message, 0, NumberOfBytes);
+
+                    TX_Counter++;
                 }
             }
 
@@ -220,6 +308,8 @@ namespace Core.Clients
                         NumberOfReceivedBytes += Stream.Read(RX, NumberOfReceivedBytes, RX.Length);
 
                     } while (Stream.DataAvailable);
+
+                    RX_Counter++;
                 }
 
                 return NumberOfReceivedBytes;
@@ -287,6 +377,8 @@ namespace Core.Clients
                         }
 
                         DataReceived?.Invoke(this, Data);
+
+                        RX_Counter++;
 
                         Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
                     }

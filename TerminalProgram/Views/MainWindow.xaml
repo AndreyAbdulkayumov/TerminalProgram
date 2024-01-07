@@ -202,29 +202,29 @@
                 
                 <Ellipse Grid.Row="0" Grid.RowSpan="2"
                          Width="20" Height="20"
-                         Fill="Green"
+                         Fill="{Binding Led_TX_IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:LedConverter}}"
                          Stroke="#FF909090"
                          StrokeThickness="1.5"
-                         Margin="0,0,110,0"
+                         Margin="0,0,190,0"
                          HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock Grid.Row="0" Grid.RowSpan="2"
-                           Text="TX"
-                           FontSize="18"
-                           Margin="0,0,80,0"
+                           Text="Передача"
+                           FontSize="16"
+                           Margin="0,0,110,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <Ellipse Grid.Row="0" Grid.RowSpan="2"
                          Width="20" Height="20"
-                         Fill="Silver"
+                         Fill="{Binding Led_RX_IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:LedConverter}}"
                          Stroke="#FF909090"
                          StrokeThickness="1.5"
-                         Margin="0,0,45,0"
+                         Margin="0,0,70,0"
                          HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock Grid.Row="0" Grid.RowSpan="2"
-                           Text="RX"
-                           FontSize="18"
+                           Text="Прием"
+                           FontSize="16"
                            Margin="0,0,15,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 

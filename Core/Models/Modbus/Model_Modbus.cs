@@ -76,7 +76,7 @@ namespace Core.Models.Modbus
 
             byte[] RX = new byte[30];
 
-            byte[] TX = new byte[0];
+            byte[] TX = Array.Empty<byte>();
 
             int NumberOfReceivedBytes = 0;
 
@@ -117,8 +117,8 @@ namespace Core.Models.Modbus
 
                 else
                 {
-                    Request = new byte[0];
-                    Response = new byte[0];
+                    Request = Array.Empty<byte>();
+                    Response = Array.Empty<byte>();
                 }
                 
                 IsBusy = false;
@@ -143,7 +143,7 @@ namespace Core.Models.Modbus
 
             byte[] RX = new byte[100];
 
-            byte[] TX = new byte[0];
+            byte[] TX = Array.Empty<byte>();
 
             int NumberOfReceivedBytes = 0;
 
@@ -203,8 +203,8 @@ namespace Core.Models.Modbus
 
                 else
                 {
-                    Request = new byte[0];
-                    Response = new byte[0];
+                    Request = Array.Empty<byte>();
+                    Response = Array.Empty<byte>();
                 }
 
                 IsBusy = false;

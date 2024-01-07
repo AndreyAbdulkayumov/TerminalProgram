@@ -624,8 +624,8 @@ namespace ViewModels.MainWindow
 
         private void Modbus_Read()
         {
-            byte[] RequestBytes = new byte[0];
-            byte[] ResponseBytes = new byte[0];
+            byte[] RequestBytes = Array.Empty<byte>();
+            byte[] ResponseBytes = Array.Empty<byte>();
 
             try
             {
