@@ -140,7 +140,10 @@ namespace ViewModels.MainWindow
 
         private TimeSpan ConnectionTime = new TimeSpan();
 
-        private bool _led_TX_IsActive;
+        // Нужно выставить true, а затем при инициализации false,
+        // чтобы сработало выставление цвета после запуска программы
+        // согласно заданной теме.
+        private bool _led_TX_IsActive = true;
 
         public bool Led_TX_IsActive
         {
@@ -148,7 +151,10 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _led_TX_IsActive, value);
         }
 
-        private bool _led_RX_IsActive;
+        // Нужно выставить true, а затем при инициализации false,
+        // чтобы сработало выставление цвета после запуска программы
+        // согласно заданной теме.
+        private bool _led_RX_IsActive = true;
 
         public bool Led_RX_IsActive
         {
@@ -313,6 +319,9 @@ namespace ViewModels.MainWindow
                 TX_RX_Notification.RX_Notification -= TX_RX_Notification_RX_Notification;
             }
 
+            Led_TX_IsActive = false;
+            Led_RX_IsActive = false;
+
             SetUI_Disconnected.Invoke();
 
             ConnectionStatus = ConnectionStatus_Disconnected;
@@ -345,6 +354,9 @@ namespace ViewModels.MainWindow
             }
 
             ConnectionString = GetConnectionString();
+
+            Led_TX_IsActive = false;
+            Led_RX_IsActive = false;
         }
 
         private string GetConnectionString()
