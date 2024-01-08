@@ -372,18 +372,33 @@ namespace ViewModels.MainWindow
 
                     if (Settings.Connection_SerialPort != null)
                     {
-                        ConnectionString = 
-                            (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == String.Empty ? 
-                                "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
-                            Separator +
-                            (Settings.Connection_SerialPort.BaudRate_IsCustom == true ? 
-                                Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate) +
-                            Separator +
-                            Settings.Connection_SerialPort.Parity +
-                            Separator +
-                            Settings.Connection_SerialPort.DataBits +
-                            Separator +
-                            Settings.Connection_SerialPort.StopBits;
+                        if ((Settings.Connection_SerialPort.BaudRate_IsCustom == false && 
+                             (Settings.Connection_SerialPort.BaudRate == null || Settings.Connection_SerialPort.BaudRate == String.Empty)) ||
+                            (Settings.Connection_SerialPort.BaudRate_IsCustom == true &&
+                             (Settings.Connection_SerialPort.BaudRate_Custom == null || Settings.Connection_SerialPort.BaudRate_Custom == String.Empty)) ||
+                            Settings.Connection_SerialPort.Parity == null || Settings.Connection_SerialPort.Parity == String.Empty ||
+                            Settings.Connection_SerialPort.DataBits == null || Settings.Connection_SerialPort.DataBits == String.Empty ||
+                            Settings.Connection_SerialPort.StopBits == null || Settings.Connection_SerialPort.StopBits == String.Empty)
+                        {
+                            ConnectionString = "Не заданы настройки для последовательного порта";
+                        }
+
+                        else
+                        {
+                            ConnectionString =
+                                (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == String.Empty ?
+                                    "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
+                                Separator +
+                                (Settings.Connection_SerialPort.BaudRate_IsCustom == true ?
+                                    Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate) +
+                                Separator +
+                                Settings.Connection_SerialPort.Parity +
+                                Separator +
+                                Settings.Connection_SerialPort.DataBits +
+                                Separator +
+                                Settings.Connection_SerialPort.StopBits;
+                        }
+
                     }
 
                     else
