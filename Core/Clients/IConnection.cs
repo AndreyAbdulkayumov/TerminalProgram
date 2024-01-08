@@ -36,6 +36,7 @@ namespace Core.Clients
         /// </summary>
         /// <returns>Возращает время ожидания выполнения операции записи в милисекундах</returns>
         int WriteTimeout { get; set; }
+
         /// <summary>
         /// Возвращает или задает время ожидания данных для чтения в милисекундах.
         /// </summary>
@@ -43,25 +44,34 @@ namespace Core.Clients
         int ReadTimeout { get; set; }
 
         /// <summary>
+        /// Система уведомлений о приеме и передачи данных.
+        /// </summary>
+        NotificationSource Notifications {  get; }
+
+        /// <summary>
         /// Установка синхронного или асинхронного режима чтения.
         /// </summary>
         /// <param name="Mode"></param>
         void SetReadMode(ReadMode Mode);
+
         /// <summary>
         /// Подключение к указанному хосту.
         /// </summary>
         /// <param name="Info"></param>
         void Connect(ConnectionInfo Info);
+
         /// <summary>
         /// Закрытие открытого соединения.
         /// </summary>
         Task Disconnect();
+
         /// <summary>
         /// Запись определенного колличества байт в открытое соединение.
         /// </summary>
         /// <param name="Message"></param>
         /// <param name="NumberOfBytes"></param>
         void Send(byte[] Message, int NumberOfBytes);
+
         /// <summary>
         /// Сихронно считывает данные из соединения. Возвращает количество принятых байт.
         /// </summary>

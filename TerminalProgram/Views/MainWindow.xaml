@@ -209,31 +209,31 @@
                 <Ellipse Grid.Row="0" Grid.RowSpan="2"
                          Width="20" Height="20"
                          Fill="{DynamicResource ConnectionString_LedBrush_Active}"
-                         Visibility="{Binding Led_TX_IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:VisibilityConverter}}"
+                         Visibility="{Binding Led_RX_IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:VisibilityConverter}}"
                          Margin="0,0,190,0"
                          HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                
+
                 <TextBlock Grid.Row="0" Grid.RowSpan="2"
-                           Text="Передача"
+                           Text="Прием"
                            FontSize="16"
-                           Margin="0,0,110,0"
+                           Margin="0,0,130,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <Ellipse Grid.Row="0" Grid.RowSpan="2"
                          Width="20" Height="20"
                          Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
-                         Margin="0,0,70,0"
+                         Margin="0,0,95,0"
                          HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <Ellipse Grid.Row="0" Grid.RowSpan="2"
                          Width="20" Height="20"
                          Fill="{DynamicResource ConnectionString_LedBrush_Active}"
-                         Visibility="{Binding Led_RX_IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:VisibilityConverter}}"
-                         Margin="0,0,70,0"
+                         Visibility="{Binding Led_TX_IsActive, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={Converters:VisibilityConverter}}"
+                         Margin="0,0,95,0"
                          HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <TextBlock Grid.Row="0" Grid.RowSpan="2"
-                           Text="Прием"
+                           Text="Передача"
                            FontSize="16"
                            Margin="0,0,15,0"
                            HorizontalAlignment="Right" VerticalAlignment="Center"/>

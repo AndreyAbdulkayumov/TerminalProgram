@@ -76,6 +76,17 @@ namespace Core.Clients
         private Task? ReadThread = null;
         private CancellationTokenSource? ReadCancelSource = null;
 
+        public NotificationSource Notifications { get; private set; }
+
+
+        public SerialPortClient()
+        {
+            Notifications = new NotificationSource(
+                TX_ViewLatency_ms: 100,
+                RX_ViewLatency_ms: 100,
+                CheckInterval_ms: 10
+                );
+        }
 
         public void SetReadMode(ReadMode Mode)
         {
@@ -274,6 +285,8 @@ namespace Core.Clients
                 if (IsConnected)
                 {
                     DeviceSerialPort.Write(Message, 0, NumberOfBytes);
+
+                    Notifications.TransmitEvent();
                 }
             }
 
@@ -327,6 +340,8 @@ namespace Core.Clients
 
                         DeviceSerialPort.Read(Data, 0, Data.Length);
                     }
+
+                    Notifications.ReceiveEvent();
                 }
 
                 return NumberOfReceivedBytes;
@@ -395,6 +410,8 @@ namespace Core.Clients
                         ReadCancel.ThrowIfCancellationRequested();
 
                         DataReceived?.Invoke(this, Data);
+
+                        Notifications.ReceiveEvent();
 
                         Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
                     }

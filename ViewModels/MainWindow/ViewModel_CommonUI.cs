@@ -173,7 +173,6 @@ namespace ViewModels.MainWindow
         private readonly Action SetUI_Disconnected;
         private readonly Func<string[], string?> Select_AvailablePresetFile;
 
-        private INotifications_TX_RX? TX_RX_Notification;
 
         public ViewModel_CommonUI(
             Action<string, MessageType> MessageBox,
@@ -257,13 +256,11 @@ namespace ViewModels.MainWindow
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
-            TX_RX_Notification = Model.Client as INotifications_TX_RX;
-
-            if (TX_RX_Notification != null)
+            if (Model.Client != null)
             {
-                TX_RX_Notification.TX_Notification += TX_RX_Notification_TX_Notification;
-                TX_RX_Notification.RX_Notification += TX_RX_Notification_RX_Notification;
-            }
+                Model.Client.Notifications.TX_Notification += Notifications_TX_Notification;
+                Model.Client.Notifications.RX_Notification += Notifications_RX_Notification;
+            }         
 
             SetUI_Connected.Invoke();
 
@@ -281,7 +278,21 @@ namespace ViewModels.MainWindow
             ConnectionTimer.Start();
         }
 
-        private void TX_RX_Notification_RX_Notification(object? sender, NotificationArgs e)
+        private void Notifications_TX_Notification(object? sender, NotificationArgs e)
+        {
+            lock (TX_View_Locker)
+            {
+                if (e.IsStarted)
+                {
+                    Led_TX_IsActive = true;
+                    return;
+                }
+
+                Led_TX_IsActive = false;
+            }
+        }
+
+        private void Notifications_RX_Notification(object? sender, NotificationArgs e)
         {
             lock (RX_View_Locker)
             {
@@ -293,34 +304,17 @@ namespace ViewModels.MainWindow
 
                 Led_RX_IsActive = false;
             }
-        }        
-
-        private void TX_RX_Notification_TX_Notification(object? sender, NotificationArgs e)
-        {
-            lock (TX_View_Locker)
-            {
-                if (e.IsStarted)
-                {
-                    Led_TX_IsActive = true;
-                    return;
-                }
-
-                Led_TX_IsActive = false;
-            }            
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             ConnectionTimer.Stop();
 
-            if (TX_RX_Notification != null)
+            if (Model.Client != null)
             {
-                TX_RX_Notification.TX_Notification -= TX_RX_Notification_TX_Notification;
-                TX_RX_Notification.RX_Notification -= TX_RX_Notification_RX_Notification;
+                Model.Client.Notifications.TX_Notification -= Notifications_TX_Notification;
+                Model.Client.Notifications.RX_Notification -= Notifications_RX_Notification;
             }
-
-            Led_TX_IsActive = false;
-            Led_RX_IsActive = false;
 
             SetUI_Disconnected.Invoke();
 
