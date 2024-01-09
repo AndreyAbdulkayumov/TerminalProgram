@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "2.3.2"
+#define MyAppVersion "2.4.0 beta 4"
 
 ; Директория установки приложения по умолчанию
 #define InstallDirectory "C:\Program Files\XSoft\TerminalProgram"

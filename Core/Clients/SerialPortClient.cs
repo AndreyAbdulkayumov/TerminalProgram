@@ -219,6 +219,8 @@ namespace Core.Clients
                 DeviceSerialPort.StopBits = SelectedStopBits;
 
                 DeviceSerialPort.Open();
+
+                Notifications.StartMonitor();
             }
 
             catch (Exception error)
@@ -265,6 +267,8 @@ namespace Core.Clients
 
                     DeviceSerialPort.Close();
                 }
+
+                await Notifications.StopMonitor();
             }
 
             catch (Exception error)

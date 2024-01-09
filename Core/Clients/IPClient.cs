@@ -160,7 +160,7 @@ namespace Core.Clients
 
             Stream = Client.GetStream();
 
-            Notifications.Notifications_Start();
+            Notifications.StartMonitor();
 
             IsConnected = true;
         }
@@ -183,7 +183,7 @@ namespace Core.Clients
 
             Client?.Close();
 
-            await Notifications.Notifications_Stop();
+            await Notifications.StopMonitor();
 
             IsConnected = false;
         }

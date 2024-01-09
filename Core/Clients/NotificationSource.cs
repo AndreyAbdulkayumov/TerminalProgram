@@ -51,7 +51,7 @@ namespace Core.Clients
             RX_Counter++;
         }
 
-        public void Notifications_Start()
+        public void StartMonitor()
         {
             NotificationCancelSource = new CancellationTokenSource();
 
@@ -59,7 +59,7 @@ namespace Core.Clients
             RX_Notification_ControlTask = Task.Run(() => RX_Notification_Control(NotificationCancelSource.Token));            
         }
 
-        public async Task Notifications_Stop()
+        public async Task StopMonitor()
         {
             NotificationCancelSource?.Cancel();
 

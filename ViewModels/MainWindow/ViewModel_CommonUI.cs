@@ -398,7 +398,6 @@ namespace ViewModels.MainWindow
                                 Separator +
                                 Settings.Connection_SerialPort.StopBits;
                         }
-
                     }
 
                     else
