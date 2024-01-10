@@ -178,6 +178,14 @@ namespace Core.Clients
                         SelectedParity = Parity.Odd;
                         break;
 
+                    case "Space":
+                        SelectedParity = Parity.Space;
+                        break;
+
+                    case "Mark":
+                        SelectedParity = Parity.Mark;
+                        break;
+
                     default:
                         throw new Exception("Неправильно задано значение Parity.");
                 }
@@ -192,10 +200,6 @@ namespace Core.Clients
 
                 switch (PortInfo.StopBits)
                 {
-                    case "0":
-                        SelectedStopBits = StopBits.None;
-                        break;
-
                     case "1":
                         SelectedStopBits = StopBits.One;
                         break;

@@ -48,7 +48,7 @@
     <SolidColorBrush x:Key="ConnectionString_Background" Color="#FF484848"/>
     <SolidColorBrush x:Key="ConnectionString_BorderBrush" Color="#FF6B6B6B"/>
 
-    <SolidColorBrush x:Key="ConnectionString_LedBrush_Active" Color="Green"/>
+    <SolidColorBrush x:Key="ConnectionString_LedBrush_Active" Color="#FFA3D049"/>
     <SolidColorBrush x:Key="ConnectionString_LedBrush_Deactive" Color="#FF909090"/>
     
     <!-- TX RX Field in MainWindow -->

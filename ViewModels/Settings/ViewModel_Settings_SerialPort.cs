@@ -102,7 +102,7 @@ namespace ViewModels.Settings
 
         private ObservableCollection<string> _parity = new ObservableCollection<string>()
         {
-            "None", "Even", "Odd"
+            "None", "Even", "Odd", "Space", "Mark"
         };
 
         public ObservableCollection<string> Parity 
@@ -150,7 +150,7 @@ namespace ViewModels.Settings
 
         private ObservableCollection<string> _stopBits = new ObservableCollection<string>()
         {
-            "0", "1", "1.5", "2"
+            "1", "1.5", "2"
         };
 
         public ObservableCollection<string> StopBits
