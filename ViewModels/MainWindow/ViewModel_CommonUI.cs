@@ -260,6 +260,9 @@ namespace ViewModels.MainWindow
             {
                 Model.Client.Notifications.TX_Notification += Notifications_TX_Notification;
                 Model.Client.Notifications.RX_Notification += Notifications_RX_Notification;
+
+                // Использовать для демонстрации работы уведомлений приема и передачи.
+                //Task.Run(Model.Client.Notifications.DemoVisualization);
             }         
 
             SetUI_Connected.Invoke();

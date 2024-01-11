@@ -16,7 +16,7 @@ namespace Core.Clients
         }
     }
 
-    public class NotificationSource
+    public partial class NotificationSource
     {
         public event EventHandler<NotificationArgs>? TX_Notification;
         public event EventHandler<NotificationArgs>? RX_Notification;
