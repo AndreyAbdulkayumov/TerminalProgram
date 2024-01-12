@@ -39,13 +39,12 @@ https://xunit.net/
 	- TCP
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/a8d5b1a8-f71f-4ae6-84fa-592ba245c8ca" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/d671f9ca-4b4c-42de-b7e0-72c704dad581" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/18f2041a-b02a-43b5-a9cb-8c6afe642a75" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/2144efba-07c7-4f91-8270-ca71ae1b3fbf" />
 </p>
-
 
 ## *"Modbus"*
 Пользователь может взаимодействовать с выбранными регистрами Modbus в соответствующих полях. История действий отображается в таблице. 
@@ -57,22 +56,37 @@ https://xunit.net/
  	- Modbus ASCII
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/c6ab7512-f16e-4ae2-bf02-25aae08107c2" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/5ae1b815-85e8-40d0-bd43-cbb96f43d5a9" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/1b385679-ee56-4719-8cee-50d11578afde" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/03989270-28fe-4f2e-bdf1-3d3f4bc8f2be" />
 </p>
 
 ## *"Http"*
 В верхнем поле пользователь пишет http или https запрос. 
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/6e98a8a6-d83e-4f65-a088-43d20e21b24e" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/69a60f7e-8f1d-488e-90f8-728450dd2fcb" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/58f122b2-4c35-4725-b921-cdc336344dce" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/c9c68e86-d6b2-4ac4-a0df-4961b2e2d836" />
+</p>
+
+# Индикация
+
+Индикация приема и передачи обеспечивает визуальный контроль текущей активности. 
+Это помогает не только в мониторинге обмена данных, но и улучшает опыт пользователя при взаимодействии с подключенными устройствами. 
+
+При получении и отправке данных мигают соответствующие индикаторы.
+
+	Используется в режимах: 
+	- "Без протокола"
+	- "Modbus"
+ 
+<p align="center">
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/de31a90c-b252-4a95-a526-c5236249560e"/>
 </p>
 
 # Цикличный опрос
