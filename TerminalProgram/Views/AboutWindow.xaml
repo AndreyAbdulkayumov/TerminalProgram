@@ -84,7 +84,7 @@
 
                 <TextBlock Margin="140,160,0,0"
                            FontSize="14">
-                
+                    
                     <Hyperlink NavigateUri="https://icons8.com" RequestNavigate="Hyperlink_RequestNavigate">
                         icons8
                     </Hyperlink>

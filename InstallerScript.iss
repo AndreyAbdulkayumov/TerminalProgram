@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "2.4.0"
+#define MyAppVersion "2.5.0 beta"
 
 ; Директория установки приложения по умолчанию
 #define InstallDirectory "C:\Program Files\XSoft\TerminalProgram"
@@ -74,7 +74,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "{#PublishDirectory}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Служебные файлы
-Source: "{#PublishDirectory}\*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#PublishDirectory}\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

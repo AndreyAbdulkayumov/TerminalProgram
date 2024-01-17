@@ -41,20 +41,6 @@ namespace TerminalProgram.Views
             this.MessageView = MessageView;
         }
 
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-                e.Handled = true;
-            }
-            
-            catch (Exception error)
-            {
-                MessageView.Show("Ошибка перехода по ссылке.\n\n" + error.Message, MessageType.Error);
-            }
-        }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape || e.Key == Key.Space || e.Key == Key.Enter)
@@ -71,6 +57,34 @@ namespace TerminalProgram.Views
         private void Button_CloseApplication_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            try
+            {
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "cmd",
+                    Arguments = $"/c start {e.Uri.AbsoluteUri}",
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                };
+
+                using (Process process = new Process { StartInfo = psi })
+                {
+                    process.Start();
+                }
+
+                e.Handled = true;
+            }
+
+            catch (Exception error)
+            {
+                MessageView.Show("Ошибка перехода по ссылке.\n\n" + error.Message, MessageType.Error);
+            }
         }
     }
 }
