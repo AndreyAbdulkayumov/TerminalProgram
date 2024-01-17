@@ -748,11 +748,21 @@ namespace ViewModels.MainWindow
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             });
 
+            string Addition = String.Empty;
+
+            if (CurrentFunction == Function.ForceSingleCoil && error.ErrorCode == 3)
+            {
+                Addition = "\n\nВ функции " + Function.ForceSingleCoil.DisplayedName + " используется логический тип данных.\n" +
+                    "\nTrue - это 0xFF00" +
+                    "\nFalse - это 0x0000";
+            }
+
             Message.Invoke(
                 "Ошибка Modbus.\n\n" +
                 "Код функции: " + error.FunctionCode.ToString() + "\n" +
                 "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
-                error.Message,
+                error.Message +
+                Addition,
                 MessageType.Error);
         }
 
