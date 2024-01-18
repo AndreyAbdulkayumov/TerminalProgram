@@ -85,7 +85,13 @@ namespace Core.Models.Modbus
                 "0x06 (запись)",
                 0x06);
 
-        public static readonly ModbusWriteFunction PresetMultipleRegister =
+        public static readonly ModbusWriteFunction ForceMultipleCoils =
+            new ModbusWriteFunction(
+                "0x0F Запись нескольких флагов",
+                "0x0F (запись)",
+                0x0F);
+
+        public static readonly ModbusWriteFunction PresetMultipleRegisters =
             new ModbusWriteFunction(
                 "0x10 Запись нескольких регистров",
                 "0x10 (запись)",
@@ -95,7 +101,8 @@ namespace Core.Models.Modbus
         {
             ForceSingleCoil,
             PresetSingleRegister,
-            PresetMultipleRegister
+            ForceMultipleCoils,
+            PresetMultipleRegisters
         };
     }
 }

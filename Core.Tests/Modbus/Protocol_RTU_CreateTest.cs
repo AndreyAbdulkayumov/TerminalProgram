@@ -82,10 +82,22 @@ namespace Core.Tests.Modbus
         }
 
         [Fact]
+        public void Test_Func_0F()
+        {
+            CheckMultiplyWriteFunction(
+                SelectedFunction:  Function.ForceMultipleCoils,
+                SlaveID:           15,
+                Address:           73,
+                WriteData:         new UInt16[] { 0xFF00, 0x0000, 0xFF00 },
+                CheckSum_IsEnable: true
+                );
+        }
+
+        [Fact]
         public void Test_Func_16()
         {
             CheckMultiplyWriteFunction(
-                SelectedFunction:  Function.PresetMultipleRegister,
+                SelectedFunction:  Function.PresetMultipleRegisters,
                 SlaveID:           240,
                 Address:           4365,
                 WriteData:         new UInt16[] { 0x0545, 0x0089, 0x7534 },

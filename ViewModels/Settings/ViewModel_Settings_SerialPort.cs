@@ -188,11 +188,6 @@ namespace ViewModels.Settings
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                if (SettingsFile.Settings.Connection_SerialPort == null)
-                {
-                    throw new Exception("Не инициализирован файл настроек.");
-                }
-
                 ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
             });
 
@@ -242,7 +237,7 @@ namespace ViewModels.Settings
             }
         }
 
-        private void ReScan_COMPorts(SerialPort_Info Info)
+        private void ReScan_COMPorts(SerialPort_Info? Info)
         {
             string[] PortsList = SerialPort.GetPortNames();
 
@@ -253,7 +248,8 @@ namespace ViewModels.Settings
                 COM_Ports.Add(Port);
             }
 
-            if (Info.COMPort == null || Info.COMPort == String.Empty)
+            if (Info == null ||
+                Info.COMPort == null || Info.COMPort == String.Empty)
             {
                 Selected_COM_Port = String.Empty;
                 Message_PortNotFound = "Порт не задан";

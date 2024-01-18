@@ -71,7 +71,7 @@ namespace Core.Tests.Modbus
         public void Test_Func_16()
         {
             CheckMultiplyWriteFunction(
-                SelectedFunction: Function.PresetMultipleRegister,
+                SelectedFunction: Function.PresetMultipleRegisters,
                 Address:          79,
                 WriteData:        new UInt16[] { 0x0F50, 0x4575, 0x0789, 0x0030 }
                 );

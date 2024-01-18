@@ -423,7 +423,8 @@ namespace ViewModels.MainWindow
         {
             try
             {
-                if (SelectedWriteFunction == Function.PresetMultipleRegister.DisplayedName)
+                if (SelectedWriteFunction == Function.PresetMultipleRegisters.DisplayedName ||
+                    SelectedWriteFunction == Function.ForceMultipleCoils.DisplayedName)
                 {
                     WriteBuffer.Clear();
 
@@ -524,8 +525,8 @@ namespace ViewModels.MainWindow
 
         private void Modbus_Write()
         {
-            byte[] RequestBytes = new byte[0];
-            byte[] ResponseBytes = new byte[0];
+            byte[] RequestBytes = Array.Empty<byte>();
+            byte[] ResponseBytes = Array.Empty<byte>();
 
             try
             {
@@ -565,7 +566,8 @@ namespace ViewModels.MainWindow
 
                 UInt16[] ModbusWriteData;
 
-                if (WriteFunction == Function.PresetMultipleRegister)
+                if (WriteFunction == Function.PresetMultipleRegisters ||
+                    WriteFunction == Function.ForceMultipleCoils)
                 {
                     ModbusWriteData = WriteBuffer.ToArray();
                 }
