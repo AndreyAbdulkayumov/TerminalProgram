@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "2.5.0 beta"
+#define MyAppVersion "2.5.0"
 
 ; Директория установки приложения по умолчанию
 #define InstallDirectory "C:\Program Files\XSoft\TerminalProgram"
@@ -13,6 +13,8 @@
 ; Имя файла установщика
 #define OutputFileName "TerminalProgram_" + MyAppVersion + "_installer"
 
+; Описание файла установщика
+#define FileDescription "TerminalProgram"
 
 #define MyAppPublisher "XSoft"
 #define MyAppExeName "TerminalProgram.exe"
@@ -37,7 +39,8 @@
 AppId={{DEE0A88B-092D-4E5E-A8C3-F4F35B17E73C}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
+VersionInfoVersion={#MyAppVersion}
+VersionInfoDescription={#FileDescription}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={#InstallDirectory}
 ChangesAssociations=yes
