@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,18 +14,30 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace TerminalProgram.Views.CustomControls
+namespace CustomControls_WPF
 {
     /// <summary>
-    /// Логика взаимодействия для ModbusDataField.xaml
+    /// Логика взаимодействия для RequestResponseField.xaml
     /// </summary>
-    public partial class ModbusDataField : UserControl
+    public partial class RequestResponseField : UserControl
     {
+        public IEnumerable FieldItems
+        {
+            get => (IEnumerable)GetValue(FieldItems_Property);
+            set => SetValue(FieldItems_Property, value);
+        }
+
+        public static readonly DependencyProperty FieldItems_Property =
+            DependencyProperty.Register(
+                nameof(FieldItems),
+                typeof(IEnumerable),
+                typeof(RequestResponseField));
+
         public static readonly DependencyProperty Property_FieldTitle =
             DependencyProperty.Register(
                 nameof(FieldTitle),
                 typeof(string),
-                typeof(ModbusDataField)
+                typeof(RequestResponseField)
                 );
 
         public string FieldTitle
@@ -37,7 +50,7 @@ namespace TerminalProgram.Views.CustomControls
             DependencyProperty.Register(
                 nameof(FieldTitle_Foreground),
                 typeof(SolidColorBrush),
-                typeof(ModbusDataField)
+                typeof(RequestResponseField)
                 );
 
         public SolidColorBrush FieldTitle_Foreground
@@ -50,7 +63,7 @@ namespace TerminalProgram.Views.CustomControls
             DependencyProperty.Register(
                 nameof(Field_Background),
                 typeof(SolidColorBrush),
-                typeof(ModbusDataField)
+                typeof(RequestResponseField)
                 );
 
         public SolidColorBrush Field_Background
@@ -59,11 +72,37 @@ namespace TerminalProgram.Views.CustomControls
             set => SetValue(Property_Field_Background, value);
         }
 
+        public static readonly DependencyProperty Property_Field_BorderBrush =
+            DependencyProperty.Register(
+                nameof(Field_BorderBrush),
+                typeof(SolidColorBrush),
+                typeof(RequestResponseField)
+                );
+
+        public SolidColorBrush Field_BorderBrush
+        {
+            get => (SolidColorBrush)GetValue(Property_Field_BorderBrush);
+            set => SetValue(Property_Field_BorderBrush, value);
+        }
+
+        public static readonly DependencyProperty Property_Data_Background =
+            DependencyProperty.Register(
+                nameof(Data_Background),
+                typeof(SolidColorBrush),
+                typeof(RequestResponseField)
+                );
+
+        public SolidColorBrush Data_Background
+        {
+            get => (SolidColorBrush)GetValue(Property_Data_Background);
+            set => SetValue(Property_Data_Background, value);
+        }
+
         public static readonly DependencyProperty Property_Data_Foreground =
             DependencyProperty.Register(
                 nameof(Data_Foreground),
                 typeof(SolidColorBrush),
-                typeof(ModbusDataField)
+                typeof(RequestResponseField)
                 );
 
         public SolidColorBrush Data_Foreground
@@ -76,7 +115,7 @@ namespace TerminalProgram.Views.CustomControls
             DependencyProperty.Register(
                 nameof(Data),
                 typeof(string),
-                typeof(ModbusDataField)
+                typeof(RequestResponseField)
                 );
 
         public string Data
@@ -85,8 +124,7 @@ namespace TerminalProgram.Views.CustomControls
             set => SetValue(Property_Data, value);
         }
 
-
-        public ModbusDataField()
+        public RequestResponseField()
         {
             InitializeComponent();
 

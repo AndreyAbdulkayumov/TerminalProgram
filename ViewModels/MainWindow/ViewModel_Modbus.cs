@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
+using CustomControls_Core;
 
 namespace ViewModels.MainWindow
 {
@@ -74,20 +75,13 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
         }
 
-        private string? _requestBytesDisplayed;
+        private ObservableCollection<RequestResponseField_ItemData> _requestResponseDisplayed =
+            new ObservableCollection<RequestResponseField_ItemData>();
 
-        public string? RequestBytesDisplayed
+        public ObservableCollection<RequestResponseField_ItemData> RequestResponseDisplayed
         {
-            get => _requestBytesDisplayed;
-            set => this.RaiseAndSetIfChanged(ref _requestBytesDisplayed, value);
-        }
-
-        private string? _responseBytesDisplayed;
-
-        public string? ResponseBytesDisplayed
-        {
-            get => _responseBytesDisplayed;
-            set => this.RaiseAndSetIfChanged(ref _responseBytesDisplayed, value);
+            get => _requestResponseDisplayed;
+            set => this.RaiseAndSetIfChanged(ref _requestResponseDisplayed, value);
         }
 
         private string? _slaveID;
@@ -502,8 +496,7 @@ namespace ViewModels.MainWindow
 
             WriteBuffer.Clear();
 
-            RequestBytesDisplayed = String.Empty;
-            ResponseBytesDisplayed = String.Empty;
+            RequestResponseDisplayed.Clear();
 
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
@@ -719,23 +712,32 @@ namespace ViewModels.MainWindow
 
         private void ViewRequestAndResponse(byte[] RequestBytes, byte[] ResponseBytes)
         {
-            string Request = String.Empty;
+            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
 
-            foreach (var element in RequestBytes)
+            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
+            
+            for (int i = 0; i < Items.Length; i++)
             {
-                Request += element.ToString("X2") + " ";
+                Items[i] = new RequestResponseField_ItemData();
+                Items[i].ItemNumber = (i + 1).ToString();
             }
 
-            RequestBytesDisplayed = Request;
-
-            string Response = String.Empty;
-
-            foreach (var element in ResponseBytes)
+            for (int i = 0; i < RequestBytes.Length; i++)
             {
-                Response += element.ToString("X2") + " ";
+                Items[i].RequestData = RequestBytes[i].ToString("X2");
             }
 
-            ResponseBytesDisplayed = Response;
+            for (int i = 0; i < ResponseBytes.Length; i++)
+            {
+                Items[i].ResponseData = ResponseBytes[i].ToString("X2");
+            }
+
+            RequestResponseDisplayed.Clear();
+
+            foreach (var Item in Items)
+            {
+                RequestResponseDisplayed.Add(Item);
+            }
         }
 
         private void ModbusErrorHandler(ModbusException error)

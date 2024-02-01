@@ -7,7 +7,7 @@
       xmlns:ViewModel="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_NoProtocol}"
-      d:DesignHeight="730" d:DesignWidth="850" 
+      d:DesignHeight="750" d:DesignWidth="850" 
       Background="{DynamicResource MainWindow_Color_Background}"
       Title="NoProtocol"
       KeyDown="Page_KeyDown"
@@ -78,7 +78,9 @@
 
             <Border Grid.Row="0" Margin="10,0,10,0">
 
-                <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch">
+                <ScrollViewer x:Name="ScrollViewer_RX" VerticalContentAlignment="Stretch"
+                              VerticalScrollBarVisibility="Visible"
+                              HorizontalScrollBarVisibility="Hidden">
 
                     <TextBox x:Name="TextBox_RX" Style="{StaticResource TX_RX_Field}"
                              IsReadOnly="True"

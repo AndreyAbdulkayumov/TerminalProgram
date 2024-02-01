@@ -6,10 +6,10 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TerminalProgram.Views.Protocols"
       xmlns:ViewModel="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
-      xmlns:CustomControls="clr-namespace:TerminalProgram.Views.CustomControls"
+      xmlns:CustomControls="clr-namespace:CustomControls_WPF;assembly=CustomControls_WPF"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_Modbus}"
-      d:DesignHeight="730" d:DesignWidth="850" 
+      d:DesignHeight="750" d:DesignWidth="850" 
       Background="{DynamicResource MainWindow_Color_Background}"
       Title="Modbus" 
       IsVisibleChanged="Page_Modbus_IsVisibleChanged">
@@ -47,7 +47,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="1*" MinHeight="100"/>
-            <RowDefinition Height="120"/>
+            <RowDefinition Height="140"/>
             <RowDefinition Height="220"/>
         </Grid.RowDefinitions>
 
@@ -118,6 +118,12 @@
                   Width="795"
                   ItemsSource="{Binding DataDisplayedList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                   AutoGenerateColumns="False"
+                  ScrollViewer.CanContentScroll="False"
+                  CanUserResizeColumns="False"
+                  CanUserAddRows="False"
+                  CanUserSortColumns="False"
+                  CanUserResizeRows="False"
+                  CanUserDeleteRows="False"
                   IsReadOnly="True"
                   FontSize="16"
                   BorderThickness="1"
@@ -128,6 +134,7 @@
                   HorizontalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
                   VerticalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
                   VerticalScrollBarVisibility="Visible"
+                  HorizontalScrollBarVisibility="Hidden"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
             <DataGrid.Columns>
@@ -197,7 +204,17 @@
 
         </DataGrid>
 
-        <Border Grid.Row="2" 
+        <CustomControls:RequestResponseField Grid.Row="2"
+                                             Field_Background="{DynamicResource ModbusDataField_Color_BorderBackground}"
+                                             Field_BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
+                                             FieldTitle_Foreground="{DynamicResource MainWindow_Color_Text}"
+                                             Data_Background="{DynamicResource ModbusDataField_Color_DataBackground}"
+                                             Data_Foreground="Black"
+                                             FieldItems="{Binding RequestResponseDisplayed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Width="700" Height="130"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        
+        <!--<Border Grid.Row="2" 
                 Background="{DynamicResource ModbusDataField_Color_BorderBackground}"
                 BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
                 BorderThickness="1"
@@ -234,7 +251,7 @@
 
             </Grid>
 
-        </Border>
+        </Border>-->
 
         <DockPanel x:Name="DockPanel_Controls" Grid.Row="3">
 

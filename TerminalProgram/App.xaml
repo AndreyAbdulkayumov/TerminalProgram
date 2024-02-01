@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="CommonControls/ComboBox_Common.xaml" />
                 <ResourceDictionary Source="CommonControls/Button_MinimizeApp.xaml" />
                 <ResourceDictionary Source="CommonControls/Button_CloseApp.xaml" />
+                <ResourceDictionary Source="CommonControls/ScrollBar.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 

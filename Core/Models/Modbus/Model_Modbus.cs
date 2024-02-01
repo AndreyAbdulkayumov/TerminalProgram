@@ -74,7 +74,7 @@ namespace Core.Models.Modbus
 
             IsBusy = true;
 
-            byte[] RX = new byte[30];
+            byte[] RX = new byte[50];
 
             byte[] TX = Array.Empty<byte>();
 
@@ -141,7 +141,7 @@ namespace Core.Models.Modbus
 
             IsBusy = true;
 
-            byte[] RX = new byte[100];
+            byte[] RX = new byte[200];
 
             byte[] TX = Array.Empty<byte>();
 
