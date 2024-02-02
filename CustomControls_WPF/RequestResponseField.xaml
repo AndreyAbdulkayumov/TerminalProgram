@@ -6,15 +6,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CustomControls_WPF"
              mc:Ignorable="d" 
-             d:DesignHeight="120" d:DesignWidth="700">
+             d:DesignHeight="140" d:DesignWidth="700">
 
 
-    <Border Background="{Binding ElementName=UserControl_RequestResponseField, Path=Field_Background}"
-            BorderBrush="{Binding ElementName=UserControl_RequestResponseField, Path=Field_BorderBrush}"
+    <Border BorderBrush="{Binding ElementName=UserControl_RequestResponseField, Path=Field_BorderBrush}"
             BorderThickness="1"
             CornerRadius="10">
 
-        <Grid Margin="0">
+        <Grid>
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80"/>
@@ -25,108 +24,108 @@
                 <RowDefinition Height="0.6*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                <RowDefinition Height="17"/>
+                <RowDefinition Height="24"/>
             </Grid.RowDefinitions>
-
-            <TextBlock Grid.Row="0" Grid.Column="0" 
-                       Text="Байт"
-                       FontSize="16"
-                       Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=FieldTitle_Foreground}"
-                       Margin="0,0,10,0"
-                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" 
                        Text="Запрос"
                        FontSize="16"
                        Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=FieldTitle_Foreground}"
-                       Margin="0,0,10,0"
+                       Margin="0,0,10,3"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
             <TextBlock Grid.Row="2" Grid.Column="0" 
                        Text="Ответ"
                        FontSize="16"
                        Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=FieldTitle_Foreground}"
-                       Margin="0,0,10,0"
+                       Margin="0,0,10,8"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-            <Border Grid.Row="1" Grid.Column="1"
+            <Border Grid.Row="0" Grid.RowSpan="4" Grid.Column="1"
                     CornerRadius="5"
-                    Background="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Background}"
-                    Margin="0,7,80,7"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    BorderBrush="{Binding ElementName=UserControl_RequestResponseField, Path=Field_BorderBrush}"
+                    BorderThickness="1"
+                    Background="{Binding ElementName=UserControl_RequestResponseField, Path=Field_Background}"
+                    Margin="0,5,80,5">
 
-            <Border Grid.Row="2" Grid.Column="1"
-                    CornerRadius="5"
-                    Background="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Background}"
-                    Margin="0,7,80,7"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <ScrollViewer Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                              HorizontalScrollBarVisibility="Visible"
+                              VerticalScrollBarVisibility="Hidden"
+                              Margin="3">
 
-            <ScrollViewer Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-                          HorizontalScrollBarVisibility="Visible"
-                          VerticalScrollBarVisibility="Hidden"
-                          Margin="0,0,80,-17"
-                          >
+                    <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Path=FieldItems}">
 
-                <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Path=FieldItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
 
-                    <ItemsControl.ItemTemplate>
-                        
-                        <DataTemplate>
-                            
-                            <Grid>
-                                
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="0.6*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                </Grid.RowDefinitions>
+                            <DataTemplate>
 
-                                <Border Grid.Row="0" 
-                                        Background="LightPink">
-                                    
-                                    <TextBlock Text="{Binding ItemNumber, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                               FontSize="12"
-                                               Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    
-                                </Border>
+                                <Grid>
 
-                                <Border Grid.Row="1">
-                                    
-                                    <TextBlock Text="{Binding RequestData, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                               FontSize="16"
-                                               Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"
-                                               Margin="10"/>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="0.6*"/>
+                                        <RowDefinition Height="1*"/>
+                                        <RowDefinition Height="1*"/>
+                                    </Grid.RowDefinitions>
 
-                                </Border>
+                                    <Border Grid.Row="0" 
+                                            BorderBrush="Black"
+                                            BorderThickness="0.5"
+                                            CornerRadius="5"
+                                            Background="{Binding ElementName=UserControl_RequestResponseField, Path=ByteNumber_Background}">
 
-                                <Border Grid.Row="2">
+                                        <TextBlock Text="{Binding ItemNumber, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                   FontSize="12"
+                                                   Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Row="2" 
-                                               Text="{Binding ResponseData, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                               FontSize="16"
-                                               Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"
-                                               Margin="10"/>
+                                    </Border>
 
-                                </Border>
-                                
-                            </Grid>
-                            
-                        </DataTemplate>
-                        
-                    </ItemsControl.ItemTemplate>
-                    
-                </ItemsControl>
-                
-            </ScrollViewer>
+                                    <Border Grid.Row="1"
+                                            BorderBrush="Black"
+                                            BorderThickness="0.5"
+                                            CornerRadius="5"
+                                            Background="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Background}">
+
+                                        <TextBlock Text="{Binding RequestData, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                   FontSize="16"
+                                                   Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Margin="10"/>
+
+                                    </Border>
+
+                                    <Border Grid.Row="2"
+                                            BorderBrush="Black"
+                                            BorderThickness="0.5"
+                                            CornerRadius="5"
+                                            Background="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Background}">
+
+                                        <TextBlock Grid.Row="2" 
+                                                   Text="{Binding ResponseData, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                   FontSize="16"
+                                                   Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Margin="10"/>
+
+                                    </Border>
+
+                                </Grid>
+
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+
+                    </ItemsControl>
+
+                </ScrollViewer>
+
+            </Border>
 
         </Grid>
 

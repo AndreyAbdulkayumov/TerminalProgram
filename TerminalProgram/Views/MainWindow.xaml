@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=ViewModel:ViewModel_CommonUI}"
         Title="Терминальная программа" 
-        Height="930" Width="850"
+        Height="940" Width="850"
         Background="{DynamicResource MainWindow_Color_Background}"
         AllowsTransparency="True"
         WindowStyle="None"

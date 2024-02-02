@@ -22,6 +22,10 @@
     <SolidColorBrush x:Key="ComboBox_Color_Enabled_Background" Color="#FFD0D0D0"/>
     <SolidColorBrush x:Key="ComboBox_Color_Disabled_Background" Color="#FFB0B0B0"/>
 
+    <!-- All ScrollBars -->
+
+    <SolidColorBrush x:Key="ScrollBar_Color_Background" Color="Silver"/>
+
     <!-- WindowChrome -->
     
     <SolidColorBrush x:Key="WindowChrome_Color" Color="#FF484848"/>
@@ -70,6 +74,8 @@
     <SolidColorBrush x:Key="ModbusDataField_Color_BorderBackground" Color="#FF404040"/>
     <SolidColorBrush x:Key="ModbusDataField_Color_BorderBrush" Color="#FFABABAB"/>
     <SolidColorBrush x:Key="ModbusDataField_Color_DataBackground" Color="#FFDFDFDF"/>
+
+    <SolidColorBrush x:Key="ModbusDataField_Color_ByteNumberBackground" Color="#FFFBD0D6"/>
 
     <!-- Settings Window -->
 

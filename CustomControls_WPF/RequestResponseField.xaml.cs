@@ -21,6 +21,19 @@ namespace CustomControls_WPF
     /// </summary>
     public partial class RequestResponseField : UserControl
     {
+        public static readonly DependencyProperty Property_ByteNumber_Background =
+            DependencyProperty.Register(
+                nameof(ByteNumber_Background),
+                typeof(SolidColorBrush),
+                typeof(RequestResponseField)
+                );
+
+        public SolidColorBrush ByteNumber_Background
+        {
+            get => (SolidColorBrush)GetValue(Property_ByteNumber_Background);
+            set => SetValue(Property_ByteNumber_Background, value);
+        }
+
         public IEnumerable FieldItems
         {
             get => (IEnumerable)GetValue(FieldItems_Property);
@@ -131,8 +144,10 @@ namespace CustomControls_WPF
             // Значения по умолчанию
 
             FieldTitle_Foreground = Brushes.Black;
-
+                        
             Field_Background = Brushes.White;
+            Field_BorderBrush = Brushes.Black;
+
             Data_Foreground = Brushes.Black;
         }
     }
