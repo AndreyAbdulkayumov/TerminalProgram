@@ -39,11 +39,11 @@ https://xunit.net/
 	- TCP
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/d671f9ca-4b4c-42de-b7e0-72c704dad581" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/9308333a-9809-48a1-82c8-4b3eab9acf23" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/2144efba-07c7-4f91-8270-ca71ae1b3fbf" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/50abe07d-ae2f-4db1-b98e-964f0fdb0021" />
 </p>
 
 ## *"Modbus"*
@@ -56,22 +56,22 @@ https://xunit.net/
  	- Modbus ASCII
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/5ae1b815-85e8-40d0-bd43-cbb96f43d5a9" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/28beb694-51c8-4e66-ae40-ba11307413d3" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/03989270-28fe-4f2e-bdf1-3d3f4bc8f2be" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/e55d28ca-127e-402b-81cd-ca8b1594ba7b" />
 </p>
 
 ## *"Http"*
 В верхнем поле пользователь пишет http или https запрос. 
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/69a60f7e-8f1d-488e-90f8-728450dd2fcb" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/92bbccba-ff2d-4e4f-834c-e6885d63c7f1" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/c9c68e86-d6b2-4ac4-a0df-4961b2e2d836" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/10dc1aff-62d5-4406-bf4c-a6d815f5e268" />
 </p>
 
 # Индикация
