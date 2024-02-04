@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\MainLogo.ico</ApplicationIcon>
     <Version>2.6.0</Version>
-    <Company>XSoft</Company>
+    <Company>Абдулкаюмов Андрей</Company>
     <Authors>Abdulkayumov Andrey</Authors>
   </PropertyGroup>
 

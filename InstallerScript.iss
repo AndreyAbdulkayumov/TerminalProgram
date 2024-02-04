@@ -8,7 +8,7 @@
 #define MyAppVersion "2.6.0"
 
 ; Директория установки приложения по умолчанию
-#define InstallDirectory "C:\Program Files\XSoft\TerminalProgram"
+#define InstallDirectory "C:\Program Files\TerminalProgram"
 
 ; Имя файла установщика
 #define OutputFileName "TerminalProgram_" + MyAppVersion + "_installer"
@@ -16,7 +16,7 @@
 ; Описание файла установщика
 #define FileDescription "TerminalProgram"
 
-#define MyAppPublisher "XSoft"
+#define MyAppPublisher "Абдулкаюмов Андрей"
 #define MyAppExeName "TerminalProgram.exe"
 #define MyAppAssocName "TerminalProgram File"
 #define MyAppAssocExt ".myp"

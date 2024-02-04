@@ -9,9 +9,6 @@ namespace Core.Models.Settings
 {
     internal class AppDirectoryManager
     {
-        // Имя корневой папки (имя разработчика ПО)
-        private const string CommonFolderName = "XSoft";
-
         // Имя папки приложения
         private const string ProgramFolderName = "TerminalProgram";
 
@@ -37,9 +34,7 @@ namespace Core.Models.Settings
         public AppDirectoryManager()
         {
             string FolderInDocuments = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                CommonFolderName,
-                ProgramFolderName);
+                Environment.GetFolderPath(Environment.SpecialFolder.Personal), ProgramFolderName);
 
             // Создание путей к папкам приложения
 
