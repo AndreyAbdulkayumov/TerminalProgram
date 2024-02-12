@@ -42,6 +42,7 @@ namespace TerminalProgram.Views.Protocols
             DataGrid_ModbusData.ItemsSource = ViewData;
 
             DataContext = new ViewModel_Modbus(
+                CopyToClipboard,
                 MessageView.Show,
                 ClearDataGrid,
                 SetUI_Connected,
@@ -52,13 +53,18 @@ namespace TerminalProgram.Views.Protocols
             this.MessageView = MessageView;
         }
 
+        private void CopyToClipboard(string TextContent)
+        {
+            Clipboard.SetText(TextContent);
+        }
+
         private void ViewModel_Modbus_AddDataInView(object? sender, ModbusDataDisplayed e)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 ViewData.Add(e);
                 DataGrid_ModbusData.ScrollIntoView(e);
-            }));            
+            }));
         }
 
         private void ClearDataGrid()
@@ -103,10 +109,6 @@ namespace TerminalProgram.Views.Protocols
 
             TextBox_Address.IsEnabled = false;
             TextBox_Data.IsEnabled = false;
-
-            TextBox_Address.Text = "";
-            TextBox_Data.Text = "";
-            TextBox_NumberOfRegisters.Text = "";
 
             Button_Write.IsEnabled = false;
             Button_Read.IsEnabled = false;

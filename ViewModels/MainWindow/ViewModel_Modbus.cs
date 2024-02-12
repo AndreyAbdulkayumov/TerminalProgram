@@ -192,6 +192,9 @@ namespace ViewModels.MainWindow
 
         #region Commands
 
+        public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
+        public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }
+
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
         public ReactiveCommand<Unit, Unit> Command_Read { get; }
         public ReactiveCommand<Unit, Unit> Command_ClearDataGrid { get; }
@@ -223,6 +226,7 @@ namespace ViewModels.MainWindow
 
 
         public ViewModel_Modbus(
+            Action<string> CopyToClipboard_Handler,
             Action<string, MessageType> MessageBox,
             Action ClearDataGrid_Handler,
             Action UI_Connected_Handler,
@@ -278,6 +282,35 @@ namespace ViewModels.MainWindow
             //
             /****************************************************/
 
+            Command_Copy_Request = ReactiveCommand.Create(() =>
+            {
+                string Data = string.Empty;
+
+                foreach (var element in RequestResponseDisplayed)
+                {
+                    if (element.RequestData != null)
+                    {
+                        Data += element.RequestData + " ";
+                    }                    
+                }
+
+                CopyToClipboard_Handler(Data);
+            });
+
+            Command_Copy_Response = ReactiveCommand.Create(() =>
+            {
+                string Data = string.Empty;
+
+                foreach (var element in RequestResponseDisplayed)
+                {
+                    if (element.ResponseData != null)
+                    {
+                        Data += element.ResponseData + " ";
+                    }                    
+                }
+
+                CopyToClipboard_Handler(Data);
+            });
 
             Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler.Invoke);
             Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));

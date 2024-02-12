@@ -137,6 +137,30 @@ namespace CustomControls_WPF
             set => SetValue(Property_Data, value);
         }
 
+        public ICommand Command_CopyRequest
+        {
+            get => (ICommand)GetValue(Command_CopyRequest_Property);
+            set => SetValue(Command_CopyRequest_Property, value);
+        }
+
+        public static readonly DependencyProperty Command_CopyRequest_Property =
+            DependencyProperty.Register(
+                nameof(Command_CopyRequest),
+                typeof(ICommand),
+                typeof(RequestResponseField));
+
+        public ICommand Command_CopyResponse
+        {
+            get => (ICommand)GetValue(Command_CopyResponse_Property);
+            set => SetValue(Command_CopyResponse_Property, value);
+        }
+
+        public static readonly DependencyProperty Command_CopyResponse_Property =
+            DependencyProperty.Register(
+                nameof(Command_CopyResponse),
+                typeof(ICommand),
+                typeof(RequestResponseField));
+
         public RequestResponseField()
         {
             InitializeComponent();

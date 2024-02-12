@@ -127,6 +127,40 @@
 
             </Border>
 
+            <Button Grid.Row="1" Grid.Column="1"
+                    ToolTip="Копировать запрос в буфер обмена"
+                    Width="35" Height="35"
+                    Margin="0,0,30,0"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Command="{Binding ElementName=UserControl_RequestResponseField, Path=Command_CopyRequest}">
+
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                
+                <Image Source="Resources/Copy.png" Margin="4"/>
+                
+            </Button>
+
+            <Button Grid.Row="2" Grid.Column="1"
+                    ToolTip="Копировать ответ в буфер обмена"
+                    Width="35" Height="35"
+                    Margin="0,0,30,0"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Command="{Binding ElementName=UserControl_RequestResponseField, Path=Command_CopyResponse}">
+
+                <Button.Resources>
+                    <Style TargetType="{x:Type Border}">
+                        <Setter Property="CornerRadius" Value="5"/>
+                    </Style>
+                </Button.Resources>
+                
+                <Image Source="Resources/Copy.png" Margin="4"/>
+                
+            </Button>
+
         </Grid>
 
     </Border>

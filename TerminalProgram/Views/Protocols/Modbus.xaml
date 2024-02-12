@@ -212,6 +212,8 @@
                                              Data_Background="{DynamicResource ModbusDataField_Color_DataBackground}"
                                              Data_Foreground="Black"
                                              FieldItems="{Binding RequestResponseDisplayed, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Command_CopyRequest="{Binding Command_Copy_Request}"
+                                             Command_CopyResponse="{Binding Command_Copy_Response}"
                                              Width="706" Height="140"
                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
 

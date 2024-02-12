@@ -196,8 +196,6 @@ namespace ViewModels.MainWindow
         {
             InterfaceType = InterfaceType_Default;
 
-            TX_String = String.Empty;
-
             SetUI_Disconnected?.Invoke();
         }
 
