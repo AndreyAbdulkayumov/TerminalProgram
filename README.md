@@ -56,14 +56,15 @@ https://xunit.net/
  	- Modbus ASCII
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/28beb694-51c8-4e66-ae40-ba11307413d3" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/1955b9ff-5a89-4810-8907-e71c57f11dd1" />
 </p>
 
 <p align="center">
-  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/e55d28ca-127e-402b-81cd-ca8b1594ba7b" />
+  <img src="https://github.com/AndreyAbdulkayumov/TerminalProgram/assets/86914394/35a00b20-2f3a-448f-be2f-d4188177f3c3" />
 </p>
 
 ## *"Http"*
+
 В верхнем поле пользователь пишет http или https запрос. 
 
 <p align="center">
