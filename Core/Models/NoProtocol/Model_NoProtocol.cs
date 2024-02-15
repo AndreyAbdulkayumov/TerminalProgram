@@ -122,7 +122,7 @@ namespace Core.Models.NoProtocol
             Model_ErrorInReadThread?.Invoke(this, e);            
         }
 
-        public void Send(string? StringMessage, bool CR_Enable, bool LF_Enable)
+        public async Task Send(string? StringMessage, bool CR_Enable, bool LF_Enable)
         {
             if (Client == null)
             {
@@ -146,16 +146,16 @@ namespace Core.Models.NoProtocol
                 Message.Add((byte)'\n');
             }
 
-            Client.Send(Message.ToArray(), Message.Count);
+            await Client.Send(Message.ToArray(), Message.Count);
         }
 
-        public void CycleMode_Start(CycleModeParameters Info)
+        public async void CycleMode_Start(CycleModeParameters Info)
         {
             CycleModeInfo = Info;
 
             OutputArray = CreateOutputBuffer(Info);
 
-            Send(Info.Message,
+            await Send(Info.Message,
                 Info.Message_CR_Enable,
                 Info.Message_LF_Enable);
 
@@ -237,13 +237,13 @@ namespace Core.Models.NoProtocol
             OutputArray = null;
         }
 
-        private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        private async void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             try
             {
                 if (CycleModeInfo != null)
                 {
-                    Send(CycleModeInfo.Message,
+                    await Send(CycleModeInfo.Message,
                         CycleModeInfo.Message_CR_Enable,
                         CycleModeInfo.Message_LF_Enable);
                 }

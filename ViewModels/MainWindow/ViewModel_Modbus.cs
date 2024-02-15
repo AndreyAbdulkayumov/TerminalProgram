@@ -27,6 +27,8 @@ namespace ViewModels.MainWindow
         public string? ViewAddress { get; set; }
         public UInt16[]? Data { get; set; }
         public string? ViewData { get; set; }
+
+        public RequestResponseField_ItemData[]? RequestResponseItems { get; set; }
     }
 
     public class ViewModel_Modbus : ReactiveObject
@@ -73,15 +75,6 @@ namespace ViewModels.MainWindow
         {
             get => _connection_IsSerialPort;
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
-        }
-
-        private ObservableCollection<RequestResponseField_ItemData> _requestResponseDisplayed =
-            new ObservableCollection<RequestResponseField_ItemData>();
-
-        public ObservableCollection<RequestResponseField_ItemData> RequestResponseDisplayed
-        {
-            get => _requestResponseDisplayed;
-            set => this.RaiseAndSetIfChanged(ref _requestResponseDisplayed, value);
         }
 
         private string? _slaveID;
@@ -226,7 +219,8 @@ namespace ViewModels.MainWindow
 
 
         public ViewModel_Modbus(
-            Action<string> CopyToClipboard_Handler,
+            Action Request_CopyToClipboard_Handler,
+            Action Response_CopyToClipboard_Handler,
             Action<string, MessageType> MessageBox,
             Action ClearDataGrid_Handler,
             Action UI_Connected_Handler,
@@ -244,7 +238,6 @@ namespace ViewModels.MainWindow
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
-
 
             /****************************************************/
             //
@@ -275,48 +268,23 @@ namespace ViewModels.MainWindow
 
             SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
 
-
             /****************************************************/
             //
             // Настройка свойств и команд модели отображения
             //
             /****************************************************/
 
-            Command_Copy_Request = ReactiveCommand.Create(() =>
-            {
-                string Data = string.Empty;
+            Command_Copy_Request = ReactiveCommand.Create(Request_CopyToClipboard_Handler);
+            Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
-                foreach (var element in RequestResponseDisplayed)
-                {
-                    if (element.RequestData != null)
-                    {
-                        Data += element.RequestData + " ";
-                    }                    
-                }
+            Command_Copy_Response = ReactiveCommand.Create(Response_CopyToClipboard_Handler);
+            Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
-                CopyToClipboard_Handler(Data);
-            });
-
-            Command_Copy_Response = ReactiveCommand.Create(() =>
-            {
-                string Data = string.Empty;
-
-                foreach (var element in RequestResponseDisplayed)
-                {
-                    if (element.ResponseData != null)
-                    {
-                        Data += element.ResponseData + " ";
-                    }                    
-                }
-
-                CopyToClipboard_Handler(Data);
-            });
-
-            Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler.Invoke);
+            Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler);
             Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
 
-            Command_Write = ReactiveCommand.Create(Modbus_Write);
-            Command_Read = ReactiveCommand.Create(Modbus_Read);
+            Command_Write = ReactiveCommand.CreateFromTask(Modbus_Write);
+            Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);
 
             this.WhenAnyValue(x => x.Selected_Modbus_RTU_ASCII)
                 .WhereNotNull()
@@ -529,8 +497,6 @@ namespace ViewModels.MainWindow
 
             WriteBuffer.Clear();
 
-            RequestResponseDisplayed.Clear();
-
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
             SetUI_Connected.Invoke();
@@ -549,7 +515,7 @@ namespace ViewModels.MainWindow
             PackageNumber = 0;
         }
 
-        private void Modbus_Write()
+        private async Task Modbus_Write()
         {
             byte[] RequestBytes = Array.Empty<byte>();
             byte[] ResponseBytes = Array.Empty<byte>();
@@ -612,16 +578,17 @@ namespace ViewModels.MainWindow
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
                     CRC16_Polynom);                                
 
-                Model.Modbus.WriteRegister(
-                    WriteFunction, 
-                    Data,
-                    ModbusMessageType,
-                    out RequestBytes,
-                    out ResponseBytes);
+                ModbusOperationResult Result = 
+                    await Model.Modbus.WriteRegister(
+                        WriteFunction, 
+                        Data,
+                        ModbusMessageType);
 
-                ViewRequestAndResponse(RequestBytes, ResponseBytes);
+                RequestBytes = Result.Request != null ? Result.Request : Array.Empty<byte>();
 
-                AddResponseInDataGrid(new ModbusDataDisplayed()
+                ResponseBytes = Result.Response != null ? Result.Response : Array.Empty<byte>();
+
+                AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
                     FuncNumber = WriteFunction.DisplayedNumber,
@@ -629,29 +596,26 @@ namespace ViewModels.MainWindow
                     ViewAddress = CreateViewAddress(SelectedAddress, ModbusWriteData.Length),
                     Data = ModbusWriteData,
                     ViewData = CreateViewData(ModbusWriteData)
-                });
+                },
+                RequestBytes,
+                ResponseBytes);
             }
 
             catch (ModbusException error)
             {
-                ViewRequestAndResponse(RequestBytes, ResponseBytes);
-
-                ModbusErrorHandler(error);
+                ModbusErrorHandler(error, RequestBytes, ResponseBytes);
             }
 
             catch (Exception error)
             {
-                if (RequestBytes.Length > 0 || ResponseBytes.Length > 0)
-                {
-                    ViewRequestAndResponse(RequestBytes, ResponseBytes);
-                }
-
                 Message.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" + error.Message, MessageType.Error);
             }
         }
 
-        private void Modbus_Read()
+        private async Task Modbus_Read()
         {
+            ModbusOperationResult? Result;
+
             byte[] RequestBytes = Array.Empty<byte>();
             byte[] ResponseBytes = Array.Empty<byte>();
 
@@ -703,79 +667,43 @@ namespace ViewModels.MainWindow
                     SelectedNumberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
                     CRC16_Polynom);
-
-
-                UInt16[] ModbusReadData = Model.Modbus.ReadRegister(
+                                
+                Result = await Model.Modbus.ReadRegister(
                                 ReadFunction,
                                 Data,
-                                ModbusMessageType,
-                                out RequestBytes,
-                                out ResponseBytes);
+                                ModbusMessageType);
 
-                ViewRequestAndResponse(RequestBytes, ResponseBytes);
+                RequestBytes = Result.Request != null ? Result.Request : Array.Empty<byte>();
 
-                AddResponseInDataGrid(new ModbusDataDisplayed()
+                ResponseBytes = Result.Response != null ? Result.Response : Array.Empty<byte>();
+
+                AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
                     Address = SelectedAddress,
-                    ViewAddress = CreateViewAddress(SelectedAddress, ModbusReadData.Length),
-                    Data = ModbusReadData,
-                    ViewData = CreateViewData(ModbusReadData)
-                });
+                    ViewAddress = CreateViewAddress(SelectedAddress, Result.ReadedData.Length),
+                    Data = Result.ReadedData,
+                    ViewData = CreateViewData(Result.ReadedData)
+                },
+                RequestBytes,
+                ResponseBytes);
             }
 
             catch (ModbusException error)
             {
-                ViewRequestAndResponse(RequestBytes, ResponseBytes);
-
-                ModbusErrorHandler(error);
+                ModbusErrorHandler(error, RequestBytes, ResponseBytes);
             }
 
             catch (Exception error)
             {
-                if (RequestBytes.Length > 0 || ResponseBytes.Length > 0)
-                {
-                    ViewRequestAndResponse(RequestBytes, ResponseBytes);
-                }
-
                 Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
             }
         }
 
-        private void ViewRequestAndResponse(byte[] RequestBytes, byte[] ResponseBytes)
+        private void ModbusErrorHandler(ModbusException error, byte[] RequestBytes, byte[] ResponseBytes)
         {
-            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
-
-            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
-            
-            for (int i = 0; i < Items.Length; i++)
-            {
-                Items[i] = new RequestResponseField_ItemData();
-                Items[i].ItemNumber = (i + 1).ToString();
-            }
-
-            for (int i = 0; i < RequestBytes.Length; i++)
-            {
-                Items[i].RequestData = RequestBytes[i].ToString("X2");
-            }
-
-            for (int i = 0; i < ResponseBytes.Length; i++)
-            {
-                Items[i].ResponseData = ResponseBytes[i].ToString("X2");
-            }
-
-            RequestResponseDisplayed.Clear();
-
-            foreach (var Item in Items)
-            {
-                RequestResponseDisplayed.Add(Item);
-            }
-        }
-
-        private void ModbusErrorHandler(ModbusException error)
-        {
-            AddResponseInDataGrid(new ModbusDataDisplayed()
+            AddDataOnView(new ModbusDataDisplayed()
             {
                 OperationID = PackageNumber,
                 FuncNumber = CurrentFunction?.DisplayedNumber,
@@ -783,7 +711,9 @@ namespace ViewModels.MainWindow
                 ViewAddress = CreateViewAddress(SelectedAddress, 1),
                 Data = new UInt16[1],
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
-            });
+            },
+            RequestBytes, 
+            ResponseBytes);
 
             string Addition = String.Empty;
 
@@ -809,8 +739,30 @@ namespace ViewModels.MainWindow
         //
         /*************************************************************************/
 
-        public static void AddResponseInDataGrid(ModbusDataDisplayed Data)
+        public static void AddDataOnView(ModbusDataDisplayed Data, byte[] RequestBytes, byte[] ResponseBytes)
         {
+            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
+
+            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
+
+            for (int i = 0; i < Items.Length; i++)
+            {
+                Items[i] = new RequestResponseField_ItemData();
+                Items[i].ItemNumber = (i + 1).ToString();
+            }
+
+            for (int i = 0; i < RequestBytes.Length; i++)
+            {
+                Items[i].RequestData = RequestBytes[i].ToString("X2");
+            }
+
+            for (int i = 0; i < ResponseBytes.Length; i++)
+            {
+                Items[i].ResponseData = ResponseBytes[i].ToString("X2");
+            }
+
+            Data.RequestResponseItems = Items;
+
             AddDataInView?.Invoke(null, Data);
 
             PackageNumber++;

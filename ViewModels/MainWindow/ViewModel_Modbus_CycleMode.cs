@@ -1,5 +1,4 @@
-﻿using Core.Models.NoProtocol;
-using Core.Models;
+﻿using Core.Models;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -299,8 +298,11 @@ namespace ViewModels.MainWindow
             }
         }
 
-        private void ReadModbusRegister()
+        private async Task ReadModbusRegister()
         {
+            byte[] RequestBytes = Array.Empty<byte>();
+            byte[] ResponseBytes = Array.Empty<byte>();
+
             try
             {
                 if (ReadFunction == null)
@@ -318,28 +320,32 @@ namespace ViewModels.MainWindow
                     throw new Exception("Не выбран тип протокола Modbus.");
                 }
 
-                UInt16[] ModbusReadData = Model.Modbus.ReadRegister(
+                ModbusOperationResult Result =
+                    await Model.Modbus.ReadRegister(
                                 ReadFunction,
                                 Data,
-                                ViewModel_Modbus.ModbusMessageType,
-                                out _,
-                                out _);
+                                ViewModel_Modbus.ModbusMessageType);
 
+                RequestBytes = Result.Request != null ? Result.Request : Array.Empty<byte>();
 
-                ViewModel_Modbus.AddResponseInDataGrid(new ModbusDataDisplayed()
+                ResponseBytes = Result.Response != null ? Result.Response : Array.Empty<byte>();
+
+                ViewModel_Modbus.AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = ViewModel_Modbus.PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
                     Address = SelectedAddress,
-                    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, ModbusReadData.Length),
-                    Data = ModbusReadData,
-                    ViewData = ViewModel_Modbus.CreateViewData(ModbusReadData)
-                });
+                    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, Result.ReadedData.Length),
+                    Data = Result.ReadedData,
+                    ViewData = ViewModel_Modbus.CreateViewData(Result.ReadedData)
+                },
+                RequestBytes,
+                ResponseBytes);
             }
 
             catch (ModbusException error)
             {
-                ViewModel_Modbus.AddResponseInDataGrid(new ModbusDataDisplayed()
+                ViewModel_Modbus.AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = ViewModel_Modbus.PackageNumber,
                     FuncNumber = ReadFunction?.DisplayedNumber,
@@ -347,7 +353,9 @@ namespace ViewModels.MainWindow
                     ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, 1),
                     Data = new UInt16[1],
                     ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
-                });
+                },
+                RequestBytes,
+                ResponseBytes);
 
                 throw new Exception(
                     "Ошибка Modbus.\n\n" +

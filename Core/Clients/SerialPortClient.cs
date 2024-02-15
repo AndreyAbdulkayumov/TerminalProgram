@@ -281,7 +281,7 @@ namespace Core.Clients
             }
         }
 
-        public void Send(byte[] Message, int NumberOfBytes)
+        public async Task Send(byte[] Message, int NumberOfBytes)
         {
             if (DeviceSerialPort == null)
             {
@@ -292,7 +292,7 @@ namespace Core.Clients
             {
                 if (IsConnected)
                 {
-                    DeviceSerialPort.Write(Message, 0, NumberOfBytes);
+                    await DeviceSerialPort.BaseStream.WriteAsync(Message, 0, NumberOfBytes);
 
                     Notifications.TransmitEvent();
                 }
@@ -307,14 +307,14 @@ namespace Core.Clients
             }
         }
 
-        public int Receive(byte[] Data)
+        public async Task<byte[]> Receive()
         {
             if (DeviceSerialPort == null)
             {
-                return 0;
+                return Array.Empty<byte>();
             }
 
-            int NumberOfReceivedBytes = 0;
+            List<byte> ReceivedBytes = new List<byte>();
 
             try
             {
@@ -322,37 +322,30 @@ namespace Core.Clients
                 {
                     // т.к. передача данных по СОМ порту медленная, то
                     // в первый раз метод Read примет только часть сообщения.
-                    // Оставшаяся часть сообщения будет считана повторным вызовом метода Read.
+                    // Оставшаяся часть сообщения будет считана повторными вызовами метода Read.
+                    // Метод Read будет вызываться пока не опустеет буфер приема (DeviceSerialPort.BytesToRead = 0).
                     // Задержка нужна для того, чтобы буфер приема успел заполниться данными.
                     // Для использования небольших скоростей передачи данных (Baud Rate)
                     // значение задержки взято с запасом.
 
-                    int FirstBytes = DeviceSerialPort.BytesToRead;
+                    byte[] Buffer;
 
-                    if (Data.Length > FirstBytes)
+                    do
                     {
-                        NumberOfReceivedBytes = FirstBytes;
+                        Buffer = new byte[DeviceSerialPort.BytesToRead];
 
-                        DeviceSerialPort.Read(Data, 0, FirstBytes);
+                        DeviceSerialPort.Read(Buffer, 0, Buffer.Length);
 
-                        Thread.Sleep(50);
+                        ReceivedBytes.AddRange(Buffer);
 
-                        NumberOfReceivedBytes += DeviceSerialPort.BytesToRead;
+                        await Task.Delay(70);
 
-                        DeviceSerialPort.Read(Data, FirstBytes, Data.Length);
-                    }
-                    
-                    else
-                    {
-                        NumberOfReceivedBytes = Data.Length;
-
-                        DeviceSerialPort.Read(Data, 0, Data.Length);
-                    }
+                    } while (DeviceSerialPort.BytesToRead > 0);
 
                     Notifications.ReceiveEvent();
                 }
 
-                return NumberOfReceivedBytes;
+                return ReceivedBytes.ToArray();
             }
 
             catch (Exception error)

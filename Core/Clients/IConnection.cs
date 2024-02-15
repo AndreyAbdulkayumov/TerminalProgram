@@ -70,13 +70,12 @@ namespace Core.Clients
         /// </summary>
         /// <param name="Message"></param>
         /// <param name="NumberOfBytes"></param>
-        void Send(byte[] Message, int NumberOfBytes);
+        Task Send(byte[] Message, int NumberOfBytes);
 
         /// <summary>
-        /// Сихронно считывает данные из соединения. Возвращает количество принятых байт.
+        /// Сихронно считывает данные из соединения. Возвращает принятые байты.
         /// </summary>
-        /// <param name="Data"></param>
-        int Receive(byte[] Data);
+        Task<byte[]> Receive();
     }
 
     public class DataFromDevice : EventArgs

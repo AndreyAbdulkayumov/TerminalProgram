@@ -25,6 +25,12 @@ namespace Core.Models.Modbus
         public byte[] Data;
     }
 
+    public class ModbusOperationResult
+    {
+        public UInt16[]? ReadedData;
+        public byte[]? Request;
+        public byte[]? Response;
+    }
 
     public class Model_Modbus
     {
@@ -43,7 +49,7 @@ namespace Core.Models.Modbus
         private readonly System.Timers.Timer CycleModeTimer;
         private const double IntervalDefault = 100;
 
-        private Action? ReadRegisterInCycleMode;
+        private Func<Task>? ReadRegisterInCycleMode;
 
         public Model_Modbus(ConnectedHost Host)
         {
@@ -67,18 +73,16 @@ namespace Core.Models.Modbus
             Device = null;
         }
 
-        public void WriteRegister(ModbusWriteFunction WriteFunction, MessageData DataForWrite, ModbusMessage Message,
-            out byte[] Request, out byte[] Response)
+        public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction WriteFunction, MessageData DataForWrite, ModbusMessage Message)
         {
             while (IsBusy) ;
 
             IsBusy = true;
 
-            byte[] RX = new byte[50];
-
             byte[] TX = Array.Empty<byte>();
+            byte[] RX = Array.Empty<byte>();
 
-            int NumberOfReceivedBytes = 0;
+            ModbusOperationResult Result = new ModbusOperationResult();
 
             try
             {
@@ -89,9 +93,9 @@ namespace Core.Models.Modbus
 
                 TX = Message.CreateMessage(WriteFunction, DataForWrite);
 
-                Device.Send(TX, TX.Length);
+                await Device.Send(TX, TX.Length);
 
-                NumberOfReceivedBytes = Device.Receive(RX);
+                RX = await Device.Receive();
 
                 ModbusResponse Data = Message.DecodingMessage(WriteFunction, RX);
             }
@@ -110,19 +114,20 @@ namespace Core.Models.Modbus
             {
                 if (TX.Length != 0)
                 {
-                    Request = TX;
-
-                    Response = GetOutputRX(RX, NumberOfReceivedBytes);
+                    Result.Request = TX;
+                    Result.Response = GetOutputRX(RX, RX.Length);
                 }
 
                 else
                 {
-                    Request = Array.Empty<byte>();
-                    Response = Array.Empty<byte>();
+                    Result.Request = Array.Empty<byte>();
+                    Result.Response = Array.Empty<byte>();
                 }
-                
-                IsBusy = false;
+
+                IsBusy = false;                
             }
+
+            return Result;
         }
 
         private byte[] GetOutputRX(byte[] RX, int Length)
@@ -134,20 +139,16 @@ namespace Core.Models.Modbus
             return OutputArray;
         }
 
-        public UInt16[] ReadRegister(ModbusReadFunction ReadFunction, MessageData DataForRead, ModbusMessage Message,
-            out byte[] Request, out byte[] Response)
+        public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction ReadFunction, MessageData DataForRead, ModbusMessage Message)
         {
             while (IsBusy) ;
 
             IsBusy = true;
 
-            byte[] RX = new byte[200];
-
             byte[] TX = Array.Empty<byte>();
+            byte[] RX = Array.Empty<byte>();
 
-            int NumberOfReceivedBytes = 0;
-
-            UInt16[] Result;
+            ModbusOperationResult Result = new ModbusOperationResult();
 
             try
             {
@@ -155,29 +156,29 @@ namespace Core.Models.Modbus
                 {
                     throw new Exception("Хост не инициализирован.");
                 }
-
+                
                 TX = Message.CreateMessage(ReadFunction, DataForRead);
 
-                Device.Send(TX, TX.Length);
-
-                NumberOfReceivedBytes = Device.Receive(RX);
+                await Device.Send(TX, TX.Length);
+                
+                RX = await Device.Receive();
 
                 ModbusResponse DeviceResponse = Message.DecodingMessage(ReadFunction, RX);
                                 
                 if (DeviceResponse.Data.Length < 2)
                 {
-                    Result = new UInt16[1];
+                    Result.ReadedData = new UInt16[1];
 
-                    Result[0] = DeviceResponse.Data[0];
+                    Result.ReadedData[0] = DeviceResponse.Data[0];
                 }
 
                 else
                 {
-                    Result = new UInt16[DeviceResponse.Data.Length / 2];
+                    Result.ReadedData = new UInt16[DeviceResponse.Data.Length / 2];
 
-                    for (int i = 0; i < Result.Length; i++)
+                    for (int i = 0; i < Result.ReadedData.Length; i++)
                     {
-                        Result[i] = BitConverter.ToUInt16(DeviceResponse.Data, i * 2);
+                        Result.ReadedData[i] = BitConverter.ToUInt16(DeviceResponse.Data, i * 2);
                     }
                 }
             }
@@ -196,15 +197,14 @@ namespace Core.Models.Modbus
             {
                 if (TX.Length != 0)
                 {
-                    Request = TX;
-
-                    Response = GetOutputRX(RX, NumberOfReceivedBytes);
+                    Result.Request = TX;
+                    Result.Response = GetOutputRX(RX, RX.Length);
                 }
 
                 else
                 {
-                    Request = Array.Empty<byte>();
-                    Response = Array.Empty<byte>();
+                    Result.Request = Array.Empty<byte>();
+                    Result.Response = Array.Empty<byte>();
                 }
 
                 IsBusy = false;
@@ -213,7 +213,7 @@ namespace Core.Models.Modbus
             return Result;
         }
 
-        public void CycleMode_Start(Action ReadRegister_Handler)
+        public void CycleMode_Start(Func<Task> ReadRegister_Handler)
         {
             ReadRegisterInCycleMode = ReadRegister_Handler;
 
@@ -225,11 +225,14 @@ namespace Core.Models.Modbus
             CycleModeTimer.Stop();
         }
 
-        private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        private async void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             try
             {
-                ReadRegisterInCycleMode?.Invoke();
+                if (ReadRegisterInCycleMode != null)
+                {
+                    await ReadRegisterInCycleMode.Invoke();
+                }                
             }
 
             catch (Exception error)

@@ -131,7 +131,7 @@ namespace ViewModels.MainWindow
             this.WhenAnyValue(x => x.TX_String)
                 .WhereNotNull()
                 .Where(x => x != String.Empty)
-                .Subscribe(_ =>
+                .Subscribe(async _ =>
                 {
                     try
                     {
@@ -139,7 +139,7 @@ namespace ViewModels.MainWindow
                             TX_String != String.Empty &&
                             TypeOfSendMessage == SendMessageType.Char)
                         {
-                            Model.NoProtocol.Send(TX_String.Last().ToString(), CR_Enable, LF_Enable);
+                            await Model.NoProtocol.Send(TX_String.Last().ToString(), CR_Enable, LF_Enable);
                         }
                     }
                     
@@ -161,9 +161,9 @@ namespace ViewModels.MainWindow
                 TX_String = String.Empty;
             });
 
-            Command_Send = ReactiveCommand.Create(() =>
+            Command_Send = ReactiveCommand.CreateFromTask(async () =>
             {
-                Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
+                await Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
             });
 
             Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));

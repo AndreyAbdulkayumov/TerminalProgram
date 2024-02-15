@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomControls_Core;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,16 +35,16 @@ namespace CustomControls_WPF
             set => SetValue(Property_ByteNumber_Background, value);
         }
 
-        public IEnumerable FieldItems
+        public IEnumerable<RequestResponseField_ItemData> FieldItems
         {
-            get => (IEnumerable)GetValue(FieldItems_Property);
+            get => (IEnumerable<RequestResponseField_ItemData>)GetValue(FieldItems_Property);
             set => SetValue(FieldItems_Property, value);
         }
 
         public static readonly DependencyProperty FieldItems_Property =
             DependencyProperty.Register(
                 nameof(FieldItems),
-                typeof(IEnumerable),
+                typeof(IEnumerable<RequestResponseField_ItemData>),
                 typeof(RequestResponseField));
 
         public static readonly DependencyProperty Property_FieldTitle =
@@ -160,6 +161,7 @@ namespace CustomControls_WPF
                 nameof(Command_CopyResponse),
                 typeof(ICommand),
                 typeof(RequestResponseField));
+
 
         public RequestResponseField()
         {

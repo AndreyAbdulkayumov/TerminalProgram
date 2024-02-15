@@ -5,10 +5,10 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "2.6.1"
+#define MyAppVersion "2.6.2"
 
 ; Директория установки приложения по умолчанию
-#define InstallDirectory "C:\Program Files\TerminalProgram"
+#define InstallDirectory "{commonpf64}\TerminalProgram"
 
 ; Имя файла установщика
 #define OutputFileName "TerminalProgram_" + MyAppVersion + "_installer"

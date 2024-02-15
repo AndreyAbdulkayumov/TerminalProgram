@@ -41,9 +41,16 @@ namespace TerminalProgram.Views.Protocols
                 UI_State_Wait
                 );
 
+            ViewModel.DeviceIsDisconnected += ViewModel_DeviceIsDisconnected;
+
             DataContext = ViewModel;
 
             this.MessageView = MessageView;
+        }
+
+        private void ViewModel_DeviceIsDisconnected(object? sender, EventArgs e)
+        {
+            this.Close();
         }
 
         private void UI_State_Work()

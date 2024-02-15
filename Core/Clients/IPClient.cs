@@ -188,7 +188,7 @@ namespace Core.Clients
             IsConnected = false;
         }
 
-        public void Send(byte[] Message, int NumberOfBytes)
+        public async Task Send(byte[] Message, int NumberOfBytes)
         {
             if (Stream == null)
             {
@@ -199,7 +199,7 @@ namespace Core.Clients
             {
                 if (IsConnected)
                 {
-                    Stream.Write(Message, 0, NumberOfBytes);
+                    await Stream.WriteAsync(Message, 0, NumberOfBytes);
 
                     Notifications.TransmitEvent();
                 }
@@ -214,34 +214,39 @@ namespace Core.Clients
             }
         }
 
-        public int Receive(byte[] RX)
+        public async Task<byte[]> Receive()
         {
             if (Stream == null)
             {
-                return 0;
+                return Array.Empty<byte>();
             }
 
-            int NumberOfReceivedBytes = 0;
+            List<byte> ReceivedBytes = new List<byte>();
 
             try
             {
                 if (IsConnected)
                 {
+                    byte[] Buffer;
+
+                    int NumberOfReceivedBytes;
+
                     do
                     {
-                        if (NumberOfReceivedBytes > RX.Length)
-                        {
-                            return RX.Length;
-                        }
+                        Buffer = new byte[100];
 
-                        NumberOfReceivedBytes += Stream.Read(RX, NumberOfReceivedBytes, RX.Length);
+                        NumberOfReceivedBytes = await Stream.ReadAsync(Buffer, 0, Buffer.Length);
+
+                        Array.Resize(ref Buffer, NumberOfReceivedBytes);
+
+                        ReceivedBytes.AddRange(Buffer);
 
                     } while (Stream.DataAvailable);
 
                     Notifications.ReceiveEvent();
                 }
 
-                return NumberOfReceivedBytes;
+                return ReceivedBytes.ToArray();
             }
 
             catch (Exception error)

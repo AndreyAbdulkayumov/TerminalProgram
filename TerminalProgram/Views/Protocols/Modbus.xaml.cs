@@ -16,6 +16,9 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using ViewModels.MainWindow;
 using MessageBox_WPF;
+using CustomControls_Core;
+using System.Diagnostics;
+using DynamicData;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -30,21 +33,28 @@ namespace TerminalProgram.Views.Protocols
 
         private readonly WPF_MessageView MessageView;
 
-        private readonly ObservableCollection<ModbusDataDisplayed> ViewData;
+        private readonly ObservableCollection<ModbusDataDisplayed> DataInDataGrid;
+
+        private readonly ObservableCollection<RequestResponseField_ItemData> DataInRequestResponseField;
 
 
         public Modbus(WPF_MessageView MessageView)
         {
             InitializeComponent();
 
-            ViewData = new ObservableCollection<ModbusDataDisplayed>();
+            DataInDataGrid = new ObservableCollection<ModbusDataDisplayed>();
 
-            DataGrid_ModbusData.ItemsSource = ViewData;
+            DataGrid_ModbusData.ItemsSource = DataInDataGrid;
+
+            DataInRequestResponseField = new ObservableCollection<RequestResponseField_ItemData>();
+
+            Field.FieldItems = DataInRequestResponseField;
 
             DataContext = new ViewModel_Modbus(
-                CopyToClipboard,
+                Request_CopyToClipboard,
+                Response_CopyToClipboard,
                 MessageView.Show,
-                ClearDataGrid,
+                ClearDataOnView,
                 SetUI_Connected,
                 SetUI_Disconnected);
 
@@ -53,23 +63,59 @@ namespace TerminalProgram.Views.Protocols
             this.MessageView = MessageView;
         }
 
-        private void CopyToClipboard(string TextContent)
+        private void Request_CopyToClipboard()
         {
-            Clipboard.SetText(TextContent);
+            string Data = string.Empty;
+
+            foreach (var element in DataInRequestResponseField)
+            {
+                if (element.RequestData != null)
+                {
+                    Data += element.RequestData + " ";
+                }
+            }
+
+            Clipboard.SetText(Data);
+        }
+
+        private void Response_CopyToClipboard()
+        {
+            string Data = string.Empty;
+
+            foreach (var element in DataInRequestResponseField)
+            {
+                if (element.ResponseData != null)
+                {
+                    Data += element.ResponseData + " ";
+                }
+            }
+
+            Clipboard.SetText(Data);
         }
 
         private void ViewModel_Modbus_AddDataInView(object? sender, ModbusDataDisplayed e)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                ViewData.Add(e);
+                DataInDataGrid.Add(e);
                 DataGrid_ModbusData.ScrollIntoView(e);
+
+                DataInRequestResponseField.Clear();
+
+                if (e.RequestResponseItems != null)
+                {
+                    DataInRequestResponseField.AddRange(e.RequestResponseItems);
+                }
             }));
         }
 
-        private void ClearDataGrid()
+        private void ClearDataOnView()
         {
-            Dispatcher.BeginInvoke(new Action(ViewData.Clear));
+            Dispatcher.BeginInvoke(new Action(() => 
+            {
+                DataInDataGrid.Clear();
+                DataInRequestResponseField.Clear();
+            }));
         }
 
         private void SetUI_Connected()
@@ -95,7 +141,7 @@ namespace TerminalProgram.Views.Protocols
 
             UI_State_IsConnected = true;
 
-            ClearDataGrid();
+            ClearDataOnView();
         }
 
         private void SetUI_Disconnected()
