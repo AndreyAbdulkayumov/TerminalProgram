@@ -243,7 +243,10 @@ namespace Core.Clients
 
                     } while (Stream.DataAvailable);
 
-                    Notifications.ReceiveEvent();
+                    if (ReceivedBytes.Count > 0)
+                    {
+                        Notifications.ReceiveEvent();
+                    }
                 }
 
                 return ReceivedBytes.ToArray();

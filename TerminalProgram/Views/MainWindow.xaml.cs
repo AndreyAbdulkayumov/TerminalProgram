@@ -43,7 +43,7 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            MessageView = new WPF_MessageView(this.Title); ; // Общий заголовок для всех диалоговых окон
+            MessageView = new WPF_MessageView(this.Title); // Общий заголовок для всех диалоговых окон
 
             Properties.Settings.Default.Reload();
 

@@ -17,7 +17,6 @@ using System.Collections.ObjectModel;
 using ViewModels.MainWindow;
 using MessageBox_WPF;
 using CustomControls_Core;
-using System.Diagnostics;
 using DynamicData;
 
 namespace TerminalProgram.Views.Protocols
@@ -97,8 +96,11 @@ namespace TerminalProgram.Views.Protocols
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
-                DataInDataGrid.Add(e);
-                DataGrid_ModbusData.ScrollIntoView(e);
+                if (e.ViewData != null)
+                {
+                    DataInDataGrid.Add(e);
+                    DataGrid_ModbusData.ScrollIntoView(e);
+                }                
 
                 DataInRequestResponseField.Clear();
 
@@ -120,6 +122,8 @@ namespace TerminalProgram.Views.Protocols
 
         private void SetUI_Connected()
         {
+            DockPanel_Controls.IsEnabled = true;
+
             TextBox_SlaveID.IsEnabled = true;
 
             Button_CycleMode.IsEnabled = true;
@@ -146,7 +150,11 @@ namespace TerminalProgram.Views.Protocols
 
         private void SetUI_Disconnected()
         {
+            DockPanel_Controls.IsEnabled = true;
+
             TextBox_SlaveID.IsEnabled = false;
+
+            Button_ClearDataGrid.IsEnabled = true;
 
             Button_CycleMode.IsEnabled = false;
 

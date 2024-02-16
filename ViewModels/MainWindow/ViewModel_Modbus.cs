@@ -603,11 +603,18 @@ namespace ViewModels.MainWindow
 
             catch (ModbusException error)
             {
-                ModbusErrorHandler(error, RequestBytes, ResponseBytes);
+                ModbusErrorHandler(error);
             }
 
             catch (Exception error)
             {
+                ModbusExceptionInfo? Info = error.InnerException as ModbusExceptionInfo;
+
+                if (Info != null)
+                {
+                    AddDataOnView(null, Info.Request, Info.Response);
+                }
+
                 Message.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" + error.Message, MessageType.Error);
             }
         }
@@ -682,7 +689,7 @@ namespace ViewModels.MainWindow
                     OperationID = PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
                     Address = SelectedAddress,
-                    ViewAddress = CreateViewAddress(SelectedAddress, Result.ReadedData.Length),
+                    ViewAddress = CreateViewAddress(SelectedAddress, Result.ReadedData == null ? 0 : Result.ReadedData.Length),
                     Data = Result.ReadedData,
                     ViewData = CreateViewData(Result.ReadedData)
                 },
@@ -692,16 +699,23 @@ namespace ViewModels.MainWindow
 
             catch (ModbusException error)
             {
-                ModbusErrorHandler(error, RequestBytes, ResponseBytes);
+                ModbusErrorHandler(error);
             }
 
             catch (Exception error)
             {
+                ModbusExceptionInfo? Info = error.InnerException as ModbusExceptionInfo;
+                
+                if (Info != null)
+                {
+                    AddDataOnView(null, Info.Request, Info.Response);
+                }                
+
                 Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
             }
         }
 
-        private void ModbusErrorHandler(ModbusException error, byte[] RequestBytes, byte[] ResponseBytes)
+        private void ModbusErrorHandler(ModbusException error)
         {
             AddDataOnView(new ModbusDataDisplayed()
             {
@@ -712,8 +726,8 @@ namespace ViewModels.MainWindow
                 Data = new UInt16[1],
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             },
-            RequestBytes, 
-            ResponseBytes);
+            error.RequestBytes, 
+            error.ResponseBytes);
 
             string Addition = String.Empty;
 
@@ -739,7 +753,7 @@ namespace ViewModels.MainWindow
         //
         /*************************************************************************/
 
-        public static void AddDataOnView(ModbusDataDisplayed Data, byte[] RequestBytes, byte[] ResponseBytes)
+        public static void AddDataOnView(ModbusDataDisplayed? Data, byte[]? RequestBytes, byte[]? ResponseBytes)
         {
             int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
 
@@ -761,6 +775,11 @@ namespace ViewModels.MainWindow
                 Items[i].ResponseData = ResponseBytes[i].ToString("X2");
             }
 
+            if (Data == null)
+            {
+                Data = new ModbusDataDisplayed();
+            }
+
             Data.RequestResponseItems = Items;
 
             AddDataInView?.Invoke(null, Data);
@@ -773,7 +792,7 @@ namespace ViewModels.MainWindow
             string DisplayedString = String.Empty;
 
             UInt16 CurrentAddress = StartAddress;
-
+            
             for (int i = 0; i < NumberOfRegisters; i++)
             {
                 DisplayedString += "0x" + CurrentAddress.ToString("X") +
@@ -790,8 +809,13 @@ namespace ViewModels.MainWindow
             return DisplayedString;
         }
 
-        public static string CreateViewData(UInt16[] ModbusData)
+        public static string CreateViewData(UInt16[]? ModbusData)
         {
+            if (ModbusData == null)
+            {
+                return String.Empty;
+            }
+            
             string DisplayedString = String.Empty;
 
             for (int i = 0; i < ModbusData.Length; i++)

@@ -14,6 +14,9 @@ namespace Core.Models.Modbus.Message
 
         public override string Message { get; }
 
+        public byte[]? RequestBytes;
+        public byte[]? ResponseBytes;
+
         public ModbusException(byte FunctionCode, byte ErrorCode, string Message)
         {
             this.FunctionCode = FunctionCode;
@@ -26,7 +29,34 @@ namespace Core.Models.Modbus.Message
             FunctionCode= ErrorObject.FunctionCode;
             ErrorCode = ErrorObject.ErrorCode;
             Message = ErrorObject.Message;
+            RequestBytes = ErrorObject.RequestBytes;
+            ResponseBytes = ErrorObject.ResponseBytes;
         }
+
+        public ModbusException(byte FunctionCode, byte ErrorCode, string Message, 
+            byte[] RequestBytes, byte[] ResponseBytes)
+        {
+            this.FunctionCode = FunctionCode;
+            this.ErrorCode = ErrorCode;
+            this.Message = Message;
+            this.RequestBytes = RequestBytes;
+            this.ResponseBytes = ResponseBytes;
+        }
+
+        public ModbusException(ModbusException ErrorObject, byte[] RequestBytes, byte[] ResponseBytes)
+        {
+            FunctionCode = ErrorObject.FunctionCode;
+            ErrorCode = ErrorObject.ErrorCode;
+            Message = ErrorObject.Message;
+            this.RequestBytes = RequestBytes;
+            this.ResponseBytes = ResponseBytes;
+        }
+    }
+
+    public class ModbusExceptionInfo : Exception
+    {
+        public byte[]? Request;
+        public byte[]? Response;
     }
 
     public abstract class ModbusMessage

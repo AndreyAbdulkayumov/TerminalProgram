@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\MainLogo.ico</ApplicationIcon>
-    <Version>2.6.1</Version>
+    <Version>2.7.0</Version>
     <Company>Абдулкаюмов Андрей</Company>
     <Authors>Abdulkayumov Andrey</Authors>
   </PropertyGroup>

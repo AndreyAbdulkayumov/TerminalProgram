@@ -335,7 +335,7 @@ namespace ViewModels.MainWindow
                     OperationID = ViewModel_Modbus.PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
                     Address = SelectedAddress,
-                    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, Result.ReadedData.Length),
+                    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, Result.ReadedData == null ? 0 : Result.ReadedData.Length),
                     Data = Result.ReadedData,
                     ViewData = ViewModel_Modbus.CreateViewData(Result.ReadedData)
                 },
@@ -354,8 +354,8 @@ namespace ViewModels.MainWindow
                     Data = new UInt16[1],
                     ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
                 },
-                RequestBytes,
-                ResponseBytes);
+                error.RequestBytes,
+                error.ResponseBytes);
 
                 throw new Exception(
                     "Ошибка Modbus.\n\n" +
@@ -366,6 +366,13 @@ namespace ViewModels.MainWindow
 
             catch (Exception error)
             {
+                ModbusExceptionInfo? Info = error.InnerException as ModbusExceptionInfo;
+
+                if (Info != null)
+                {
+                    ViewModel_Modbus.AddDataOnView(null, Info.Request, Info.Response);
+                }
+
                 throw new Exception("Возникла ошибка чтения Modbus регистра:\n\n" + error.Message);
             }
         }

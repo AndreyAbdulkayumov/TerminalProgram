@@ -97,32 +97,42 @@ namespace Core.Models.Modbus
 
                 RX = await Device.Receive();
 
-                ModbusResponse Data = Message.DecodingMessage(WriteFunction, RX);
-            }
-
-            catch (ModbusException error)
-            {
-                throw new ModbusException(error);
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception(error.Message);
-            }
-
-            finally
-            {
-                if (TX.Length != 0)
+                if (RX.Length > 0)
                 {
-                    Result.Request = TX;
-                    Result.Response = GetOutputRX(RX, RX.Length);
+                    ModbusResponse Data = Message.DecodingMessage(WriteFunction, RX);
                 }
 
                 else
                 {
-                    Result.Request = Array.Empty<byte>();
-                    Result.Response = Array.Empty<byte>();
-                }
+                    throw new Exception("Хост не ответил.\n\n" +
+                        "Таймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
+                        "Таймаут чтения: " + Device.ReadTimeout + " мс.");
+                }                
+            }
+
+            catch (ModbusException error)
+            {
+                throw new ModbusException(
+                    ErrorObject: error,
+                    RequestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
+                    ResponseBytes: GetOutputRX(RX, RX.Length)
+                    );
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception(error.Message,
+                    new ModbusExceptionInfo()
+                    {
+                        Request = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        Response = GetOutputRX(RX, RX.Length)
+                    });
+            }
+
+            finally
+            {
+                Result.Request = TX.Length > 0 ? TX : Array.Empty<byte>();
+                Result.Response = GetOutputRX(RX, RX.Length);
 
                 IsBusy = false;                
             }
@@ -160,52 +170,62 @@ namespace Core.Models.Modbus
                 TX = Message.CreateMessage(ReadFunction, DataForRead);
 
                 await Device.Send(TX, TX.Length);
-                
+
                 RX = await Device.Receive();
 
-                ModbusResponse DeviceResponse = Message.DecodingMessage(ReadFunction, RX);
-                                
-                if (DeviceResponse.Data.Length < 2)
+                if (RX.Length > 0)
                 {
-                    Result.ReadedData = new UInt16[1];
+                    ModbusResponse DeviceResponse = Message.DecodingMessage(ReadFunction, RX);
 
-                    Result.ReadedData[0] = DeviceResponse.Data[0];
+                    if (DeviceResponse.Data.Length < 2)
+                    {
+                        Result.ReadedData = new UInt16[1];
+
+                        Result.ReadedData[0] = DeviceResponse.Data[0];
+                    }
+
+                    else
+                    {
+                        Result.ReadedData = new UInt16[DeviceResponse.Data.Length / 2];
+
+                        for (int i = 0; i < Result.ReadedData.Length; i++)
+                        {
+                            Result.ReadedData[i] = BitConverter.ToUInt16(DeviceResponse.Data, i * 2);
+                        }
+                    }
                 }
-
+                
                 else
                 {
-                    Result.ReadedData = new UInt16[DeviceResponse.Data.Length / 2];
-
-                    for (int i = 0; i < Result.ReadedData.Length; i++)
-                    {
-                        Result.ReadedData[i] = BitConverter.ToUInt16(DeviceResponse.Data, i * 2);
-                    }
+                    throw new Exception("Хост не ответил.\n\n" +
+                        "Таймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
+                        "Таймаут чтения: " + Device.ReadTimeout + " мс.");
                 }
             }
 
             catch (ModbusException error)
             {
-                throw new ModbusException(error);
+                throw new ModbusException(
+                    ErrorObject:   error,
+                    RequestBytes:  TX.Length > 0 ? TX : Array.Empty<byte>(),
+                    ResponseBytes: GetOutputRX(RX, RX.Length)
+                    );
             }
 
             catch (Exception error)
             {
-                throw new Exception(error.Message);
+                throw new Exception(error.Message , 
+                    new ModbusExceptionInfo()
+                    {
+                        Request = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        Response = GetOutputRX(RX, RX.Length)
+                    });
             }
 
             finally
             {
-                if (TX.Length != 0)
-                {
-                    Result.Request = TX;
-                    Result.Response = GetOutputRX(RX, RX.Length);
-                }
-
-                else
-                {
-                    Result.Request = Array.Empty<byte>();
-                    Result.Response = Array.Empty<byte>();
-                }
+                Result.Request = TX.Length > 0 ? TX : Array.Empty<byte>();
+                Result.Response = GetOutputRX(RX, RX.Length);
 
                 IsBusy = false;
             }

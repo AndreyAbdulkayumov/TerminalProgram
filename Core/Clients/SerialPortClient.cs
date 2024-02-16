@@ -342,7 +342,10 @@ namespace Core.Clients
 
                     } while (DeviceSerialPort.BytesToRead > 0);
 
-                    Notifications.ReceiveEvent();
+                    if (ReceivedBytes.Count > 0)
+                    {
+                        Notifications.ReceiveEvent();
+                    }                    
                 }
 
                 return ReceivedBytes.ToArray();
