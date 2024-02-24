@@ -1,0 +1,228 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ViewModels="clr-namespace:TerminalProgram.ViewModels"
+             mc:Ignorable="d"
+			 d:DesignWidth="850" d:DesignHeight="600"
+             x:Class="TerminalProgram.Views.MainView"
+             x:DataType="ViewModels:MainViewModel">
+	
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+			to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+	  <ViewModels:MainViewModel />
+	</Design.DataContext>
+
+	<UserControl.DataContext>
+		<ViewModels:MainViewModel/>
+	</UserControl.DataContext>
+
+	<UserControl.Styles>
+
+		<Style Selector="TextBlock">
+			<Setter Property="TextBlock.Foreground" Value="#FFD2C25A"/>
+		</Style>
+
+		<Style Selector="ComboBox">
+			<Setter Property="ComboBox.Background" Value="Aqua"/>
+			<Setter Property="ComboBox.BorderThickness" Value="0"/>
+		</Style>
+
+		<Style Selector="Button">
+			<Setter Property="Button.Height" Value="30"/>
+			<Setter Property="Button.FontSize" Value="14"/>
+			<Setter Property="Button.HorizontalAlignment" Value="Left"/>
+			<Setter Property="Button.VerticalAlignment" Value="Center"/>
+			<Setter Property="Button.HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="Button.VerticalContentAlignment" Value="Center"/>
+		</Style>
+
+	</UserControl.Styles>
+
+
+	<Border Background="#FF323232"
+			BorderBrush="Black" BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="80"/>
+				<RowDefinition Height="1*"/>
+				<RowDefinition Height="80"/>
+			</Grid.RowDefinitions>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="200"/>
+				<ColumnDefinition Width="4*"/>
+			</Grid.ColumnDefinitions>
+
+			<Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+					Background="#FF464646"
+					BorderThickness="0"
+					CornerRadius="6"
+					Margin="10">
+
+				<StackPanel Orientation="Vertical" Spacing="10"
+							Margin="10">
+
+					<Button Background="Silver"
+							Foreground="Black"
+							Content="Без протокола"
+							Height="40"
+							HorizontalAlignment="Stretch"
+							Command="{Binding Select_NoProtocol_View}"/>
+
+					<Button Background="Silver"
+							Foreground="Black"
+							Content="Modbus"
+							Height="40"
+							HorizontalAlignment="Stretch"
+							Command="{Binding Select_Modbus_Client_View}"/>
+
+					<Button Background="Silver"
+							Foreground="Black"
+							Content="Modbus TCP сервер"
+							Height="40"
+							HorizontalAlignment="Stretch"
+							Command="{Binding Select_Modbus_Server_View}"/>
+
+				</StackPanel>
+
+			</Border>
+
+			<Border Grid.Row="0" Grid.Column="1"
+					Background="#FF404040"
+					BorderThickness="0"
+					CornerRadius="6"
+					Margin="10">
+
+				<Grid>
+
+					<TextBlock x:Name="TextBlock_SelectedPreset"
+							   Text="Выбранный пресет:"
+							   Margin="10,0,0,0"
+                               FontSize="16"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<ComboBox x:Name="ComboBox_SelectedPreset"
+							  BorderThickness="0"
+							  Background="#FFD0D0D0"
+							  MinHeight="20"
+							  Height="30" Width="160"
+							  Margin="180,0,0,0"
+							  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<Button x:Name="Button_Connect"
+							Background="#FFBABABA"
+							Foreground="Black"
+							Margin="380,0,0,0"
+							Content="Подключить"/>
+
+					<Button x:Name="Button_Disconnect"
+							Background="#FFBABABA"
+							Foreground="Black"
+							Margin="500,0,0,0"
+							Content="Отключить"/>
+
+				</Grid>
+
+			</Border>
+
+			<Border Grid.Row="1" Grid.Column="1"
+					Background="#FF404040"
+					BorderThickness="0"
+					CornerRadius="6"
+					Margin="10">
+
+				<ScrollViewer HorizontalScrollBarVisibility="Visible"
+                              VerticalScrollBarVisibility="Visible">
+
+					<ContentControl x:Name="ContentControl_Pages"
+                                    Content="{Binding CurrentView}"/>
+
+				</ScrollViewer>
+
+			</Border>
+
+			<Border Grid.Row="2" Grid.Column="1"
+					Background="#FF404040"
+					BorderThickness="0"
+					CornerRadius="6"
+					Margin="10">
+
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="1*"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
+
+					<Border BorderThickness="0,2,0,0"
+							BorderBrush="{DynamicResource ConnectionString_BorderBrush}"/>
+
+					<TextBlock Grid.Row="0"
+							   Text="COM4 : 115200 : None : 8 : 1"
+							   FontSize="16"
+							   Margin="20,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBlock Grid.Row="1"
+							   Text="Подключен"
+							   FontSize="16"
+							   Margin="20,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBlock Grid.Row="1"
+							   Text="00 : 00 : 53"
+							   FontSize="16"
+							   Margin="130,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<Ellipse Grid.Row="0" Grid.RowSpan="2"
+							 Width="20" Height="20"
+							 Fill="#FF909090"
+							 Margin="0,0,190,0"
+							 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					<Ellipse Grid.Row="0" Grid.RowSpan="2"
+							 Width="20" Height="20"
+							 Fill="#FFA3D049"
+							 IsVisible="False"
+							 Margin="0,0,190,0"
+							 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					<TextBlock Grid.Row="0" Grid.RowSpan="2"
+							   Text="Прием"
+							   FontSize="16"
+							   Margin="0,0,130,0"
+							   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					<Ellipse Grid.Row="0" Grid.RowSpan="2"
+							 Width="20" Height="20"
+							 Fill="#FF909090"
+							 Margin="0,0,95,0"
+							 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					<Ellipse Grid.Row="0" Grid.RowSpan="2"
+							 Width="20" Height="20"
+							 Fill="#FFA3D049"
+							 IsVisible="True"
+							 Margin="0,0,95,0"
+							 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					<TextBlock Grid.Row="0" Grid.RowSpan="2"
+							   Text="Передача"
+							   FontSize="16"
+							   Margin="0,0,10,0"
+							   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+				</Grid>
+
+			</Border>
+
+		</Grid>
+
+	</Border>
+	
+</UserControl>
