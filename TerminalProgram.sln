@@ -5,19 +5,13 @@ VisualStudioVersion = 17.4.33403.182
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgram", "TerminalProgram\TerminalProgram.csproj", "{2B82A257-BB2B-460F-A9B6-C330ED087620}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core.Tests", "Core.Tests\Core.Tests.csproj", "{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModels", "ViewModels\ViewModels.csproj", "{7AD5CBD3-5143-4630-80B0-A40A385DDB3D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox_Core", "MessageBox_Core\MessageBox_Core.csproj", "{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox_WPF", "MessageBox_WPF\MessageBox_WPF.csproj", "{0CB95075-D562-4C0F-A4CB-7178AC58D723}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomControls_WPF", "CustomControls_WPF\CustomControls_WPF.csproj", "{BE7BA920-002E-4A9E-870E-EE79129C79C6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomControls_Core", "CustomControls_Core\CustomControls_Core.csproj", "{E662C3C7-9959-420E-8E5B-FD81A3AC3750}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomControls_Core", "CustomControls_Core\CustomControls_Core.csproj", "{E662C3C7-9959-420E-8E5B-FD81A3AC3750}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +23,6 @@ Global
 		{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2066A4F8-68D8-4105-8E0C-53E957C5D1E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2B82A257-BB2B-460F-A9B6-C330ED087620}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B82A257-BB2B-460F-A9B6-C330ED087620}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B82A257-BB2B-460F-A9B6-C330ED087620}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B82A257-BB2B-460F-A9B6-C330ED087620}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30BD8EDC-AB72-47AF-98F5-DF912B45EAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,14 +35,6 @@ Global
 		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0CB95075-D562-4C0F-A4CB-7178AC58D723}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE7BA920-002E-4A9E-870E-EE79129C79C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE7BA920-002E-4A9E-870E-EE79129C79C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE7BA920-002E-4A9E-870E-EE79129C79C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE7BA920-002E-4A9E-870E-EE79129C79C6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E662C3C7-9959-420E-8E5B-FD81A3AC3750}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E662C3C7-9959-420E-8E5B-FD81A3AC3750}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E662C3C7-9959-420E-8E5B-FD81A3AC3750}.Release|Any CPU.ActiveCfg = Release|Any CPU
