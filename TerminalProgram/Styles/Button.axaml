@@ -1,0 +1,33 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="Button">
+		
+		<Setter Property="Background" Value="{DynamicResource Button_Color_Enabled_Background}"/>
+		<Setter Property="Foreground" Value="{DynamicResource Button_Color_Enabled_Foreground}"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="Height" Value="30"/>
+		<Setter Property="FontSize" Value="14"/>
+		<Setter Property="HorizontalAlignment" Value="Left"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+
+		<Style Selector="^:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource Button_Color_MouseOver_Background}"/>
+			<Setter Property="Foreground" Value="{DynamicResource Button_Color_Enabled_Foreground}"/>
+		</Style>
+
+		<Style Selector="^:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource Button_Color_Pressed_Background}"/>
+			<Setter Property="Foreground" Value="{DynamicResource Button_Color_Enabled_Foreground}"/>
+		</Style>
+
+		<Style Selector="^:disabled /template/ ContentPresenter">
+			<Setter Property="Background" Value="{DynamicResource Button_Color_Disabled_Background}"/>
+			<Setter Property="Foreground" Value="{DynamicResource Button_Color_Disabled_Foreground}"/>
+		</Style>
+
+	</Style>
+	
+</Styles>

@@ -31,6 +31,22 @@ namespace ViewModels.MainWindow
 
     public class ViewModel_CommonUI : ReactiveObject
     {
+        private bool ui_IsConnectedState = false;
+
+        public bool UI_IsConnectedState
+        {
+            get => ui_IsConnectedState;
+            set => this.RaiseAndSetIfChanged(ref ui_IsConnectedState, value);
+        }
+
+        private object? _currentViewModel;
+
+        public object? CurrentViewModel
+        {
+            get => _currentViewModel;
+            set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
+        }
+
         public bool IsConnected
         {
             get => Model.HostIsConnect;
@@ -169,25 +185,24 @@ namespace ViewModels.MainWindow
         private readonly Model_Settings SettingsFile;
 
         private readonly Action<string, MessageType> Message;
-        private readonly Action SetUI_Connected;
-        private readonly Action SetUI_Disconnected;
         private readonly Func<string[], string?> Select_AvailablePresetFile;
+
+        private ViewModel_NoProtocol NoProtocol_VM;
+        private ViewModel_Modbus ModbusClient_VM;
 
 
         public ViewModel_CommonUI(
             Action<string, MessageType> MessageBox,
-            Action UI_Connected_Handler,
-            Action UI_Disconnected_Handler,
             Func<string[], string?> Select_AvailablePresetFile_Handler,
             string? SettingsDocument,
             string? CurrentThemeName,
             string? ThemeName_Dark,
-            string? ThemeName_Light
+            string? ThemeName_Light,
+            Action Set_Dark_Theme,
+            Action Set_Light_Theme
             )
         {
             Message = MessageBox;
-            SetUI_Connected = UI_Connected_Handler;
-            SetUI_Disconnected = UI_Disconnected_Handler;
             Select_AvailablePresetFile = Select_AvailablePresetFile_Handler;
             ViewModel_CommonUI.SettingsDocument = SettingsDocument;
             ViewModel_CommonUI.ThemeName = CurrentThemeName;
@@ -198,6 +213,11 @@ namespace ViewModels.MainWindow
             SettingsFile = Model_Settings.Model;
 
             StringValue.ShowMessageView = Message;
+
+            NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
+            ModbusClient_VM = new ViewModel_Modbus();
+
+            CurrentViewModel = NoProtocol_VM;
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -226,10 +246,18 @@ namespace ViewModels.MainWindow
             Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
             Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
 
-            Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(Model.SetProtocol_NoProtocol);
+            Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() => 
+            {
+                CurrentViewModel = NoProtocol_VM;
+                Model.SetProtocol_NoProtocol();
+            });
             Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
-            Command_ProtocolMode_Modbus = ReactiveCommand.Create(Model.SetProtocol_Modbus);
+            Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
+            {
+                CurrentViewModel = ModbusClient_VM;
+                Model.SetProtocol_Modbus();
+            });
             Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
@@ -241,7 +269,7 @@ namespace ViewModels.MainWindow
 
             // Действия после запуска приложения
 
-            SetUI_Disconnected.Invoke();
+            Set_Dark_Theme();
         }
 
         private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -265,7 +293,7 @@ namespace ViewModels.MainWindow
                 //Task.Run(Model.Client.Notifications.DemoVisualization);
             }         
 
-            SetUI_Connected.Invoke();
+            UI_IsConnectedState = true;
 
             ConnectionStatus = ConnectionStatus_Connected;
 
@@ -319,7 +347,7 @@ namespace ViewModels.MainWindow
                 Model.Client.Notifications.RX_Notification -= Notifications_RX_Notification;
             }
 
-            SetUI_Disconnected.Invoke();
+            UI_IsConnectedState = false;
 
             ConnectionStatus = ConnectionStatus_Disconnected;
 

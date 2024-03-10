@@ -24,6 +24,14 @@ namespace ViewModels.MainWindow
     {
         #region Properties
 
+        private bool ui_IsEnable = false;
+
+        public bool UI_IsEnable
+        {
+            get => ui_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
+
         private const string InterfaceType_Default = "не определен";
         private const string InterfaceType_SerialPort = "Serial Port";
         private const string InterfaceType_Ethernet = "Ethernet";
@@ -35,6 +43,20 @@ namespace ViewModels.MainWindow
             get => _interfaceType;
             set => this.RaiseAndSetIfChanged(ref _interfaceType, value);
         }
+
+        private string _rx_String = String.Empty;
+
+        public string RX_String
+        {
+            get => _rx_String;
+            set => this.RaiseAndSetIfChanged(ref _rx_String, value);
+        }
+
+        // Делаем эти значения одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
+        private const int RX_Capacity = 300;
+        private const int RX_MaxCapacity = 300;
+
+        private readonly StringBuilder RX = new StringBuilder(RX_Capacity, RX_MaxCapacity);
 
         private string _tx_String = String.Empty;
 
@@ -51,6 +73,7 @@ namespace ViewModels.MainWindow
             get => _cr_enable;
             set => this.RaiseAndSetIfChanged(ref _cr_enable, value);
         }
+
 
         private bool _lf_enable;
 
@@ -76,12 +99,12 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _messageIsString, value);
         }
 
-        private bool _rx_nextLine;
+        private bool _rx_NextLine;
 
         public bool RX_NextLine
         {
-            get => _rx_nextLine;
-            set => this.RaiseAndSetIfChanged(ref _rx_nextLine, value);
+            get => _rx_NextLine;
+            set => this.RaiseAndSetIfChanged(ref _rx_NextLine, value);
         }
 
         #endregion
@@ -98,29 +121,17 @@ namespace ViewModels.MainWindow
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
-        private readonly Action SetUI_Connected;
-        private readonly Action SetUI_Disconnected;
-        private readonly Action<string> UI_Action_Receive;
+
+        
 
 
         public ViewModel_NoProtocol(
-            Action<string, MessageType> MessageBox,
-            Action UI_Connected_Handler,
-            Action UI_Disconnected_Handler,
-            Action<string> Action_Receive_Handler,
-            Action Clear_ReceiveField
+            Action<string, MessageType> MessageBox
             )
         {
             Message = MessageBox;
 
-            SetUI_Connected = UI_Connected_Handler;
-            SetUI_Disconnected = UI_Disconnected_Handler;
-
-            UI_Action_Receive = Action_Receive_Handler;
-
             Model = ConnectedHost.Model;
-
-            SetUI_Disconnected.Invoke();
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -168,7 +179,7 @@ namespace ViewModels.MainWindow
 
             Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
 
-            Command_ClearRX = ReactiveCommand.Create(Clear_ReceiveField);
+            Command_ClearRX = ReactiveCommand.Create(() => { RX.Clear(); RX_String = RX.ToString(); });
         }        
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -189,14 +200,14 @@ namespace ViewModels.MainWindow
                 return;
             }
 
-            SetUI_Connected?.Invoke();
+            UI_IsEnable = true;
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             InterfaceType = InterfaceType_Default;
 
-            SetUI_Disconnected?.Invoke();
+            UI_IsEnable = false;
         }
 
         private void NoProtocol_Model_DataReceived(object? sender, string e)
@@ -205,8 +216,15 @@ namespace ViewModels.MainWindow
             {
                 e += "\n";
             }
+            
+            if (RX.Length + e.Length > RX.MaxCapacity)
+            {
+                RX.Remove(0, RX.Length + e.Length - RX.MaxCapacity);
+            }
 
-            UI_Action_Receive.Invoke(e);
+            RX.Append(e);
+
+            RX_String = RX.ToString();
         }
 
         private void NoProtocol_Model_ErrorInReadThread(object? sender, string e)

@@ -124,13 +124,18 @@ namespace ViewModels.Settings
 
         public readonly ViewModel_Settings_Ethernet Ethernet_VM;
         public readonly ViewModel_Settings_SerialPort SerialPort_VM;
-                
+
+        private ReactiveCommand<Unit, Unit> Select_Dark_Theme { get; }
+        private ReactiveCommand<Unit, Unit> Select_Light_Theme { get; }
+
 
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
             Func<string, MessageType, bool> MessageBoxDialog,
             Func<string, string?> Get_FilePath_Handler,
-            Func<string> Get_NewFileName_Handler
+            Func<string> Get_NewFileName_Handler,
+            Action Set_Dark_Theme_Handler,
+            Action Set_Light_Theme_Handler
             )
         {
             Message = MessageBox;
@@ -146,6 +151,9 @@ namespace ViewModels.Settings
             Command_File_AddExisting = ReactiveCommand.Create(File_AddExisting_Handler);
             Command_File_Delete = ReactiveCommand.Create(File_Delete_Handler);
             Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
+
+            Select_Dark_Theme = ReactiveCommand.Create(Set_Dark_Theme_Handler);
+            Select_Light_Theme = ReactiveCommand.Create(Set_Light_Theme_Handler);
 
             this.WhenAnyValue(x => x.SelectedTheme)
                 .WhereNotNull()

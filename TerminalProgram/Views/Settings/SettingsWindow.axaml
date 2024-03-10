@@ -1,0 +1,75 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="TerminalProgram.Views.Settings.SettingsWindow"
+        Title="SettingsWindow"
+		Width="500" Height="350"
+		Background="Transparent"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		SystemDecorations="BorderOnly">
+
+	<Border x:Name="Border_Window"
+			Background="{DynamicResource MainWindow_Back_Color_Background}"
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
+			BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="Настройки"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+				
+				<Button Width="25"
+						CornerRadius="0"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Close_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+					</Button.Styles>
+
+				</Button>
+
+			</Grid>
+
+			<Button Grid.Row="1" 
+					Content="Dark Theme"
+					HorizontalAlignment="Center" VerticalAlignment="Center"
+					Command="{Binding Select_Dark_Theme}"/>
+
+			<Button Grid.Row="1" 
+					Content="Light Theme"
+					Margin="0,100,0,0"
+					HorizontalAlignment="Center" VerticalAlignment="Center"
+					Command="{Binding Select_Light_Theme}"/>
+			
+		</Grid>
+		
+	</Border>
+	
+</Window>

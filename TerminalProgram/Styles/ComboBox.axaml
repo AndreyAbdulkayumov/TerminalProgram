@@ -1,0 +1,23 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="ComboBox">
+		
+		<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Enabled_Background}"/>
+		<Setter Property="BorderThickness" Value="0"/>
+
+		<Style Selector="^:pointerover /template/ Border#Background">
+			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_MouseOver_Background}"/>
+		</Style>
+
+		<Style Selector="^:pressed /template/ Border#Background">
+			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Pressed_Background}"/>
+		</Style>
+		
+		<Style Selector="^:disabled /template/ Border#Background">
+			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Disabled_Background}"/>
+		</Style>
+		
+	</Style>	
+	
+</Styles>

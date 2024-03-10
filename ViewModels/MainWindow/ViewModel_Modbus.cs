@@ -217,6 +217,11 @@ namespace ViewModels.MainWindow
 
         private ModbusFunction? CurrentFunction;
 
+        // Для отладки
+        public ViewModel_Modbus()
+        {
+
+        }
 
         public ViewModel_Modbus(
             Action Request_CopyToClipboard_Handler,

@@ -1,0 +1,126 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="TerminalProgram.Views.AboutWindow"
+        Title="AboutWindow"
+		Width="350" Height="280"
+		Background="Transparent"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		SystemDecorations="BorderOnly">
+	
+
+	<Border x:Name="Border_Window"
+			Background="{DynamicResource MainWindow_Back_Color_Background}"
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
+			BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="О программе"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button Width="25"
+						CornerRadius="0"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Close_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+					</Button.Styles>
+
+				</Button>
+
+			</Grid>
+
+			<Grid Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="1.5*"/>
+					<RowDefinition Height="2.5*"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+
+				<TextBlock Grid.Row="0" Text="Разработал:" 
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+                           FontSize="18"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="1" Text="Абдулкаюмов Андрей Ренатович" 
+                           Width="140"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+                           FontSize="20"
+						   TextWrapping="Wrap" 
+						   TextAlignment="Center"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="2" Text="Версия приложения:" 
+                           Margin="30,0,0,0"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+                           FontSize="18"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="2" x:Name="TextBlock_App_Version" Text="0.0.0" 
+                           Margin="230,0,0,0"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+                           FontSize="18"
+					       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="3" Text="Версия Avalonia UI:" 
+                           Margin="30,0,0,0"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+                           FontSize="18"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="3" x:Name="TextBlock_GUI_Version" Text="0.0.0" 
+                           Margin="230,0,0,0"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+                           FontSize="18"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="4" Text="Версия .NET:"
+                           Margin="30,0,0,0"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+                           FontSize="18"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="4" x:Name="TextBlock_Runtime_Version" Text="0.0.0" 
+                           Margin="230,0,0,0"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+                           FontSize="18"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				
+			</Grid>
+
+		</Grid>
+
+	</Border>
+	
+</Window>

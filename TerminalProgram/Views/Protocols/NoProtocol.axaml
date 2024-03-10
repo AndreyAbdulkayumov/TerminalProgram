@@ -2,13 +2,183 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" 
+			 d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TerminalProgram.Views.Protocols.NoProtocol">
 
-	<Grid>
+	<UserControl.Styles>	
+		<StyleInclude Source="avares://TerminalProgram/Styles/TX_RX_Field.axaml"/>		
+	</UserControl.Styles>
 
-		<TextBlock Text="No Protocol"
-				   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="0.4*"/>
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0">
+
+			<TextBlock Text="Тип интерфейса:"
+                       FontSize="16"
+                       Foreground="{DynamicResource MainWindow_Color_Text}"
+                       Margin="10,10,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<TextBlock x:Name="TextBlock_InterfaceType"
+                       Text="Unknown"
+                       FontSize="16"
+                       Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+                       Margin="155,10,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<Button x:Name="Button_CycleMode"
+                    Margin="0,7,20,0"
+                    Width="160"
+                    Content="Цикличный опрос"
+					IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
+		</Grid>
+
+		<Grid Grid.Row="1">
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="1*"/>
+				<RowDefinition Height="60"/>
+			</Grid.RowDefinitions>
+
+			<Border x:Name="Border_Test" Grid.Row="0" Margin="10,0,10,0">
+
+				<!--<ScrollViewer x:Name="ScrollViewer_RX"
+							  Height="{Binding ElementName=Border_Test, Path=ActualHeight}">
+
+					<TextBox Text="{Binding RX_String, Mode=OneWay}"
+							 ScrollViewer.IsScrollChainingEnabled="False"
+							 Height="{Binding ElementName=Border_Test, Path=ActualHeight}"
+							 x:Name="TextBox_Test"
+							 IsReadOnly="True"
+                             IsUndoEnabled="False"
+                             MaxLines="50"
+                             MaxLength="300"
+							 TextAlignment="Left"
+							 TextWrapping="Wrap"
+							 TextChanged="TextBox_TextChanged"/>
+					
+				</ScrollViewer>-->
+				
+				<TextBox Text="{Binding RX_String, Mode=OneWay}"
+						 x:Name="TextBox_Test"
+						 IsReadOnly="True"
+                         IsUndoEnabled="False"
+                         MaxLines="50"
+                         MaxLength="300"
+						 TextAlignment="Left"
+						 TextWrapping="Wrap"
+						 TextChanged="TextBox_TextChanged"/>
+				
+
+			</Border>
+
+			<Grid Grid.Row="1">
+
+				<Button x:Name="Button_SaveAs"
+                        Margin="20,0,0,0"
+                        Width="130"
+                        Content="Сохранить как..."
+                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<CheckBox x:Name="CheckBox_NextLine"
+                          Foreground="{DynamicResource MainWindow_Color_Text}"
+                          FontSize="14"
+                          Margin="180,0,0,0"
+						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
+                          Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<Button x:Name="Button_ClearFieldRX"
+                        Margin="0,0,20,0"
+                        Width="120"
+                        Content="Очистить поле"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Command="{Binding Command_ClearRX}"/>
+
+			</Grid>
+
+		</Grid>
+
+		<GridSplitter Grid.Row="2" 
+					  MinHeight="0" Height="3"
+                      Background="#FF6B6B6B"
+				      ResizeDirection="Rows"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+
+		<Grid Grid.Row="3">
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="1*"/>
+				<RowDefinition Height="60"/>
+			</Grid.RowDefinitions>
+
+			<TextBox Grid.Row="0"
+                     Margin="10,10,10,0"
+				     IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+					 Text="{Binding TX_String, Mode=TwoWay}"
+                     TextWrapping="Wrap"/>
+
+			<Grid Grid.Row="1">
+
+				<TextBlock Text="Добавить в конце строки:"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
+                           FontSize="14"
+                           Margin="20,0,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<CheckBox x:Name="CheckBox_CR"
+                          Foreground="{DynamicResource MainWindow_Color_Text}"
+                          FontSize="14"
+                          Margin="210,2,0,0"
+						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						  IsChecked="{Binding CR_Enable, Mode=TwoWay}"
+                          Content="CR ( &#8216;\r &#8217;, 0x0D)"
+                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<CheckBox x:Name="CheckBox_LF"
+                          Foreground="{DynamicResource MainWindow_Color_Text}"
+                          FontSize="14"
+                          Margin="350,2,0,0"
+						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						  IsChecked="{Binding LF_Enable, Mode=TwoWay}"
+                          Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				<RadioButton x:Name="RadioButton_Char"
+                             Margin="0,0,210,0"
+                             Content="Символ"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+                             HorizontalAlignment="Right" VerticalAlignment="Center"
+                             Command="{Binding Command_Select_Char}"/>
+
+				<RadioButton x:Name="RadioButton_String"
+                             Margin="0,0,125,0"
+                             Content="Строка"
+							 IsChecked="True"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+                             HorizontalAlignment="Right" VerticalAlignment="Center"
+                             Command="{Binding Command_Select_String}"/>
+
+				<Button x:Name="Button_Send"
+                        Margin="0,0,20,0"
+                        Width="95"
+                        Content="Отправить"
+						IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Command="{Binding Command_Send}"/>
+
+			</Grid>
+
+		</Grid>
 
 	</Grid>
 	
