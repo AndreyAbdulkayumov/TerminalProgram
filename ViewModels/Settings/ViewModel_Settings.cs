@@ -18,6 +18,14 @@ namespace ViewModels.Settings
 {
     public class ViewModel_Settings : ReactiveObject
     {
+        private object? _currentViewModel;
+
+        public object? CurrentViewModel
+        {
+            get => _currentViewModel;
+            set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
+        }
+
         private const string ThemeName_Dark = "Темная";
         private const string ThemeName_Light = "Светлая";
 

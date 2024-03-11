@@ -5,13 +5,20 @@
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.AboutWindow"
         Title="AboutWindow"
-		Width="350" Height="280"
+		Width="400" Height="320"
 		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
 		SystemDecorations="BorderOnly">
-	
+
+	<Window.Styles>
+		
+		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
+
+	</Window.Styles>
 
 	<Border x:Name="Border_Window"
 			Background="{DynamicResource MainWindow_Back_Color_Background}"
@@ -37,7 +44,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button Width="25"
+				<Button Width="25" Height="25"
 						CornerRadius="0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
@@ -61,62 +68,112 @@
 			<Grid Grid.Row="1">
 
 				<Grid.RowDefinitions>
-					<RowDefinition Height="1.5*"/>
-					<RowDefinition Height="2.5*"/>
 					<RowDefinition Height="1*"/>
 					<RowDefinition Height="1*"/>
 					<RowDefinition Height="1*"/>
+					<RowDefinition Height="2*"/>
+					<RowDefinition Height="3*"/>
 				</Grid.RowDefinitions>
 
-				<TextBlock Grid.Row="0" Text="Разработал:" 
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1*"/>
+					<ColumnDefinition Width="2*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+						   Text="Терминальная программа"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
                            FontSize="18"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-				<TextBlock Grid.Row="1" Text="Абдулкаюмов Андрей Ренатович" 
+				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+						   x:Name="TextBlock_App_Version" Text="0.0.0"
+						   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+						   FontSize="16"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+				
+				<TextBlock Grid.Row="2" Grid.Column="1" Text="Разработал:" 
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+                           FontSize="16"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+				<Image Grid.Row="2" Grid.RowSpan="2" Grid.Column="0"
+					   Source="avares://TerminalProgram/Resources/MainLogo.ico"
+					   Margin="5"
+					   HorizontalAlignment="Center"/>
+
+				<Button Grid.Row="4" Grid.Column="0"
+						Content="Лицензия"
+						CornerRadius="6"
+						HorizontalAlignment="Center" VerticalAlignment="Center"/>
+				
+				<TextBlock Grid.Row="3" Grid.Column="1"
+						   Text="Абдулкаюмов Андрей Ренатович" 
                            Width="140"
                            Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
-                           FontSize="20"
+                           FontSize="16"
 						   TextWrapping="Wrap" 
 						   TextAlignment="Center"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-				<TextBlock Grid.Row="2" Text="Версия приложения:" 
-                           Margin="30,0,0,0"
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
-                           FontSize="18"
-						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<Border Grid.Row="4" Grid.Column="1" 
+						Background="Transparent"
+						CornerRadius="8"
+						Margin="1">
 
-				<TextBlock Grid.Row="2" x:Name="TextBlock_App_Version" Text="0.0.0" 
-                           Margin="230,0,0,0"
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
-                           FontSize="18"
-					       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<!--<Border Grid.Row="2" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						CornerRadius="8">-->
 
-				<TextBlock Grid.Row="3" Text="Версия Avalonia UI:" 
-                           Margin="30,0,0,0"
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
-                           FontSize="18"
-						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					<Grid>
 
-				<TextBlock Grid.Row="3" x:Name="TextBlock_GUI_Version" Text="0.0.0" 
-                           Margin="230,0,0,0"
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
-                           FontSize="18"
-						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="1*"/>
+							<RowDefinition Height="1*"/>
+							<RowDefinition Height="1*"/>
+						</Grid.RowDefinitions>
+						
+						<!--<TextBlock Grid.Row="0" Text="Версия приложения:"
+								   Margin="20,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
 
-				<TextBlock Grid.Row="4" Text="Версия .NET:"
-                           Margin="30,0,0,0"
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
-                           FontSize="18"
-						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<!--<TextBlock Grid.Row="0" x:Name="TextBlock_App_Version" Text="0.0.0"
+								   Margin="200,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
 
-				<TextBlock Grid.Row="4" x:Name="TextBlock_Runtime_Version" Text="0.0.0" 
-                           Margin="230,0,0,0"
-                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
-                           FontSize="18"
-						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<TextBlock Grid.Row="0" Text="Версия .NET:"
+								   Margin="20,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" x:Name="TextBlock_Runtime_Version" Text="0.0.0"
+								   Margin="200,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+						<TextBlock Grid.Row="1" Text="Версия Avalonia UI:"
+								   Margin="20,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="1" x:Name="TextBlock_GUI_Version" Text="0.0.0"
+								   Margin="200,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+					</Grid>
+					
+				</Border>
 				
+
 			</Grid>
 
 		</Grid>

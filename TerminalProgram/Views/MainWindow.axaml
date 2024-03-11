@@ -7,7 +7,7 @@
         mc:Ignorable="d"
 		Width="1050" Height="700"
         x:Class="TerminalProgram.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Resources/MainLogo.ico"
         Title="Терминальная программа"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"

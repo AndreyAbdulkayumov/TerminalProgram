@@ -44,5 +44,6 @@ namespace TerminalProgram.Views
         {
             this.Close();
         }
+
     }
 }

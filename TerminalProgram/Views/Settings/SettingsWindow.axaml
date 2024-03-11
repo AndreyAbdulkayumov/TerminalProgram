@@ -2,8 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
+		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"
+		x:DataType="ViewModels:ViewModel_Settings"
         Title="SettingsWindow"
 		Width="500" Height="350"
 		Background="Transparent"
@@ -12,6 +15,26 @@
 		ExtendClientAreaToDecorationsHint="True"
 		SystemDecorations="BorderOnly">
 
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection}">
+			<Tabs:Connection/>
+		</DataTemplate>
+		
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_NoProtocol}">
+			<Tabs:NoProtocol/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Modbus}">
+			<Tabs:Modbus/>
+		</DataTemplate>	
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_UI}">
+			<Tabs:UI/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
+	
 	<Border x:Name="Border_Window"
 			Background="{DynamicResource MainWindow_Back_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
@@ -57,7 +80,9 @@
 
 			</Grid>
 
-			<Button Grid.Row="1" 
+			<ContentControl Content="{Binding CurrentViewModel}"/>
+			
+			<!--<Button Grid.Row="1" 
 					Content="Dark Theme"
 					HorizontalAlignment="Center" VerticalAlignment="Center"
 					Command="{Binding Select_Dark_Theme}"/>
@@ -66,7 +91,7 @@
 					Content="Light Theme"
 					Margin="0,100,0,0"
 					HorizontalAlignment="Center" VerticalAlignment="Center"
-					Command="{Binding Select_Light_Theme}"/>
+					Command="{Binding Select_Light_Theme}"/>-->
 			
 		</Grid>
 		
