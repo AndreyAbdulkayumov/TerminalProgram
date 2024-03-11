@@ -8,32 +8,23 @@
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:ViewModel_Settings"
         Title="SettingsWindow"
-		Width="500" Height="350"
+		Width="500" Height="400"
 		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly">
+		SystemDecorations="BorderOnly"
+		Loaded="Window_Loaded"
+		KeyDown="Window_KeyDown">
 
-	<Window.DataTemplates>
-
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection}">
-			<Tabs:Connection/>
-		</DataTemplate>
+	<Window.Styles>
 		
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_NoProtocol}">
-			<Tabs:NoProtocol/>
-		</DataTemplate>
-
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Modbus}">
-			<Tabs:Modbus/>
-		</DataTemplate>	
-
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_UI}">
-			<Tabs:UI/>
-		</DataTemplate>
-
-	</Window.DataTemplates>
+		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
+	
+	</Window.Styles>
+	
 	
 	<Border x:Name="Border_Window"
 			Background="{DynamicResource MainWindow_Back_Color_Background}"
@@ -46,6 +37,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="25"/>
 				<RowDefinition Height="1*"/>
+				<RowDefinition Height="40"/>
 			</Grid.RowDefinitions>
 
 			<Grid Grid.Row="0">
@@ -59,7 +51,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 				
-				<Button Width="25"
+				<Button Width="25" Height="25"
 						CornerRadius="0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
@@ -80,20 +72,41 @@
 
 			</Grid>
 
-			<ContentControl Content="{Binding CurrentViewModel}"/>
 			
-			<!--<Button Grid.Row="1" 
-					Content="Dark Theme"
-					HorizontalAlignment="Center" VerticalAlignment="Center"
-					Command="{Binding Select_Dark_Theme}"/>
+			<TabControl Grid.Row="1">
+				
+				<TabItem Header="Подключение"
+						 FontSize="16">
+					<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
 
-			<Button Grid.Row="1" 
-					Content="Light Theme"
-					Margin="0,100,0,0"
+				</TabItem>
+				
+				<TabItem Header="Без протокола"
+						 FontSize="16">
+					<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
+
+				</TabItem>
+				
+				<TabItem Header="Modbus"
+						 FontSize="16">
+					<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
+
+				</TabItem>
+
+				<TabItem Header="Внешний вид"
+						 FontSize="16">
+					<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
+
+				</TabItem>
+				
+			</TabControl>
+
+			<Button Grid.Row="2"
+					Content="Сохранить"
 					HorizontalAlignment="Center" VerticalAlignment="Center"
-					Command="{Binding Select_Light_Theme}"/>-->
+					Command="{Binding Command_File_Save}"/>
 			
-		</Grid>
+		</Grid>		
 		
 	</Border>
 	

@@ -64,55 +64,6 @@ namespace ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
 
-        private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
-        {
-            "ASCII", "UTF-8", "UTF-32", "Unicode"
-        };
-
-        public ObservableCollection<string> TypeOfEncoding
-        {
-            get => _typeOfEncoding;
-        }
-
-        private string _selectedEncoding = string.Empty;
-
-        public string SelectedEncoding
-        {
-            get => _selectedEncoding;
-            set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
-        }
-
-        private string _writeTimeout = string.Empty;
-
-        public string WriteTimeout
-        {
-            get => _writeTimeout;
-            set => this.RaiseAndSetIfChanged(ref _writeTimeout, value);
-        }
-
-        private string _readTimeout = string.Empty;
-
-        public string ReadTimeout
-        {
-            get => _readTimeout;
-            set => this.RaiseAndSetIfChanged(ref _readTimeout, value);
-        }
-
-        private bool _selected_SerialPort;
-
-        public bool Selected_SerialPort
-        {
-            get => _selected_SerialPort;
-            set => this.RaiseAndSetIfChanged(ref _selected_SerialPort, value);
-        }
-
-        private bool _selected_Ethernet;
-
-        public bool Selected_Ethernet
-        {
-            get => _selected_Ethernet;
-            set => this.RaiseAndSetIfChanged(ref _selected_Ethernet, value);
-        }
         
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
@@ -130,11 +81,34 @@ namespace ViewModels.Settings
 
         public event EventHandler<EventArgs>? SettingsFileChanged;
 
-        public readonly ViewModel_Settings_Ethernet Ethernet_VM;
-        public readonly ViewModel_Settings_SerialPort SerialPort_VM;
 
-        private ReactiveCommand<Unit, Unit> Select_Dark_Theme { get; }
-        private ReactiveCommand<Unit, Unit> Select_Light_Theme { get; }
+        private readonly ViewModel_Tab_Connection _tab_Connection_VM;
+
+        public ViewModel_Tab_Connection Tab_Connection_VM
+        {
+            get => _tab_Connection_VM;
+        }
+
+        private readonly ViewModel_Tab_NoProtocol _tab_NoProtocol_VM;
+
+        public ViewModel_Tab_NoProtocol Tab_NoProtocol_VM
+        {
+            get => _tab_NoProtocol_VM;
+        }
+
+        private readonly ViewModel_Tab_Modbus _tab_Modbus_VM;
+
+        public ViewModel_Tab_Modbus Tab_Modbus_VM
+        {
+            get => _tab_Modbus_VM;
+        }
+
+        private readonly ViewModel_Tab_UI _tab_UI_VM;
+
+        public ViewModel_Tab_UI Tab_UI_VM
+        {
+            get => _tab_UI_VM;
+        }       
 
 
         public ViewModel_Settings(
@@ -153,6 +127,11 @@ namespace ViewModels.Settings
 
             SettingsFile = Model_Settings.Model;
 
+            _tab_Connection_VM = new ViewModel_Tab_Connection(this);
+            _tab_NoProtocol_VM = new ViewModel_Tab_NoProtocol();
+            _tab_Modbus_VM = new ViewModel_Tab_Modbus();
+            _tab_UI_VM = new ViewModel_Tab_UI(Set_Dark_Theme_Handler, Set_Light_Theme_Handler);
+
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
             Command_File_AddNew = ReactiveCommand.Create(File_CreateNew_Handler);
@@ -160,8 +139,6 @@ namespace ViewModels.Settings
             Command_File_Delete = ReactiveCommand.Create(File_Delete_Handler);
             Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
 
-            Select_Dark_Theme = ReactiveCommand.Create(Set_Dark_Theme_Handler);
-            Select_Light_Theme = ReactiveCommand.Create(Set_Light_Theme_Handler);
 
             this.WhenAnyValue(x => x.SelectedTheme)
                 .WhereNotNull()
@@ -183,40 +160,25 @@ namespace ViewModels.Settings
                 .WhereNotNull()
                 .Where(x => x != string.Empty)
                 .Subscribe(UpdateUI);
-
-            this.WhenAnyValue(x => x.WriteTimeout)
-                .WhereNotNull()
-                .Where(x => x != string.Empty)
-                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
-                .Subscribe(result => WriteTimeout = result);
-            
-            this.WhenAnyValue(x => x.ReadTimeout)
-                .WhereNotNull()
-                .Where(x => x != string.Empty)
-                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out UInt16 _))
-                .Subscribe(result => ReadTimeout = result);
-
-            Ethernet_VM = new ViewModel_Settings_Ethernet(this);
-            SerialPort_VM = new ViewModel_Settings_SerialPort(this);
         }
 
         private void UpdateUI(string FileName)
         {
             DeviceData Settings = SettingsFile.Read(FileName);
 
-            SelectedEncoding = Settings.GlobalEncoding ?? string.Empty;
+            Tab_NoProtocol_VM.SelectedEncoding = Settings.GlobalEncoding ?? string.Empty;
 
-            WriteTimeout = Settings.TimeoutWrite ?? string.Empty;
-            ReadTimeout = Settings.TimeoutRead ?? string.Empty;
+            Tab_Modbus_VM.WriteTimeout = Settings.TimeoutWrite ?? string.Empty;
+            Tab_Modbus_VM.ReadTimeout = Settings.TimeoutRead ?? string.Empty;
 
             switch (Settings.TypeOfConnection)
             {
                 case DeviceData.ConnectionName_SerialPort:
-                    Selected_SerialPort = true;
+                    Tab_Connection_VM.Selected_SerialPort = true;
                     break;
 
                 case DeviceData.ConnectionName_Ethernet:
-                    Selected_Ethernet = true;
+                    Tab_Connection_VM.Selected_Ethernet = true;
                     break;
             }
 
@@ -324,32 +286,32 @@ namespace ViewModels.Settings
         {
             try
             {
-                string ConnectionType = Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
+                string ConnectionType = Tab_Connection_VM.Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
 
                 DeviceData Data = new DeviceData()
                 {
-                    GlobalEncoding = this.SelectedEncoding,
+                    GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
 
-                    TimeoutWrite = this.WriteTimeout,
-                    TimeoutRead = this.ReadTimeout,
+                    TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
+                    TimeoutRead = Tab_Modbus_VM.ReadTimeout,
 
                     TypeOfConnection = ConnectionType,
                                         
                     Connection_SerialPort = new SerialPort_Info()
                     {
-                        COMPort = SerialPort_VM.Selected_COM_Port,
-                        BaudRate = SerialPort_VM.Selected_BaudRate,
-                        BaudRate_IsCustom = SerialPort_VM.BaudRate_IsCustom,
-                        BaudRate_Custom = SerialPort_VM.Custom_BaudRate_Value,
-                        Parity = SerialPort_VM.Selected_Parity,
-                        DataBits = SerialPort_VM.Selected_DataBits,
-                        StopBits = SerialPort_VM.Selected_StopBits
+                        COMPort = Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port,
+                        BaudRate = Tab_Connection_VM.Connection_SerialPort_VM.Selected_BaudRate,
+                        BaudRate_IsCustom = Tab_Connection_VM.Connection_SerialPort_VM.BaudRate_IsCustom,
+                        BaudRate_Custom = Tab_Connection_VM.Connection_SerialPort_VM.Custom_BaudRate_Value,
+                        Parity = Tab_Connection_VM.Connection_SerialPort_VM.Selected_Parity,
+                        DataBits = Tab_Connection_VM.Connection_SerialPort_VM.Selected_DataBits,
+                        StopBits = Tab_Connection_VM.Connection_SerialPort_VM.Selected_StopBits
                     },
 
                     Connection_IP = new IP_Info()
                     {
-                        IP_Address = Ethernet_VM.IP_Address,
-                        Port = Ethernet_VM.Port
+                        IP_Address = Tab_Connection_VM.Connection_Ethernet_VM.IP_Address,
+                        Port = Tab_Connection_VM.Connection_Ethernet_VM.Port
                     }
                 };
 
@@ -357,9 +319,9 @@ namespace ViewModels.Settings
 
                 ViewModel_CommonUI.SettingsDocument = SelectedPreset;
 
-                if (SerialPort_VM.Selected_COM_Port != String.Empty)
+                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port != String.Empty)
                 {
-                    SerialPort_VM.Message_PortNotFound_IsVisible = false;
+                    Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = false;
                 }
 
                 Message.Invoke("Настройки успешно сохранены!", MessageType.Information);

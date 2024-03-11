@@ -2,13 +2,49 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="TerminalProgram.Views.Settings.Tabs.Connection">
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
+			 xmlns:ConnectionViews="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
+             mc:Ignorable="d" 
+			 d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TerminalProgram.Views.Settings.Tabs.Connection"
+			 Design.DataContext="ViewModels.ViewModel_Tab_Connection">
 
+	<UserControl.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection_SerialPort}">
+			<ConnectionViews:Connection_SerialPort/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection_Ethernet}">
+			<ConnectionViews:Connection_Ethernet/>
+		</DataTemplate>
+
+	</UserControl.DataTemplates>
+	
+	
 	<Grid>
 
-		<TextBlock Text="Connection"
-				   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="5*"/>
+		</Grid.RowDefinitions>
+		
+		<RadioButton Grid.Row="0"
+					 Content="Serial Port"
+					 IsChecked="{Binding Selected_SerialPort, Mode=TwoWay}"
+					 Foreground="{DynamicResource Settings_Color_Text}"
+					 Margin="0,0,150,0"
+					 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+		<RadioButton Grid.Row="0"
+					 Content="Ethernet"
+					 IsChecked="{Binding Selected_Ethernet, Mode=TwoWay}"
+					 Foreground="{DynamicResource Settings_Color_Text}"
+					 Margin="150,0,0,0"
+					 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+		<ContentControl Grid.Row="1" 
+						Content="{Binding CurrentConnectionViewModel}"/>
 
 	</Grid>
 	

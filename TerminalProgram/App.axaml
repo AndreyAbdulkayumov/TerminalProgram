@@ -2,20 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:Themes="clr-namespace:TerminalProgram.Themes;assembly=TerminalProgram"
              x:Class="TerminalProgram.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Light">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
 	</Application.Styles>
-
-	<Application.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.ThemeDictionaries>
-				<ResourceDictionary x:Key='Light'/>
-				<ResourceDictionary x:Key='Dark'/>
-			</ResourceDictionary.ThemeDictionaries>
-		</ResourceDictionary>
-	</Application.Resources>
 	
 </Application>

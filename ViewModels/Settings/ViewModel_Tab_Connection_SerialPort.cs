@@ -14,7 +14,7 @@ using System.Windows;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Settings_SerialPort : ReactiveObject
+    public class ViewModel_Tab_Connection_SerialPort : ReactiveObject
     {
         /************************************/
         //
@@ -173,7 +173,7 @@ namespace ViewModels.Settings
         private readonly Model_Settings SettingsFile;
 
 
-        public ViewModel_Settings_SerialPort(ViewModel_Settings Main_VM)
+        public ViewModel_Tab_Connection_SerialPort(ViewModel_Settings Main_VM)
         {
             Main_VM.SettingsFileChanged += Main_VM_SettingsFileChanged;
 

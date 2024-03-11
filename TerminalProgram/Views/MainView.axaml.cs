@@ -44,8 +44,8 @@ public partial class MainView : UserControl
                 Source = new Uri("avares://TerminalProgram/Themes/Dark.axaml")
             });
 
-            Application.Current.RequestedThemeVariant = 
-                new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
+            //Application.Current.RequestedThemeVariant =
+            //    new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
         }
     }
 
@@ -61,8 +61,8 @@ public partial class MainView : UserControl
                 Source = new Uri("avares://TerminalProgram/Themes/Light.axaml")
             });
 
-            Application.Current.RequestedThemeVariant =
-                new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
+            //Application.Current.RequestedThemeVariant =
+            //    new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
         }
     }
 
@@ -124,4 +124,5 @@ public partial class MainView : UserControl
 
         await window.ShowDialog(MainWindow.Instance);
     }
+
 }

@@ -5,11 +5,33 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TerminalProgram.Views.Settings.Tabs.NoProtocol">
 
-	<Grid>
+	<UserControl.Styles>
 
-		<TextBlock Text="NoProtocol"
-				   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
+		
+	</UserControl.Styles>
+	
+	
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="10">
 
-	</Grid>
+		<Grid>
+
+			<TextBlock Text="Кодировка:"
+					   Margin="100,0,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+			<ComboBox Margin="195,0,0,0"
+					  BorderThickness="0"
+					  Width="100" Height="24"
+					  FontSize="14"
+					  HorizontalAlignment="Left" VerticalAlignment="Center"
+					  ItemsSource="{Binding TypeOfEncoding}"
+					  SelectedItem="{Binding SelectedEncoding}"/>
+		</Grid>
+
+	</StackPanel>
 	
 </UserControl>

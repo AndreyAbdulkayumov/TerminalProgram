@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Settings_Ethernet : ReactiveObject
+    public class ViewModel_Tab_Connection_Ethernet : ReactiveObject
     {
         private string? _ip_address = String.Empty;
 
@@ -33,7 +33,7 @@ namespace ViewModels.Settings
         private readonly Action<string, MessageType> Message;
 
 
-        public ViewModel_Settings_Ethernet(ViewModel_Settings Main_VM)
+        public ViewModel_Tab_Connection_Ethernet(ViewModel_Settings Main_VM)
         {
             Main_VM.SettingsFileChanged += Main_VM_SettingsFileChanged;
 

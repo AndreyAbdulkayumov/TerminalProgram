@@ -26,8 +26,7 @@
                        Margin="10,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-			<TextBlock x:Name="TextBlock_InterfaceType"
-                       Text="Unknown"
+			<TextBlock Text="{Binding InterfaceType, Mode=OneWay}"
                        FontSize="16"
                        Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
                        Margin="155,10,0,0"
@@ -156,6 +155,7 @@
 				<RadioButton x:Name="RadioButton_Char"
                              Margin="0,0,210,0"
                              Content="Символ"
+							 Foreground="{DynamicResource MainWindow_Color_Text}"
 							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
                              HorizontalAlignment="Right" VerticalAlignment="Center"
                              Command="{Binding Command_Select_Char}"/>
@@ -164,6 +164,7 @@
                              Margin="0,0,125,0"
                              Content="Строка"
 							 IsChecked="True"
+							 Foreground="{DynamicResource MainWindow_Color_Text}"
 							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
                              HorizontalAlignment="Right" VerticalAlignment="Center"
                              Command="{Binding Command_Select_String}"/>

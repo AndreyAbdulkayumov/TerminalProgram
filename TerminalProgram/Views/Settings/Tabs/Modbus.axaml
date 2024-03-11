@@ -5,11 +5,57 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="TerminalProgram.Views.Settings.Tabs.Modbus">
 
-	<Grid>
+	<UserControl.Styles>
 
-		<TextBlock Text="Modbus"
-				   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
+		
+		<Style Selector="TextBox">
+			<Setter Property="Height" Value="24"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Width" Value="50"/>
+			<Setter Property="Margin" Value="230,0,0,0"/>
+			<Setter Property="Padding" Value="10,0,0,0"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+		
+	</UserControl.Styles>
+	
+	
+	<StackPanel Orientation="Vertical" 
+				Spacing="10"
+				Margin="10">		
+		
+		<Grid>
 
-	</Grid>
+			<TextBlock Text="Таймаут записи: "
+					   Margin="100,0,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+			<TextBox Text="{Binding WriteTimeout, Mode=TwoWay}"/>
+
+			<TextBlock Text="мс."
+					   Margin="305,0,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+		</Grid>
+
+
+		<Grid>
+
+			<TextBlock Text="Таймаут чтения: "
+					   Margin="100,0,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+			<TextBox Text="{Binding ReadTimeout, Mode=TwoWay}"/>
+
+			<TextBlock Text="мс."
+					   Margin="305,0,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+		</Grid>
+		
+	</StackPanel>
 	
 </UserControl>

@@ -45,5 +45,12 @@ namespace TerminalProgram.Views
             this.Close();
         }
 
+        private void Window_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape || e.Key == Key.Space || e.Key == Key.Enter)
+            {
+                this.Close();
+            }
+        }
     }
 }

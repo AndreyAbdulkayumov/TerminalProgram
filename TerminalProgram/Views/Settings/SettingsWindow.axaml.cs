@@ -5,6 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.Styling;
 using MessageBox_Core;
 using System;
+using System.Reactive.Linq;
 using ViewModels.Settings;
 
 namespace TerminalProgram.Views.Settings
@@ -27,6 +28,28 @@ namespace TerminalProgram.Views.Settings
                 );
 
             DataContext = ViewModel;
+        }
+
+        private async void Window_Loaded(object? sender, RoutedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                await ViewModel.Command_Loaded.Execute();
+            }
+        }
+
+        private async void Window_KeyDown(object? sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    await ViewModel.Command_File_Save.Execute();
+                    break;
+
+                case Key.Escape:
+                    this.Close();
+                    break;
+            }
         }
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

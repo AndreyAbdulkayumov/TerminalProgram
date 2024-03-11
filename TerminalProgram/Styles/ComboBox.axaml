@@ -2,9 +2,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Style Selector="ComboBox">
-		
+
+		<Style Selector="^ TextBlock">
+			<Setter Property="Foreground" Value="Black"/>
+		</Style>
+				
 		<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Enabled_Background}"/>
 		<Setter Property="BorderThickness" Value="0"/>
+		
+		<Setter Property="HorizontalContentAlignment" Value="Left"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
 
 		<Style Selector="^:pointerover /template/ Border#Background">
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_MouseOver_Background}"/>
@@ -18,6 +25,10 @@
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Disabled_Background}"/>
 		</Style>
 		
-	</Style>	
+	</Style>
+
+	<Style Selector="ComboBoxItem">
+		<Setter Property="Foreground" Value="Black"/>
+	</Style>
 	
 </Styles>

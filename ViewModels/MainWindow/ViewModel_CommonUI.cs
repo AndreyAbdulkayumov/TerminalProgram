@@ -187,8 +187,8 @@ namespace ViewModels.MainWindow
         private readonly Action<string, MessageType> Message;
         private readonly Func<string[], string?> Select_AvailablePresetFile;
 
-        private ViewModel_NoProtocol NoProtocol_VM;
-        private ViewModel_Modbus ModbusClient_VM;
+        private readonly ViewModel_NoProtocol NoProtocol_VM;
+        private readonly ViewModel_Modbus ModbusClient_VM;
 
 
         public ViewModel_CommonUI(
