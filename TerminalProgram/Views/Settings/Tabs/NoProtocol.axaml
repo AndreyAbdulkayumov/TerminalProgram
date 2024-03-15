@@ -2,34 +2,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="TerminalProgram.Views.Settings.Tabs.NoProtocol">
 
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
+
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,0,235,0"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="ComboBox">
+			<Setter Property="Height" Value="24"/>
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
 		
 	</UserControl.Styles>
 	
 	
 	<StackPanel Orientation="Vertical"
 				Spacing="10"
-				Margin="10">
+				Margin="10"
+				Width="450"
+				HorizontalAlignment="Center">
 
 		<Grid>
 
-			<TextBlock Text="Кодировка:"
-					   Margin="100,0,0,0"
-					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+			<TextBlock Text="Кодировка" Classes="Parameters"/>
 
-			<ComboBox Margin="195,0,0,0"
-					  BorderThickness="0"
-					  Width="100" Height="24"
-					  FontSize="14"
-					  HorizontalAlignment="Left" VerticalAlignment="Center"
-					  ItemsSource="{Binding TypeOfEncoding}"
+			<ComboBox ItemsSource="{Binding TypeOfEncoding}"
 					  SelectedItem="{Binding SelectedEncoding}"/>
+			
 		</Grid>
 
 	</StackPanel>

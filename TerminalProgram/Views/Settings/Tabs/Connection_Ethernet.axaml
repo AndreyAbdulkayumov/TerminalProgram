@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="TerminalProgram.Views.Settings.Tabs.Connection_Ethernet">
 
 	<UserControl.Styles>
@@ -10,7 +11,7 @@
 		<Style Selector="TextBlock">
 			<Setter Property="Foreground" Value="{DynamicResource Settings_Color_Text}"/>
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Margin" Value="0,0,7,2"/>
+			<Setter Property="Margin" Value="0,0,235,2"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
@@ -18,47 +19,45 @@
 		<Style Selector="TextBox">
 			<Setter Property="Height" Value="24"/>
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="TextWrapping" Value="Wrap"/>
-			<Setter Property="Padding" Value="3,0,0,0"/>
-			<Setter Property="Margin" Value="7,0,0,0"/>
-			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Padding" Value="10,0,10,0"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>			
 		</Style>
 
 	</UserControl.Styles>
 
-	<Grid>
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="50"/>
-			<RowDefinition Height="50"/>
-			<RowDefinition Height="1*"/>
-		</Grid.RowDefinitions>
-
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="0.7*"/>
-			<ColumnDefinition Width="1*"/>
-		</Grid.ColumnDefinitions>
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="10"
+				Width="450"
+				HorizontalAlignment="Center">
 
 		<!-- IP address -->
+		
+		<Grid>
+			
+			<TextBlock Text="IP-адрес"/>
 
-		<TextBlock Grid.Row="0" Grid.Column="0"
-                   Text="IP"/>
-
-		<TextBox Grid.Row="0" Grid.Column="1"
-                 Width="110"
-                 Text="{Binding IP_Address, Mode=TwoWay}"/>
+			<TextBox Width="110"
+					 Text="{Binding IP_Address, Mode=TwoWay}"/>
+					 
+		</Grid>
 
 		<!-- Port -->
+		
+		<Grid>
 
-		<TextBlock Grid.Row="1" Grid.Column="0"
-                   Text="Port"/>
+			<TextBlock Text="Порт"/>
 
-		<TextBox Grid.Row="1" Grid.Column="1"
-                 Width="50"
-                 Text="{Binding Port, Mode=TwoWay}"/>
-
-	</Grid>
+			<TextBox Width="50"
+					 Text="{Binding Port, Mode=TwoWay}"/>
+			
+		</Grid>		
+		
+	</StackPanel>
 	
 </UserControl>

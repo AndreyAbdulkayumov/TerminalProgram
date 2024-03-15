@@ -8,7 +8,7 @@
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:ViewModel_Settings"
         Title="SettingsWindow"
-		Width="500" Height="400"
+		Width="500" Height="450"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -37,7 +37,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="25"/>
 				<RowDefinition Height="1*"/>
-				<RowDefinition Height="40"/>
+				<RowDefinition Height="50"/>
 			</Grid.RowDefinitions>
 
 			<Grid Grid.Row="0">

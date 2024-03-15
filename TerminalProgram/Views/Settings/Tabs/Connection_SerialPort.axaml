@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d"
+			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="TerminalProgram.Views.Settings.Tabs.Connection_SerialPort">
 
 	<UserControl.Styles>
@@ -12,143 +12,126 @@
 		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
 
-		<Style Selector="TextBlock">
-			<Setter Property="Margin" Value="0,0,7,0"/>
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,0,235,0"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
-			<Setter Property="FontSize" Value="14"/>
-		</Style>
-		
-
-		<Style Selector="ComboBox">
-			<Setter Property="BorderThickness" Value="0"/>
-			<Setter Property="Margin" Value="7,0,0,0"/>
-			<Setter Property="Height" Value="24"/>
-			<Setter Property="Width" Value="100"/>
-			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
-			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>			
 		</Style>
 
 		<Style Selector="TextBox">
-			<Setter Property="Margin" Value="7,0,0,0"/>
 			<Setter Property="Height" Value="24"/>
 			<Setter Property="Width" Value="100"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Padding" Value="10,0,10,0"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
-			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="VerticalContentAlignment" Value="Center"/>
 			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>			
 		</Style>
-
+		
+		<Style Selector="ComboBox">
+			<Setter Property="Height" Value="24"/>
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>			
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>			
+		</Style>
+		
 	</UserControl.Styles>
 
-	<Grid>
-
-		<Grid.RowDefinitions>
-			<RowDefinition Height="1*"/>
-			<RowDefinition Height="1*"/>
-			<RowDefinition Height="1*"/>
-			<RowDefinition Height="1*"/>
-			<RowDefinition Height="1*"/>
-			<RowDefinition Height="1*"/>
-		</Grid.RowDefinitions>
-
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="1*"/>
-			<ColumnDefinition Width="1*"/>
-		</Grid.ColumnDefinitions>
-
-
-		<!-- COM Port-->
-
-		<Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-				IsVisible="{Binding Message_PortNotFound_IsVisible, Mode=OneWay}"
-                Width="170" Height="24"
-                Margin="160,-48,0,0"
-                HorizontalAlignment="Left" VerticalAlignment="Center"
-                Background="{DynamicResource Settings_Color_PortNotFound_Background}"
-                BorderBrush="{DynamicResource Settings_Color_PortNotFound_BorderBrush}"
-                BorderThickness="1,1,1,1">
-
-			<TextBlock Text="{Binding Message_PortNotFound, Mode=OneWay}"
-                       TextWrapping="Wrap"
-                       TextAlignment="Center"
-                       Foreground="#FFFAFAF0"
-                       Margin="0,0,0,0"
-                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-		</Border>
-
-		<TextBlock Grid.Row="0" Grid.Column="0"
-                   Text="COM - Port"/>
-
-		<ComboBox Grid.Row="0" Grid.Column="1"
-                  ItemsSource="{Binding COM_Ports}"
-                  SelectedItem="{Binding Selected_COM_Port, Mode=TwoWay}"/>
-
-		<!-- Re-scan COM Ports -->
-
-		<Button Grid.Row="0" Grid.Column="1"
-                Content="R"
-                FontSize="14"
-                Width="30" Height="30"
-				Margin="120,0,0,0"
-                HorizontalAlignment="Left" VerticalAlignment="Center"
-                Command="{Binding Command_ReScan_COMPorts}"/>
-
-		<!-- Baud Rate -->
-
-		<TextBlock Grid.Row="1" Grid.Column="0"
-                   Text="BaudRate"/>
-
-		<ComboBox Grid.Row="1" Grid.Column="1"
-                  ItemsSource="{Binding BaudRate}"
-                  SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay}"
-				  IsEnabled="{Binding !BaudRate_IsCustom}"/>
-
-		<CheckBox Grid.Row="2" Grid.Column="0"
-                  x:Name="CheckBox_Custom_BaudRate"
-                  Content="Custom BaudRate"
-                  Foreground="{DynamicResource Settings_Color_Text}"
-                  Margin="0,0,7,0" FontSize="14"
-                  HorizontalAlignment="Right" VerticalAlignment="Center"
-                  IsChecked="{Binding BaudRate_IsCustom, Mode=TwoWay}"/>
-
-		<TextBox Grid.Row="2" Grid.Column="1"
-                 x:Name="TextBox_BaudRate_Custom"
-                 Padding="10,0,10,0"
-                 VerticalContentAlignment="Center"
-                 Text="{Binding Custom_BaudRate_Value, Mode=TwoWay}"
-                 IsEnabled="{Binding BaudRate_IsCustom}"/>
-
-		<!-- Parity -->
-
-		<TextBlock Grid.Row="3" Grid.Column="0"
-                   Text="Parity"/>
-
-		<ComboBox Grid.Row="3" Grid.Column="1"
-                  ItemsSource="{Binding Parity}"
-                  SelectedItem="{Binding Selected_Parity, Mode=TwoWay}"/>
-
-		<!-- Data Bits -->
-
-		<TextBlock Grid.Row="4" Grid.Column="0"
-                   Text="DataBits"/>
-
-		<ComboBox Grid.Row="4" Grid.Column="1"
-                  ItemsSource="{Binding DataBits}"
-                  SelectedItem="{Binding Selected_DataBits, Mode=TwoWay}"/>
-
-		<!-- Stop Bits -->
-
-		<TextBlock Grid.Row="5" Grid.Column="0"
-                   Text="StopBits"/>
-
-		<ComboBox Grid.Row="5" Grid.Column="1"
-                  ItemsSource="{Binding StopBits}"
-                  SelectedItem="{Binding Selected_StopBits, Mode=TwoWay}"/>
-
-	</Grid>
 	
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="10"
+				Width="450"
+				HorizontalAlignment="Center">
+
+		 <!--COM Port-->
+
+		<Grid>
+
+			<TextBlock Text="COM - Port" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding COM_Ports}"
+					  SelectedItem="{Binding Selected_COM_Port, Mode=TwoWay}"/>
+
+			 <!--Re-scan COM Ports--> 
+
+			<Button Content="R"
+					FontSize="14"
+					Width="30" Height="30"
+					Margin="350,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Center"
+					Command="{Binding Command_ReScan_COMPorts}"/>
+
+		</Grid>
+
+		 <!--Baud Rate--> 
+
+		<Grid>
+
+			<TextBlock Text="BaudRate" Classes="Parameters"/>
+			
+			<ComboBox ItemsSource="{Binding BaudRate}"
+					  SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay}"
+					  IsEnabled="{Binding !BaudRate_IsCustom}"/>
+
+		</Grid>
+
+		 <!--Baud Rate Custom--> 
+
+		<Grid>
+
+			<CheckBox x:Name="CheckBox_Custom_BaudRate"
+					  Content="Custom BaudRate"
+					  Foreground="{DynamicResource Settings_Color_Text}"
+					  Margin="0,0,235,0" FontSize="14"
+					  HorizontalAlignment="Right" VerticalAlignment="Center"
+					  IsChecked="{Binding BaudRate_IsCustom, Mode=TwoWay}"/>
+
+			<TextBox x:Name="TextBox_BaudRate_Custom"
+					 Text="{Binding Custom_BaudRate_Value, Mode=TwoWay}"
+					 IsEnabled="{Binding BaudRate_IsCustom}"/>
+
+		</Grid>
+
+		 <!--Parity--> 
+
+		<Grid>
+
+			<TextBlock Text="Parity" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding Parity}"
+					  SelectedItem="{Binding Selected_Parity, Mode=TwoWay}"/>
+
+		</Grid>
+
+		 <!--Data Bits--> 
+
+		<Grid>
+
+			<TextBlock Text="DataBits" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding DataBits}"
+					  SelectedItem="{Binding Selected_DataBits, Mode=TwoWay}"/>
+
+		</Grid>
+
+		 <!--Stop Bits--> 
+
+		<Grid>
+
+			<TextBlock Text="StopBits" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding StopBits}"
+					  SelectedItem="{Binding Selected_StopBits, Mode=TwoWay}"/>
+
+		</Grid>
+
+	</StackPanel>
+
 </UserControl>
