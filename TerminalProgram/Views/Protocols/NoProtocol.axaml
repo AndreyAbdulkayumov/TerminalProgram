@@ -14,7 +14,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="1*"/>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="3"/>
 			<RowDefinition Height="0.4*"/>
 		</Grid.RowDefinitions>
 
@@ -108,10 +108,10 @@
 		</Grid>
 
 		<GridSplitter Grid.Row="2" 
-					  MinHeight="0" Height="3"
+					  MinHeight="0"
                       Background="#FF6B6B6B"
 				      ResizeDirection="Rows"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
 		<Grid Grid.Row="3">
 

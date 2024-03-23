@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TerminalProgram.Views"
         mc:Ignorable="d"
-		Width="1050" Height="700"
+		Width="1300" Height="700"
         x:Class="TerminalProgram.Views.MainWindow"
         Icon="/Resources/MainLogo.ico"
         Title="Терминальная программа"

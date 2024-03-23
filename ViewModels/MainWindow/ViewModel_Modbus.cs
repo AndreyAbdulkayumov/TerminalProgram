@@ -15,10 +15,16 @@ using System.Globalization;
 using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
-using CustomControls_Core;
 
 namespace ViewModels.MainWindow
 {
+    public class RequestResponseField_ItemData
+    {
+        public string? ItemNumber { get; set; }
+        public string? RequestData { get; set; }
+        public string? ResponseData { get; set; }
+    }
+
     public class ModbusDataDisplayed
     {
         public UInt16 OperationID { get; set; }
@@ -75,6 +81,14 @@ namespace ViewModels.MainWindow
         {
             get => _connection_IsSerialPort;
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
+        }
+
+        private ObservableCollection<ModbusDataDisplayed> _dataInDataGrid = new ObservableCollection<ModbusDataDisplayed>();
+
+        public ObservableCollection<ModbusDataDisplayed> DataInDataGrid
+        {
+            get => _dataInDataGrid;
+            set => this.RaiseAndSetIfChanged(ref _dataInDataGrid, value);
         }
 
         private string? _slaveID;
@@ -224,22 +238,25 @@ namespace ViewModels.MainWindow
         }
 
         public ViewModel_Modbus(
-            Action Request_CopyToClipboard_Handler,
-            Action Response_CopyToClipboard_Handler,
-            Action<string, MessageType> MessageBox,
-            Action ClearDataGrid_Handler,
-            Action UI_Connected_Handler,
-            Action UI_Disconnected_Handler
+            Action<string, MessageType> MessageBox
             )
+        //public ViewModel_Modbus(
+        //    Action Request_CopyToClipboard_Handler,
+        //    Action Response_CopyToClipboard_Handler,
+        //    Action<string, MessageType> MessageBox,
+        //    Action ClearDataGrid_Handler,
+        //    Action UI_Connected_Handler,
+        //    Action UI_Disconnected_Handler
+        //    )
         {
             Message = MessageBox;
 
-            SetUI_Connected = UI_Connected_Handler;
-            SetUI_Disconnected = UI_Disconnected_Handler;
+            //SetUI_Connected = UI_Connected_Handler;
+            //SetUI_Disconnected = UI_Disconnected_Handler;
 
             Model = ConnectedHost.Model;
 
-            SetUI_Disconnected.Invoke();
+            SetUI_Disconnected?.Invoke();
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -279,14 +296,14 @@ namespace ViewModels.MainWindow
             //
             /****************************************************/
 
-            Command_Copy_Request = ReactiveCommand.Create(Request_CopyToClipboard_Handler);
-            Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            //Command_Copy_Request = ReactiveCommand.Create(Request_CopyToClipboard_Handler);
+            //Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
-            Command_Copy_Response = ReactiveCommand.Create(Response_CopyToClipboard_Handler);
-            Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            //Command_Copy_Response = ReactiveCommand.Create(Response_CopyToClipboard_Handler);
+            //Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
-            Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler);
-            Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
+            //Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler);
+            //Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.CreateFromTask(Modbus_Write);
             Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);
@@ -504,12 +521,12 @@ namespace ViewModels.MainWindow
 
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
-            SetUI_Connected.Invoke();
+            SetUI_Connected?.Invoke();
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            SetUI_Disconnected.Invoke();
+            SetUI_Disconnected?.Invoke();
 
             CheckSum_IsVisible = true;
 
@@ -758,7 +775,7 @@ namespace ViewModels.MainWindow
         //
         /*************************************************************************/
 
-        public static void AddDataOnView(ModbusDataDisplayed? Data, byte[]? RequestBytes, byte[]? ResponseBytes)
+        public void AddDataOnView(ModbusDataDisplayed? Data, byte[]? RequestBytes, byte[]? ResponseBytes)
         {
             int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
 
@@ -787,7 +804,8 @@ namespace ViewModels.MainWindow
 
             Data.RequestResponseItems = Items;
 
-            AddDataInView?.Invoke(null, Data);
+            DataInDataGrid.Add(Data);
+            //AddDataInView?.Invoke(null, Data);
 
             PackageNumber++;
         }

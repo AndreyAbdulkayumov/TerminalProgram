@@ -1,0 +1,15 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+			 d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TerminalProgram.Views.Protocols.Modbus_Client_Log">
+
+	<TextBox Text="20:54:56 -> 54 59 57 89 F2 DE &#x0a;20:54:57 -> 54 59 57 89 F2 DE&#x0a;&#x0a;21:02:32 -> 54 59 57 89 F2 DE &#x0a;21:02:33 -> 54 59 57 89 F2 DE"
+			 AcceptsReturn="True"  
+			 IsReadOnly="True"
+			 TextWrapping="Wrap"
+			 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+	
+</UserControl>

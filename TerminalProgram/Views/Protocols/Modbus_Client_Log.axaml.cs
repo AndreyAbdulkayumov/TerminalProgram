@@ -1,11 +1,10 @@
 using Avalonia.Controls;
-using ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
 {
-    public partial class Modbus_Client : UserControl
+    public partial class Modbus_Client_Log : UserControl
     {
-        public Modbus_Client()
+        public Modbus_Client_Log()
         {
             InitializeComponent();
         }

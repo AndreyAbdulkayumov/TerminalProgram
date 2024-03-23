@@ -215,7 +215,7 @@ namespace ViewModels.MainWindow
             StringValue.ShowMessageView = Message;
 
             NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
-            ModbusClient_VM = new ViewModel_Modbus();
+            ModbusClient_VM = new ViewModel_Modbus(MessageBox);
 
             CurrentViewModel = NoProtocol_VM;
 

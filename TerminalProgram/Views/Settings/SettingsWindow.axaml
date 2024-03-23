@@ -27,7 +27,7 @@
 	
 	
 	<Border x:Name="Border_Window"
-			Background="{DynamicResource MainWindow_Back_Color_Background}"
+			Background="{DynamicResource MainWindow_Field_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
 			BorderThickness="3"
 			CornerRadius="6">
@@ -77,24 +77,28 @@
 				
 				<TabItem Header="Подключение"
 						 FontSize="16">
+					
 					<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
 
 				</TabItem>
 				
 				<TabItem Header="Без протокола"
 						 FontSize="16">
+					
 					<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
 
 				</TabItem>
 				
 				<TabItem Header="Modbus"
 						 FontSize="16">
+					
 					<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
 
 				</TabItem>
 
 				<TabItem Header="Внешний вид"
 						 FontSize="16">
+					
 					<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
 
 				</TabItem>

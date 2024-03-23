@@ -2,15 +2,315 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="TerminalProgram.Views.Protocols.Modbus_Client">
+             xmlns:DataTabs="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
+			 mc:Ignorable="d" 
+			 d:DesignWidth="1000" d:DesignHeight="550"
+             x:Class="TerminalProgram.Views.Protocols.Modbus_Client"
+			 Background="{DynamicResource MainWindow_Color_Background}">
+
+	<UserControl.Styles>
+
+		<Style Selector="TextBox.InputField">
+			<Setter Property="Height" Value="25"/>
+			<Setter Property="MinWidth" Value="{Binding ElementName=^,Path=Width}"/>
+			<Setter Property="FontSize" Value="16"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
+		</Style>
+
+		<Style Selector="ComboBox.Functions">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Width" Value="290"/>
+			<Setter Property="Margin" Value="20,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="Button.ModbusAction">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="Margin" Value="330,0,0,0"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+		
+	</UserControl.Styles>
 
 	<Grid>
 
-		<TextBlock Text="Modbus Client"
-				   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition Height="2*"/>
+			<RowDefinition Height="3"/>
+			<RowDefinition Height="1*"/>
+		</Grid.RowDefinitions>
+		
+		<Grid Grid.Row="0">
 
+			<TextBlock Text="Режим обмена данными:"
+                       FontSize="16"
+                       Foreground="{DynamicResource MainWindow_Color_Text}"
+                       Margin="20,10,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<TextBlock x:Name="TextBlock_ModbusMode"
+                       Text="{Binding ModbusMode_Name, Mode=OneWay}"
+                       FontSize="16"
+                       Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+					   IsVisible="{Binding Connection_IsSerialPort, Mode=OneWay}"
+                       Margin="220,10,0,0"
+                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<ComboBox x:Name="ComboBox_Modbus_RTU_ASCII"
+                      Template="{DynamicResource ComboBox_Common}"
+                      ItemsSource="{Binding Modbus_RTU_ASCII}"
+                      SelectedItem="{Binding Selected_Modbus_RTU_ASCII, Mode=TwoWay}"
+                      FontSize="16"
+					  IsVisible="{Binding Connection_IsSerialPort, Mode=OneWay}"
+                      Width="130"
+                      Margin="220,8,0,0"
+                      HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<Button x:Name="Button_CycleMode" Template="{DynamicResource ButtonCommon}"
+                    Margin="0,7,20,0"
+                    Width="160"
+                    Content="Цикличный опрос"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
+
+		</Grid>
+
+		<Grid Grid.Row="1">
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="1*"/>
+				<ColumnDefinition Width="1*"/>
+			</Grid.ColumnDefinitions>
+
+			<StackPanel Grid.Column="0" 
+						Orientation="Vertical"
+						Spacing="10">
+
+				<Grid>
+					
+					<TextBlock Text="Slave ID"
+							   FontSize="16"
+							   Foreground="{DynamicResource MainWindow_Color_Text}"
+                               Margin="20,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBox Classes="InputField"
+							 Width="50"
+							 Text="{Binding SlaveID, Mode=TwoWay}"
+							 Margin="90,0,0,0"
+							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
+							  Content="Контрольная сумма"
+							  FontSize="14"
+							  Foreground="{DynamicResource MainWindow_Color_Text}"
+							  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
+							  Margin="160,0,0,0"
+							  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				</Grid>
+
+				<TextBlock Text="Формат числа"
+                           FontSize="16"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
+						   Margin="130,0,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+				
+				<Grid>
+
+					<RadioButton Content="Шестнадцетиричный"
+								 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+                                 FontSize="14"
+                                 Foreground="{DynamicResource MainWindow_Color_Text}"
+								 Margin="20,0,0,0"
+                                 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<RadioButton Content="Десятичный"
+								 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+								 FontSize="14"
+								 Foreground="{DynamicResource MainWindow_Color_Text}"
+								 Margin="220,0,0,0"
+								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					
+				</Grid>
+
+				<Grid>
+
+					<TextBlock Text="Адрес"
+							   Margin="20,0,0,0"
+                               FontSize="16"
+                               Foreground="{DynamicResource MainWindow_Color_Text}"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+							   FontSize="16"
+							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+							   Margin="75,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBox Classes="InputField"
+							 Width="70"
+							 Text="{Binding Address, Mode=TwoWay}"
+							 Margin="120,0,0,0"
+							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBlock Text="Кол-во регистров"
+							   FontSize="16"
+							   Foreground="{DynamicResource MainWindow_Color_Text}"
+                               Margin="210,0,0,0"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBox Classes="InputField"
+							 Width="40"
+							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
+							 Margin="360,0,0,0"
+							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					
+				</Grid>
+
+				<Grid>
+
+					<ComboBox Classes="Functions"
+							  ItemsSource="{Binding ReadFunctions}"
+							  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
+
+					<Button Classes="ModbusAction"
+							Content="Прочитать"
+							Command="{Binding Command_Read}"/>
+					
+				</Grid>
+
+				<Grid>
+
+					<TextBlock Text="Значение"
+                               FontSize="16"
+                               Foreground="{DynamicResource MainWindow_Color_Text}"
+                               Margin="20,0,0,0"
+                               HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+							   FontSize="16"
+							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+							   Margin="100,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					<TextBox Classes="InputField"
+							 Width="250"
+							 Text="{Binding WriteData, Mode=TwoWay}"
+							 Padding="10,0,0,0"
+							 Margin="150,0,0,0"
+							 HorizontalContentAlignment="Left"
+							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+
+				</Grid>
+
+				<Grid>
+
+					<ComboBox Classes="Functions"
+							  ItemsSource="{Binding WriteFunctions}"
+							  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
+
+					<Button Classes="ModbusAction"
+							Content="Записать"
+							Command="{Binding Command_Write}"/>
+					
+				</Grid>
+				
+			</StackPanel>
+
+			<DataGrid x:Name="DataGrid_ModbusData" Grid.Column="1"
+                      ItemsSource="{Binding DataInDataGrid, Mode=OneWay}"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      BorderThickness="1"
+                      Background="{DynamicResource DataGrid_Color_Background}"
+                      BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
+                      RowBackground="{DynamicResource DataGrid_Color_RowBackground}"
+                      HorizontalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
+                      VerticalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
+                      VerticalScrollBarVisibility="Visible"
+                      HorizontalScrollBarVisibility="Hidden"
+				      Margin="10"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+				<DataGrid.Styles>
+					
+					<Style Selector="TextBlock">
+						<Setter Property="FontSize" Value="12"/>
+						<Setter Property="Foreground" Value="Black"/>
+						<Setter Property="HorizontalAlignment" Value="Center"/>
+						<Setter Property="VerticalAlignment" Value="Center"/>
+					</Style>
+					
+				</DataGrid.Styles>
+				
+				<DataGrid.Columns>
+
+					<DataGridTextColumn Header="ID"
+										FontSize="14"
+										Binding="{Binding Path=OperationID}"
+										Width="80"/>
+
+					<DataGridTextColumn Header="Функция"
+										FontSize="14"
+										Binding="{Binding Path=FuncNumber}"
+										Width="150"/>
+
+					<DataGridTextColumn Header="Адрес"
+										FontSize="14"
+										Binding="{Binding Path=ViewAddress}"
+										Width="150"/>
+
+					<DataGridTextColumn Header="Данные"
+										FontSize="14"
+										Binding="{Binding Path=ViewData}"
+										Width="*"/>
+
+				</DataGrid.Columns>
+
+			</DataGrid>
+			
+		</Grid>
+
+		<GridSplitter Grid.Row="2"
+					  MinHeight="0" 
+				      Background="#FF6B6B6B"
+					  ResizeDirection="Rows"
+					  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+
+		<Grid Grid.Row="3">
+
+			<TabControl>
+
+				<TabItem Header="Последний запрос"
+						 FontSize="16">
+					
+					<!--<DataTabs:Modbus_Client_LastRequest/>-->
+                    
+				</TabItem>
+
+				<TabItem Header="Лог"
+						 FontSize="16">
+
+					<DataTabs:Modbus_Client_Log/>
+					
+				</TabItem>
+
+			</TabControl>
+
+		</Grid>
+		
 	</Grid>
 	
 </UserControl>
