@@ -77,7 +77,7 @@ namespace Core.Clients
         private CancellationTokenSource? ReadCancelSource = null;
 
         public NotificationSource Notifications { get; private set; }
-
+        public DateTime ExecutionTime { get; private set; }
 
         public SerialPortClient()
         {
@@ -281,11 +281,11 @@ namespace Core.Clients
             }
         }
 
-        public async Task Send(byte[] Message, int NumberOfBytes)
+        public async Task<ModbusOperationInfo> Send(byte[] Message, int NumberOfBytes)
         {
             if (DeviceSerialPort == null)
             {
-                return;
+                return new ModbusOperationInfo(DateTime.Now, null);
             }
 
             try
@@ -294,8 +294,12 @@ namespace Core.Clients
                 {
                     await DeviceSerialPort.BaseStream.WriteAsync(Message, 0, NumberOfBytes);
 
+                    ExecutionTime = DateTime.Now;
+                    
                     Notifications.TransmitEvent();
                 }
+
+                return new ModbusOperationInfo(ExecutionTime, null);
             }
 
             catch (Exception error)
@@ -307,11 +311,11 @@ namespace Core.Clients
             }
         }
 
-        public async Task<byte[]> Receive()
+        public async Task<ModbusOperationInfo> Receive()
         {
             if (DeviceSerialPort == null)
             {
-                return Array.Empty<byte>();
+                return new ModbusOperationInfo(DateTime.Now, Array.Empty<byte>());
             }
 
             List<byte> ReceivedBytes = new List<byte>();
@@ -330,11 +334,19 @@ namespace Core.Clients
 
                     byte[] Buffer;
 
+                    bool IsFirstPackage = true;
+
                     do
                     {
                         Buffer = new byte[DeviceSerialPort.BytesToRead];
 
                         DeviceSerialPort.Read(Buffer, 0, Buffer.Length);
+
+                        if (IsFirstPackage)
+                        {
+                            ExecutionTime = DateTime.Now;
+                            IsFirstPackage = false;
+                        }
 
                         ReceivedBytes.AddRange(Buffer);
 
@@ -348,7 +360,7 @@ namespace Core.Clients
                     }                    
                 }
 
-                return ReceivedBytes.ToArray();
+                return new ModbusOperationInfo(ExecutionTime, ReceivedBytes.ToArray());
             }
 
             catch (Exception error)

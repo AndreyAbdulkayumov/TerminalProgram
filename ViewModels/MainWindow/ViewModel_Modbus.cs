@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
+using DynamicData;
 
 namespace ViewModels.MainWindow
 {
@@ -33,8 +34,6 @@ namespace ViewModels.MainWindow
         public string? ViewAddress { get; set; }
         public UInt16[]? Data { get; set; }
         public string? ViewData { get; set; }
-
-        public RequestResponseField_ItemData[]? RequestResponseItems { get; set; }
     }
 
     public class ViewModel_Modbus : ReactiveObject
@@ -89,6 +88,22 @@ namespace ViewModels.MainWindow
         {
             get => _dataInDataGrid;
             set => this.RaiseAndSetIfChanged(ref _dataInDataGrid, value);
+        }
+
+        private ObservableCollection<RequestResponseField_ItemData> _requestResponseItems = new ObservableCollection<RequestResponseField_ItemData>();
+
+        public ObservableCollection<RequestResponseField_ItemData> RequestResponseItems
+        {
+            get => _requestResponseItems;
+            set => this.RaiseAndSetIfChanged(ref _requestResponseItems, value);
+        }
+
+        private string _logData = string.Empty;
+        
+        public string LogData
+        {
+            get => _logData;
+            set => this.RaiseAndSetIfChanged(ref _logData, value);
         }
 
         private string? _slaveID;
@@ -606,10 +621,6 @@ namespace ViewModels.MainWindow
                         Data,
                         ModbusMessageType);
 
-                RequestBytes = Result.Request != null ? Result.Request : Array.Empty<byte>();
-
-                ResponseBytes = Result.Response != null ? Result.Response : Array.Empty<byte>();
-
                 AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
@@ -619,8 +630,7 @@ namespace ViewModels.MainWindow
                     Data = ModbusWriteData,
                     ViewData = CreateViewData(ModbusWriteData)
                 },
-                RequestBytes,
-                ResponseBytes);
+                Result.Details);
             }
 
             catch (ModbusException error)
@@ -634,7 +644,7 @@ namespace ViewModels.MainWindow
 
                 if (Info != null)
                 {
-                    AddDataOnView(null, Info.Request, Info.Response);
+                    AddDataOnView(null, Info.Details);
                 }
 
                 Message.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" + error.Message, MessageType.Error);
@@ -702,10 +712,6 @@ namespace ViewModels.MainWindow
                                 Data,
                                 ModbusMessageType);
 
-                RequestBytes = Result.Request != null ? Result.Request : Array.Empty<byte>();
-
-                ResponseBytes = Result.Response != null ? Result.Response : Array.Empty<byte>();
-
                 AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = PackageNumber,
@@ -715,8 +721,7 @@ namespace ViewModels.MainWindow
                     Data = Result.ReadedData,
                     ViewData = CreateViewData(Result.ReadedData)
                 },
-                RequestBytes,
-                ResponseBytes);
+                Result.Details);
             }
 
             catch (ModbusException error)
@@ -730,7 +735,7 @@ namespace ViewModels.MainWindow
                 
                 if (Info != null)
                 {
-                    AddDataOnView(null, Info.Request, Info.Response);
+                    AddDataOnView(null, Info.Details);
                 }                
 
                 Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
@@ -748,8 +753,7 @@ namespace ViewModels.MainWindow
                 Data = new UInt16[1],
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             },
-            error.RequestBytes, 
-            error.ResponseBytes);
+            error.Details);
 
             string Addition = String.Empty;
 
@@ -775,9 +779,9 @@ namespace ViewModels.MainWindow
         //
         /*************************************************************************/
 
-        public void AddDataOnView(ModbusDataDisplayed? Data, byte[]? RequestBytes, byte[]? ResponseBytes)
+        public void AddDataOnView(ModbusDataDisplayed? Data, ModbusActionDetails Details)
         {
-            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
+            int MaxLength = Details.RequestBytes.Length > Details.ResponseBytes.Length ? Details.RequestBytes.Length : Details.ResponseBytes.Length;
 
             RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
 
@@ -787,14 +791,20 @@ namespace ViewModels.MainWindow
                 Items[i].ItemNumber = (i + 1).ToString();
             }
 
-            for (int i = 0; i < RequestBytes.Length; i++)
+            string RequestString = string.Empty;
+
+            for (int i = 0; i < Details.RequestBytes.Length; i++)
             {
-                Items[i].RequestData = RequestBytes[i].ToString("X2");
+                Items[i].RequestData = Details.RequestBytes[i].ToString("X2");
+                RequestString += Details.RequestBytes[i].ToString("X2") + "   ";
             }
 
-            for (int i = 0; i < ResponseBytes.Length; i++)
+            string ResponseString = string.Empty;
+
+            for (int i = 0; i < Details.ResponseBytes.Length; i++)
             {
-                Items[i].ResponseData = ResponseBytes[i].ToString("X2");
+                Items[i].ResponseData = Details.ResponseBytes[i].ToString("X2");
+                ResponseString += Details.ResponseBytes[i].ToString("X2") + "   ";
             }
 
             if (Data == null)
@@ -802,10 +812,25 @@ namespace ViewModels.MainWindow
                 Data = new ModbusDataDisplayed();
             }
 
-            Data.RequestResponseItems = Items;
+            RequestResponseItems.Clear();
+            RequestResponseItems.AddRange(Items);
 
             DataInDataGrid.Add(Data);
             //AddDataInView?.Invoke(null, Data);
+
+            if (LogData == string.Empty)
+            {
+                LogData +=
+                    Details.Request_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   ->   " + RequestString + "\n" +
+                    Details.Response_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   <-   " + ResponseString;
+            }
+
+            else
+            {
+                LogData += "\n\n" +
+                    Details.Request_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   ->   " + RequestString + "\n" +
+                    Details.Response_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   <-   " + ResponseString;
+            }  
 
             PackageNumber++;
         }

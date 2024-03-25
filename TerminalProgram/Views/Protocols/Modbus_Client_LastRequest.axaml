@@ -2,56 +2,61 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 x:Name="UserControl_RequestResponseField"
              mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
+			 d:DesignWidth="500" d:DesignHeight="160"
              x:Class="TerminalProgram.Views.Protocols.Modbus_Client_LastRequest">
 
-	<Border BorderBrush="{Binding ElementName=UserControl_RequestResponseField, Path=Field_BorderBrush}"
+	<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
             BorderThickness="1"
-            CornerRadius="10">
+			Height="140"
+            CornerRadius="10"
+			HorizontalAlignment="Stretch" VerticalAlignment="Center">
 
 		<Grid>
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="80"/>
 				<ColumnDefinition Width="1*"/>
+				<ColumnDefinition Width="80"/>
 			</Grid.ColumnDefinitions>
 
-			<Grid.RowDefinitions>
-				<RowDefinition Height="0.6*"/>
-				<RowDefinition Height="1*"/>
-				<RowDefinition Height="1*"/>
-				<RowDefinition Height="24"/>
-			</Grid.RowDefinitions>
+			<Grid Grid.Column="0"
+				  Margin="0,8,0,8">
 
-			<TextBlock Grid.Row="1" Grid.Column="0"
+				<Grid.RowDefinitions>
+					<RowDefinition Height="0.6*"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+				
+				<TextBlock Grid.Row="1"
                        Text="Запрос"
                        FontSize="16"
-                       Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=FieldTitle_Foreground}"
-                       Margin="0,0,10,3"
+                       Foreground="{DynamicResource MainWindow_Color_Text}"
+                       Margin="0,0,10,0"
                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-			<TextBlock Grid.Row="2" Grid.Column="0"
-                       Text="Ответ"
-                       FontSize="16"
-                       Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=FieldTitle_Foreground}"
-                       Margin="0,0,10,8"
-                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+				<TextBlock Grid.Row="2"
+						   Text="Ответ"
+						   FontSize="16"
+						   Foreground="{DynamicResource MainWindow_Color_Text}"
+						   Margin="0,0,10,0"
+						   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+			
+			</Grid>
 
-			<Border Grid.Row="0" Grid.RowSpan="4" Grid.Column="1"
+			<Border Grid.Column="1"
                     CornerRadius="5"
-                    BorderBrush="{Binding ElementName=UserControl_RequestResponseField, Path=Field_BorderBrush}"
+                    BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
                     BorderThickness="1"
-                    Background="{Binding ElementName=UserControl_RequestResponseField, Path=Field_Background}"
-                    Margin="0,5,80,5">
+                    Background="{DynamicResource ModbusDataField_Color_BorderBackground}"
+                    Margin="0,5,0,5">
 
-				<ScrollViewer Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
-                              HorizontalScrollBarVisibility="Visible"
+				<ScrollViewer HorizontalScrollBarVisibility="Visible"
                               VerticalScrollBarVisibility="Hidden"
                               Margin="3">
 
-					<ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}, Path=FieldItems}">
+					<ItemsControl ItemsSource="{Binding RequestResponseItems, Mode=OneWay}">
 
 						<ItemsControl.ItemsPanel>
 							<ItemsPanelTemplate>
@@ -73,26 +78,26 @@
 
 									<Border Grid.Row="0"
                                             BorderBrush="Black"
-                                            BorderThickness="0.5"
+                                            BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="{Binding ElementName=UserControl_RequestResponseField, Path=ByteNumber_Background}">
+                                            Background="{DynamicResource ModbusDataField_Color_ByteNumberBackground}">
 
 										<TextBlock Text="{Binding ItemNumber, Mode=OneWay}"
                                                    FontSize="12"
-                                                   Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 									</Border>
 
 									<Border Grid.Row="1"
                                             BorderBrush="Black"
-                                            BorderThickness="0.5"
+                                            BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Background}">
+                                            Background="{DynamicResource ModbusDataField_Color_DataBackground}">
 
 										<TextBlock Text="{Binding RequestData, Mode=OneWay}"
                                                    FontSize="16"
-                                                   Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                                    Margin="10"/>
 
@@ -100,14 +105,14 @@
 
 									<Border Grid.Row="2"
                                             BorderBrush="Black"
-                                            BorderThickness="0.5"
+                                            BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Background}">
+                                            Background="{DynamicResource ModbusDataField_Color_DataBackground}">
 
 										<TextBlock Grid.Row="2"
                                                    Text="{Binding ResponseData, Mode=OneWay}"
                                                    FontSize="16"
-                                                   Foreground="{Binding ElementName=UserControl_RequestResponseField, Path=Data_Foreground}"
+                                                   Foreground="Black"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"
                                                    Margin="10"/>
 
@@ -125,29 +130,40 @@
 
 			</Border>
 
-			<Button Grid.Row="1" Grid.Column="1"
-                    ToolTip.Tip="Копировать запрос в буфер обмена"
-				    CornerRadius="5"
-                    Width="35" Height="35"
-                    Margin="0,0,30,0"
-                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Command="{Binding ElementName=UserControl_RequestResponseField, Path=Command_CopyRequest}">
+			<Grid Grid.Column="2"
+				  Margin="0,8,0,8">
 
-				<Image Source="Resources/Copy.png" Margin="4"/>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="0.6*"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+				
+				<Button Grid.Row="1"
+						ToolTip.Tip="Копировать запрос в буфер обмена"
+						CornerRadius="5"
+						Width="35" Height="35"
+						Margin="0,0,30,0"
+						HorizontalAlignment="Right" VerticalAlignment="Center"
+						Command="{Binding Command_Copy_Request}">
 
-			</Button>
+					<Image Source="avares://TerminalProgram/Resources/Copy.png"/>
 
-			<Button Grid.Row="2" Grid.Column="1"
-                    ToolTip.Tip="Копировать ответ в буфер обмена"
-					CornerRadius="5"
-                    Width="35" Height="35"
-                    Margin="0,0,30,0"
-                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Command="{Binding ElementName=UserControl_RequestResponseField, Path=Command_CopyResponse}">
+				</Button>
 
-				<Image Source="Resources/Copy.png" Margin="4"/>
+				<Button Grid.Row="2"
+						ToolTip.Tip="Копировать ответ в буфер обмена"
+						CornerRadius="5"
+						Width="35" Height="35"
+						Margin="0,0,30,0"
+						HorizontalAlignment="Right" VerticalAlignment="Center"
+						Command="{Binding Command_Copy_Response}">
 
-			</Button>
+					<Image Source="avares://TerminalProgram/Resources/Copy.png"/>
+
+				</Button>
+				
+			</Grid>			
 
 		</Grid>
 

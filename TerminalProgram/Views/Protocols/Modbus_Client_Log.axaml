@@ -3,13 +3,41 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
+			 d:DesignWidth="600" d:DesignHeight="160"
              x:Class="TerminalProgram.Views.Protocols.Modbus_Client_Log">
 
-	<TextBox Text="20:54:56 -> 54 59 57 89 F2 DE &#x0a;20:54:57 -> 54 59 57 89 F2 DE&#x0a;&#x0a;21:02:32 -> 54 59 57 89 F2 DE &#x0a;21:02:33 -> 54 59 57 89 F2 DE"
+	<TextBox Text="{Binding LogData, Mode=OneWay}"
 			 AcceptsReturn="True"  
 			 IsReadOnly="True"
 			 TextWrapping="Wrap"
-			 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+			 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			 TextChanged="TextBox_TextChanged">
+
+		<TextBox.Styles>
+			
+			<Style Selector="TextBox">
+
+				<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+				<Setter Property="Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush}"/>
+				<Setter Property="BorderThickness" Value="2"/>
+
+				<Style Selector="^:pointerover /template/ Border">
+					<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+					<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+					<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_MouseOver}"/>
+				</Style>
+
+				<Style Selector="^:focus /template/ Border" >
+					<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+					<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+					<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_Focused}"/>
+				</Style>
+
+			</Style>
+			
+		</TextBox.Styles>
+		
+	</TextBox>
 	
 </UserControl>

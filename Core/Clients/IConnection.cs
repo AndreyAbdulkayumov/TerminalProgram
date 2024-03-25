@@ -12,6 +12,18 @@ namespace Core.Clients
         Sync
     }
 
+    public class ModbusOperationInfo
+    {
+        public readonly DateTime ExecutionTime;
+        public readonly byte[]? ResponseBytes;
+
+        public ModbusOperationInfo(DateTime ExecutionTime, byte[]? ResponseBytes)
+        {
+            this.ExecutionTime = ExecutionTime;
+            this.ResponseBytes = ResponseBytes;
+        }
+    }
+
     public interface IConnection
     {
         /// <summary>
@@ -70,12 +82,12 @@ namespace Core.Clients
         /// </summary>
         /// <param name="Message"></param>
         /// <param name="NumberOfBytes"></param>
-        Task Send(byte[] Message, int NumberOfBytes);
+        Task<ModbusOperationInfo> Send(byte[] Message, int NumberOfBytes);
 
         /// <summary>
         /// Сихронно считывает данные из соединения. Возвращает принятые байты.
         /// </summary>
-        Task<byte[]> Receive();
+        Task<ModbusOperationInfo> Receive();
     }
 
     public class DataFromDevice : EventArgs

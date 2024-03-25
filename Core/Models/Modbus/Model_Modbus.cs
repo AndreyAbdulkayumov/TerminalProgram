@@ -1,8 +1,10 @@
 ﻿using Core.Clients;
 using Core.Models.Modbus.Message;
+using Core.Models.Settings;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,8 +30,8 @@ namespace Core.Models.Modbus
     public class ModbusOperationResult
     {
         public UInt16[]? ReadedData;
-        public byte[]? Request;
-        public byte[]? Response;
+
+        public ModbusActionDetails? Details;
     }
 
     public class Model_Modbus
@@ -84,6 +86,8 @@ namespace Core.Models.Modbus
 
             ModbusOperationResult Result = new ModbusOperationResult();
 
+            ModbusOperationInfo? TX_Info = null, RX_Info = null;
+
             try
             {
                 if (Device == null)
@@ -93,12 +97,14 @@ namespace Core.Models.Modbus
 
                 TX = Message.CreateMessage(WriteFunction, DataForWrite);
 
-                await Device.Send(TX, TX.Length);
+                TX_Info = await Device.Send(TX, TX.Length);
 
-                RX = await Device.Receive();
+                RX_Info = await Device.Receive();
 
-                if (RX.Length > 0)
+                if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
                 {
+                    RX = RX_Info.ResponseBytes;
+
                     ModbusResponse Data = Message.DecodingMessage(WriteFunction, RX);
                 }
 
@@ -107,7 +113,7 @@ namespace Core.Models.Modbus
                     throw new Exception("Хост не ответил.\n\n" +
                         "Таймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
                         "Таймаут чтения: " + Device.ReadTimeout + " мс.");
-                }                
+                }
             }
 
             catch (ModbusException error)
@@ -115,7 +121,9 @@ namespace Core.Models.Modbus
                 throw new ModbusException(
                     ErrorObject: error,
                     RequestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
-                    ResponseBytes: GetOutputRX(RX, RX.Length)
+                    ResponseBytes: GetOutputRX(RX, RX.Length),
+                    Response_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : null,
+                    Request_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : null
                     );
             }
 
@@ -124,18 +132,30 @@ namespace Core.Models.Modbus
                 throw new Exception(error.Message,
                     new ModbusExceptionInfo()
                     {
-                        Request = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                        Response = GetOutputRX(RX, RX.Length)
+                        Details = new ModbusActionDetails()
+                        {
+                            RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                            ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                            Request_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null,
+                            Response_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null
+                        }
                     });
             }
 
             finally
             {
-                Result.Request = TX.Length > 0 ? TX : Array.Empty<byte>();
-                Result.Response = GetOutputRX(RX, RX.Length);
+                Result.Details = new ModbusActionDetails()
+                {
+                    RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                    ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                IsBusy = false;                
+                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null,
+                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null
+                };
             }
+
+            IsBusy = false;
 
             return Result;
         }
@@ -160,6 +180,8 @@ namespace Core.Models.Modbus
 
             ModbusOperationResult Result = new ModbusOperationResult();
 
+            ModbusOperationInfo? TX_Info = null, RX_Info = null;
+
             try
             {
                 if (Device == null)
@@ -169,12 +191,14 @@ namespace Core.Models.Modbus
                 
                 TX = Message.CreateMessage(ReadFunction, DataForRead);
 
-                await Device.Send(TX, TX.Length);
+                TX_Info = await Device.Send(TX, TX.Length);
 
-                RX = await Device.Receive();
+                RX_Info = await Device.Receive();
 
-                if (RX.Length > 0)
+                if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
                 {
+                    RX = RX_Info.ResponseBytes;
+
                     ModbusResponse DeviceResponse = Message.DecodingMessage(ReadFunction, RX);
 
                     if (DeviceResponse.Data.Length < 2)
@@ -208,24 +232,38 @@ namespace Core.Models.Modbus
                 throw new ModbusException(
                     ErrorObject:   error,
                     RequestBytes:  TX.Length > 0 ? TX : Array.Empty<byte>(),
-                    ResponseBytes: GetOutputRX(RX, RX.Length)
+                    ResponseBytes: GetOutputRX(RX, RX.Length),
+                    Response_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : null,
+                    Request_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : null
                     );
             }
 
             catch (Exception error)
             {
-                throw new Exception(error.Message , 
+                throw new Exception(error.Message, 
                     new ModbusExceptionInfo()
                     {
-                        Request = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                        Response = GetOutputRX(RX, RX.Length)
+                        Details = new ModbusActionDetails()
+                        {
+                            RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                            ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                            Request_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null,
+                            Response_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null
+                        }
                     });
             }
 
             finally
             {
-                Result.Request = TX.Length > 0 ? TX : Array.Empty<byte>();
-                Result.Response = GetOutputRX(RX, RX.Length);
+                Result.Details = new ModbusActionDetails()
+                {
+                    RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                    ResponseBytes = GetOutputRX(RX, RX.Length),
+
+                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null,
+                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null
+                };
 
                 IsBusy = false;
             }

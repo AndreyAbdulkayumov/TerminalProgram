@@ -65,7 +65,7 @@ namespace Core.Clients
         private CancellationTokenSource? ReadCancelSource = null;
 
         public NotificationSource Notifications { get; private set; }
-
+        public DateTime ExecutionTime { get; private set; }
 
         public IPClient()
         {
@@ -188,11 +188,11 @@ namespace Core.Clients
             IsConnected = false;
         }
 
-        public async Task Send(byte[] Message, int NumberOfBytes)
+        public async Task<ModbusOperationInfo> Send(byte[] Message, int NumberOfBytes)
         {
             if (Stream == null)
             {
-                return;
+                return new ModbusOperationInfo(DateTime.Now, null);
             }
 
             try
@@ -201,8 +201,12 @@ namespace Core.Clients
                 {
                     await Stream.WriteAsync(Message, 0, NumberOfBytes);
 
+                    ExecutionTime = DateTime.Now;
+
                     Notifications.TransmitEvent();
                 }
+
+                return new ModbusOperationInfo(ExecutionTime, null);
             }
 
             catch (Exception error)
@@ -214,11 +218,11 @@ namespace Core.Clients
             }
         }
 
-        public async Task<byte[]> Receive()
+        public async Task<ModbusOperationInfo> Receive()
         {
             if (Stream == null)
             {
-                return Array.Empty<byte>();
+                return new ModbusOperationInfo(DateTime.Now, Array.Empty<byte>());
             }
 
             List<byte> ReceivedBytes = new List<byte>();
@@ -231,11 +235,19 @@ namespace Core.Clients
 
                     int NumberOfReceivedBytes;
 
+                    bool IsFirstPackage = true;
+
                     do
                     {
                         Buffer = new byte[100];
 
                         NumberOfReceivedBytes = await Stream.ReadAsync(Buffer, 0, Buffer.Length);
+
+                        if (IsFirstPackage)
+                        {
+                            ExecutionTime = DateTime.Now;
+                            IsFirstPackage = false;
+                        }                        
 
                         Array.Resize(ref Buffer, NumberOfReceivedBytes);
 
@@ -243,13 +255,15 @@ namespace Core.Clients
 
                     } while (Stream.DataAvailable);
 
+                    ExecutionTime = DateTime.Now;
+
                     if (ReceivedBytes.Count > 0)
                     {
                         Notifications.ReceiveEvent();
                     }
                 }
 
-                return ReceivedBytes.ToArray();
+                return new ModbusOperationInfo(ExecutionTime, ReceivedBytes.ToArray());
             }
 
             catch (Exception error)

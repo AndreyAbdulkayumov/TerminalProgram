@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Copy.png" />
+    <AvaloniaResource Include="Resources\Copy.png" />
   </ItemGroup>
 
   <ItemGroup>

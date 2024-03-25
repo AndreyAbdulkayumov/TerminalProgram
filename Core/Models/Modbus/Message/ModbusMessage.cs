@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace Core.Models.Modbus.Message
 {
+    public class ModbusActionDetails
+    {
+        public byte[]? RequestBytes;
+        public byte[]? ResponseBytes;
+
+        public DateTime? Request_ExecutionTime;
+        public DateTime? Response_ExecutionTime;
+    }
+
     public class ModbusException : Exception
     {
         public readonly byte ErrorCode;
@@ -14,8 +23,7 @@ namespace Core.Models.Modbus.Message
 
         public override string Message { get; }
 
-        public byte[]? RequestBytes;
-        public byte[]? ResponseBytes;
+        public readonly ModbusActionDetails Details = new ModbusActionDetails();
 
         public ModbusException(byte FunctionCode, byte ErrorCode, string Message)
         {
@@ -29,8 +37,8 @@ namespace Core.Models.Modbus.Message
             FunctionCode= ErrorObject.FunctionCode;
             ErrorCode = ErrorObject.ErrorCode;
             Message = ErrorObject.Message;
-            RequestBytes = ErrorObject.RequestBytes;
-            ResponseBytes = ErrorObject.ResponseBytes;
+            Details.RequestBytes = ErrorObject.Details.RequestBytes;
+            Details.ResponseBytes = ErrorObject.Details.ResponseBytes;
         }
 
         public ModbusException(byte FunctionCode, byte ErrorCode, string Message, 
@@ -39,24 +47,26 @@ namespace Core.Models.Modbus.Message
             this.FunctionCode = FunctionCode;
             this.ErrorCode = ErrorCode;
             this.Message = Message;
-            this.RequestBytes = RequestBytes;
-            this.ResponseBytes = ResponseBytes;
+            this.Details.RequestBytes = RequestBytes;
+            this.Details.ResponseBytes = ResponseBytes;
         }
 
-        public ModbusException(ModbusException ErrorObject, byte[] RequestBytes, byte[] ResponseBytes)
+        public ModbusException(ModbusException ErrorObject, byte[] RequestBytes, byte[] ResponseBytes, 
+            DateTime? Request_ExecutionTime, DateTime? Response_ExecutionTime)
         {
             FunctionCode = ErrorObject.FunctionCode;
             ErrorCode = ErrorObject.ErrorCode;
             Message = ErrorObject.Message;
-            this.RequestBytes = RequestBytes;
-            this.ResponseBytes = ResponseBytes;
+            this.Details.RequestBytes = RequestBytes;
+            this.Details.ResponseBytes = ResponseBytes;
+            this.Details.Request_ExecutionTime = Request_ExecutionTime;
+            this.Details.Response_ExecutionTime = Response_ExecutionTime;
         }
     }
 
     public class ModbusExceptionInfo : Exception
     {
-        public byte[]? Request;
-        public byte[]? Response;
+        public ModbusActionDetails Details;
     }
 
     public abstract class ModbusMessage

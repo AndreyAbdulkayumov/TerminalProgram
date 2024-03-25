@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using ViewModels.MainWindow;
 
 namespace TerminalProgram.Views.Protocols
 {

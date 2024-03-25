@@ -45,7 +45,7 @@
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="2*"/>
 			<RowDefinition Height="3"/>
-			<RowDefinition Height="1*"/>
+			<RowDefinition Height="200"/>
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">
@@ -86,10 +86,64 @@
 			
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="1*"/>
-				<ColumnDefinition Width="1*"/>
+				<ColumnDefinition Width="460"/>
 			</Grid.ColumnDefinitions>
 
-			<StackPanel Grid.Column="0" 
+			<DataGrid Grid.Column="0"
+                      ItemsSource="{Binding DataInDataGrid, Mode=OneWay}"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="False"
+                      CanUserSortColumns="False"
+                      IsReadOnly="True"
+                      BorderThickness="1"
+                      Background="{DynamicResource DataGrid_Color_Background}"
+                      BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
+                      RowBackground="{DynamicResource DataGrid_Color_RowBackground}"
+                      HorizontalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
+                      VerticalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
+                      VerticalScrollBarVisibility="Visible"
+                      HorizontalScrollBarVisibility="Hidden"
+				      Margin="10"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+				<DataGrid.Styles>
+
+					<Style Selector="TextBlock">
+						<Setter Property="FontSize" Value="12"/>
+						<Setter Property="Foreground" Value="Black"/>
+						<Setter Property="HorizontalAlignment" Value="Center"/>
+						<Setter Property="VerticalAlignment" Value="Center"/>
+					</Style>
+
+				</DataGrid.Styles>
+
+				<DataGrid.Columns>
+
+					<DataGridTextColumn Header="ID"
+										FontSize="14"
+										Binding="{Binding Path=OperationID}"
+										Width="80"/>
+
+					<DataGridTextColumn Header="Функция"
+										FontSize="14"
+										Binding="{Binding Path=FuncNumber}"
+										Width="150"/>
+
+					<DataGridTextColumn Header="Адрес"
+										FontSize="14"
+										Binding="{Binding Path=ViewAddress}"
+										Width="150"/>
+
+					<DataGridTextColumn Header="Данные"
+										FontSize="14"
+										Binding="{Binding Path=ViewData}"
+										Width="*"/>
+
+				</DataGrid.Columns>
+
+			</DataGrid>
+			
+			<StackPanel Grid.Column="1" 
 						Orientation="Vertical"
 						Spacing="10">
 
@@ -98,13 +152,13 @@
 					<TextBlock Text="Slave ID"
 							   FontSize="16"
 							   Foreground="{DynamicResource MainWindow_Color_Text}"
-                               Margin="20,0,0,0"
+                               Margin="115,0,0,0"
 							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<TextBox Classes="InputField"
 							 Width="50"
 							 Text="{Binding SlaveID, Mode=TwoWay}"
-							 Margin="90,0,0,0"
+							 Margin="190,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
@@ -112,15 +166,14 @@
 							  FontSize="14"
 							  Foreground="{DynamicResource MainWindow_Color_Text}"
 							  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
-							  Margin="160,0,0,0"
+							  Margin="260,0,0,0"
 							  HorizontalAlignment="Left" VerticalAlignment="Center"/>
 				</Grid>
 
 				<TextBlock Text="Формат числа"
                            FontSize="16"
                            Foreground="{DynamicResource MainWindow_Color_Text}"
-						   Margin="130,0,0,0"
-                           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 				
 				<Grid>
@@ -129,14 +182,14 @@
 								 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
                                  FontSize="14"
                                  Foreground="{DynamicResource MainWindow_Color_Text}"
-								 Margin="20,0,0,0"
+								 Margin="80,0,0,0"
                                  HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<RadioButton Content="Десятичный"
 								 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
 								 FontSize="14"
 								 Foreground="{DynamicResource MainWindow_Color_Text}"
-								 Margin="220,0,0,0"
+								 Margin="290,0,0,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 					
 				</Grid>
@@ -152,25 +205,25 @@
 					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 							   FontSize="16"
 							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-							   Margin="75,0,0,0"
+							   Margin="80,0,0,0"
 							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<TextBox Classes="InputField"
 							 Width="70"
 							 Text="{Binding Address, Mode=TwoWay}"
-							 Margin="120,0,0,0"
+							 Margin="130,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<TextBlock Text="Кол-во регистров"
 							   FontSize="16"
 							   Foreground="{DynamicResource MainWindow_Color_Text}"
-                               Margin="210,0,0,0"
+                               Margin="230,0,0,0"
                                HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<TextBox Classes="InputField"
 							 Width="40"
 							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
-							 Margin="360,0,0,0"
+							 Margin="390,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 					
 				</Grid>
@@ -198,14 +251,14 @@
 					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 							   FontSize="16"
 							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-							   Margin="100,0,0,0"
+							   Margin="105,0,0,0"
 							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<TextBox Classes="InputField"
-							 Width="250"
+							 Width="270"
 							 Text="{Binding WriteData, Mode=TwoWay}"
 							 Padding="10,0,0,0"
-							 Margin="150,0,0,0"
+							 Margin="160,0,0,0"
 							 HorizontalContentAlignment="Left"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
@@ -225,60 +278,6 @@
 				</Grid>
 				
 			</StackPanel>
-
-			<DataGrid x:Name="DataGrid_ModbusData" Grid.Column="1"
-                      ItemsSource="{Binding DataInDataGrid, Mode=OneWay}"
-                      AutoGenerateColumns="False"
-                      CanUserResizeColumns="False"
-                      CanUserSortColumns="False"
-                      IsReadOnly="True"
-                      BorderThickness="1"
-                      Background="{DynamicResource DataGrid_Color_Background}"
-                      BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
-                      RowBackground="{DynamicResource DataGrid_Color_RowBackground}"
-                      HorizontalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
-                      VerticalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
-                      VerticalScrollBarVisibility="Visible"
-                      HorizontalScrollBarVisibility="Hidden"
-				      Margin="10"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-
-				<DataGrid.Styles>
-					
-					<Style Selector="TextBlock">
-						<Setter Property="FontSize" Value="12"/>
-						<Setter Property="Foreground" Value="Black"/>
-						<Setter Property="HorizontalAlignment" Value="Center"/>
-						<Setter Property="VerticalAlignment" Value="Center"/>
-					</Style>
-					
-				</DataGrid.Styles>
-				
-				<DataGrid.Columns>
-
-					<DataGridTextColumn Header="ID"
-										FontSize="14"
-										Binding="{Binding Path=OperationID}"
-										Width="80"/>
-
-					<DataGridTextColumn Header="Функция"
-										FontSize="14"
-										Binding="{Binding Path=FuncNumber}"
-										Width="150"/>
-
-					<DataGridTextColumn Header="Адрес"
-										FontSize="14"
-										Binding="{Binding Path=ViewAddress}"
-										Width="150"/>
-
-					<DataGridTextColumn Header="Данные"
-										FontSize="14"
-										Binding="{Binding Path=ViewData}"
-										Width="*"/>
-
-				</DataGrid.Columns>
-
-			</DataGrid>
 			
 		</Grid>
 
@@ -296,7 +295,7 @@
 				<TabItem Header="Последний запрос"
 						 FontSize="16">
 					
-					<!--<DataTabs:Modbus_Client_LastRequest/>-->
+					<DataTabs:Modbus_Client_LastRequest/>
                     
 				</TabItem>
 

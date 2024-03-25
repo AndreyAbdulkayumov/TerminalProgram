@@ -326,9 +326,9 @@ namespace ViewModels.MainWindow
                                 Data,
                                 ViewModel_Modbus.ModbusMessageType);
 
-                RequestBytes = Result.Request != null ? Result.Request : Array.Empty<byte>();
+                RequestBytes = Result.Details.RequestBytes != null ? Result.Details.RequestBytes : Array.Empty<byte>();
 
-                ResponseBytes = Result.Response != null ? Result.Response : Array.Empty<byte>();
+                ResponseBytes = Result.Details.ResponseBytes != null ? Result.Details.ResponseBytes : Array.Empty<byte>();
 
                 //ViewModel_Modbus.AddDataOnView(new ModbusDataDisplayed()
                 //{
