@@ -147,6 +147,12 @@
 						HorizontalAlignment="Right" VerticalAlignment="Center"
 						Command="{Binding Command_Copy_Request}">
 
+					<Button.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+					
 					<Image Source="avares://TerminalProgram/Resources/Copy.png"/>
 
 				</Button>
@@ -159,6 +165,12 @@
 						HorizontalAlignment="Right" VerticalAlignment="Center"
 						Command="{Binding Command_Copy_Response}">
 
+					<Button.Styles>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+					
 					<Image Source="avares://TerminalProgram/Resources/Copy.png"/>
 
 				</Button>

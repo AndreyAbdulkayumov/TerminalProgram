@@ -122,12 +122,8 @@ namespace ViewModels.MainWindow
 
         private readonly Action<string, MessageType> Message;
 
-        
 
-
-        public ViewModel_NoProtocol(
-            Action<string, MessageType> MessageBox
-            )
+        public ViewModel_NoProtocol(Action<string, MessageType> MessageBox)
         {
             Message = MessageBox;
 

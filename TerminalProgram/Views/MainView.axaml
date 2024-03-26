@@ -196,7 +196,7 @@
 				<Ellipse Grid.Row="0" Grid.RowSpan="2"
 						 Width="20" Height="20"
 						 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
-						 IsVisible="False"
+						 IsVisible="{Binding Led_RX_IsActive, Mode=OneWay}"
 						 Margin="0,0,190,0"
 						 HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
@@ -215,7 +215,7 @@
 				<Ellipse Grid.Row="0" Grid.RowSpan="2"
 						 Width="20" Height="20"
 						 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
-						 IsVisible="True"
+						 IsVisible="{Binding Led_TX_IsActive, Mode=OneWay}"
 						 Margin="0,0,95,0"
 						 HorizontalAlignment="Right" VerticalAlignment="Center"/>
 

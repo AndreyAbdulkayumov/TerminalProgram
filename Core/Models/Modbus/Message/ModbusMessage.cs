@@ -12,8 +12,8 @@ namespace Core.Models.Modbus.Message
         public byte[]? RequestBytes;
         public byte[]? ResponseBytes;
 
-        public DateTime? Request_ExecutionTime;
-        public DateTime? Response_ExecutionTime;
+        public DateTime Request_ExecutionTime;
+        public DateTime Response_ExecutionTime;
     }
 
     public class ModbusException : Exception
@@ -52,7 +52,7 @@ namespace Core.Models.Modbus.Message
         }
 
         public ModbusException(ModbusException ErrorObject, byte[] RequestBytes, byte[] ResponseBytes, 
-            DateTime? Request_ExecutionTime, DateTime? Response_ExecutionTime)
+            DateTime Request_ExecutionTime, DateTime Response_ExecutionTime)
         {
             FunctionCode = ErrorObject.FunctionCode;
             ErrorCode = ErrorObject.ErrorCode;
@@ -66,7 +66,7 @@ namespace Core.Models.Modbus.Message
 
     public class ModbusExceptionInfo : Exception
     {
-        public ModbusActionDetails Details;
+        public ModbusActionDetails? Details;
     }
 
     public abstract class ModbusMessage

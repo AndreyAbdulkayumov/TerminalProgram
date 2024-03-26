@@ -77,7 +77,7 @@ namespace Core.Clients
         private CancellationTokenSource? ReadCancelSource = null;
 
         public NotificationSource Notifications { get; private set; }
-        public DateTime ExecutionTime { get; private set; }
+
 
         public SerialPortClient()
         {
@@ -288,6 +288,8 @@ namespace Core.Clients
                 return new ModbusOperationInfo(DateTime.Now, null);
             }
 
+            DateTime ExecutionTime = new DateTime();
+
             try
             {
                 if (IsConnected)
@@ -320,6 +322,8 @@ namespace Core.Clients
 
             List<byte> ReceivedBytes = new List<byte>();
 
+            DateTime ExecutionTime = new DateTime();
+
             try
             {
                 if (IsConnected)
@@ -334,19 +338,23 @@ namespace Core.Clients
 
                     byte[] Buffer;
 
-                    bool IsFirstPackage = true;
+                    Task CheckTime = Task.Run(() =>
+                    {
+                        while (true)
+                        {
+                            if (DeviceSerialPort.BytesToRead > 0)
+                            {
+                                ExecutionTime = DateTime.Now;
+                                return;
+                            }
+                        }
+                    });
 
                     do
                     {
                         Buffer = new byte[DeviceSerialPort.BytesToRead];
 
                         DeviceSerialPort.Read(Buffer, 0, Buffer.Length);
-
-                        if (IsFirstPackage)
-                        {
-                            ExecutionTime = DateTime.Now;
-                            IsFirstPackage = false;
-                        }
 
                         ReceivedBytes.AddRange(Buffer);
 
@@ -357,7 +365,9 @@ namespace Core.Clients
                     if (ReceivedBytes.Count > 0)
                     {
                         Notifications.ReceiveEvent();
-                    }                    
+                    }
+
+                    await Task.WhenAll(CheckTime);
                 }
 
                 return new ModbusOperationInfo(ExecutionTime, ReceivedBytes.ToArray());

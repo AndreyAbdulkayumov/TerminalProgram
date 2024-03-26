@@ -65,7 +65,7 @@ namespace Core.Clients
         private CancellationTokenSource? ReadCancelSource = null;
 
         public NotificationSource Notifications { get; private set; }
-        public DateTime ExecutionTime { get; private set; }
+
 
         public IPClient()
         {
@@ -195,6 +195,8 @@ namespace Core.Clients
                 return new ModbusOperationInfo(DateTime.Now, null);
             }
 
+            DateTime ExecutionTime = new DateTime();
+
             try
             {
                 if (IsConnected)
@@ -226,6 +228,8 @@ namespace Core.Clients
             }
 
             List<byte> ReceivedBytes = new List<byte>();
+
+            DateTime ExecutionTime = new DateTime();
 
             try
             {

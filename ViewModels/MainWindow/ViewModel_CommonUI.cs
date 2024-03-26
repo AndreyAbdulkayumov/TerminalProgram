@@ -3,19 +3,10 @@ using Core.Models;
 using Core.Models.Settings;
 using ReactiveUI;
 using MessageBox_Core;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace ViewModels.MainWindow
 {
@@ -199,7 +190,8 @@ namespace ViewModels.MainWindow
             string? ThemeName_Dark,
             string? ThemeName_Light,
             Action Set_Dark_Theme,
-            Action Set_Light_Theme
+            Action Set_Light_Theme,
+            Func<string, Task> CopyToClipboard
             )
         {
             Message = MessageBox;
@@ -215,7 +207,7 @@ namespace ViewModels.MainWindow
             StringValue.ShowMessageView = Message;
 
             NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
-            ModbusClient_VM = new ViewModel_Modbus(MessageBox);
+            ModbusClient_VM = new ViewModel_Modbus(MessageBox, CopyToClipboard);
 
             CurrentViewModel = NoProtocol_VM;
 

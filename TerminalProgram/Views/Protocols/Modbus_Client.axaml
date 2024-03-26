@@ -53,32 +53,29 @@
 			<TextBlock Text="Режим обмена данными:"
                        FontSize="16"
                        Foreground="{DynamicResource MainWindow_Color_Text}"
-                       Margin="20,10,0,0"
+                       Margin="10,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-			<TextBlock x:Name="TextBlock_ModbusMode"
-                       Text="{Binding ModbusMode_Name, Mode=OneWay}"
+			<TextBlock Text="{Binding ModbusMode_Name, Mode=OneWay}"
                        FontSize="16"
                        Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-					   IsVisible="{Binding Connection_IsSerialPort, Mode=OneWay}"
+					   IsVisible="{Binding !Connection_IsSerialPort, Mode=OneWay}"
                        Margin="220,10,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-			<ComboBox x:Name="ComboBox_Modbus_RTU_ASCII"
-                      Template="{DynamicResource ComboBox_Common}"
-                      ItemsSource="{Binding Modbus_RTU_ASCII}"
+			<ComboBox ItemsSource="{Binding Modbus_RTU_ASCII}"
                       SelectedItem="{Binding Selected_Modbus_RTU_ASCII, Mode=TwoWay}"
                       FontSize="16"
 					  IsVisible="{Binding Connection_IsSerialPort, Mode=OneWay}"
-                      Width="130"
-                      Margin="220,8,0,0"
+                      Width="150"
+                      Margin="220,4,0,0"
                       HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-			<Button x:Name="Button_CycleMode" Template="{DynamicResource ButtonCommon}"
-                    Margin="0,7,20,0"
-                    Width="160"
-                    Content="Цикличный опрос"
-                    HorizontalAlignment="Right" VerticalAlignment="Top"/>
+			<Button Content="Очистить таблицу"
+					Width="145"
+                    Margin="0,0,20,0"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Command="{Binding Command_ClearDataGrid}"/>
 
 		</Grid>
 
@@ -109,10 +106,22 @@
 				<DataGrid.Styles>
 
 					<Style Selector="TextBlock">
-						<Setter Property="FontSize" Value="12"/>
+						<Setter Property="FontSize" Value="16"/>
 						<Setter Property="Foreground" Value="Black"/>
+						<Setter Property="TextAlignment" Value="Center"/>
+						<Setter Property="Padding" Value="0,5,0,5"/>
 						<Setter Property="HorizontalAlignment" Value="Center"/>
 						<Setter Property="VerticalAlignment" Value="Center"/>
+					</Style>
+
+					<!-- Полосатая таблица -->
+					
+					<Style Selector="DataGridRow:nth-child(odd)">
+						<Setter Property="Background" Value="{DynamicResource DataGrid_Color_RowBackground}"/>
+					</Style>
+
+					<Style Selector="DataGridRow:nth-child(even)">
+						<Setter Property="Background" Value="{DynamicResource DataGrid_Color_AlternatingRowBackground}"/>
 					</Style>
 
 				</DataGrid.Styles>
@@ -120,24 +129,20 @@
 				<DataGrid.Columns>
 
 					<DataGridTextColumn Header="ID"
-										FontSize="14"
 										Binding="{Binding Path=OperationID}"
-										Width="80"/>
+										Width="2*"/>
 
 					<DataGridTextColumn Header="Функция"
-										FontSize="14"
 										Binding="{Binding Path=FuncNumber}"
-										Width="150"/>
+										Width="4*"/>
 
 					<DataGridTextColumn Header="Адрес"
-										FontSize="14"
 										Binding="{Binding Path=ViewAddress}"
-										Width="150"/>
+										Width="4*"/>
 
 					<DataGridTextColumn Header="Данные"
-										FontSize="14"
 										Binding="{Binding Path=ViewData}"
-										Width="*"/>
+										Width="6*"/>
 
 				</DataGrid.Columns>
 
@@ -157,11 +162,13 @@
 
 					<TextBox Classes="InputField"
 							 Width="50"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							 Text="{Binding SlaveID, Mode=TwoWay}"
 							 Margin="190,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 					<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
+							  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							  Content="Контрольная сумма"
 							  FontSize="14"
 							  Foreground="{DynamicResource MainWindow_Color_Text}"
@@ -180,6 +187,7 @@
 
 					<RadioButton Content="Шестнадцетиричный"
 								 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
                                  FontSize="14"
                                  Foreground="{DynamicResource MainWindow_Color_Text}"
 								 Margin="80,0,0,0"
@@ -187,6 +195,7 @@
 
 					<RadioButton Content="Десятичный"
 								 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 FontSize="14"
 								 Foreground="{DynamicResource MainWindow_Color_Text}"
 								 Margin="290,0,0,0"
@@ -210,6 +219,7 @@
 
 					<TextBox Classes="InputField"
 							 Width="70"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							 Text="{Binding Address, Mode=TwoWay}"
 							 Margin="130,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -222,6 +232,7 @@
 
 					<TextBox Classes="InputField"
 							 Width="40"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
 							 Margin="390,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -231,10 +242,12 @@
 				<Grid>
 
 					<ComboBox Classes="Functions"
+							  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							  ItemsSource="{Binding ReadFunctions}"
 							  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
 
 					<Button Classes="ModbusAction"
+							IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							Content="Прочитать"
 							Command="{Binding Command_Read}"/>
 					
@@ -256,6 +269,7 @@
 
 					<TextBox Classes="InputField"
 							 Width="270"
+							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							 Text="{Binding WriteData, Mode=TwoWay}"
 							 Padding="10,0,0,0"
 							 Margin="160,0,0,0"
@@ -268,10 +282,12 @@
 				<Grid>
 
 					<ComboBox Classes="Functions"
+							  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							  ItemsSource="{Binding WriteFunctions}"
 							  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
 
 					<Button Classes="ModbusAction"
+							IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							Content="Записать"
 							Command="{Binding Command_Write}"/>
 					

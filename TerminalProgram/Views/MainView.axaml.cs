@@ -1,9 +1,13 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml.Styling;
 using MessageBox_Core;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using TerminalProgram.Views.Settings;
 using ViewModels.MainWindow;
 
@@ -26,10 +30,21 @@ public partial class MainView : UserControl
                 "Dark",
                 "Light",
                 Set_Dark_Theme,
-                Set_Light_Theme
+                Set_Light_Theme,
+                CopyToClipboard
                 );
 
         DataContext = ViewModel;
+    }
+
+    private async Task CopyToClipboard(string Data)
+    {
+        var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
+        var dataObject = new DataObject();
+
+        dataObject.Set(DataFormats.Text, Data);
+
+        await clipboard.SetDataObjectAsync(dataObject);
     }
 
     private void Set_Dark_Theme()

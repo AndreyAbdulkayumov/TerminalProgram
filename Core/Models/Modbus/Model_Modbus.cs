@@ -122,8 +122,8 @@ namespace Core.Models.Modbus
                     ErrorObject: error,
                     RequestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
                     ResponseBytes: GetOutputRX(RX, RX.Length),
-                    Response_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : null,
-                    Request_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : null
+                    Request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                    Response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                     );
             }
 
@@ -137,8 +137,8 @@ namespace Core.Models.Modbus
                             RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                             ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                            Request_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null,
-                            Response_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null
+                            Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                            Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                         }
                     });
             }
@@ -150,8 +150,8 @@ namespace Core.Models.Modbus
                     RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                     ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null,
-                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null
+                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                 };
             }
 
@@ -233,8 +233,8 @@ namespace Core.Models.Modbus
                     ErrorObject:   error,
                     RequestBytes:  TX.Length > 0 ? TX : Array.Empty<byte>(),
                     ResponseBytes: GetOutputRX(RX, RX.Length),
-                    Response_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : null,
-                    Request_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : null
+                    Request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                    Response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()                    
                     );
             }
 
@@ -248,8 +248,8 @@ namespace Core.Models.Modbus
                             RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                             ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                            Request_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null,
-                            Response_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null
+                            Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                            Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                         }
                     });
             }
@@ -261,8 +261,8 @@ namespace Core.Models.Modbus
                     RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
                     ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : null,
-                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : null
+                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                 };
 
                 IsBusy = false;

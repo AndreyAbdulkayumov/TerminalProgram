@@ -8,9 +8,9 @@
 
 	<UserControl.Styles>
 
-		<!--<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>-->
-		<!--<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>-->
+		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
 		
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>

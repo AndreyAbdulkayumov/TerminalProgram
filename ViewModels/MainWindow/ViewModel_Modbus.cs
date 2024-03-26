@@ -42,6 +42,14 @@ namespace ViewModels.MainWindow
 
         #region Properties
 
+        private bool ui_IsEnable = false;
+
+        public bool UI_IsEnable
+        {
+            get => ui_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
+
         private const string ModbusMode_Name_Default = "не определен";
 
         private string? _modbusMode_Name;
@@ -227,9 +235,6 @@ namespace ViewModels.MainWindow
 
         private readonly Action<string, MessageType> Message;
 
-        private readonly Action SetUI_Connected;
-        private readonly Action SetUI_Disconnected;
-
         public static ModbusMessage? ModbusMessageType { get; private set; }
 
         private readonly List<UInt16> WriteBuffer = new List<UInt16>();
@@ -246,14 +251,10 @@ namespace ViewModels.MainWindow
 
         private ModbusFunction? CurrentFunction;
 
-        // Для отладки
-        public ViewModel_Modbus()
-        {
-
-        }
 
         public ViewModel_Modbus(
-            Action<string, MessageType> MessageBox
+            Action<string, MessageType> MessageBox,
+            Func<string, Task> CopyToClipboard
             )
         //public ViewModel_Modbus(
         //    Action Request_CopyToClipboard_Handler,
@@ -266,12 +267,7 @@ namespace ViewModels.MainWindow
         {
             Message = MessageBox;
 
-            //SetUI_Connected = UI_Connected_Handler;
-            //SetUI_Disconnected = UI_Disconnected_Handler;
-
             Model = ConnectedHost.Model;
-
-            SetUI_Disconnected?.Invoke();
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -311,14 +307,40 @@ namespace ViewModels.MainWindow
             //
             /****************************************************/
 
-            //Command_Copy_Request = ReactiveCommand.Create(Request_CopyToClipboard_Handler);
-            //Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Request = ReactiveCommand.CreateFromTask(async () =>
+            {
+                string Data = string.Empty;
 
-            //Command_Copy_Response = ReactiveCommand.Create(Response_CopyToClipboard_Handler);
-            //Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+                foreach (var element in RequestResponseItems)
+                {
+                    if (element.RequestData != null)
+                    {
+                        Data += element.RequestData + " ";
+                    }
+                }
 
-            //Command_ClearDataGrid = ReactiveCommand.Create(ClearDataGrid_Handler);
-            //Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
+                await CopyToClipboard(Data);
+            });
+            Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
+
+            Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
+            {
+                string Data = string.Empty;
+
+                foreach (var element in RequestResponseItems)
+                {
+                    if (element.ResponseData != null)
+                    {
+                        Data += element.ResponseData + " ";
+                    }
+                }
+
+                await CopyToClipboard(Data);
+            });
+            Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+
+            Command_ClearDataGrid = ReactiveCommand.Create(DataInDataGrid.Clear);
+            Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.CreateFromTask(Modbus_Write);
             Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);
@@ -536,12 +558,12 @@ namespace ViewModels.MainWindow
 
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
-            SetUI_Connected?.Invoke();
+            UI_IsEnable = true;
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            SetUI_Disconnected?.Invoke();
+            UI_IsEnable = false;
 
             CheckSum_IsVisible = true;
 
@@ -779,58 +801,88 @@ namespace ViewModels.MainWindow
         //
         /*************************************************************************/
 
-        public void AddDataOnView(ModbusDataDisplayed? Data, ModbusActionDetails Details)
+        private (string[], string) ParseData(byte[]? Data)
         {
-            int MaxLength = Details.RequestBytes.Length > Details.ResponseBytes.Length ? Details.RequestBytes.Length : Details.ResponseBytes.Length;
-
-            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
-
-            for (int i = 0; i < Items.Length; i++)
+            if (Data == null)
             {
-                Items[i] = new RequestResponseField_ItemData();
-                Items[i].ItemNumber = (i + 1).ToString();
+                return (Array.Empty<string>(), string.Empty);
             }
 
-            string RequestString = string.Empty;
+            string[] DataBytes = new string[Data.Length];
+            string StringForLog = string.Empty;
 
-            for (int i = 0; i < Details.RequestBytes.Length; i++)
+            for (int i = 0; i < Data.Length; i++)
             {
-                Items[i].RequestData = Details.RequestBytes[i].ToString("X2");
-                RequestString += Details.RequestBytes[i].ToString("X2") + "   ";
+                DataBytes[i] = Data[i].ToString("X2");
+                StringForLog += Data[i].ToString("X2") + "   ";
             }
 
-            string ResponseString = string.Empty;
+            return (DataBytes, StringForLog);
+        }
 
-            for (int i = 0; i < Details.ResponseBytes.Length; i++)
+        public void AddDataOnView(ModbusDataDisplayed? Data, ModbusActionDetails? Details)
+        {
+            if (Details != null)
             {
-                Items[i].ResponseData = Details.ResponseBytes[i].ToString("X2");
-                ResponseString += Details.ResponseBytes[i].ToString("X2") + "   ";
+                // Добавление данных в "Последний запрос"
+
+                (string[] Bytes, string LogString) Request = ParseData(Details.RequestBytes);
+                (string[] Bytes, string LogString) Response = ParseData(Details.ResponseBytes);
+
+                int MaxLength = Request.Bytes.Length > Response.Bytes.Length ? Request.Bytes.Length : Response.Bytes.Length;
+
+                RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
+
+                for (int i = 0; i < Items.Length; i++)
+                {
+                    Items[i] = new RequestResponseField_ItemData();
+                    Items[i].ItemNumber = (i + 1).ToString();
+                }
+
+                for (int i = 0; i < Request.Bytes.Length; i++)
+                {
+                    Items[i].RequestData = Request.Bytes[i];
+                }
+
+                for (int i = 0; i < Response.Bytes.Length; i++)
+                {
+                    Items[i].ResponseData = Response.Bytes[i];
+                }
+
+                RequestResponseItems.Clear();
+                RequestResponseItems.AddRange(Items);
+
+                // Добавление данных в "Лог"
+
+                if (LogData != string.Empty)
+                {
+                    LogData += "\n\n";
+                }
+
+                if (Request.Bytes.Length > 0)
+                {
+                    LogData += Details.Request_ExecutionTime.ToString("HH : mm : ss . fff") + "   ->   " + Request.LogString;
+                }
+
+                if (Response.Bytes.Length > 0)
+                {
+                    if (Request.Bytes.Length > 0)
+                    {
+                        LogData += "\n";
+                    }
+
+                    LogData += Details.Response_ExecutionTime.ToString("HH : mm : ss . fff") + "   <-   " + Response.LogString;
+                }
             }
+
+            // Добавление строки в таблицу 
 
             if (Data == null)
             {
                 Data = new ModbusDataDisplayed();
             }
 
-            RequestResponseItems.Clear();
-            RequestResponseItems.AddRange(Items);
-
             DataInDataGrid.Add(Data);
-            //AddDataInView?.Invoke(null, Data);
-
-            if (LogData == string.Empty)
-            {
-                LogData +=
-                    Details.Request_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   ->   " + RequestString + "\n" +
-                    Details.Response_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   <-   " + ResponseString;
-            }
-
-            else
-            {
-                LogData += "\n\n" +
-                    Details.Request_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   ->   " + RequestString + "\n" +
-                    Details.Response_ExecutionTime.GetValueOrDefault().ToString("HH : mm : ss . fff") + "   <-   " + ResponseString;
-            }  
 
             PackageNumber++;
         }
