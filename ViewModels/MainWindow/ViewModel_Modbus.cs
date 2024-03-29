@@ -227,7 +227,7 @@ namespace ViewModels.MainWindow
 
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
         public ReactiveCommand<Unit, Unit> Command_Read { get; }
-        public ReactiveCommand<Unit, Unit> Command_ClearDataGrid { get; }
+        public ReactiveCommand<Unit, Unit> Command_ClearData { get; }
 
         #endregion
 
@@ -339,8 +339,13 @@ namespace ViewModels.MainWindow
             });
             Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
-            Command_ClearDataGrid = ReactiveCommand.Create(DataInDataGrid.Clear);
-            Command_ClearDataGrid.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки содержимого таблицы.\n\n" + error.Message, MessageType.Error));
+            Command_ClearData = ReactiveCommand.Create(() =>
+            {
+                DataInDataGrid.Clear();
+                RequestResponseItems.Clear();
+                LogData = string.Empty;
+            });
+            Command_ClearData.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.CreateFromTask(Modbus_Write);
             Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);

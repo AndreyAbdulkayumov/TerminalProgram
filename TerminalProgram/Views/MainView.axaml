@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ViewModels="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
 			 xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
-             mc:Ignorable="d"
+			 mc:Ignorable="d"
 			 d:DesignWidth="1050" d:DesignHeight="700"
              x:Class="TerminalProgram.Views.MainView"
 			 x:DataType="ViewModels:ViewModel_CommonUI"
@@ -91,6 +91,9 @@
 						IsEnabled="False"
 						HorizontalAlignment="Stretch"
 						Command="{Binding Select_Modbus_Server_View}"/>
+				
+				<TextBlock Text="Local"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 			</StackPanel>
 

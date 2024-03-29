@@ -9,7 +9,8 @@
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
-
+		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
+		
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="Margin" Value="0,0,235,0"/>
@@ -19,14 +20,14 @@
 
 		<Style Selector="TextBlock.Units">
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Margin" Value="310,0,0,0"/>
+			<Setter Property="Margin" Value="315,0,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
 		
-		<Style Selector="TextBox">
+		<Style Selector="TextBox.InputField.Settings">
 			<Setter Property="Height" Value="24"/>
-			<Setter Property="Width" Value="50"/>
+			<Setter Property="Width" Value="65"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="Padding" Value="10,0,10,0"/>
 			<Setter Property="Margin" Value="235,0,0,0"/>
@@ -49,7 +50,8 @@
 
 			<TextBlock Text="Таймаут записи" Classes="Parameters"/>
 
-			<TextBox Text="{Binding WriteTimeout, Mode=TwoWay}"/>
+			<TextBox Classes="InputField Settings"
+					 Text="{Binding WriteTimeout, Mode=TwoWay}"/>
 
 			<TextBlock Text="мс." Classes="Units"/>
 
@@ -60,7 +62,8 @@
 
 			<TextBlock Text="Таймаут чтения" Classes="Parameters"/>
 
-			<TextBox Text="{Binding ReadTimeout, Mode=TwoWay}"/>
+			<TextBox Classes="InputField Settings"
+					 Text="{Binding ReadTimeout, Mode=TwoWay}"/>
 
 			<TextBlock Text="мс." Classes="Units"/>
 

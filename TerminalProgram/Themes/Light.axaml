@@ -15,14 +15,23 @@
 
 	<!-- All ComboBoxes -->
 
-	<SolidColorBrush x:Key="ComboBox_Color_Enabled_Background" Color="White"/>
-
+	<SolidColorBrush x:Key="ComboBox_Color_Enabled_Background" Color="WhiteSmoke"/>
 	<SolidColorBrush x:Key="ComboBox_Color_MouseOver_Background" Color="#FFD1EAF3"/>
-
 	<SolidColorBrush x:Key="ComboBox_Color_Pressed_Background" Color="#FFC5E7F3"/>
-	
 	<SolidColorBrush x:Key="ComboBox_Color_Disabled_Background" Color="#FFBDBDBD"/>
 
+	<!-- All TextInputField (TextBox) -->
+
+	<SolidColorBrush x:Key="TextInputField_Color_Enabled_Background" Color="WhiteSmoke"/>
+	<SolidColorBrush x:Key="TextInputField_Color_MouseOver_Background" Color="#FFD1EAF3"/>
+	<SolidColorBrush x:Key="TextInputField_Color_Pressed_Background" Color="#FFC5E7F3"/>
+	<SolidColorBrush x:Key="TextInputField_Color_Disabled_Background" Color="#FFBDBDBD"/>
+
+	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush" Color="#FFABABAB"/>
+	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush_MouseOver" Color="#FFA4DBE8"/>
+	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush_Focused" Color="#FFA2BAF5"/>
+
+	
 	<!-- All ScrollBars -->
 
 	<SolidColorBrush x:Key="ScrollBar_Color_Background" Color="WhiteSmoke"/>

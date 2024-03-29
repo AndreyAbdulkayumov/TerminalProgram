@@ -11,6 +11,7 @@
 		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
 		
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
@@ -19,7 +20,7 @@
 			<Setter Property="VerticalAlignment" Value="Center"/>			
 		</Style>
 
-		<Style Selector="TextBox">
+		<Style Selector="TextBox.InputField.Settings">
 			<Setter Property="Height" Value="24"/>
 			<Setter Property="Width" Value="100"/>
 			<Setter Property="FontSize" Value="14"/>
@@ -93,7 +94,7 @@
 					  HorizontalAlignment="Right" VerticalAlignment="Center"
 					  IsChecked="{Binding BaudRate_IsCustom, Mode=TwoWay}"/>
 
-			<TextBox x:Name="TextBox_BaudRate_Custom"
+			<TextBox Classes="InputField Settings"
 					 Text="{Binding Custom_BaudRate_Value, Mode=TwoWay}"
 					 IsEnabled="{Binding BaudRate_IsCustom}"/>
 

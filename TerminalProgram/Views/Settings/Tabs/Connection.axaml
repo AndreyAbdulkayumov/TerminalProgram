@@ -8,7 +8,7 @@
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="TerminalProgram.Views.Settings.Tabs.Connection"
 			 Design.DataContext="ViewModels.ViewModel_Tab_Connection">
-
+	
 	<UserControl.DataTemplates>
 
 		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection_SerialPort}">
