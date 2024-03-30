@@ -21,6 +21,7 @@
 
 	<Window.Styles>
 
+		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
 	
 	</Window.Styles>
@@ -43,6 +44,7 @@
 			<Grid Grid.Row="0">
 
 				<Border Background="{DynamicResource WindowChrome_Color}"
+						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 
 				<TextBlock Text="Настройки"
@@ -52,7 +54,7 @@
 						   PointerPressed="Chrome_PointerPressed"/>
 				
 				<Button Width="25" Height="25"
-						CornerRadius="0"
+						CornerRadius="0,4,0,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
 

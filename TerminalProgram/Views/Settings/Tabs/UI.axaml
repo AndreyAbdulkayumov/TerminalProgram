@@ -8,7 +8,9 @@
 
 	<Grid>
 		
-		<TextBlock Text="Need restart to apply theme"/>
+		<TextBlock Text="Need restart to apply theme"
+				   Margin="0,100,0,0"
+				   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
 		<Button Grid.Row="1" 
 					Content="Dark Theme"

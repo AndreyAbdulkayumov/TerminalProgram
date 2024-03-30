@@ -7,6 +7,7 @@
 		<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush}"/>
 		<Setter Property="Foreground" Value="Black"/>
 		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="CornerRadius" Value="4"/>
 		<Setter Property="Height" Value="25"/>
 		<Setter Property="MinWidth" Value="{Binding ElementName=^,Path=Width}"/>
 		<Setter Property="FontSize" Value="16"/>
@@ -18,15 +19,18 @@
 		<Style Selector="^:pointerover /template/ Border">
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
 			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_MouseOver}"/>
+			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
 
 		<Style Selector="^:focus /template/ Border" >
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
 			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_Focused}"/>
+			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
 
 		<Style Selector="^:disabled /template/ Border">
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Disabled_Background}"/>
+			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
 
 	</Style>

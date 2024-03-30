@@ -5,7 +5,7 @@
              xmlns:ViewModels="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
 			 xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
 			 mc:Ignorable="d"
-			 d:DesignWidth="1050" d:DesignHeight="700"
+			 d:DesignWidth="1050" d:DesignHeight="750"
              x:Class="TerminalProgram.Views.MainView"
 			 x:DataType="ViewModels:ViewModel_CommonUI"
 			 Loaded="UserControl_Loaded">
@@ -92,9 +92,6 @@
 						HorizontalAlignment="Stretch"
 						Command="{Binding Select_Modbus_Server_View}"/>
 				
-				<TextBlock Text="Local"
-						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
 			</StackPanel>
 
 		</Border>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TerminalProgram.Views"
         mc:Ignorable="d"
-		Width="1300" Height="750"
+		Width="1300" Height="780"
         x:Class="TerminalProgram.Views.MainWindow"
         Icon="/Resources/MainLogo.ico"
         Title="Терминальная программа"
@@ -33,6 +33,7 @@
 			<Grid Grid.Row="0">
 				
 				<Border Background="{DynamicResource WindowChrome_Color}"
+						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 				
 				<TextBlock Text="Терминальная программа"
@@ -82,7 +83,7 @@
 				</Button>
 				
 				<Button Width="25"
-						CornerRadius="0"
+						CornerRadius="0,4,0,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
 

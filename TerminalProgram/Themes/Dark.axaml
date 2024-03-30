@@ -84,7 +84,7 @@
 
 	<!-- DataGrid in MainWindow -->
 
-	<SolidColorBrush x:Key="DataGrid_Color_Background" Color="#FF464646"/>
+	<SolidColorBrush x:Key="DataGrid_Color_Background" Color="#FF3A3A3A"/>
 	<SolidColorBrush x:Key="DataGrid_Color_BorderBrush" Color="#FFABABAB"/>
 	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#FFDFDFDF"/>
 	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#FFBBBBBB"/>
