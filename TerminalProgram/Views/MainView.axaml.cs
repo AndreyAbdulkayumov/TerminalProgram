@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.Styling;
+using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,16 @@ public partial class MainView : UserControl
 {
     private readonly ViewModel_CommonUI ViewModel;
 
+    private readonly MessageBox mb;
+
     public MainView()
     {
         InitializeComponent();
 
+        mb = new MessageBox(MainWindow.Instance, "Терминальная программа");
+
         ViewModel = new ViewModel_CommonUI(
-                //MessageView.Show,
-                MessageEmpty,
+                mb.Show,
                 Select_AvailablePresetFiles,
                 "Unknown",
                 "Dark",
@@ -86,11 +90,6 @@ public partial class MainView : UserControl
         await ViewModel.Command_UpdatePresets.Execute();
     }
 
-    private void MessageEmpty(string Message, MessageType Type)
-    {
-
-    }
-
     private string? Select_AvailablePresetFiles(string[] Files)
     {
         //ComboBoxWindow window = new ComboBoxWindow(Files)
@@ -139,5 +138,4 @@ public partial class MainView : UserControl
 
         await window.ShowDialog(MainWindow.Instance);
     }
-
 }

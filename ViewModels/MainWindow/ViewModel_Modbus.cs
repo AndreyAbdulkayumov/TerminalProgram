@@ -38,8 +38,6 @@ namespace ViewModels.MainWindow
 
     public class ViewModel_Modbus : ReactiveObject
     {
-        public static event EventHandler<ModbusDataDisplayed>? AddDataInView;
-
         #region Properties
 
         private bool ui_IsEnable = false;
@@ -256,14 +254,6 @@ namespace ViewModels.MainWindow
             Action<string, MessageType> MessageBox,
             Func<string, Task> CopyToClipboard
             )
-        //public ViewModel_Modbus(
-        //    Action Request_CopyToClipboard_Handler,
-        //    Action Response_CopyToClipboard_Handler,
-        //    Action<string, MessageType> MessageBox,
-        //    Action ClearDataGrid_Handler,
-        //    Action UI_Connected_Handler,
-        //    Action UI_Disconnected_Handler
-        //    )
         {
             Message = MessageBox;
 

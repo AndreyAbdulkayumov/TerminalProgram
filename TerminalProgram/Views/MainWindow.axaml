@@ -13,8 +13,7 @@
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly"
-		Loaded="Window_Loaded">
+		SystemDecorations="BorderOnly">
 	
 
 	<Border x:Name="Border_Window"
@@ -82,7 +81,8 @@
 
 				</Button>
 				
-				<Button Width="25"
+				<Button x:Name="Button_Close"
+						Width="25"
 						CornerRadius="0,4,0,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">

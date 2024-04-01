@@ -2,34 +2,30 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
-		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
         mc:Ignorable="d"
-        x:Class="TerminalProgram.Views.Settings.SettingsWindow"
-		x:DataType="ViewModels:ViewModel_Settings"
-        Title="SettingsWindow"
-		Width="500" Height="450"
-		Background="Transparent"
+		d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="MessageBox_AvaloniaUI.Views.MessageBoxView"
+		MinWidth="350"
+		MinHeight="150"
+		SizeToContent="WidthAndHeight"
 		CanResize="False"
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
 		SystemDecorations="BorderOnly"
-		Loaded="Window_Loaded"
 		KeyDown="Window_KeyDown">
 
 	<Window.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
-	
+		
 	</Window.Styles>
 	
 	
-	<Border Background="{DynamicResource MainWindow_Field_Color_Background}"
+	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
-			BorderThickness="3"
+			BorderThickness="1"
 			CornerRadius="6">
 
 		<Grid>
@@ -37,7 +33,7 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="25"/>
 				<RowDefinition Height="1*"/>
-				<RowDefinition Height="50"/>
+				<RowDefinition Height="40"/>
 			</Grid.RowDefinitions>
 
 			<Grid Grid.Row="0">
@@ -46,12 +42,12 @@
 						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 
-				<TextBlock Text="Настройки"
+				<TextBlock x:Name="TextBlock_Title"
 						   Foreground="{DynamicResource WindowChrome_Color_Title}"
 						   FontSize="12"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
-				
+
 				<Button Width="25" Height="25"
 						CornerRadius="0,4,0,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
@@ -74,45 +70,46 @@
 			</Grid>
 
 			
-			<TabControl Grid.Row="1">
-				
-				<TabItem Header="Подключение"
-						 FontSize="16">
-					
-					<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
-
-				</TabItem>
-				
-				<TabItem Header="Без протокола"
-						 FontSize="16">
-					
-					<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
-
-				</TabItem>
-				
-				<TabItem Header="Modbus"
-						 FontSize="16">
-					
-					<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
-
-				</TabItem>
-
-				<TabItem Header="Внешний вид"
-						 FontSize="16">
-					
-					<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
-
-				</TabItem>
-				
-			</TabControl>
-
-			<Button Grid.Row="2"
-					Content="Сохранить"
-					HorizontalAlignment="Center" VerticalAlignment="Center"
-					Command="{Binding Command_File_Save}"/>
+			<TextBlock x:Name="TextBlock_Content" Grid.Row="1"
+					   Foreground="{DynamicResource WindowChrome_Color_Title}"
+					   Margin="20"
+					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 			
-		</Grid>		
+			
+			<Grid Grid.Row="2" 
+				  Background="{DynamicResource MainWindow_Field_Color_Background}">
+				
+				<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
+
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Horizontal"
+										HorizontalAlignment="Right"
+										Margin="10,0,10,0"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+
+						<DataTemplate>
+
+							<Button Content="{Binding Content, Mode=OneWay}"
+									Width="60" Height="26"
+									FontSize="12"
+									Margin="10,0,10,0"
+									HorizontalAlignment="Right" VerticalAlignment="Center"
+									Click="Button_Click"/>
+								
+						</DataTemplate>
+							
+					</ItemsControl.ItemTemplate>
+						
+				</ItemsControl>
+				
+			</Grid>
 		
+		</Grid>
+
 	</Border>
 	
 </Window>

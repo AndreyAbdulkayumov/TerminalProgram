@@ -13,9 +13,16 @@ namespace MessageBox_Core
         Information
     }
 
+    public enum MessageBoxResult
+    {
+        Default,
+        Yes,
+        No
+    }
+
     public interface IMessageBox
     {
         void Show(string Message, MessageType Type);
-        bool ShowDialog(string Message, MessageType Type);
+        MessageBoxResult ShowYesNoDialog(string Message, MessageType Type);
     }
 }

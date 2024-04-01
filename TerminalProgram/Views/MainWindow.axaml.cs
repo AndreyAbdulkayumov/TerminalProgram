@@ -10,15 +10,13 @@ public partial class MainWindow : Window
     public static Window? Instance { get; private set; }
 
     private CornerRadius WindowCornerRadius;
+    private CornerRadius ButtonCloseRadius;
 
     public MainWindow()
     {
-        InitializeComponent();
-    }
-
-    private void Window_Loaded(object? sender, RoutedEventArgs e)
-    {
         Instance = this;
+
+        InitializeComponent();
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -36,14 +34,20 @@ public partial class MainWindow : Window
         if (this.WindowState == WindowState.Maximized)
         {
             this.WindowState = WindowState.Normal;
+
             Border_Window.CornerRadius = WindowCornerRadius;
+            Button_Close.CornerRadius = ButtonCloseRadius;
         }
 
         else
         {
             WindowCornerRadius = Border_Window.CornerRadius;
+            ButtonCloseRadius = Button_Close.CornerRadius;
+
             this.WindowState = WindowState.Maximized;
+
             Border_Window.CornerRadius = new CornerRadius(0, 0, 0, 0);
+            Button_Close.CornerRadius = new CornerRadius(0, 0, 0, 0);
         }
     }
 

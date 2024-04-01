@@ -21,8 +21,7 @@
 
 	</Window.Styles>
 
-	<Border x:Name="Border_Window"
-			Background="{DynamicResource MainWindow_Back_Color_Background}"
+	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
 			BorderThickness="3"
 			CornerRadius="6">
