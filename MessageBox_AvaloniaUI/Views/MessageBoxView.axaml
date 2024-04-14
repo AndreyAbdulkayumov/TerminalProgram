@@ -3,17 +3,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+		xmlns:effects="using=Avalonia.Media.Effects"
 		d:DesignWidth="800" d:DesignHeight="450"
         x:Class="MessageBox_AvaloniaUI.Views.MessageBoxView"
-		MinWidth="350"
-		MinHeight="150"
+		MinWidth="350" MaxWidth="500"
+		MinHeight="150" MaxHeight="500"
 		SizeToContent="WidthAndHeight"
 		CanResize="False"
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly"
+		SystemDecorations="None"
 		KeyDown="Window_KeyDown">
 
 	<Window.Styles>
@@ -21,11 +22,10 @@
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
 		
 	</Window.Styles>
-	
-	
+
 	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
-			BorderThickness="1"
+			BorderThickness="2"
 			CornerRadius="6">
 
 		<Grid>
@@ -69,11 +69,17 @@
 
 			</Grid>
 
-			
-			<TextBlock x:Name="TextBlock_Content" Grid.Row="1"
+
+			<ScrollViewer Grid.Row="1">
+
+				<TextBlock x:Name="TextBlock_Content" 
 					   Foreground="{DynamicResource WindowChrome_Color_Title}"
+					   TextWrapping="Wrap"
 					   Margin="20"
 					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+			</ScrollViewer>
+			
 			
 			
 			<Grid Grid.Row="2" 

@@ -9,7 +9,6 @@
              x:Class="TerminalProgram.Views.MainView"
 			 x:DataType="ViewModels:ViewModel_CommonUI"
 			 Loaded="UserControl_Loaded">
-	
 
 	<UserControl.Styles>
 		
@@ -129,16 +128,16 @@
 				<Button Margin="380,0,0,0"
 						Content="Подключить"
 						FontSize="14"
-						Width="105" Height="30"
-						CornerRadius="10"
+						Width="105" Height="32"
+						CornerRadius="6"
 						IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 						Command="{Binding Command_Connect}"/>
 
 				<Button Margin="500,0,0,0"
 						Content="Отключить"
 						FontSize="14"
-						Width="105" Height="30"
-						CornerRadius="10"
+						Width="105" Height="32"
+						CornerRadius="6"
 						IsEnabled="{Binding UI_IsConnectedState, Mode=OneWay}"
 						Command="{Binding Command_Disconnect}"/>
 

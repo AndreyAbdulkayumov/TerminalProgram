@@ -22,16 +22,29 @@ namespace MessageBox_AvaloniaUI
         {
             MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.Default);
 
-            Dispatcher.UIThread.Invoke(() => window.ShowDialog(Owner));
+            Dispatcher.UIThread.Invoke(() => CallMessageBox(window));
         }
 
         public MessageBoxResult ShowYesNoDialog(string Message, MessageType Type)
         {
             MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.YesNo);
 
-            Dispatcher.UIThread.Invoke(() => window.ShowDialog(Owner));
+            Dispatcher.UIThread.Invoke(() => CallMessageBox(window));
 
             return window.Result;
+        }
+
+        private void CallMessageBox(Window window)
+        {
+            if (Owner.IsVisible)
+            {
+                window.ShowDialog(Owner);
+                return;
+            }
+
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            window.Topmost = true;
+            window.Show();
         }
     }
 }
