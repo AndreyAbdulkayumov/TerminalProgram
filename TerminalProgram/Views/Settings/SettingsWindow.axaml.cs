@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.Styling;
 using MessageBox_Core;
+using MessageBox_AvaloniaUI;
 using System;
 using System.Reactive.Linq;
 using ViewModels.Settings;
@@ -14,13 +15,17 @@ namespace TerminalProgram.Views.Settings
     {
         private readonly ViewModel_Settings ViewModel;
 
+        private readonly IMessageBox Message;
+
         public SettingsWindow()
         {
             InitializeComponent();
 
+            Message = new MessageBox(MainWindow.Instance, "Терминальная программа");
+
             ViewModel = new ViewModel_Settings(
-                MessageEmpty,
-                MessageDialogEmpty,
+                Message.Show,
+                Message.ShowYesNoDialog,
                 GetFilePathEmpty,
                 GetFileNameEmpty,
                 Set_Dark_Theme,
@@ -62,17 +67,7 @@ namespace TerminalProgram.Views.Settings
             this.Close();
         }
 
-        private void MessageEmpty(string Message, MessageType Type)
-        {
-
-        }
-
-        private bool MessageDialogEmpty(string Message, MessageType Type)
-        {
-            return true;
-        }
-
-        private string GetFilePathEmpty(string Path)
+        private string GetFilePathEmpty(string WindowTitle)
         {
             return string.Empty;
         }

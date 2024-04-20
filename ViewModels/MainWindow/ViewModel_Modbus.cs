@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using ReactiveUI;
 using Core.Models;
 using Core.Models.Modbus;
@@ -220,12 +213,15 @@ namespace ViewModels.MainWindow
 
         #region Commands
 
-        public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
-        public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }
+        public ReactiveCommand<Unit, Unit> Command_Open_ModbusScanner { get; }
+
+        public ReactiveCommand<Unit, Unit> Command_ClearData { get; }
 
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
-        public ReactiveCommand<Unit, Unit> Command_Read { get; }
-        public ReactiveCommand<Unit, Unit> Command_ClearData { get; }
+        public ReactiveCommand<Unit, Unit> Command_Read { get; }        
+
+        public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
+        public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }
 
         #endregion
 
@@ -251,6 +247,7 @@ namespace ViewModels.MainWindow
 
 
         public ViewModel_Modbus(
+            Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
             Func<string, Task> CopyToClipboard
             )
@@ -339,6 +336,8 @@ namespace ViewModels.MainWindow
 
             Command_Write = ReactiveCommand.CreateFromTask(Modbus_Write);
             Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);
+
+            Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(Open_ModbusScanner);
 
             this.WhenAnyValue(x => x.Selected_Modbus_RTU_ASCII)
                 .WhereNotNull()

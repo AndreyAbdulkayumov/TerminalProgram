@@ -2,14 +2,7 @@
 using Core.Models.NoProtocol;
 using ReactiveUI;
 using MessageBox_Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 
 namespace ViewModels.MainWindow
 {

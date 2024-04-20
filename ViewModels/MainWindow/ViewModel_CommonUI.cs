@@ -183,6 +183,7 @@ namespace ViewModels.MainWindow
 
 
         public ViewModel_CommonUI(
+            Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
             Func<string[], string?> Select_AvailablePresetFile_Handler,
             string? SettingsDocument,
@@ -207,7 +208,7 @@ namespace ViewModels.MainWindow
             StringValue.ShowMessageView = Message;
 
             NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
-            ModbusClient_VM = new ViewModel_Modbus(MessageBox, CopyToClipboard);
+            ModbusClient_VM = new ViewModel_Modbus(Open_ModbusScanner, MessageBox, CopyToClipboard);
 
             CurrentViewModel = NoProtocol_VM;
 

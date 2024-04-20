@@ -1,12 +1,8 @@
-﻿using Core.Models.Settings;
+﻿using System.Reactive.Linq;
+using Core.Models.Settings;
 using ReactiveUI;
 using MessageBox_Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ViewModels.Settings
 {

@@ -14,8 +14,8 @@
 		<Setter Property="Padding" Value="0"/>
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
-		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
-
+		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>	
+		
 		<Style Selector="^:pointerover /template/ Border">
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
 			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_MouseOver}"/>

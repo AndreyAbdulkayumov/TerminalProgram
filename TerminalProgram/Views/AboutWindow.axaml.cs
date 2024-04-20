@@ -2,10 +2,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Splat;
 using System;
 using System.Reflection;
-using System.Runtime.Versioning;
 
 namespace TerminalProgram.Views
 {
@@ -31,7 +29,6 @@ namespace TerminalProgram.Views
                 TextBlock_GUI_Version.Text = new string(GUIVersion_Chars, 0, NumberOfChars);
             }
 
-            //TextBlock_Runtime_Version.Text = Assembly.GetEntryAssembly()?.GetCustomAttribute<TargetFrameworkAttribute>()?.FrameworkDisplayName;
             TextBlock_Runtime_Version.Text = Environment.Version.ToString();
         }
 

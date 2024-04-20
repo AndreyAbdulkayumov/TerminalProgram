@@ -1,9 +1,5 @@
 ﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-
-using MessageBox_AvaloniaUI.ViewModels;
-using MessageBox_AvaloniaUI.Views;
 
 namespace MessageBox_AvaloniaUI;
 

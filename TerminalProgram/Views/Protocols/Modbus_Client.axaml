@@ -170,6 +170,14 @@
 
 					<Grid>
 
+						<Button Content="Сканнер"
+								IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								Width="80" Height="32"
+								HorizontalAlignment="Left" VerticalAlignment="Center"
+								HorizontalContentAlignment="Center"
+								VerticalContentAlignment="Center"
+								Command="{Binding Command_Open_ModbusScanner}"/>
+
 						<TextBlock Text="Slave ID"
 								   FontSize="16"
 								   Foreground="{DynamicResource MainWindow_Color_Text}"
@@ -197,7 +205,6 @@
 							   FontSize="16"
 							   Foreground="{DynamicResource MainWindow_Color_Text}"
 							   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
 
 					<Grid>
 

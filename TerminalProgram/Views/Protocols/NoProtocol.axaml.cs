@@ -24,8 +24,6 @@ namespace TerminalProgram.Views.Protocols
                 // прокрутка не всегда происходит.
                 element.CaretIndex = 0;
                 element.CaretIndex = element.Text == null ? 0 : element.Text.Length;
-
-                //ScrollViewer_RX.ScrollToEnd();
             }
         }
     }

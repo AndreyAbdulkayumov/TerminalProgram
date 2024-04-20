@@ -2,15 +2,14 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml.Styling;
-using MessageBox_AvaloniaUI;
 using MessageBox_Core;
+using MessageBox_AvaloniaUI;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using TerminalProgram.Views.Settings;
 using ViewModels.MainWindow;
+using Avalonia.Threading;
 
 namespace TerminalProgram.Views;
 
@@ -18,16 +17,17 @@ public partial class MainView : UserControl
 {
     private readonly ViewModel_CommonUI ViewModel;
 
-    private readonly MessageBox mb;
+    private readonly IMessageBox Message;
 
     public MainView()
     {
         InitializeComponent();
 
-        mb = new MessageBox(MainWindow.Instance, "Терминальная программа");
+        Message = new MessageBox(MainWindow.Instance, "Терминальная программа");
 
         ViewModel = new ViewModel_CommonUI(
-                mb.Show,
+                OpenWindow_ModbusScanner,
+                Message.Show,
                 Select_AvailablePresetFiles,
                 "Unknown",
                 "Dark",
@@ -39,6 +39,16 @@ public partial class MainView : UserControl
                 );
 
         DataContext = ViewModel;
+    }
+
+    private async Task OpenWindow_ModbusScanner()
+    {
+        await Dispatcher.UIThread.Invoke(async () =>
+        {
+            ModbusScannerWindow window = new ModbusScannerWindow();
+
+            await window.ShowDialog(MainWindow.Instance);
+        });        
     }
 
     private async Task CopyToClipboard(string Data)

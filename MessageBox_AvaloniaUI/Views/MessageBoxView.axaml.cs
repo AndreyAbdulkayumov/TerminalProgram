@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_Core;
-using System;
 using System.Collections.ObjectModel;
 
 namespace MessageBox_AvaloniaUI.Views

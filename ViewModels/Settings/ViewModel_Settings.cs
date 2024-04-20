@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using ReactiveUI;
 using Core.Models.Settings;
 using MessageBox_Core;
@@ -73,7 +65,7 @@ namespace ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
         public readonly Action<string, MessageType> Message;
-        private readonly Func<string, MessageType, bool> MessageDialog;
+        private readonly Func<string, MessageType, MessageBoxResult> MessageDialog;
         private readonly Func<string, string?> Get_FilePath;
         private readonly Func<string> Get_NewFileName;
 
@@ -113,7 +105,7 @@ namespace ViewModels.Settings
 
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
-            Func<string, MessageType, bool> MessageBoxDialog,
+            Func<string, MessageType, MessageBoxResult> MessageBoxDialog,
             Func<string, string?> Get_FilePath_Handler,
             Func<string> Get_NewFileName_Handler,
             Action Set_Dark_Theme_Handler,
@@ -262,9 +254,9 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                bool DialogResult = MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+                MessageBoxResult DialogResult = MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
 
-                if (DialogResult == false)
+                if (DialogResult != MessageBoxResult.Yes)
                 {
                     return;
                 }
