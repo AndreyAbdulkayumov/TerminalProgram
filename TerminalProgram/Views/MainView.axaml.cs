@@ -47,6 +47,8 @@ public partial class MainView : UserControl
         {
             ModbusScannerWindow window = new ModbusScannerWindow();
 
+            window.DataContext = new ViewModel_ModbusScanner(Message.Show);
+
             await window.ShowDialog(MainWindow.Instance);
         });        
     }
