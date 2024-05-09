@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace Core.Models.Modbus.Message
 {
@@ -25,7 +23,7 @@ namespace Core.Models.Modbus.Message
         /// </summary>
         /// <param name="Message"></param>
         /// <returns></returns>
-        public static byte[] Calculate_CRC16(byte[] Message, ushort Polynom)
+        public static byte[] Calculate_CRC16(byte[] Message, UInt16 Polynom = 0xA001)
         {            
             ushort Register = 0xFFFF; // создаем регистр, в котором будем сохранять высчитанный CRC
             //ushort Polynom = 0xA001; // Указываем полином, он может быть как 0xA001(старший бит справа), так и его реверс 0x8005(старший бит слева, здесь не рассматривается), при сдвиге вправо используется 0xA001

@@ -102,9 +102,7 @@ namespace Core.Models.Modbus
 
                 else
                 {
-                    throw new Exception("Хост не ответил.\n\n" +
-                        "Таймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
-                        "Таймаут чтения: " + Device.ReadTimeout + " мс.");
+                    throw new TimeoutException();
                 }
             }
 
@@ -117,6 +115,19 @@ namespace Core.Models.Modbus
                     Request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
                     Response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                     );
+            }
+
+            catch (TimeoutException)
+            {
+                string ErrorMessage = "Хост не ответил.";
+
+                if (Device != null)
+                {
+                    ErrorMessage += "\n\nТаймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
+                        "Таймаут чтения: " + Device.ReadTimeout + " мс.";
+                }
+
+                throw new TimeoutException(ErrorMessage);
             }
 
             catch (Exception error)
@@ -213,9 +224,7 @@ namespace Core.Models.Modbus
                 
                 else
                 {
-                    throw new Exception("Хост не ответил.\n\n" +
-                        "Таймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
-                        "Таймаут чтения: " + Device.ReadTimeout + " мс.");
+                    throw new TimeoutException();
                 }
             }
 
@@ -228,6 +237,19 @@ namespace Core.Models.Modbus
                     Request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
                     Response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()                    
                     );
+            }
+
+            catch (TimeoutException)
+            {
+                string ErrorMessage = "Хост не ответил.";
+
+                if (Device != null)
+                {
+                    ErrorMessage += "\n\nТаймаут записи: " + Device.WriteTimeout + " мс." + "\n" +
+                        "Таймаут чтения: " + Device.ReadTimeout + " мс.";
+                }
+
+                throw new TimeoutException(ErrorMessage);
             }
 
             catch (Exception error)

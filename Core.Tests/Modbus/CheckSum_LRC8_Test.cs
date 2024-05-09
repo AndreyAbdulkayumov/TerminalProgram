@@ -1,6 +1,4 @@
-﻿using Core.Models.Modbus;
-using Core.Models.Modbus.Message;
-using System.ComponentModel;
+﻿using Core.Models.Modbus.Message;
 
 namespace Core.Tests.Modbus
 {

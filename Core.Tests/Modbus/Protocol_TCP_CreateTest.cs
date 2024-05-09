@@ -7,8 +7,6 @@ namespace Core.Tests.Modbus
     {
         private ModbusMessage Message = new ModbusTCP_Message();
 
-        private const UInt16 Polynom = 0xA001;
-
         // PackageNumber делать всегда равным 0
 
         [Fact]
@@ -118,8 +116,7 @@ namespace Core.Tests.Modbus
                 SlaveID,
                 Address,
                 NumberOfRegisters,
-                false,
-                Polynom
+                false
                 );
 
             byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
@@ -157,8 +154,7 @@ namespace Core.Tests.Modbus
                 SlaveID,
                 Address,
                 WriteDataArray,
-                false,
-                Polynom
+                false
                 );
 
             byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
@@ -199,8 +195,7 @@ namespace Core.Tests.Modbus
                 SlaveID,
                 Address,
                 WriteData,
-                false,
-                Polynom
+                false
                 );
 
             byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);

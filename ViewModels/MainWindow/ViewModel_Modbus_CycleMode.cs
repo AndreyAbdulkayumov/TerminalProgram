@@ -279,8 +279,7 @@ namespace ViewModels.MainWindow
                     SlaveID,
                     SelectedAddress,
                     NumberOfRegisters,
-                    ViewModel_Modbus.ModbusMessageType is ModbusTCP_Message ? false : true,
-                    ViewModel_Modbus.CRC16_Polynom);
+                    ViewModel_Modbus.ModbusMessageType is ModbusTCP_Message ? false : true);
 
                 UI_State_Work.Invoke();
 

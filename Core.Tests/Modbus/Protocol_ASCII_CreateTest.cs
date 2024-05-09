@@ -7,8 +7,6 @@ namespace Core.Tests.Modbus
     {
         private ModbusMessage Message = new ModbusASCII_Message();
 
-        private const UInt16 Polynom = 0xA001;
-
         [Fact]
         public void Test_Func_01()
         {
@@ -116,8 +114,7 @@ namespace Core.Tests.Modbus
                 SlaveID,
                 Address,
                 NumberOfRegisters,
-                CheckSum_IsEnable,
-                Polynom
+                CheckSum_IsEnable
                 );
 
             byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
@@ -150,8 +147,7 @@ namespace Core.Tests.Modbus
                 SlaveID,
                 Address,
                 WriteDataArray,
-                CheckSum_IsEnable,
-                Polynom
+                CheckSum_IsEnable
                 );
 
             byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
@@ -186,8 +182,7 @@ namespace Core.Tests.Modbus
                 SlaveID,
                 Address,
                 WriteData,
-                CheckSum_IsEnable,
-                Polynom
+                CheckSum_IsEnable
                 );
 
             byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);

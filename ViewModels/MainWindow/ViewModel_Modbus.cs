@@ -241,8 +241,6 @@ namespace ViewModels.MainWindow
         private UInt16 SelectedAddress = 0;
         private UInt16 SelectedNumberOfRegisters = 1;
 
-        public const UInt16 CRC16_Polynom = 0xA001;
-
         private ModbusFunction? CurrentFunction;
 
 
@@ -628,8 +626,7 @@ namespace ViewModels.MainWindow
                     SelectedSlaveID,
                     SelectedAddress,
                     ModbusWriteData,
-                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
-                    CRC16_Polynom);                                
+                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);                                
 
                 ModbusOperationResult Result = 
                     await Model.Modbus.WriteRegister(
@@ -720,8 +717,7 @@ namespace ViewModels.MainWindow
                     SelectedSlaveID,
                     SelectedAddress,
                     SelectedNumberOfRegisters,
-                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable,
-                    CRC16_Polynom);
+                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);
                                 
                 Result = await Model.Modbus.ReadRegister(
                                 ReadFunction,
@@ -871,12 +867,10 @@ namespace ViewModels.MainWindow
 
             // Добавление строки в таблицу 
 
-            if (Data == null)
+            if (Data != null)
             {
-                Data = new ModbusDataDisplayed();
-            }
-
-            DataInDataGrid.Add(Data);
+                DataInDataGrid.Add(Data);
+            }            
 
             PackageNumber++;
         }

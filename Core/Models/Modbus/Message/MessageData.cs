@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.Models.Modbus.Message
+﻿namespace Core.Models.Modbus.Message
 {
     public abstract class MessageData
     {
@@ -18,7 +12,7 @@ namespace Core.Models.Modbus.Message
     {
         public int NumberOfRegisters;
 
-        public ReadTypeMessage(byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CheckSum_IsEnable, UInt16 Polynom)
+        public ReadTypeMessage(byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CheckSum_IsEnable, UInt16 Polynom = 0xA001)
         {
             this.SlaveID = SlaveID;
             this.Address = Address;
@@ -32,7 +26,7 @@ namespace Core.Models.Modbus.Message
     {
         public UInt16[] WriteData;
 
-        public WriteTypeMessage(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable, UInt16 Polynom)
+        public WriteTypeMessage(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable, UInt16 Polynom = 0xA001)
         {
             this.SlaveID = SlaveID;
             this.Address = Address;

@@ -3,7 +3,6 @@ using Core.Models.Settings;
 using ReactiveUI;
 using MessageBox_Core;
 
-
 namespace ViewModels.Settings
 {
     public class ViewModel_Tab_Connection_Ethernet : ReactiveObject

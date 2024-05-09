@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Ports;
-using System.Linq;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.IO.Ports;
 using Core.Models;
 
 namespace Core.Clients
@@ -338,23 +330,23 @@ namespace Core.Clients
 
                     byte[] Buffer;
 
-                    Task CheckTime = Task.Run(() =>
-                    {
-                        while (true)
-                        {
-                            if (DeviceSerialPort.BytesToRead > 0)
-                            {
-                                ExecutionTime = DateTime.Now;
-                                return;
-                            }
-                        }
-                    });
+                    int NumberOfReceivedBytes;
+
+                    bool IsFirstPackage = true;
 
                     do
                     {
-                        Buffer = new byte[DeviceSerialPort.BytesToRead];
+                        Buffer = new byte[100];
 
-                        DeviceSerialPort.Read(Buffer, 0, Buffer.Length);
+                        NumberOfReceivedBytes = DeviceSerialPort.Read(Buffer, 0, Buffer.Length);
+
+                        if (IsFirstPackage)
+                        {
+                            ExecutionTime = DateTime.Now;
+                            IsFirstPackage = false;
+                        }
+
+                        Array.Resize(ref Buffer, NumberOfReceivedBytes);
 
                         ReceivedBytes.AddRange(Buffer);
 
@@ -366,11 +358,14 @@ namespace Core.Clients
                     {
                         Notifications.ReceiveEvent();
                     }
-
-                    await Task.WhenAll(CheckTime);
                 }
 
                 return new ModbusOperationInfo(ExecutionTime, ReceivedBytes.ToArray());
+            }
+
+            catch (TimeoutException error)
+            {
+                throw new TimeoutException(error.Message);
             }
 
             catch (Exception error)
