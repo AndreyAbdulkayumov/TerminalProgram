@@ -7,8 +7,6 @@ namespace TerminalProgram.Views.Protocols
         public NoProtocol()
         {
             InitializeComponent();
-
-            ScrollViewer? e2 = ControlExtensions.FindControl<ScrollViewer>(TextBox_Test, "PART_ScrollViewer");
         }
                 
         private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)

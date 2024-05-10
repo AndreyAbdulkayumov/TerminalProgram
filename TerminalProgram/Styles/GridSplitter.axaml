@@ -1,0 +1,12 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="GridSplitter">
+		<Setter Property="Background" Value="#FF6B6B6B"/>
+		<Setter Property="MinHeight" Value="0"/>
+		<Setter Property="MinWidth" Value="0"/>
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="VerticalAlignment" Value="Stretch"/>
+	</Style>
+	
+</Styles>

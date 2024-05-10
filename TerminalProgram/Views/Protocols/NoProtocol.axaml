@@ -10,8 +10,9 @@
 		
 		<StyleInclude Source="avares://TerminalProgram/Styles/CheckBox.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/RadioButton.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/TX_RX_Field.axaml"/>		
-	
+		<StyleInclude Source="avares://TerminalProgram/Styles/TX_RX_Field.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/GridSplitter.axaml"/>
+		
 	</UserControl.Styles>
 
 	
@@ -52,38 +53,16 @@
 				<RowDefinition Height="60"/>
 			</Grid.RowDefinitions>
 
-			<Border x:Name="Border_Test" Grid.Row="0" Margin="10,0,10,0">
-
-				<!--<ScrollViewer x:Name="ScrollViewer_RX"
-							  Height="{Binding ElementName=Border_Test, Path=ActualHeight}">
-
-					<TextBox Text="{Binding RX_String, Mode=OneWay}"
-							 ScrollViewer.IsScrollChainingEnabled="False"
-							 Height="{Binding ElementName=Border_Test, Path=ActualHeight}"
-							 x:Name="TextBox_Test"
-							 IsReadOnly="True"
-                             IsUndoEnabled="False"
-                             MaxLines="50"
-                             MaxLength="300"
-							 TextAlignment="Left"
-							 TextWrapping="Wrap"
-							 TextChanged="TextBox_TextChanged"/>
-					
-				</ScrollViewer>-->
-				
-				<TextBox Classes="TX_RX_Field"
-						 Text="{Binding RX_String, Mode=OneWay}"
-						 x:Name="TextBox_Test"
-						 IsReadOnly="True"
-                         IsUndoEnabled="False"
-                         MaxLines="50"
-                         MaxLength="300"
-						 TextAlignment="Left"
-						 TextWrapping="Wrap"
-						 TextChanged="TextBox_TextChanged"/>
-				
-
-			</Border>
+			<TextBox Grid.Row="0"
+					 Classes="TX_RX_Field"  
+					 Text="{Binding RX_String, Mode=OneWay}"
+					 IsReadOnly="True"
+                     IsUndoEnabled="False"
+                     MaxLines="50"
+                     MaxLength="300"
+					 TextAlignment="Left"
+					 Margin="10,0,10,0"
+					 TextChanged="TextBox_TextChanged"/>
 
 			<Grid Grid.Row="1">
 
@@ -113,13 +92,11 @@
 
 		</Grid>
 
-		<GridSplitter Grid.Row="2" 
-					  MinHeight="0"
-                      Background="#FF6B6B6B"
-				      ResizeDirection="Rows"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+		<GridSplitter Grid.Row="2"
+				      ResizeDirection="Rows"/>
 
-		<Grid Grid.Row="3">
+		<Grid Grid.Row="3" 
+			  Background="{DynamicResource MainWindow_Field_Color_Background}">
 
 			<Grid.RowDefinitions>
 				<RowDefinition Height="1*"/>
@@ -130,8 +107,7 @@
 					 Classes="TX_RX_Field"
                      Margin="10,10,10,0"
 				     IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-					 Text="{Binding TX_String, Mode=TwoWay}"
-                     TextWrapping="Wrap"/>
+					 Text="{Binding TX_String, Mode=TwoWay}"/>
 
 			<Grid Grid.Row="1">
 

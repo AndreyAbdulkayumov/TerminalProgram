@@ -101,7 +101,6 @@
 								 Text="{Binding SlavesAddresses, Mode=OneWay}"
 								 IsReadOnly="True"
 								 TextAlignment="Left"
-								 TextWrapping="Wrap"
 								 Margin="10,45,10,10"/>
 
 					</Grid>
