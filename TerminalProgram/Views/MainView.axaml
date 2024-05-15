@@ -51,11 +51,13 @@
 				CornerRadius="6"
 				Margin="10">
 
-			<StackPanel Orientation="Horizontal" Spacing="10"
+			<StackPanel Orientation="Horizontal"
+						Spacing="10"
 						Margin="10">
 
 				<Button Content="S"
 						HorizontalAlignment="Stretch"
+						IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 						Click="Button_OpenSettings_Click"/>
 				
 				<Button Content="A"
@@ -108,11 +110,7 @@
 						   FontSize="16"
 						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-				<ComboBox MinHeight="20"
-						  Height="30" Width="160"
-						  Foreground="DarkGreen"
-						  BorderBrush="Pink"
-						  OpacityMask="Blue"
+				<ComboBox Height="30" Width="160"
 						  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 						  Margin="180,0,0,0"
 						  HorizontalAlignment="Left" VerticalAlignment="Center">

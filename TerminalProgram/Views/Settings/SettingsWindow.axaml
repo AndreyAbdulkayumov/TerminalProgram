@@ -8,7 +8,7 @@
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:ViewModel_Settings"
         Title="SettingsWindow"
-		Width="500" Height="450"
+		Width="520" Height="530"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -22,6 +22,7 @@
 	<Window.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
 	
 	</Window.Styles>
@@ -37,10 +38,9 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="25"/>
 				<RowDefinition Height="1*"/>
-				<RowDefinition Height="50"/>
 			</Grid.RowDefinitions>
 
-			<Grid Grid.Row="0">
+			<Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
 
 				<Border Background="{DynamicResource WindowChrome_Color}"
 						CornerRadius="4,4,0,0"
@@ -73,43 +73,99 @@
 
 			</Grid>
 
-			
-			<TabControl Grid.Row="1">
-				
-				<TabItem Header="Подключение"
-						 FontSize="16">
+			<Grid Grid.Row="1"
+				  Background="{DynamicResource MainWindow_Back_Color_Background}">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="80"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="200"/>
+					<ColumnDefinition Width="1*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Row="0" Grid.Column="0"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<StackPanel Orientation="Horizontal" 
+								Spacing="10"
+								Margin="10">
+
+						<Button Content="Сохранить"
+								HorizontalAlignment="Center" VerticalAlignment="Center"
+								Command="{Binding Command_File_Save}"/>
+						
+					</StackPanel>
 					
-					<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
+				</Border>
 
-				</TabItem>
-				
-				<TabItem Header="Без протокола"
-						 FontSize="16">
+				<Border Grid.Row="0" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<StackPanel Orientation="Horizontal"
+								Spacing="15"
+								Margin="10">
+
+						<TextBlock Text="Пресет:"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<ComboBox Height="30" Width="160"
+								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<TabControl>
+
+						<TabItem Header="Подключение"
+								 FontSize="16">
+
+							<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
+
+						</TabItem>
+
+						<TabItem Header="Без протокола"
+								 FontSize="16">
+
+							<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
+
+						</TabItem>
+
+						<TabItem Header="Modbus"
+								 FontSize="16">
+
+							<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
+
+						</TabItem>
+
+						<TabItem Header="Внешний вид"
+								 FontSize="16">
+
+							<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
+
+						</TabItem>
+
+					</TabControl>
 					
-					<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
-
-				</TabItem>
+				</Border>
 				
-				<TabItem Header="Modbus"
-						 FontSize="16">
-					
-					<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
-
-				</TabItem>
-
-				<TabItem Header="Внешний вид"
-						 FontSize="16">
-					
-					<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
-
-				</TabItem>
-				
-			</TabControl>
-
-			<Button Grid.Row="2"
-					Content="Сохранить"
-					HorizontalAlignment="Center" VerticalAlignment="Center"
-					Command="{Binding Command_File_Save}"/>
+			</Grid>
 			
 		</Grid>		
 		

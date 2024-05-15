@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.ModbusScannerWindow"
 		x:DataType="ViewModels:ViewModel_ModbusScanner"
-		Width="430" Height="450"
+		Width="430" Height="420"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -155,12 +155,7 @@
 						<TextBlock Text="{Binding DeviceReadTimeout, Mode=OneWay}"
 								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
 								   VerticalAlignment="Center"/>
-
-						<CheckBox Content="Найти все устройства"
-								  Foreground="{DynamicResource MainWindow_Color_Text}"
-								  IsChecked="{Binding SearchAllSlaves, Mode=TwoWay}"
-								  IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"/>
-
+						
 						<Button Width="150"
 								Content="{Binding ActionButtonContent, Mode=OneWay}"
 								Command="{Binding Command_Start_Stop_Search}"
@@ -182,12 +177,12 @@
 
 							<TextBlock Text="Текущий ID:"
 									   IsVisible="{Binding SearchInProcess, Mode=OneWay}"
-							           Margin="20,10,0,0"
+							           Margin="20,20,0,0"
 							           HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 							<TextBlock Text="{Binding CurrentSlaveID, Mode=OneWay}"
 									   IsVisible="{Binding SearchInProcess, Mode=OneWay}"
-									   Margin="110,10,0,0"
+									   Margin="110,20,0,0"
 									   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 							<ProgressBar Height="40"

@@ -56,14 +56,6 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _deviceReadTimeout, value);
         }
 
-        private bool _searchAllSlaves;
-
-        public bool SearchAllSlaves
-        {
-            get => _searchAllSlaves;
-            set => this.RaiseAndSetIfChanged(ref _searchAllSlaves, value);
-        }
-
         private const string ButtonContent_Start = "Начать поиск";
         private const string ButtonContent_Stop = "Остановить поиск";
 
@@ -156,7 +148,6 @@ namespace ViewModels.MainWindow
 
             // Значения по умолчанию
             PauseBetweenRequests = "100";
-            SearchAllSlaves = false;
         }
 
         public async Task Close_EventHandler()
