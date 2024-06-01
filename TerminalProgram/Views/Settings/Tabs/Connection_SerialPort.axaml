@@ -58,9 +58,25 @@
 				HorizontalAlignment="Center">
 
 		 <!--COM Port-->
-
+		
 		<Grid>
 
+			<Border IsVisible="{Binding Message_PortNotFound_IsVisible, Mode=OneWay}"
+					Background="{DynamicResource Settings_Color_PortNotFound_Background}"
+					BorderBrush="{DynamicResource Settings_Color_PortNotFound_BorderBrush}"
+					BorderThickness="1"
+					Width="140" Height="28"
+					Margin="-20,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Center">
+
+				<TextBlock Text="{Binding Message_PortNotFound, Mode=OneWay}"
+                           TextAlignment="Center"
+						   FontSize="14"
+						   Foreground="#FFFAFAF0"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+				
+			</Border>
+			
 			<TextBlock Text="COM - Port" Classes="Parameters"/>
 
 			<ComboBox ItemsSource="{Binding COM_Ports}"

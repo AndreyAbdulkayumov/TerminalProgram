@@ -74,6 +74,8 @@
         public abstract byte[] CreateMessage(ModbusFunction Function, MessageData Data);
         public abstract ModbusResponse DecodingMessage(ModbusFunction Function, byte[] SourceArray);
 
+        //public abstract void DecodingClientMessage(int FunctionNumber, byte[] SourceArray);
+
         /***********************************************/
 
         protected ulong PackageNumber = 0;

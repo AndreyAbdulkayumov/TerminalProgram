@@ -18,28 +18,6 @@ namespace ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
         }
 
-        private const string ThemeName_Dark = "Темная";
-        private const string ThemeName_Light = "Светлая";
-
-        private ObservableCollection<string> _themes = new ObservableCollection<string>()
-        {
-            ThemeName_Dark, ThemeName_Light
-        };
-
-        public ObservableCollection<string> Themes
-        {
-            get => _themes;
-            set => this.RaiseAndSetIfChanged(ref _themes, value);
-        }
-
-        private string _selectedTheme = string.Empty;
-
-        public string SelectedTheme
-        {
-            get => _selectedTheme;
-            set => this.RaiseAndSetIfChanged(ref _selectedTheme, value);
-        }
-
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -64,10 +42,11 @@ namespace ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
+
         public readonly Action<string, MessageType> Message;
         private readonly Func<string, MessageType, MessageBoxResult> MessageDialog;
-        private readonly Func<string, string?> Get_FilePath;
-        private readonly Func<string> Get_NewFileName;
+        private readonly Func<string, Task<string?>> Get_FilePath;
+        private readonly Func<Task<string?>> Get_NewFileName;
 
         private readonly Model_Settings SettingsFile;
 
@@ -106,8 +85,8 @@ namespace ViewModels.Settings
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
             Func<string, MessageType, MessageBoxResult> MessageBoxDialog,
-            Func<string, string?> Get_FilePath_Handler,
-            Func<string> Get_NewFileName_Handler,
+            Func<string, Task<string?>> Get_FilePath_Handler,
+            Func<Task<string?>> Get_NewFileName_Handler,
             Action Set_Dark_Theme_Handler,
             Action Set_Light_Theme_Handler
             )
@@ -126,27 +105,10 @@ namespace ViewModels.Settings
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
-            Command_File_AddNew = ReactiveCommand.Create(File_CreateNew_Handler);
-            Command_File_AddExisting = ReactiveCommand.Create(File_AddExisting_Handler);
+            Command_File_AddNew = ReactiveCommand.CreateFromTask(File_CreateNew_Handler);
+            Command_File_AddExisting = ReactiveCommand.CreateFromTask(File_AddExisting_Handler);
             Command_File_Delete = ReactiveCommand.Create(File_Delete_Handler);
             Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
-
-
-            this.WhenAnyValue(x => x.SelectedTheme)
-                .WhereNotNull()
-                .Subscribe(ThemeName =>
-                {
-                    switch (ThemeName)
-                    {
-                        case ThemeName_Dark:
-                            ViewModel_CommonUI.ThemeName = ViewModel_CommonUI.ThemeName_Dark;
-                            break;
-
-                        case ThemeName_Light:
-                            ViewModel_CommonUI.ThemeName = ViewModel_CommonUI.ThemeName_Light;
-                            break;
-                    }
-                });
 
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
@@ -179,16 +141,6 @@ namespace ViewModels.Settings
 
         private void Loaded_EventHandler()
         {
-            if (ViewModel_CommonUI.ThemeName == ViewModel_CommonUI.ThemeName_Dark)
-            {
-                SelectedTheme = ThemeName_Dark;
-            }
-
-            else if (ViewModel_CommonUI.ThemeName == ViewModel_CommonUI.ThemeName_Light)
-            {
-                SelectedTheme = ThemeName_Light;
-            }
-
             UpdateListOfPresets();
 
             SelectedPreset = Presets.Single(x => x == ViewModel_CommonUI.SettingsDocument);
@@ -206,11 +158,11 @@ namespace ViewModels.Settings
             }
         }
 
-        private void File_CreateNew_Handler()
+        private async Task File_CreateNew_Handler()
         {
-            string FileName = Get_NewFileName.Invoke();
+            string? FileName = await Get_NewFileName();
 
-            if (FileName != String.Empty)
+            if (FileName != null && FileName != String.Empty)
             {
                 SettingsFile.Save(FileName, DeviceData.GetDefault());
 
@@ -220,11 +172,11 @@ namespace ViewModels.Settings
             }
         }
 
-        private void File_AddExisting_Handler()
+        private async Task File_AddExisting_Handler()
         {
             try
             {
-                string? FilePath = Get_FilePath.Invoke("Добавление уже существующего файла настроек");
+                string? FilePath = await Get_FilePath.Invoke("Добавление уже существующего файла настроек");
 
                 if (FilePath == null)
                 {
@@ -311,9 +263,10 @@ namespace ViewModels.Settings
 
                 ViewModel_CommonUI.SettingsDocument = SelectedPreset;
 
-                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port != String.Empty)
+                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port == null ||
+                    Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port == String.Empty)
                 {
-                    Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = false;
+                    Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = true;
                 }
 
                 Message.Invoke("Настройки успешно сохранены!", MessageType.Information);

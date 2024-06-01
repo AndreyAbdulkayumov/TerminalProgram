@@ -1,3 +1,6 @@
+using System;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -5,9 +8,11 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.Styling;
 using MessageBox_Core;
 using MessageBox_AvaloniaUI;
-using System;
-using System.Reactive.Linq;
 using ViewModels.Settings;
+using Avalonia.Platform.Storage;
+using System.IO;
+using System.Linq;
+
 
 namespace TerminalProgram.Views.Settings
 {
@@ -26,8 +31,8 @@ namespace TerminalProgram.Views.Settings
             ViewModel = new ViewModel_Settings(
                 Message.Show,
                 Message.ShowYesNoDialog,
-                GetFilePathEmpty,
-                GetFileNameEmpty,
+                Get_FilePath,
+                Get_NewFileName,
                 Set_Dark_Theme,
                 Set_Light_Theme
                 );
@@ -67,14 +72,37 @@ namespace TerminalProgram.Views.Settings
             this.Close();
         }
 
-        private string GetFilePathEmpty(string WindowTitle)
+        private async Task<string?> Get_FilePath(string WindowTitle)
         {
-            return string.Empty;
+            // Get top level from the current control. Alternatively, you can use Window reference instead.
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+
+            if (topLevel != null)
+            {
+                // Start async operation to open the dialog.
+                var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                {
+                    Title = WindowTitle,
+                    FileTypeFilter = [new FilePickerFileType("Файл настроек") { Patterns = ["*.json"] }],
+                    AllowMultiple = false
+                });
+
+                if (files.Count >= 1)
+                {
+                    return files.First().Path.AbsolutePath;
+                }
+            }            
+
+            return null;
         }
 
-        private string GetFileNameEmpty()
+        private async Task<string?> Get_NewFileName()
         {
-            return string.Empty;
+            ServiceWindow window = new ServiceWindow();
+
+            await window.ShowDialog(this);
+
+            return window.SelectedFilePath;
         }
 
         private void Set_Dark_Theme()

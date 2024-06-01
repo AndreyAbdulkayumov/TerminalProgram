@@ -133,18 +133,6 @@
 							<RowDefinition Height="1*"/>
 							<RowDefinition Height="1*"/>
 						</Grid.RowDefinitions>
-						
-						<!--<TextBlock Grid.Row="0" Text="Версия приложения:"
-								   Margin="20,0,0,0"
-								   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
-
-						<!--<TextBlock Grid.Row="0" x:Name="TextBlock_App_Version" Text="0.0.0"
-								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
 
 						<TextBlock Grid.Row="0" Text="Версия .NET:"
 								   Margin="20,0,0,0"
@@ -172,8 +160,7 @@
 						
 					</Grid>
 					
-				</Border>
-				
+				</Border>				
 
 			</Grid>
 

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:DataTabs="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
 			 mc:Ignorable="d" 
-			 d:DesignWidth="1000" d:DesignHeight="570"
+			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="TerminalProgram.Views.Protocols.Modbus_Client"
 			 Background="{DynamicResource MainWindow_Color_Background}">
 
@@ -43,7 +43,7 @@
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="2*"/>
 			<RowDefinition Height="3"/>
-			<RowDefinition Height="200"/>
+			<RowDefinition Height="220"/>
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">
@@ -343,7 +343,7 @@
 				<TabItem Header="Последний запрос"
 						 FontSize="16">
 					
-					<DataTabs:Modbus_Client_LastRequest/>
+					<DataTabs:Modbus_Client_LastRequest Height="160"/>
                     
 				</TabItem>
 

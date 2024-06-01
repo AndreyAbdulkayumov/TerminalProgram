@@ -228,6 +228,8 @@ namespace ViewModels.MainWindow
                     {
                         SettingsFile.Read(PresetName);
                         SettingsDocument = PresetName;
+
+                        ConnectionString = GetConnectionString();
                     }
 
                     catch (Exception error)
@@ -263,6 +265,86 @@ namespace ViewModels.MainWindow
             // Действия после запуска приложения
 
             Set_Dark_Theme();
+        }
+
+        private string GetConnectionString()
+        {
+            if (SettingsFile.Settings == null)
+            {
+                throw new Exception("Настройки не инициализированы.");
+            }
+
+            DeviceData Settings = (DeviceData)SettingsFile.Settings.Clone();
+
+            string Separator = " : ";
+
+            string ConnectionString;
+
+            switch (Settings.TypeOfConnection)
+            {
+                case DeviceData.ConnectionName_SerialPort:
+
+                    if (Settings.Connection_SerialPort != null)
+                    {
+                        if ((Settings.Connection_SerialPort.BaudRate_IsCustom == false &&
+                             (Settings.Connection_SerialPort.BaudRate == null || Settings.Connection_SerialPort.BaudRate == String.Empty)) ||
+                            (Settings.Connection_SerialPort.BaudRate_IsCustom == true &&
+                             (Settings.Connection_SerialPort.BaudRate_Custom == null || Settings.Connection_SerialPort.BaudRate_Custom == String.Empty)) ||
+                            Settings.Connection_SerialPort.Parity == null || Settings.Connection_SerialPort.Parity == String.Empty ||
+                            Settings.Connection_SerialPort.DataBits == null || Settings.Connection_SerialPort.DataBits == String.Empty ||
+                            Settings.Connection_SerialPort.StopBits == null || Settings.Connection_SerialPort.StopBits == String.Empty)
+                        {
+                            ConnectionString = "Не заданы настройки для последовательного порта";
+                        }
+
+                        else
+                        {
+                            ConnectionString =
+                                (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == String.Empty ?
+                                    "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
+                                Separator +
+                                (Settings.Connection_SerialPort.BaudRate_IsCustom == true ?
+                                    Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate) +
+                                Separator +
+                                Settings.Connection_SerialPort.Parity +
+                                Separator +
+                                Settings.Connection_SerialPort.DataBits +
+                                Separator +
+                                Settings.Connection_SerialPort.StopBits;
+                        }
+                    }
+
+                    else
+                    {
+                        ConnectionString = "Настройки не заданы";
+                    }
+
+                    break;
+
+                case DeviceData.ConnectionName_Ethernet:
+
+                    if (Settings.Connection_IP != null)
+                    {
+                        ConnectionString =
+                            (Settings.Connection_IP.IP_Address == null || Settings.Connection_IP.IP_Address == String.Empty ?
+                                "IP адрес не задан" : Settings.Connection_IP.IP_Address) +
+                            Separator +
+                            (Settings.Connection_IP.Port == null || Settings.Connection_IP.Port == String.Empty ?
+                                "Порт не задан" : Settings.Connection_IP.Port);
+                    }
+
+                    else
+                    {
+                        ConnectionString = "Настройки не заданы";
+                    }
+
+                    break;
+
+                default:
+                    throw new Exception("Задан неизвестный тип подключения: " + Settings.TypeOfConnection);
+            }
+
+            return ConnectionString;
         }
 
         private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -371,90 +453,8 @@ namespace ViewModels.MainWindow
                 SelectedPreset = Presets.Single(x => x == SettingsDocument);
             }
 
-            ConnectionString = GetConnectionString();
-
             Led_TX_IsActive = false;
             Led_RX_IsActive = false;
-        }
-
-        private string GetConnectionString()
-        {
-            if (SettingsFile.Settings == null)
-            {
-                throw new Exception("Настройки не инициализированы.");
-            }
-
-            DeviceData Settings = (DeviceData)SettingsFile.Settings.Clone();
-
-            string Separator = " : ";
-
-            string ConnectionString;
-
-            switch (Settings.TypeOfConnection)
-            {
-                case DeviceData.ConnectionName_SerialPort:
-
-                    if (Settings.Connection_SerialPort != null)
-                    {
-                        if ((Settings.Connection_SerialPort.BaudRate_IsCustom == false && 
-                             (Settings.Connection_SerialPort.BaudRate == null || Settings.Connection_SerialPort.BaudRate == String.Empty)) ||
-                            (Settings.Connection_SerialPort.BaudRate_IsCustom == true &&
-                             (Settings.Connection_SerialPort.BaudRate_Custom == null || Settings.Connection_SerialPort.BaudRate_Custom == String.Empty)) ||
-                            Settings.Connection_SerialPort.Parity == null || Settings.Connection_SerialPort.Parity == String.Empty ||
-                            Settings.Connection_SerialPort.DataBits == null || Settings.Connection_SerialPort.DataBits == String.Empty ||
-                            Settings.Connection_SerialPort.StopBits == null || Settings.Connection_SerialPort.StopBits == String.Empty)
-                        {
-                            ConnectionString = "Не заданы настройки для последовательного порта";
-                        }
-
-                        else
-                        {
-                            ConnectionString =
-                                (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == String.Empty ?
-                                    "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
-                                Separator +
-                                (Settings.Connection_SerialPort.BaudRate_IsCustom == true ?
-                                    Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate) +
-                                Separator +
-                                Settings.Connection_SerialPort.Parity +
-                                Separator +
-                                Settings.Connection_SerialPort.DataBits +
-                                Separator +
-                                Settings.Connection_SerialPort.StopBits;
-                        }
-                    }
-
-                    else
-                    {
-                        ConnectionString = "Настройки не заданы";
-                    }
-                    
-                    break;
-
-                case DeviceData.ConnectionName_Ethernet:
-
-                    if (Settings.Connection_IP != null)
-                    {
-                        ConnectionString = 
-                            (Settings.Connection_IP.IP_Address == null || Settings.Connection_IP.IP_Address == String.Empty ?
-                                "IP адрес не задан" : Settings.Connection_IP.IP_Address) +
-                            Separator +
-                            (Settings.Connection_IP.Port == null || Settings.Connection_IP.Port == String.Empty ?
-                                "Порт не задан" : Settings.Connection_IP.Port);
-                    }
-
-                    else
-                    {
-                        ConnectionString = "Настройки не заданы";
-                    }
-                    
-                    break;
-
-                default:
-                    throw new Exception("Задан неизвестный тип подключения: " + Settings.TypeOfConnection);
-            }
-
-            return ConnectionString;
         }
 
         private void Connect_Handler()

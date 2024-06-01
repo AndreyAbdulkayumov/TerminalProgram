@@ -15,7 +15,9 @@ namespace ViewModels.MainWindow
     public class RequestResponseField_ItemData
     {
         public string? ItemNumber { get; set; }
+        public string? RequestDataType { get; set; }
         public string? RequestData { get; set; }
+        public string? ResponseDataType { get; set; }
         public string? ResponseData { get; set; }
     }
 
@@ -814,33 +816,13 @@ namespace ViewModels.MainWindow
         {
             if (Details != null)
             {
-                // Добавление данных в "Последний запрос"
-
                 (string[] Bytes, string LogString) Request = ParseData(Details.RequestBytes);
                 (string[] Bytes, string LogString) Response = ParseData(Details.ResponseBytes);
 
-                int MaxLength = Request.Bytes.Length > Response.Bytes.Length ? Request.Bytes.Length : Response.Bytes.Length;
-
-                RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
-
-                for (int i = 0; i < Items.Length; i++)
-                {
-                    Items[i] = new RequestResponseField_ItemData();
-                    Items[i].ItemNumber = (i + 1).ToString();
-                }
-
-                for (int i = 0; i < Request.Bytes.Length; i++)
-                {
-                    Items[i].RequestData = Request.Bytes[i];
-                }
-
-                for (int i = 0; i < Response.Bytes.Length; i++)
-                {
-                    Items[i].ResponseData = Response.Bytes[i];
-                }
+                // Добавление данных в "Последний запрос"
 
                 RequestResponseItems.Clear();
-                RequestResponseItems.AddRange(Items);
+                RequestResponseItems.AddRange(GetDataForLastRequest(Request.Bytes, Response.Bytes));
 
                 // Добавление данных в "Лог"
 
@@ -873,6 +855,33 @@ namespace ViewModels.MainWindow
             }            
 
             PackageNumber++;
+        }
+
+        private RequestResponseField_ItemData[] GetDataForLastRequest(string[] RequestBytes, string[] ResponseBytes)
+        {
+            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
+
+            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
+
+            for (int i = 0; i < Items.Length; i++)
+            {
+                Items[i] = new RequestResponseField_ItemData();
+                Items[i].ItemNumber = (i + 1).ToString();
+            }
+
+            for (int i = 0; i < RequestBytes.Length; i++)
+            {
+                Items[i].RequestDataType = i.ToString() + "X";
+                Items[i].RequestData = RequestBytes[i];
+            }
+
+            for (int i = 0; i < ResponseBytes.Length; i++)
+            {
+                Items[i].ResponseDataType = i.ToString() + "Y";
+                Items[i].ResponseData = ResponseBytes[i];
+            }
+
+            return Items;
         }
 
         public static string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)

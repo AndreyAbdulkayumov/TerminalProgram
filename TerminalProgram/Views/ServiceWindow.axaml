@@ -3,30 +3,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-		xmlns:effects="using=Avalonia.Media.Effects"
-		d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="MessageBox_AvaloniaUI.Views.MessageBoxView"
-		MinWidth="350" MaxWidth="500"
-		MinHeight="150" MaxHeight="500"
-		SizeToContent="WidthAndHeight"
+        x:Class="TerminalProgram.Views.ServiceWindow"
+		Height="190" Width="300"
+		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="None"
-		Background="Transparent"
-		KeyDown="Window_KeyDown">
+		SystemDecorations="BorderOnly">
 
 	<Window.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
-		
+		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
+
 	</Window.Styles>
+	
 
 	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
-			BorderThickness="2"
+			BorderThickness="3"
 			CornerRadius="6">
 
 		<Grid>
@@ -34,7 +32,6 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="25"/>
 				<RowDefinition Height="1*"/>
-				<RowDefinition Height="40"/>
 			</Grid.RowDefinitions>
 
 			<Grid Grid.Row="0">
@@ -43,7 +40,7 @@
 						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 
-				<TextBlock x:Name="TextBlock_Title"
+				<TextBlock Text="Сервис"
 						   Foreground="{DynamicResource WindowChrome_Color_Title}"
 						   FontSize="12"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -70,54 +67,39 @@
 
 			</Grid>
 
+			<Border Grid.Row="1">
 
-			<ScrollViewer Grid.Row="1">
+				<Grid>
+					
+					<TextBlock x:Name="TextBlock_Description" Text="Default Text"
+							   Margin="0,25,0,0"
+							   FontSize="14"
+		   					   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+							   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-				<TextBlock x:Name="TextBlock_Content" 
-					   Foreground="{DynamicResource WindowChrome_Color_Title}"
-					   TextWrapping="Wrap"
-					   Margin="20"
-					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					<TextBox x:Name="TextBox_SelectFileName" Classes="InputField"
+							 Margin="0,60,0,0"
+							 Width="180"
+							 HorizontalAlignment="Center" VerticalAlignment="Top"/>
+					
+					<ComboBox x:Name="ComboBox_SelectFileName"
+							  Margin="0,60,0,0"
+							  Width="180"
+							  HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-			</ScrollViewer>
-			
-			
-			
-			<Border Grid.Row="2"
-					CornerRadius="0,0,4,4"
-				    Background="{DynamicResource MainWindow_Field_Color_Background}">
-				
-				<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
-
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Horizontal"
-										HorizontalAlignment="Right"
-										Margin="10,0,10,0"/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
-
-					<ItemsControl.ItemTemplate>
-
-						<DataTemplate>
-
-							<Button Content="{Binding Content, Mode=OneWay}"
-									Width="60" Height="26"
-									FontSize="12"
-									Margin="10,0,10,0"
-									HorizontalAlignment="Right" VerticalAlignment="Center"
-									Click="Button_Click"/>
-								
-						</DataTemplate>
-							
-					</ItemsControl.ItemTemplate>
-						
-				</ItemsControl>
+					<Button x:Name="Button_Select" Content="Выбрать"
+							Margin="0,110,0,0"
+							Width="80"
+							FontSize="14"
+							HorizontalAlignment="Center" VerticalAlignment="Top"
+							Click="Button_Select_Click"/>
+					
+				</Grid>
 				
 			</Border>
-		
-		</Grid>
 
+		</Grid>
+	
 	</Border>
 	
 </Window>

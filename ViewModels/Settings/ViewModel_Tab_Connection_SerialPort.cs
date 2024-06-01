@@ -40,9 +40,9 @@ namespace ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _com_Ports, value);
         }
 
-        private string _selected_COM_Port = String.Empty;
+        private string? _selected_COM_Port;
 
-        public string Selected_COM_Port
+        public string? Selected_COM_Port
         {
             get => _selected_COM_Port;
             set => this.RaiseAndSetIfChanged(ref _selected_COM_Port, value);
@@ -64,7 +64,7 @@ namespace ViewModels.Settings
             get => _baudRate;
         }
 
-        private string? _selected_BaudRate = String.Empty;
+        private string? _selected_BaudRate;
 
         public string? Selected_BaudRate
         {
@@ -104,7 +104,7 @@ namespace ViewModels.Settings
             get => _parity; 
         }
 
-        private string? _selected_Parity = String.Empty;
+        private string? _selected_Parity;
 
         public string? Selected_Parity
         {
@@ -128,7 +128,7 @@ namespace ViewModels.Settings
             get => _dataBits;
         }
 
-        private string? _selected_DataBits = String.Empty;
+        private string? _selected_DataBits;
 
         public string? Selected_DataBits
         {
@@ -152,7 +152,7 @@ namespace ViewModels.Settings
             get => _stopBits;
         }
 
-        private string? _selected_StopBits = String.Empty;
+        private string? _selected_StopBits;
 
         public string? Selected_StopBits
         {
@@ -161,6 +161,7 @@ namespace ViewModels.Settings
         }
 
         public ReactiveCommand<Unit, Unit> Command_ReScan_COMPorts { get; }
+
 
         private readonly Action<string, MessageType> Message;
 
@@ -205,9 +206,21 @@ namespace ViewModels.Settings
 
                 if (SettingsFile.Settings.Connection_SerialPort == null)
                 {
-                    Selected_COM_Port = String.Empty;
+                    Selected_COM_Port = null;
                     Message_PortNotFound = "Порт не задан";
                     Message_PortNotFound_IsVisible = true;
+
+                    Selected_COM_Port = null;
+
+                    Selected_BaudRate = null;
+                    BaudRate_IsCustom = false;
+                    Custom_BaudRate_Value = null;
+
+                    Selected_Parity = null;
+
+                    Selected_DataBits = null;
+
+                    Selected_StopBits = null;
 
                     return;
                 }
@@ -245,7 +258,7 @@ namespace ViewModels.Settings
             if (Info == null ||
                 Info.COMPort == null || Info.COMPort == String.Empty)
             {
-                Selected_COM_Port = String.Empty;
+                Selected_COM_Port = null;
                 Message_PortNotFound = "Порт не задан";
                 Message_PortNotFound_IsVisible = true;
 
@@ -264,17 +277,16 @@ namespace ViewModels.Settings
                 }
             }
 
-            if (FoundPort == null)
-            {
-                Selected_COM_Port = String.Empty;
+            Selected_COM_Port = FoundPort;
 
-                Message_PortNotFound = "Порт " + SelectedPort + " не найден";
+            if (Selected_COM_Port == null)
+            {
+                Message_PortNotFound = SelectedPort + " не найден";
                 Message_PortNotFound_IsVisible = true;
             }
 
             else
             {
-                Selected_COM_Port = FoundPort;
                 Message_PortNotFound_IsVisible = false;
             }
         }

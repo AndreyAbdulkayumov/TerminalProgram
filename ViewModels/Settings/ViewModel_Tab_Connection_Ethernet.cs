@@ -54,6 +54,9 @@ namespace ViewModels.Settings
 
                 if (SettingsFile.Settings.Connection_IP == null)
                 {
+                    IP_Address = null;
+                    Port = null;
+
                     return;
                 }
 

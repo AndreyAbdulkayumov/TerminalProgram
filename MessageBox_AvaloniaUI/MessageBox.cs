@@ -1,8 +1,8 @@
-﻿using Avalonia.Controls;
+﻿using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using MessageBox_AvaloniaUI.Views;
 using MessageBox_Core;
-
 
 namespace MessageBox_AvaloniaUI
 {
@@ -22,29 +22,31 @@ namespace MessageBox_AvaloniaUI
         {
             MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.Default);
 
-            Dispatcher.UIThread.Invoke(() => CallMessageBox(window));
+            Dispatcher.UIThread.Invoke(async () => await CallMessageBox(window));
         }
 
         public MessageBoxResult ShowYesNoDialog(string Message, MessageType Type)
         {
             MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.YesNo);
 
-            Dispatcher.UIThread.Invoke(() => CallMessageBox(window));
+            Dispatcher.UIThread.Invoke(async () => await CallMessageBox(window));
 
             return window.Result;
         }
 
-        private void CallMessageBox(Window window)
+        private async Task CallMessageBox(Window window)
         {
             if (Owner.IsVisible)
             {
-                window.ShowDialog(Owner);
-                return;
+                await window.ShowDialog(Owner);
             }
 
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            window.Topmost = true;
-            window.Show();
+            else
+            {
+                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                window.Topmost = true;
+                window.Show();
+            }            
         }
     }
 }

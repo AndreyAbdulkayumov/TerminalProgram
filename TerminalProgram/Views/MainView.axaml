@@ -5,7 +5,7 @@
              xmlns:ViewModels="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
 			 xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
 			 mc:Ignorable="d"
-			 d:DesignWidth="1050" d:DesignHeight="750"
+			 d:DesignWidth="1050" d:DesignHeight="770"
              x:Class="TerminalProgram.Views.MainView"
 			 x:DataType="ViewModels:ViewModel_CommonUI"
 			 Loaded="UserControl_Loaded">
@@ -112,16 +112,10 @@
 
 				<ComboBox Height="30" Width="160"
 						  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+						  ItemsSource="{Binding Presets, Mode=OneWay}"
+                          SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
 						  Margin="180,0,0,0"
-						  HorizontalAlignment="Left" VerticalAlignment="Center">
-
-					<ComboBoxItem>Text Item 1</ComboBoxItem>
-					<ComboBoxItem>Text Item 2</ComboBoxItem>
-					<ComboBoxItem>Text Item 3</ComboBoxItem>
-					<ComboBoxItem>Text Item 4</ComboBoxItem>
-					<ComboBoxItem>Text Item 5</ComboBoxItem>
-					
-				</ComboBox>
+						  HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 				<Button Margin="380,0,0,0"
 						Content="Подключить"

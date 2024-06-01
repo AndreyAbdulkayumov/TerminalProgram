@@ -8,7 +8,7 @@
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:ViewModel_Settings"
         Title="SettingsWindow"
-		Width="520" Height="530"
+		Width="540" Height="530"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
@@ -73,99 +73,147 @@
 
 			</Grid>
 
-			<Grid Grid.Row="1"
-				  Background="{DynamicResource MainWindow_Back_Color_Background}">
+			<Border Grid.Row="1"
+					Background="{DynamicResource MainWindow_Back_Color_Background}"
+					CornerRadius="0,0,4,4">
 
-				<Grid.RowDefinitions>
-					<RowDefinition Height="80"/>
-					<RowDefinition Height="1*"/>
-				</Grid.RowDefinitions>
+				<Grid>
 
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="200"/>
-					<ColumnDefinition Width="1*"/>
-				</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="80"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
 
-				<Border Grid.Row="0" Grid.Column="0"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="200"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
 
-					<StackPanel Orientation="Horizontal" 
-								Spacing="10"
-								Margin="10">
+					<Border Grid.Row="0" Grid.Column="0"
+							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							BorderThickness="0"
+							CornerRadius="6"
+							Margin="10">
 
-						<Button Content="Сохранить"
-								HorizontalAlignment="Center" VerticalAlignment="Center"
-								Command="{Binding Command_File_Save}"/>
-						
-					</StackPanel>
-					
-				</Border>
+						<StackPanel Orientation="Horizontal"
+									Spacing="10"
+									Margin="10">
 
-				<Border Grid.Row="0" Grid.Column="1"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+							<Button Content="AN"
+									ToolTip.Tip="Создать новый файл"
+									Command="{Binding Command_File_AddNew}">
 
-					<StackPanel Orientation="Horizontal"
-								Spacing="15"
-								Margin="10">
+								<Button.Styles>
+									<Style Selector="TextBlock">
+										<Setter Property="Foreground" Value="Black"/>
+									</Style>
+								</Button.Styles>
+							</Button>
 
-						<TextBlock Text="Пресет:"
-								   FontSize="16"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-						<ComboBox Height="30" Width="160"
-								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
-						
-					</StackPanel>
+							<Button Content="AE"
+									ToolTip.Tip="Добавить существующий файл"
+									Command="{Binding Command_File_AddExisting}">
 
-				</Border>
+								<Button.Styles>
+									<Style Selector="TextBlock">
+										<Setter Property="Foreground" Value="Black"/>
+									</Style>
+								</Button.Styles>
+							</Button>
 
-				<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+							<Button Content="D"
+									ToolTip.Tip="Удалить выбранный файл"
+									Command="{Binding Command_File_Delete}">
 
-					<TabControl>
+								<Button.Styles>
+									<Style Selector="TextBlock">
+										<Setter Property="Foreground" Value="Black"/>
+									</Style>
+								</Button.Styles>
+							</Button>
 
-						<TabItem Header="Подключение"
-								 FontSize="16">
+							<Button Content="S"
+									ToolTip.Tip="Сохранить выбранный файл"
+									Command="{Binding Command_File_Save}">
 
-							<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
+								<Button.Styles>
+									<Style Selector="TextBlock">
+										<Setter Property="Foreground" Value="Black"/>
+									</Style>
+								</Button.Styles>
+							</Button>
 
-						</TabItem>
+						</StackPanel>
 
-						<TabItem Header="Без протокола"
-								 FontSize="16">
+					</Border>
 
-							<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
+					<Border Grid.Row="0" Grid.Column="1"
+							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							BorderThickness="0"
+							CornerRadius="6"
+							Margin="10">
 
-						</TabItem>
+						<StackPanel Orientation="Horizontal"
+									Spacing="15"
+									Margin="10">
 
-						<TabItem Header="Modbus"
-								 FontSize="16">
+							<TextBlock Text="Пресет:"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-							<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
+							<ComboBox Height="30" Width="160"
+									  ItemsSource="{Binding Presets}"
+									  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+									  HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-						</TabItem>
+						</StackPanel>
 
-						<TabItem Header="Внешний вид"
-								 FontSize="16">
+					</Border>
 
-							<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
+					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							BorderThickness="0"
+							CornerRadius="6"
+							Margin="10">
 
-						</TabItem>
+						<TabControl>
 
-					</TabControl>
-					
-				</Border>
-				
-			</Grid>
+							<TabItem Header="Подключение"
+									 FontSize="16">
+
+								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
+
+							</TabItem>
+
+							<TabItem Header="Без протокола"
+									 FontSize="16">
+
+								<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
+
+							</TabItem>
+
+							<TabItem Header="Modbus"
+									 FontSize="16">
+
+								<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
+
+							</TabItem>
+
+							<TabItem Header="Внешний вид"
+									 FontSize="16">
+
+								<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
+
+							</TabItem>
+
+						</TabControl>
+
+					</Border>
+
+				</Grid>
+
+			</Border>			
 			
 		</Grid>		
 		
