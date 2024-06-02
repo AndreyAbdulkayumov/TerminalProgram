@@ -25,11 +25,11 @@ namespace MessageBox_AvaloniaUI
             Dispatcher.UIThread.Invoke(async () => await CallMessageBox(window));
         }
 
-        public MessageBoxResult ShowYesNoDialog(string Message, MessageType Type)
+        public async Task<MessageBoxResult> ShowYesNoDialog(string Message, MessageType Type)
         {
             MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.YesNo);
 
-            Dispatcher.UIThread.Invoke(async () => await CallMessageBox(window));
+            await Dispatcher.UIThread.Invoke(async () => await CallMessageBox(window));
 
             return window.Result;
         }

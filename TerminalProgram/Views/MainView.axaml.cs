@@ -28,11 +28,6 @@ public partial class MainView : UserControl
         ViewModel = new ViewModel_CommonUI(
                 OpenWindow_ModbusScanner,
                 Message.Show,
-                Select_AvailablePresetFiles,
-                "Unknown",
-                "Dark",
-                "Dark",
-                "Light",
                 Set_Dark_Theme,
                 Set_Light_Theme,
                 CopyToClipboard
@@ -100,29 +95,6 @@ public partial class MainView : UserControl
     private async void UserControl_Loaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         await ViewModel.Command_UpdatePresets.Execute();
-    }
-
-    private string? Select_AvailablePresetFiles(string[] Files)
-    {
-        //ComboBoxWindow window = new ComboBoxWindow(Files)
-        //{
-        //    Owner = this
-        //};
-
-        //window.ShowDialog();
-
-        //if (window.SelectedDocumentPath != String.Empty)
-        //{
-        //    return window.SelectedDocumentPath;
-        //}
-
-        //else
-        //{
-        //    Application.Current.Shutdown();
-        //    return null;
-        //}
-
-        return "Unknown";
     }
 
     private async void Button_OpenSettings_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

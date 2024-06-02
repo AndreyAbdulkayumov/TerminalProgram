@@ -79,9 +79,6 @@ namespace ViewModels.MainWindow
             }
         }
 
-        public static string? ThemeName_Dark;
-        public static string? ThemeName_Light;
-
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -90,9 +87,9 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _presets, value);
         }
 
-        private string _selectedPreset = string.Empty;
+        private string? _selectedPreset;
 
-        public string SelectedPreset
+        public string? SelectedPreset
         {
             get => _selectedPreset;
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
@@ -176,7 +173,8 @@ namespace ViewModels.MainWindow
         private readonly Model_Settings SettingsFile;
 
         private readonly Action<string, MessageType> Message;
-        private readonly Func<string[], string?> Select_AvailablePresetFile;
+
+        private readonly Action Set_Dark_Theme, Set_Light_Theme;
 
         private readonly ViewModel_NoProtocol NoProtocol_VM;
         private readonly ViewModel_Modbus ModbusClient_VM;
@@ -185,25 +183,21 @@ namespace ViewModels.MainWindow
         public ViewModel_CommonUI(
             Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
-            Func<string[], string?> Select_AvailablePresetFile_Handler,
-            string? SettingsDocument,
-            string? CurrentThemeName,
-            string? ThemeName_Dark,
-            string? ThemeName_Light,
-            Action Set_Dark_Theme,
-            Action Set_Light_Theme,
+            Action Set_Dark_Theme_Handler,
+            Action Set_Light_Theme_Handler,
             Func<string, Task> CopyToClipboard
             )
         {
-            Message = MessageBox;
-            Select_AvailablePresetFile = Select_AvailablePresetFile_Handler;
-            ViewModel_CommonUI.SettingsDocument = SettingsDocument;
-            ViewModel_CommonUI.ThemeName = CurrentThemeName;
-            ViewModel_CommonUI.ThemeName_Dark = ThemeName_Dark;
-            ViewModel_CommonUI.ThemeName_Light = ThemeName_Light;
-
             Model = ConnectedHost.Model;
             SettingsFile = Model_Settings.Model;
+
+            Message = MessageBox;
+
+            Set_Dark_Theme = Set_Dark_Theme_Handler;
+            Set_Light_Theme = Set_Light_Theme_Handler;
+
+            ViewModel_CommonUI.SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
+            ViewModel_CommonUI.ThemeName = SettingsFile.AppData.ThemeName;
 
             StringValue.ShowMessageView = Message;
 
@@ -227,7 +221,13 @@ namespace ViewModels.MainWindow
                     try
                     {
                         SettingsFile.Read(PresetName);
-                        SettingsDocument = PresetName;
+
+                        if (PresetName != ViewModel_CommonUI.SettingsDocument)
+                        {
+                            ViewModel_CommonUI.SettingsDocument = PresetName;
+                            SettingsFile.AppData.SelectedPresetFileName = PresetName;
+                            SettingsFile.SaveAppInfo(SettingsFile.AppData);
+                        }                        
 
                         ConnectionString = GetConnectionString();
                     }
@@ -264,7 +264,27 @@ namespace ViewModels.MainWindow
 
             // Действия после запуска приложения
 
-            Set_Dark_Theme();
+            SetAppTheme(SettingsFile.AppData.ThemeName);
+        }
+
+        private void SetAppTheme(string? ThemeName)
+        {
+            switch(ThemeName)
+            {
+                case AppInfo.ThemeName_Dark:
+                    Set_Dark_Theme?.Invoke();
+                    break;
+
+                case AppInfo.ThemeName_Light:
+                    Set_Light_Theme?.Invoke();
+                    break;
+
+                default:
+                    Set_Dark_Theme?.Invoke();
+                    SettingsFile.AppData.ThemeName = AppInfo.ThemeName_Dark;
+                    SettingsFile.SaveAppInfo(SettingsFile.AppData);
+                    break;
+            }
         }
 
         private string GetConnectionString()
@@ -442,10 +462,7 @@ namespace ViewModels.MainWindow
 
             if (SettingsDocument == null || Presets.Contains(SettingsDocument) == false)
             {
-                Message.Invoke("Файл настроек \"" + SettingsDocument + "\" не существует в папке " + SettingsFile.FolderPath_Settings +
-                    "\n\nНажмите ОК и выберите один из доступных файлов в появившемся окне.", MessageType.Warning);
-
-                SettingsDocument = Select_AvailablePresetFile(Presets.ToArray());
+                SettingsDocument = Presets.First();
             }
 
             if (SettingsDocument != null)

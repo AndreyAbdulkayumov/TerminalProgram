@@ -33,8 +33,8 @@ namespace ViewModels.Settings
             get => _selectedPreset;
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
+                
 
-        
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
         public ReactiveCommand<Unit, Unit> Command_File_AddNew { get; }
@@ -44,7 +44,7 @@ namespace ViewModels.Settings
 
 
         public readonly Action<string, MessageType> Message;
-        private readonly Func<string, MessageType, MessageBoxResult> MessageDialog;
+        private readonly Func<string, MessageType, Task<MessageBoxResult>> MessageDialog;
         private readonly Func<string, Task<string?>> Get_FilePath;
         private readonly Func<Task<string?>> Get_NewFileName;
 
@@ -84,7 +84,7 @@ namespace ViewModels.Settings
 
         public ViewModel_Settings(
             Action<string, MessageType> MessageBox,
-            Func<string, MessageType, MessageBoxResult> MessageBoxDialog,
+            Func<string, MessageType, Task<MessageBoxResult>> MessageBoxDialog,
             Func<string, Task<string?>> Get_FilePath_Handler,
             Func<Task<string?>> Get_NewFileName_Handler,
             Action Set_Dark_Theme_Handler,
@@ -101,13 +101,13 @@ namespace ViewModels.Settings
             _tab_Connection_VM = new ViewModel_Tab_Connection(this);
             _tab_NoProtocol_VM = new ViewModel_Tab_NoProtocol();
             _tab_Modbus_VM = new ViewModel_Tab_Modbus();
-            _tab_UI_VM = new ViewModel_Tab_UI(Set_Dark_Theme_Handler, Set_Light_Theme_Handler);
+            _tab_UI_VM = new ViewModel_Tab_UI(Set_Dark_Theme_Handler, Set_Light_Theme_Handler, MessageBox);
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
             Command_File_AddNew = ReactiveCommand.CreateFromTask(File_CreateNew_Handler);
             Command_File_AddExisting = ReactiveCommand.CreateFromTask(File_AddExisting_Handler);
-            Command_File_Delete = ReactiveCommand.Create(File_Delete_Handler);
+            Command_File_Delete = ReactiveCommand.CreateFromTask(File_Delete_Handler);
             Command_File_Save = ReactiveCommand.Create(File_Save_Handler);
 
             this.WhenAnyValue(x => x.SelectedPreset)
@@ -196,7 +196,7 @@ namespace ViewModels.Settings
             }
         }
 
-        private void File_Delete_Handler()
+        private async Task File_Delete_Handler()
         {
             try
             {
@@ -206,7 +206,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                MessageBoxResult DialogResult = MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+                MessageBoxResult DialogResult = await MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
 
                 if (DialogResult != MessageBoxResult.Yes)
                 {

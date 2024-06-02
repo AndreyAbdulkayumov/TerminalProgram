@@ -6,6 +6,8 @@ namespace Core.Models.Settings
     {
         public DeviceData? Settings { get; private set; }
 
+        public AppInfo AppData { get; private set; }
+
         private static Model_Settings? _model;
 
         public static Model_Settings Model
@@ -19,12 +21,18 @@ namespace Core.Models.Settings
             get => DirectoryManager.SettingsFiles_Directory;
         }
 
-        private const string DefaultFileName = "Unknown";
+        private const string FileName_DefaultPreset = "Unknown";
+
+        private const string FileName_AppData = "AppData";
 
         private const string FileExtension = ".json";
 
         private readonly AppDirectoryManager DirectoryManager = new AppDirectoryManager();
 
+        public Model_Settings()
+        {
+            AppData = ReadAppInfo();
+        }
 
         /// <summary>
         /// Сохранение данных в файл. Если файл с таким именем не найден, то он создается.
@@ -175,12 +183,81 @@ namespace Core.Models.Settings
         {
             string[] ArrayOfPresets = DirectoryManager.CheckFiles(
                 DirectoryManager.SettingsFiles_Directory, 
-                DefaultFileName, 
+                FileName_DefaultPreset, 
                 FileExtension, 
                 DeviceData.GetDefault()
                 );
 
             return ArrayOfPresets;
+        }
+
+        public void SaveAppInfo(AppInfo Data)
+        {
+            string FilePath = Path.Combine(DirectoryManager.CommonFiles_Directory, FileName_AppData + FileExtension);
+
+            try
+            {
+                if (File.Exists(FilePath) == false)
+                {
+                    File.Create(FilePath).Close();
+                }
+
+                File.WriteAllText(FilePath, string.Empty);
+
+                var Options = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+
+                using (FileStream Stream = new FileStream(FilePath, FileMode.OpenOrCreate))
+                {
+                    JsonSerializer.Serialize(Stream, Data, Options);
+                }
+
+                AppData = Data;
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Не удалось записать данные в файл настроек приложения.\n\n" + error.Message);
+            }
+        }
+
+        private AppInfo ReadAppInfo()
+        {
+            string FilePath = DirectoryManager.FindOrCreateFile(
+                DirectoryManager.CommonFiles_Directory,
+                FileName_AppData,
+                FileExtension,
+                AppInfo.GetDefault(FileName_DefaultPreset)
+                );
+
+            AppInfo? Data;
+
+            try
+            {
+                using (FileStream Stream = new FileStream(FilePath, FileMode.Open))
+                {
+                    Data = JsonSerializer.Deserialize<AppInfo>(Stream);
+                }
+
+                if (Data == null)
+                {
+                    SaveAppInfo(AppInfo.GetDefault(FileName_DefaultPreset));
+
+                    Data = AppInfo.GetDefault(FileName_DefaultPreset);
+                }
+            }
+
+            // Создание настроек по умолчанию, если в файле некоректные данные.
+            catch (JsonException)
+            {
+                SaveAppInfo(AppInfo.GetDefault(FileName_DefaultPreset));
+
+                Data = AppInfo.GetDefault(FileName_DefaultPreset);
+            }
+
+            return Data;
         }
     }
 }
