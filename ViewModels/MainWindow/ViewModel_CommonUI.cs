@@ -196,8 +196,8 @@ namespace ViewModels.MainWindow
             Set_Dark_Theme = Set_Dark_Theme_Handler;
             Set_Light_Theme = Set_Light_Theme_Handler;
 
-            ViewModel_CommonUI.SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
-            ViewModel_CommonUI.ThemeName = SettingsFile.AppData.ThemeName;
+            SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
+            ThemeName = SettingsFile.AppData.ThemeName;
 
             StringValue.ShowMessageView = Message;
 
@@ -222,12 +222,12 @@ namespace ViewModels.MainWindow
                     {
                         SettingsFile.Read(PresetName);
 
-                        if (PresetName != ViewModel_CommonUI.SettingsDocument)
+                        if (SettingsFile.AppData.SelectedPresetFileName != PresetName)
                         {
-                            ViewModel_CommonUI.SettingsDocument = PresetName;
+                            SettingsDocument = PresetName;
                             SettingsFile.AppData.SelectedPresetFileName = PresetName;
                             SettingsFile.SaveAppInfo(SettingsFile.AppData);
-                        }                        
+                        }
 
                         ConnectionString = GetConnectionString();
                     }
@@ -465,10 +465,7 @@ namespace ViewModels.MainWindow
                 SettingsDocument = Presets.First();
             }
 
-            if (SettingsDocument != null)
-            {
-                SelectedPreset = Presets.Single(x => x == SettingsDocument);
-            }
+            SelectedPreset = Presets.Single(x => x == SettingsDocument);
 
             Led_TX_IsActive = false;
             Led_RX_IsActive = false;

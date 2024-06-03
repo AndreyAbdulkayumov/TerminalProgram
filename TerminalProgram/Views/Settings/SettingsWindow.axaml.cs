@@ -10,7 +10,6 @@ using MessageBox_Core;
 using MessageBox_AvaloniaUI;
 using ViewModels.Settings;
 using Avalonia.Platform.Storage;
-using System.IO;
 using System.Linq;
 
 

@@ -204,6 +204,8 @@ namespace ViewModels.Settings
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
+                ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
+
                 if (SettingsFile.Settings.Connection_SerialPort == null)
                 {
                     Selected_COM_Port = null;
@@ -224,8 +226,6 @@ namespace ViewModels.Settings
 
                     return;
                 }
-
-                ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
 
                 Selected_BaudRate = SettingsFile.Settings.Connection_SerialPort.BaudRate;
                 BaudRate_IsCustom = SettingsFile.Settings.Connection_SerialPort.BaudRate_IsCustom;
