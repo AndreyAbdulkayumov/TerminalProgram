@@ -41,7 +41,7 @@ namespace Core.Models.Settings
                 }
             }
 
-            // Создание настроек по умолчанию, если в файле некоректные данные.
+            // Если в файле некоректные данные.
             catch (JsonException)
             {
                 return default;

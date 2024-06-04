@@ -54,6 +54,7 @@
 				
 				<Button Width="25" Height="25"
 						CornerRadius="0,4,0,0"
+						BorderThickness="1"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
 

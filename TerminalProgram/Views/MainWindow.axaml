@@ -3,17 +3,43 @@
         xmlns:vm="using:TerminalProgram.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="clr-namespace:TerminalProgram.Views"
+		xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
+		xmlns:ViewModels="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
         mc:Ignorable="d"
 		Width="1300" Height="800"
         x:Class="TerminalProgram.Views.MainWindow"
+		x:DataType="ViewModels:ViewModel_CommonUI"
         Icon="/Resources/MainLogo.ico"
         Title="Терминальная программа"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly">
+		SystemDecorations="BorderOnly"
+		Loaded="Window_Loaded"
+		Closing="Window_Closing">
+
+	
+	<Window.Styles>
+
+		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
+
+	</Window.Styles>
+	
+	
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_NoProtocol}">
+			<Views:NoProtocol/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_ModbusClient}">
+			<Views:Modbus_Client/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
 	
 
 	<Border x:Name="Border_Window"
@@ -41,8 +67,9 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button Width="25"
+				<Button Width="25" Height="25"
 						CornerRadius="0"
+						BorderThickness="1"
 						Margin="0,0,50,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Minimize_Click">
@@ -61,8 +88,9 @@
 
 				</Button>
 
-				<Button Width="25"
+				<Button Width="25" Height="25"
 						CornerRadius="0"
+						BorderThickness="1"
 						Margin="0,0,25,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Maximize_Click">
@@ -82,7 +110,8 @@
 				</Button>
 				
 				<Button x:Name="Button_Close"
-						Width="25"
+						Width="25" Height="25"
+						BorderThickness="1"
 						CornerRadius="0,4,0,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
@@ -102,8 +131,196 @@
 				</Button>
 				
 			</Grid>
-						
-			<views:MainView Grid.Row="1"/>
+
+			<Grid Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="80"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="80"/>
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="200"/>
+					<ColumnDefinition Width="4*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Row="0" Grid.Column="0"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<StackPanel Orientation="Horizontal"
+								Spacing="10"
+								Margin="10">
+
+						<Button Content="S"
+								HorizontalAlignment="Stretch"
+								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								Click="Button_OpenSettings_Click"/>
+
+						<Button Content="A"
+								HorizontalAlignment="Stretch"
+								Click="Button_About_Click"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<StackPanel Orientation="Vertical" Spacing="10"
+								Margin="10">
+
+						<Button Content="Без протокола"
+								Height="40"
+								HorizontalAlignment="Stretch"
+								Command="{Binding Command_ProtocolMode_NoProtocol}"/>
+
+						<Button Content="Modbus"
+								Height="40"
+								HorizontalAlignment="Stretch"
+								Command="{Binding Command_ProtocolMode_Modbus}"/>
+
+						<Button Content="Modbus TCP сервер"
+								Height="40"
+								IsEnabled="False"
+								HorizontalAlignment="Stretch"
+								Command="{Binding Select_Modbus_Server_View}"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="0" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<Grid>
+
+						<TextBlock Text="Выбранный пресет:"
+								   Margin="10,0,0,0"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<ComboBox Height="30" Width="160"
+								  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								  ItemsSource="{Binding Presets, Mode=OneWay}"
+								  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+								  Margin="180,0,0,0"
+								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<Button Margin="380,0,0,0"
+								Content="Подключить"
+								FontSize="14"
+								Width="105" Height="32"
+								CornerRadius="6"
+								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_Connect}"/>
+
+						<Button Margin="500,0,0,0"
+								Content="Отключить"
+								FontSize="14"
+								Width="105" Height="32"
+								CornerRadius="6"
+								IsEnabled="{Binding UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_Disconnect}"/>
+
+					</Grid>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<ContentControl Content="{Binding CurrentViewModel}"/>
+
+				</Border>
+
+				<Border Grid.Row="2" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="1*"/>
+							<RowDefinition Height="1*"/>
+						</Grid.RowDefinitions>
+
+						<TextBlock Grid.Row="0"
+								   Text="{Binding ConnectionString, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="20,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="1"
+								   Text="{Binding ConnectionStatus, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="20,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="1"
+								   IsVisible="{Binding ConnectionTimer_IsVisible, Mode=OneWay}"
+								   Text="{Binding ConnectionTimer_View, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="130,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
+								 Margin="0,0,190,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+								 IsVisible="{Binding Led_RX_IsActive, Mode=OneWay}"
+								 Margin="0,0,190,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" Grid.RowSpan="2"
+								   Text="Прием"
+								   FontSize="16"
+								   Margin="0,0,130,0"
+								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
+								 Margin="0,0,95,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+								 IsVisible="{Binding Led_TX_IsActive, Mode=OneWay}"
+								 Margin="0,0,95,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" Grid.RowSpan="2"
+								   Text="Передача"
+								   FontSize="16"
+								   Margin="0,0,10,0"
+								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					</Grid>
+
+				</Border>
+
+			</Grid>
 			
 		</Grid>		
 		

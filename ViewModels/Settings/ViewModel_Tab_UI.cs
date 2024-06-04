@@ -22,7 +22,6 @@ namespace ViewModels.Settings
                 Set_Dark_Theme_Handler();
 
                 SettingsFile.AppData.ThemeName = AppTheme.Dark;
-                SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
             Select_Dark_Theme.ThrownExceptions.Subscribe(error => Message.Invoke("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
 
@@ -31,7 +30,6 @@ namespace ViewModels.Settings
                 Set_Light_Theme_Handler();
 
                 SettingsFile.AppData.ThemeName = AppTheme.Light;
-                SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
             Select_Light_Theme.ThrownExceptions.Subscribe(error => Message.Invoke("Не удалось корректно переключиться на светлую тему.\n\n" + error.Message, MessageType.Error));
         }

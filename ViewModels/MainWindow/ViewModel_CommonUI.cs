@@ -77,6 +77,8 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
 
+        public ReactiveCommand<Unit, Unit> Command_Closing { get; }
+
         public ReactiveCommand<Unit, Unit> Command_UpdatePresets { get; }
 
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
@@ -202,12 +204,8 @@ namespace ViewModels.MainWindow
 
                         ConnectionString = GetConnectionString();
 
-                        if (SettingsFile.AppData.SelectedPresetFileName != PresetName)
-                        {
-                            SettingsDocument = PresetName;
-                            SettingsFile.AppData.SelectedPresetFileName = PresetName;
-                            SettingsFile.SaveAppInfo(SettingsFile.AppData);
-                        }
+                        SettingsDocument = PresetName;
+                        SettingsFile.AppData.SelectedPresetFileName = PresetName;
                     }
 
                     catch (Exception error)
@@ -216,6 +214,11 @@ namespace ViewModels.MainWindow
                     }
                 });
 
+            Command_Closing = ReactiveCommand.Create(() =>
+            {
+                SettingsFile.SaveAppInfo(SettingsFile.AppData);
+            });
+            
             Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
             Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
 
@@ -225,7 +228,6 @@ namespace ViewModels.MainWindow
                 Model.SetProtocol_NoProtocol();
 
                 SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
-                SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
             Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -235,7 +237,6 @@ namespace ViewModels.MainWindow
                 Model.SetProtocol_Modbus();
 
                 SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
-                SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
             Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -267,9 +268,7 @@ namespace ViewModels.MainWindow
 
                 default:
                     Set_Dark_Theme?.Invoke();
-
                     SettingsFile.AppData.ThemeName = AppTheme.Dark;
-                    SettingsFile.SaveAppInfo(SettingsFile.AppData);
                     break;
             }
         }
@@ -288,6 +287,7 @@ namespace ViewModels.MainWindow
 
                 default:
                     CurrentViewModel = NoProtocol_VM;
+                    SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
                     break;
             }
         }
