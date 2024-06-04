@@ -31,7 +31,7 @@ namespace ViewModels.MainWindow
         public string? ViewData { get; set; }
     }
 
-    public class ViewModel_Modbus : ReactiveObject
+    public class ViewModel_ModbusClient : ReactiveObject
     {
         #region Properties
 
@@ -246,7 +246,7 @@ namespace ViewModels.MainWindow
         private ModbusFunction? CurrentFunction;
 
 
-        public ViewModel_Modbus(
+        public ViewModel_ModbusClient(
             Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
             Func<string, Task> CopyToClipboard

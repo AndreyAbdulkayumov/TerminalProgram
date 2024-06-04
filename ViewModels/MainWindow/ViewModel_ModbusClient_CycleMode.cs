@@ -10,7 +10,7 @@ using MessageBox_Core;
 
 namespace ViewModels.MainWindow
 {
-    public class ViewModel_Modbus_CycleMode : ReactiveObject, ICycleMode
+    public class ViewModel_ModbusClient_CycleMode : ReactiveObject, ICycleMode
     {
         public event EventHandler<EventArgs>? DeviceIsDisconnected;
 
@@ -115,7 +115,7 @@ namespace ViewModels.MainWindow
         private const int TimeForReadHandler = 100;
 
 
-        public ViewModel_Modbus_CycleMode(
+        public ViewModel_ModbusClient_CycleMode(
             Action<string, MessageType> MessageBox,
             Action UI_State_Work,
             Action UI_State_Wait
@@ -246,7 +246,7 @@ namespace ViewModels.MainWindow
                     return;
                 }                
 
-                if (ViewModel_Modbus.ModbusMessageType == null)
+                if (ViewModel_ModbusClient.ModbusMessageType == null)
                 {
                     Message.Invoke("Не задан тип протокола Modbus.", MessageType.Error);
                     return;
@@ -279,7 +279,7 @@ namespace ViewModels.MainWindow
                     SlaveID,
                     SelectedAddress,
                     NumberOfRegisters,
-                    ViewModel_Modbus.ModbusMessageType is ModbusTCP_Message ? false : true);
+                    ViewModel_ModbusClient.ModbusMessageType is ModbusTCP_Message ? false : true);
 
                 UI_State_Work.Invoke();
 
@@ -308,7 +308,7 @@ namespace ViewModels.MainWindow
                     throw new Exception("Не сформированы данные для опроса.");
                 }
 
-                if (ViewModel_Modbus.ModbusMessageType == null)
+                if (ViewModel_ModbusClient.ModbusMessageType == null)
                 {
                     throw new Exception("Не выбран тип протокола Modbus.");
                 }
@@ -317,7 +317,7 @@ namespace ViewModels.MainWindow
                     await Model.Modbus.ReadRegister(
                                 ReadFunction,
                                 Data,
-                                ViewModel_Modbus.ModbusMessageType);
+                                ViewModel_ModbusClient.ModbusMessageType);
 
                 RequestBytes = Result.Details.RequestBytes != null ? Result.Details.RequestBytes : Array.Empty<byte>();
 

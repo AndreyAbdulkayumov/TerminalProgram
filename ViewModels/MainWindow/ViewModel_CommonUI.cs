@@ -61,24 +61,6 @@ namespace ViewModels.MainWindow
             }
         }
 
-        public static event EventHandler<DocArgs>? ThemeName_Changed;
-
-        private static string? _themeName;
-
-        public static string? ThemeName
-        {
-            get
-            {
-                return _themeName;
-            }
-
-            set
-            {
-                _themeName = value;
-                ThemeName_Changed?.Invoke(null, new DocArgs(value));
-            }
-        }
-
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -177,7 +159,7 @@ namespace ViewModels.MainWindow
         private readonly Action Set_Dark_Theme, Set_Light_Theme;
 
         private readonly ViewModel_NoProtocol NoProtocol_VM;
-        private readonly ViewModel_Modbus ModbusClient_VM;
+        private readonly ViewModel_ModbusClient ModbusClient_VM;
 
 
         public ViewModel_CommonUI(
@@ -197,20 +179,16 @@ namespace ViewModels.MainWindow
             Set_Light_Theme = Set_Light_Theme_Handler;
 
             SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
-            ThemeName = SettingsFile.AppData.ThemeName;
 
             StringValue.ShowMessageView = Message;
 
             NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
-            ModbusClient_VM = new ViewModel_Modbus(Open_ModbusScanner, MessageBox, CopyToClipboard);
-
-            CurrentViewModel = NoProtocol_VM;
+            ModbusClient_VM = new ViewModel_ModbusClient(Open_ModbusScanner, MessageBox, CopyToClipboard);
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             ConnectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
-
             ConnectionTimer.Elapsed += ConnectionTimer_Elapsed;
 
             this.WhenAnyValue(x => x.SelectedPreset)
@@ -222,14 +200,14 @@ namespace ViewModels.MainWindow
                     {
                         SettingsFile.Read(PresetName);
 
+                        ConnectionString = GetConnectionString();
+
                         if (SettingsFile.AppData.SelectedPresetFileName != PresetName)
                         {
                             SettingsDocument = PresetName;
                             SettingsFile.AppData.SelectedPresetFileName = PresetName;
                             SettingsFile.SaveAppInfo(SettingsFile.AppData);
                         }
-
-                        ConnectionString = GetConnectionString();
                     }
 
                     catch (Exception error)
@@ -245,6 +223,9 @@ namespace ViewModels.MainWindow
             {
                 CurrentViewModel = NoProtocol_VM;
                 Model.SetProtocol_NoProtocol();
+
+                SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
             Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -252,6 +233,9 @@ namespace ViewModels.MainWindow
             {
                 CurrentViewModel = ModbusClient_VM;
                 Model.SetProtocol_Modbus();
+
+                SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
+                SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
             Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -265,24 +249,45 @@ namespace ViewModels.MainWindow
             // Действия после запуска приложения
 
             SetAppTheme(SettingsFile.AppData.ThemeName);
+
+            SetAppMode(SettingsFile.AppData.SelectedMode);
         }
 
-        private void SetAppTheme(string? ThemeName)
+        private void SetAppTheme(AppTheme ThemeName)
         {
-            switch(ThemeName)
+            switch (ThemeName)
             {
-                case AppInfo.ThemeName_Dark:
+                case AppTheme.Dark:
                     Set_Dark_Theme?.Invoke();
                     break;
 
-                case AppInfo.ThemeName_Light:
+                case AppTheme.Light:
                     Set_Light_Theme?.Invoke();
                     break;
 
                 default:
                     Set_Dark_Theme?.Invoke();
-                    SettingsFile.AppData.ThemeName = AppInfo.ThemeName_Dark;
+
+                    SettingsFile.AppData.ThemeName = AppTheme.Dark;
                     SettingsFile.SaveAppInfo(SettingsFile.AppData);
+                    break;
+            }
+        }
+
+        private void SetAppMode(AppMode Mode)
+        {
+            switch (Mode)
+            {
+                case AppMode.NoProtocol:
+                    CurrentViewModel = NoProtocol_VM;
+                    break;
+
+                case AppMode.ModbusClient:
+                    CurrentViewModel = ModbusClient_VM;
+                    break;
+
+                default:
+                    CurrentViewModel = NoProtocol_VM;
                     break;
             }
         }

@@ -25,7 +25,7 @@
 			<Views:NoProtocol/>
 		</DataTemplate>
 		
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Modbus}">
+		<DataTemplate DataType="{x:Type ViewModels:ViewModel_ModbusClient}">
 			<Views:Modbus_Client/>
 		</DataTemplate>
 		
