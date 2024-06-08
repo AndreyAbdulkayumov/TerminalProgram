@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+			 d:DesignWidth="1000" d:DesignHeight="150"
+             x:Class="TerminalProgram.Views.Protocols.NoProtocol_Mode_Cycle">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
+
+	</UserControl.Styles>
+	
+	<Grid>
+		
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="1*"/>
+		</Grid.RowDefinitions>
+
+		<StackPanel Grid.Row="0"
+					Orientation="Horizontal" Spacing="20">
+
+			<TextBlock Text="Сообщение"
+					   Margin="20,0,0,0"
+					   VerticalAlignment="Center"/>
+
+			<TextBox Classes="InputField"
+					 Width="200"
+					 Text="{Binding Message_Content, Mode=TwoWay}"
+					 VerticalAlignment="Center"/>
+
+			<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Content="CR ( &#8216;\r &#8217;)"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Message_CR, Mode=TwoWay}"/>
+
+			<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Content="LF ( &#8216;\n	&#8216;)"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Message_LF, Mode=TwoWay}"/>
+			
+		</StackPanel>
+
+		<StackPanel Grid.Row="1"
+					Orientation="Horizontal" Spacing="20">
+
+			<TextBlock Text="Ответ"
+                       Margin="20,0,0,0"
+                       VerticalAlignment="Center"/>
+
+			<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Content="Дата"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Response_Date, Mode=TwoWay}"/>
+
+			<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Content="Время"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Response_Time, Mode=TwoWay}"/>
+
+			<CheckBox FontSize="14"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Response_String_Start_Enable, Mode=TwoWay}"/>
+
+			<TextBox Classes="InputField" 
+					 IsEnabled="{Binding ElementName=CheckBox_String_Start, Path=IsChecked}"
+					 Width="120"
+					 Text="{Binding Response_String_Start, Mode=TwoWay}"
+					 VerticalAlignment="Center"/>
+
+			<TextBlock Text="&#171;Ответ хоста&#187;"
+					   VerticalAlignment="Center"/>
+
+			<CheckBox FontSize="14"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Response_String_End_Enable, Mode=TwoWay}"/>
+
+			<TextBox Classes="InputField" 
+					 IsEnabled="{Binding ElementName=CheckBox_String_End, Path=IsChecked}"
+					 Width="120"
+					 Text="{Binding Response_String_End, Mode=TwoWay}"
+					 VerticalAlignment="Center"/>
+
+			<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Content="CR ( &#8216;\r &#8217;)"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Response_CR, Mode=TwoWay}"/>
+
+			<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Content="LF ( &#8216;\n	&#8216;)"
+					  VerticalAlignment="Center"
+					  IsChecked="{Binding Response_LF, Mode=TwoWay}"/>
+			
+		</StackPanel>
+
+		<StackPanel Grid.Row="2"
+					Orientation="Horizontal" Spacing="20">
+			
+			<TextBlock Text="Период:" 
+					   Margin="20,0,0,0"
+					   VerticalAlignment="Center"/>
+
+			<TextBox Classes="InputField"
+					 Width="60"
+					 Text="{Binding Message_Period_ms, Mode=TwoWay}"
+					 VerticalAlignment="Center"/>
+
+			<TextBlock Text="мс."
+					   VerticalAlignment="Center"/>
+
+			<Button Width="150"
+					FontSize="14"
+					Content="{Binding Button_Content, Mode=OneWay}"
+					IsEnabled="{Binding UI_IsEnable}"
+					HorizontalAlignment="Center" VerticalAlignment="Center"
+					Command="{Binding Command_Start_Stop_Polling}"/>
+			
+		</StackPanel>
+		
+	</Grid>
+	
+</UserControl>

@@ -200,7 +200,7 @@ namespace ViewModels.MainWindow
                 {
                     try
                     {
-                        SettingsFile.Read(PresetName);
+                        SettingsFile.ReadPreset(PresetName);
 
                         ConnectionString = GetConnectionString();
 

@@ -8,7 +8,7 @@ namespace TerminalProgram.Views.Protocols
         {
             InitializeComponent();
         }
-                
+
         private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
         {
             TextBox? element = sender as TextBox;

@@ -1,5 +1,4 @@
 ﻿using System.Reactive;
-using System.Reactive.Linq;
 using System.Text;
 using Core.Clients;
 using Core.Models;
@@ -8,14 +7,16 @@ using MessageBox_Core;
 
 namespace ViewModels.MainWindow
 {
-    internal enum SendMessageType
-    {
-        String,
-        Char
-    }
-
     public class ViewModel_NoProtocol : ReactiveObject
     {
+        private object? _currentModeViewModel;
+
+        public object? CurrentModeViewModel
+        {
+            get => _currentModeViewModel;
+            set => this.RaiseAndSetIfChanged(ref _currentModeViewModel, value);
+        }
+
         #region Properties
 
         private bool ui_IsEnable = false;
@@ -24,6 +25,14 @@ namespace ViewModels.MainWindow
         {
             get => ui_IsEnable;
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
+
+        private bool _isCycleMode = false;
+
+        public bool IsCycleMode
+        {
+            get => _isCycleMode;
+            set => this.RaiseAndSetIfChanged(ref _isCycleMode, value);
         }
 
         private const string InterfaceType_Default = "не определен";
@@ -52,47 +61,6 @@ namespace ViewModels.MainWindow
 
         private readonly StringBuilder RX = new StringBuilder(RX_Capacity, RX_MaxCapacity);
 
-        private string _tx_String = String.Empty;
-
-        public string TX_String
-        {
-            get => _tx_String;
-            set => this.RaiseAndSetIfChanged(ref _tx_String, value);
-        }
-
-        private bool _cr_enable;
-
-        public bool CR_Enable
-        {
-            get => _cr_enable;
-            set => this.RaiseAndSetIfChanged(ref _cr_enable, value);
-        }
-
-
-        private bool _lf_enable;
-
-        public bool LF_Enable
-        {
-            get => _lf_enable;
-            set => this.RaiseAndSetIfChanged(ref _lf_enable, value);
-        }
-
-        private bool _messageIsChar;
-
-        public bool MessageIsChar
-        {
-            get => _messageIsChar;
-            set => this.RaiseAndSetIfChanged(ref _messageIsChar, value);
-        }
-
-        private bool _messageIsString;
-
-        public bool MessageIsString
-        {
-            get => _messageIsString;
-            set => this.RaiseAndSetIfChanged(ref _messageIsString, value);
-        }
-
         private bool _rx_NextLine;
 
         public bool RX_NextLine
@@ -103,18 +71,16 @@ namespace ViewModels.MainWindow
 
         #endregion
 
-        public ReactiveCommand<Unit, Unit> Command_Select_Char { get; }
-        public ReactiveCommand<Unit, Unit> Command_Select_String { get; }
-
-        public ReactiveCommand<Unit, Unit> Command_Send { get; }
-
+        
         public ReactiveCommand<Unit, Unit> Command_ClearRX { get; }
 
-        private SendMessageType TypeOfSendMessage;
 
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
+
+        private readonly ViewModel_NoProtocol_Mode_Normal Mode_Normal_VM;
+        private readonly ViewModel_NoProtocol_Mode_Cycle Mode_Cycle_VM;
 
 
         public ViewModel_NoProtocol(Action<string, MessageType> MessageBox)
@@ -129,47 +95,16 @@ namespace ViewModels.MainWindow
             Model.NoProtocol.Model_DataReceived += NoProtocol_Model_DataReceived;
             Model.NoProtocol.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
 
-            this.WhenAnyValue(x => x.TX_String)
-                .WhereNotNull()
-                .Where(x => x != String.Empty)
-                .Subscribe(async _ =>
-                {
-                    try
-                    {
-                        if (Model.HostIsConnect &&
-                            TX_String != String.Empty &&
-                            TypeOfSendMessage == SendMessageType.Char)
-                        {
-                            await Model.NoProtocol.Send(TX_String.Last().ToString(), CR_Enable, LF_Enable);
-                        }
-                    }
-                    
-                    catch (Exception error)
-                    {
-                        Message.Invoke("Ошибка отправки данных\n\n" + error.Message, MessageType.Error);
-                    }
-                });
-
-            Command_Select_Char = ReactiveCommand.Create(() =>
-            {
-                TypeOfSendMessage = SendMessageType.Char;
-                TX_String = String.Empty;
-            });
-
-            Command_Select_String = ReactiveCommand.Create(() =>
-            {
-                TypeOfSendMessage = SendMessageType.String;
-                TX_String = String.Empty;
-            });
-
-            Command_Send = ReactiveCommand.CreateFromTask(async () =>
-            {
-                await Model.NoProtocol.Send(TX_String, CR_Enable, LF_Enable);
-            });
-
-            Command_Send.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
-
             Command_ClearRX = ReactiveCommand.Create(() => { RX.Clear(); RX_String = RX.ToString(); });
+
+            Mode_Normal_VM = new ViewModel_NoProtocol_Mode_Normal(MessageBox);
+            Mode_Cycle_VM = new ViewModel_NoProtocol_Mode_Cycle(MessageBox);
+
+            this.WhenAnyValue(x => x.IsCycleMode)
+                .Subscribe(_ =>
+                {
+                    CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
+                });
         }        
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)

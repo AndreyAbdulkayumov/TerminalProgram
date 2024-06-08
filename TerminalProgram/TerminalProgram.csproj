@@ -64,4 +64,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Protocols\Modbus_Client_Mode_Normal.axaml" />
+  </ItemGroup>
 </Project>

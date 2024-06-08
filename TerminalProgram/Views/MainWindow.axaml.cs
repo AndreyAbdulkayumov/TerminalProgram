@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -98,6 +97,12 @@ public partial class MainWindow : Window
         }
     }
 
+    /********************************************************/
+    //
+    //  События окна
+    //
+    /********************************************************/
+
     private async void Window_Loaded(object? sender, RoutedEventArgs e)
     {
         await ViewModel.Command_UpdatePresets.Execute();
@@ -152,6 +157,12 @@ public partial class MainWindow : Window
     {
         this.Close();
     }
+
+    /********************************************************/
+    //
+    //  Обработчики кнопок
+    //
+    /********************************************************/
 
     private async void Button_OpenSettings_Click(object? sender, RoutedEventArgs e)
     {

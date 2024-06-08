@@ -6,9 +6,17 @@ using System.Reactive;
 
 namespace ViewModels.MainWindow
 {
-    public class ViewModel_NoProtocol_CycleMode : ReactiveObject, ICycleMode
+    public class ViewModel_NoProtocol_Mode_Cycle : ReactiveObject, ICycleMode
     {
         public event EventHandler<EventArgs>? DeviceIsDisconnected;
+
+        private bool ui_IsEnable = false;
+
+        public bool UI_IsEnable
+        {
+            get => ui_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
 
         #region Message
 
@@ -141,19 +149,20 @@ namespace ViewModels.MainWindow
         private readonly Action UI_State_Wait;
 
 
-        public ViewModel_NoProtocol_CycleMode(
-            Action<string, MessageType> MessageBox,
-            Action UI_State_Work,
-            Action UI_State_Wait
+        public ViewModel_NoProtocol_Mode_Cycle(
+            Action<string, MessageType> MessageBox
+            //Action UI_State_Work,
+            //Action UI_State_Wait
             )
         {
             Message = MessageBox;
 
-            this.UI_State_Work = UI_State_Work;
-            this.UI_State_Wait = UI_State_Wait;
+            //this.UI_State_Work = UI_State_Work;
+            //this.UI_State_Wait = UI_State_Wait;
 
             Model = ConnectedHost.Model;
 
+            Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             Model.NoProtocol.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
@@ -161,11 +170,17 @@ namespace ViewModels.MainWindow
             Command_Start_Stop_Polling = ReactiveCommand.Create(Start_Stop_Handler);
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
-            this.UI_State_Wait.Invoke();
+            this.UI_State_Wait?.Invoke();
+        }
+
+        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        {
+            UI_IsEnable = true;
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
+            UI_IsEnable = false;
             DeviceIsDisconnected?.Invoke(this, e);
         }
 
@@ -186,7 +201,7 @@ namespace ViewModels.MainWindow
             {                
                 Model.NoProtocol.CycleMode_Stop();
 
-                UI_State_Wait.Invoke();
+                UI_State_Wait?.Invoke();
 
                 Button_Content = Button_Content_Start;
                 IsStart = false;
@@ -218,7 +233,7 @@ namespace ViewModels.MainWindow
 
                 Model.NoProtocol.CycleMode_Start(Info);
 
-                UI_State_Work.Invoke();
+                UI_State_Work?.Invoke();
 
                 Button_Content = Button_Content_Stop;
                 IsStart = true;

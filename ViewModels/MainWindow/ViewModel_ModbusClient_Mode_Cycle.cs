@@ -10,7 +10,7 @@ using MessageBox_Core;
 
 namespace ViewModels.MainWindow
 {
-    public class ViewModel_ModbusClient_CycleMode : ReactiveObject, ICycleMode
+    public class ViewModel_ModbusClient_Mode_Cycle : ReactiveObject, ICycleMode
     {
         public event EventHandler<EventArgs>? DeviceIsDisconnected;
 
@@ -115,16 +115,16 @@ namespace ViewModels.MainWindow
         private const int TimeForReadHandler = 100;
 
 
-        public ViewModel_ModbusClient_CycleMode(
-            Action<string, MessageType> MessageBox,
-            Action UI_State_Work,
-            Action UI_State_Wait
+        public ViewModel_ModbusClient_Mode_Cycle(
+            Action<string, MessageType> MessageBox
+            //Action UI_State_Work,
+            //Action UI_State_Wait
             )
         {
             Message = MessageBox;
 
-            this.UI_State_Work = UI_State_Work;
-            this.UI_State_Wait = UI_State_Wait;
+            //this.UI_State_Work = UI_State_Work;
+            //this.UI_State_Wait = UI_State_Wait;
 
             Model = ConnectedHost.Model;
 
@@ -173,7 +173,7 @@ namespace ViewModels.MainWindow
                     }
                 });           
 
-            this.UI_State_Wait.Invoke();
+            this.UI_State_Wait?.Invoke();
         }
 
         public void SourceWindowClosingAction()
@@ -191,7 +191,7 @@ namespace ViewModels.MainWindow
         {
             if (IsStart)
             {
-                UI_State_Wait.Invoke();
+                UI_State_Wait?.Invoke();
 
                 Button_Content = Button_Content_Start;
                 IsStart = false;
@@ -226,7 +226,7 @@ namespace ViewModels.MainWindow
             {
                 Model.Modbus.CycleMode_Stop();
 
-                UI_State_Wait.Invoke();
+                UI_State_Wait?.Invoke();
 
                 Button_Content = Button_Content_Start;
                 IsStart = false;                
@@ -281,7 +281,7 @@ namespace ViewModels.MainWindow
                     NumberOfRegisters,
                     ViewModel_ModbusClient.ModbusMessageType is ModbusTCP_Message ? false : true);
 
-                UI_State_Work.Invoke();
+                UI_State_Work?.Invoke();
 
                 Button_Content = Button_Content_Stop;
                 IsStart = true;

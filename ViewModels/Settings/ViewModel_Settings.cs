@@ -10,14 +10,6 @@ namespace ViewModels.Settings
 {
     public class ViewModel_Settings : ReactiveObject
     {
-        private object? _currentViewModel;
-
-        public object? CurrentViewModel
-        {
-            get => _currentViewModel;
-            set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
-        }
-
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -118,7 +110,7 @@ namespace ViewModels.Settings
 
         private void UpdateUI(string FileName)
         {
-            DeviceData Settings = SettingsFile.Read(FileName);
+            DeviceData Settings = SettingsFile.ReadPreset(FileName);
 
             Tab_NoProtocol_VM.SelectedEncoding = Settings.GlobalEncoding ?? string.Empty;
 
@@ -164,7 +156,7 @@ namespace ViewModels.Settings
 
             if (FileName != null && FileName != String.Empty)
             {
-                SettingsFile.Save(FileName, DeviceData.GetDefault());
+                SettingsFile.SavePreset(FileName, DeviceData.GetDefault());
 
                 UpdateListOfPresets();
 
@@ -259,7 +251,7 @@ namespace ViewModels.Settings
                     }
                 };
 
-                SettingsFile.Save(SelectedPreset, Data);
+                SettingsFile.SavePreset(SelectedPreset, Data);
 
                 ViewModel_CommonUI.SettingsDocument = SelectedPreset;
 

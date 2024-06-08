@@ -1,0 +1,77 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+			 d:DesignWidth="1000" d:DesignHeight="150"
+             x:Class="TerminalProgram.Views.Protocols.NoProtocol_Mode_Normal">
+
+	<Grid Background="{DynamicResource MainWindow_Field_Color_Background}">
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="60"/>
+		</Grid.RowDefinitions>
+
+		<TextBox Grid.Row="0"
+				 Classes="TX_RX_Field"
+				 Margin="10,10,10,0"
+				 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+				 Text="{Binding TX_String, Mode=TwoWay}"/>
+
+		<Grid Grid.Row="1">
+
+			<TextBlock Text="Добавить в конце строки:"
+					   Foreground="{DynamicResource MainWindow_Color_Text}"
+					   FontSize="14"
+					   Margin="20,0,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+			<CheckBox x:Name="CheckBox_CR"
+					  Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Margin="210,2,0,0"
+					  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+					  IsChecked="{Binding CR_Enable, Mode=TwoWay}"
+					  Content="CR ( &#8216;\r &#8217;, 0x0D)"
+					  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+			<CheckBox x:Name="CheckBox_LF"
+					  Foreground="{DynamicResource MainWindow_Color_Text}"
+					  FontSize="14"
+					  Margin="350,2,0,0"
+					  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+					  IsChecked="{Binding LF_Enable, Mode=TwoWay}"
+					  Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+					  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+			<RadioButton x:Name="RadioButton_Char"
+						 Margin="0,0,210,0"
+						 Content="Символ"
+						 Foreground="{DynamicResource MainWindow_Color_Text}"
+						 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						 HorizontalAlignment="Right" VerticalAlignment="Center"
+						 Command="{Binding Command_Select_Char}"/>
+
+			<RadioButton x:Name="RadioButton_String"
+						 Margin="0,0,125,0"
+						 Content="Строка"
+						 IsChecked="True"
+						 Foreground="{DynamicResource MainWindow_Color_Text}"
+						 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						 HorizontalAlignment="Right" VerticalAlignment="Center"
+						 Command="{Binding Command_Select_String}"/>
+
+			<Button x:Name="Button_Send"
+					Margin="0,0,20,0"
+					Width="95"
+					Content="Отправить"
+					IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+					HorizontalAlignment="Right" VerticalAlignment="Center"
+					Command="{Binding Command_Send}"/>
+
+		</Grid>
+
+	</Grid>
+	
+</UserControl>

@@ -38,7 +38,7 @@
         /// <param name="FileName"></param>
         /// <param name="Data"></param>
         /// <exception cref="Exception"></exception>
-        public void Save(string FileName, DeviceData Data)
+        public void SavePreset(string FileName, DeviceData Data)
         {
             try
             {
@@ -66,7 +66,7 @@
         /// <param name="FileName"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public DeviceData Read(string FileName)
+        public DeviceData ReadPreset(string FileName)
         {
             try
             {

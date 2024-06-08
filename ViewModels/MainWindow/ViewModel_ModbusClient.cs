@@ -33,6 +33,14 @@ namespace ViewModels.MainWindow
 
     public class ViewModel_ModbusClient : ReactiveObject
     {
+        private object? _currentModeViewModel;
+
+        public object? CurrentModeViewModel
+        {
+            get => _currentModeViewModel;
+            set => this.RaiseAndSetIfChanged(ref _currentModeViewModel, value);
+        }
+
         #region Properties
 
         private bool ui_IsEnable = false;
@@ -41,6 +49,14 @@ namespace ViewModels.MainWindow
         {
             get => ui_IsEnable;
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
+
+        private bool _isCycleMode = false;
+
+        public bool IsCycleMode
+        {
+            get => _isCycleMode;
+            set => this.RaiseAndSetIfChanged(ref _isCycleMode, value);
         }
 
         private const string ModbusMode_Name_Default = "не определен";
@@ -245,6 +261,9 @@ namespace ViewModels.MainWindow
 
         private ModbusFunction? CurrentFunction;
 
+        private readonly ViewModel_ModbusClient_Mode_Normal Mode_Normal_VM;
+        private readonly ViewModel_ModbusClient_Mode_Cycle Mode_Cycle_VM;
+
 
         public ViewModel_ModbusClient(
             Func<Task> Open_ModbusScanner,
@@ -258,6 +277,9 @@ namespace ViewModels.MainWindow
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
+            Mode_Normal_VM = new ViewModel_ModbusClient_Mode_Normal(MessageBox);
+            Mode_Cycle_VM = new ViewModel_ModbusClient_Mode_Cycle(MessageBox);
 
             /****************************************************/
             //
@@ -338,6 +360,12 @@ namespace ViewModels.MainWindow
             Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);
 
             Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(Open_ModbusScanner);
+
+            this.WhenAnyValue(x => x.IsCycleMode)
+                .Subscribe(_ =>
+                {
+                    CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
+                });
 
             this.WhenAnyValue(x => x.Selected_Modbus_RTU_ASCII)
                 .WhereNotNull()
