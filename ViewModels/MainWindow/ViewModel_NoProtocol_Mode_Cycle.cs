@@ -6,10 +6,8 @@ using System.Reactive;
 
 namespace ViewModels.MainWindow
 {
-    public class ViewModel_NoProtocol_Mode_Cycle : ReactiveObject, ICycleMode
+    public class ViewModel_NoProtocol_Mode_Cycle : ReactiveObject
     {
-        public event EventHandler<EventArgs>? DeviceIsDisconnected;
-
         private bool ui_IsEnable = false;
 
         public bool UI_IsEnable
@@ -145,20 +143,13 @@ namespace ViewModels.MainWindow
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
-        private readonly Action UI_State_Work;
-        private readonly Action UI_State_Wait;
 
 
         public ViewModel_NoProtocol_Mode_Cycle(
             Action<string, MessageType> MessageBox
-            //Action UI_State_Work,
-            //Action UI_State_Wait
             )
         {
             Message = MessageBox;
-
-            //this.UI_State_Work = UI_State_Work;
-            //this.UI_State_Wait = UI_State_Wait;
 
             Model = ConnectedHost.Model;
 
@@ -167,10 +158,11 @@ namespace ViewModels.MainWindow
 
             Model.NoProtocol.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
 
-            Command_Start_Stop_Polling = ReactiveCommand.Create(Start_Stop_Handler);
+            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+            {
+                Start_Stop_Handler(!IsStart);
+            });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
-
-            this.UI_State_Wait?.Invoke();
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -181,7 +173,8 @@ namespace ViewModels.MainWindow
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             UI_IsEnable = false;
-            DeviceIsDisconnected?.Invoke(this, e);
+
+            Start_Stop_Handler(false);
         }
 
         private void NoProtocol_Model_ErrorInCycleMode(object? sender, string e)
@@ -195,20 +188,10 @@ namespace ViewModels.MainWindow
             Model.NoProtocol.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
         }
 
-        public void Start_Stop_Handler()
+        public void Start_Stop_Handler(bool StartPolling)
         {
-            if (IsStart)
-            {                
-                Model.NoProtocol.CycleMode_Stop();
-
-                UI_State_Wait?.Invoke();
-
-                Button_Content = Button_Content_Start;
-                IsStart = false;
-            }
-
-            else
-            {                
+            if (StartPolling)
+            {
                 Model.NoProtocol.CycleMode_Period = Message_Period_ms;
 
                 CycleModeParameters Info = new CycleModeParameters()
@@ -233,11 +216,17 @@ namespace ViewModels.MainWindow
 
                 Model.NoProtocol.CycleMode_Start(Info);
 
-                UI_State_Work?.Invoke();
-
                 Button_Content = Button_Content_Stop;
-                IsStart = true;
             }
+
+            else 
+            {                
+                Model.NoProtocol.CycleMode_Stop();
+
+                Button_Content = Button_Content_Start;
+            }
+
+            IsStart = StartPolling;
         }        
     }
 }

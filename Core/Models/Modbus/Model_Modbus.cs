@@ -303,7 +303,7 @@ namespace Core.Models.Modbus
             {
                 if (ReadRegisterInCycleMode != null)
                 {
-                    await ReadRegisterInCycleMode.Invoke();
+                    await ReadRegisterInCycleMode.Invoke(); 
                 }                
             }
 

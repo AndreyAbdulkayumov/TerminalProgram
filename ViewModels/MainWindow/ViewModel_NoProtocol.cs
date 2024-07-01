@@ -103,6 +103,11 @@ namespace ViewModels.MainWindow
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
                 {
+                    if (!IsCycleMode)
+                    {
+                        Mode_Cycle_VM.Start_Stop_Handler(false);
+                    }
+
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
         }        

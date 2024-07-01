@@ -16,6 +16,9 @@ namespace Core.Models.Settings
         // Папка с файлами настроек
         private const string SettingsFiles_FolderName = "Settings";
 
+        // Папка с файлами логов
+        private const string LogFiles_FolderName = "LogFiles";
+
         // Папка с общими файлами (сейчас общие файлы лежат в корне папки приложения)
         private readonly string CommonFiles_FolderName = string.Empty;
 
@@ -25,10 +28,19 @@ namespace Core.Models.Settings
         //
         /*******************************************************/
 
-        // Полный путь к папке настроек
+        /// <summary>
+        /// Полный путь к папке настроек
+        /// </summary>
         public readonly string SettingsFiles_Directory;
 
-        // Полный путь к папке с общими файлами
+        /// <summary>
+        /// Полный путь к папке файлов с логами
+        /// </summary>
+        public readonly string LogFiles_Directory;
+
+        /// <summary>
+        /// Полный путь к папке с общими файлами
+        /// </summary>
         public readonly string CommonFiles_Directory;
 
 
@@ -40,6 +52,8 @@ namespace Core.Models.Settings
             // Создание путей к папкам приложения
 
             SettingsFiles_Directory = Path.Combine(FolderInDocuments, SettingsFiles_FolderName);
+
+            LogFiles_Directory = Path.Combine(FolderInDocuments, LogFiles_FolderName);
 
             CommonFiles_Directory = Path.Combine(FolderInDocuments, CommonFiles_FolderName);
         }

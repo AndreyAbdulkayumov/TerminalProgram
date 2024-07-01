@@ -5,18 +5,24 @@ using System.Collections.ObjectModel;
 using Core.Models.Modbus;
 using System.Globalization;
 using System.Reactive.Linq;
-using Core.Models.Modbus.Message;
 using MessageBox_Core;
+using Core.Clients;
 
 namespace ViewModels.MainWindow
 {
-    public class ViewModel_ModbusClient_Mode_Cycle : ReactiveObject, ICycleMode
+    public class ViewModel_ModbusClient_Mode_Cycle : ReactiveObject
     {
-        public event EventHandler<EventArgs>? DeviceIsDisconnected;
+        private bool ui_IsEnable = false;
 
-        private byte _slaveID = 1;
+        public bool UI_IsEnable
+        {
+            get => ui_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+        }
 
-        public byte SlaveID
+        private string _slaveID;
+
+        public string SlaveID
         {
             get => _slaveID;
             set => this.RaiseAndSetIfChanged(ref _slaveID, value);
@@ -101,40 +107,45 @@ namespace ViewModels.MainWindow
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
-        private readonly Action UI_State_Work;
-        private readonly Action UI_State_Wait;
 
         private NumberStyles NumberViewStyle;
+
+        private byte SelectedSlaveID = 0;
         private UInt16 SelectedAddress = 0;
 
-        private ModbusReadFunction? ReadFunction;
-        private MessageData? Data;
+        private ModbusReadFunction ReadFunction;
 
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
         private const int TimeForReadHandler = 100;
 
+        private readonly Func<byte, UInt16, ModbusReadFunction, int, bool, Task> Modbus_Read;
+
+        private bool CheckSum_IsEnable;
+
 
         public ViewModel_ModbusClient_Mode_Cycle(
-            Action<string, MessageType> MessageBox
-            //Action UI_State_Work,
-            //Action UI_State_Wait
+            Action<string, MessageType> MessageBox,
+            Func<byte, UInt16, ModbusReadFunction, int, bool, Task> Modbus_Read
             )
         {
             Message = MessageBox;
 
-            //this.UI_State_Work = UI_State_Work;
-            //this.UI_State_Wait = UI_State_Wait;
+            this.Modbus_Read = Modbus_Read;
 
             Model = ConnectedHost.Model;
 
+            Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Period_ms = Model.Host_ReadTimeout + TimeForReadHandler;
+            Period_ms = 600;
             
-            Command_Start_Stop_Polling = ReactiveCommand.Create(Start_Stop_Handler);
+            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+            {
+                Start_Stop_Handler(!IsStart);
+            });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
             foreach (ModbusReadFunction element in Function.AllReadFunctions)
@@ -146,6 +157,10 @@ namespace ViewModels.MainWindow
 
             SelectedNumberFormat_Hex = true;
 
+            this.WhenAnyValue(x => x.SlaveID)
+                .WhereNotNull()
+                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedSlaveID))
+                .Subscribe(x => SlaveID = x);
 
             this.WhenAnyValue(x => x.Address)
                 .WhereNotNull()
@@ -171,9 +186,7 @@ namespace ViewModels.MainWindow
                     {
                         SelectNumberFormat_Dec();
                     }
-                });           
-
-            this.UI_State_Wait?.Invoke();
+                });
         }
 
         public void SourceWindowClosingAction()
@@ -182,17 +195,26 @@ namespace ViewModels.MainWindow
             Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
         }
 
+        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        {
+            UI_IsEnable = true;
+
+            CheckSum_IsEnable = e.ConnectedDevice is SerialPortClient;
+        }
+
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            DeviceIsDisconnected?.Invoke(this, e);
+            UI_IsEnable = false;
+
+            Start_Stop_Handler(false);
         }
 
         private void Modbus_Model_ErrorInCycleMode(object? sender, string e)
         {
+            Model.Modbus.CycleMode_Stop();
+
             if (IsStart)
             {
-                UI_State_Wait?.Invoke();
-
                 Button_Content = Button_Content_Start;
                 IsStart = false;
             }
@@ -220,154 +242,53 @@ namespace ViewModels.MainWindow
             }           
         }        
 
-        public void Start_Stop_Handler()
+        public void Start_Stop_Handler(bool StartPolling)
         {
-            if (IsStart)
+            if (StartPolling)
             {
-                Model.Modbus.CycleMode_Stop();
-
-                UI_State_Wait?.Invoke();
-
-                Button_Content = Button_Content_Start;
-                IsStart = false;                
+                StartAction();
+                Button_Content = Button_Content_Stop;
             }
 
             else
             {
-                if (Model.HostIsConnect == false)
-                {
-                    Message.Invoke("Modbus клиент отключен.", MessageType.Error);
-                    return;
-                }
-
-                if (Model.Modbus == null)
-                {
-                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Error);
-                    return;
-                }                
-
-                if (ViewModel_ModbusClient.ModbusMessageType == null)
-                {
-                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Error);
-                    return;
-                }
-
-                if (Period_ms < Model.Host_ReadTimeout + TimeForReadHandler)
-                {
-                    Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " + 
-                        TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
-                        "Таймаут чтения: " + Model.Host_ReadTimeout + " мс.", MessageType.Warning);
-
-                    return;
-                }
-
-                if (Address == null || Address == String.Empty)
-                {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
-                    return;
-                }
-
-                if (NumberOfRegisters == 0)
-                {
-                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
-                    return;
-                }
-
-                ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
-
-                Data = new ReadTypeMessage(
-                    SlaveID,
-                    SelectedAddress,
-                    NumberOfRegisters,
-                    ViewModel_ModbusClient.ModbusMessageType is ModbusTCP_Message ? false : true);
-
-                UI_State_Work?.Invoke();
-
-                Button_Content = Button_Content_Stop;
-                IsStart = true;
-
-                Model.Modbus.CycleMode_Period = Period_ms;
-                Model.Modbus.CycleMode_Start(ReadModbusRegister);
+                Model.Modbus.CycleMode_Stop();
+                Button_Content = Button_Content_Start;
             }
+            
+            IsStart = StartPolling;            
         }
 
-        private async Task ReadModbusRegister()
+        private void StartAction()
         {
-            byte[] RequestBytes = Array.Empty<byte>();
-            byte[] ResponseBytes = Array.Empty<byte>();
-
-            try
+            if (Address == null || Address == String.Empty)
             {
-                if (ReadFunction == null)
-                {
-                    throw new Exception("Не выбрана функция чтения.");
-                }
-
-                if (Data == null)
-                {
-                    throw new Exception("Не сформированы данные для опроса.");
-                }
-
-                if (ViewModel_ModbusClient.ModbusMessageType == null)
-                {
-                    throw new Exception("Не выбран тип протокола Modbus.");
-                }
-
-                ModbusOperationResult Result =
-                    await Model.Modbus.ReadRegister(
-                                ReadFunction,
-                                Data,
-                                ViewModel_ModbusClient.ModbusMessageType);
-
-                RequestBytes = Result.Details.RequestBytes != null ? Result.Details.RequestBytes : Array.Empty<byte>();
-
-                ResponseBytes = Result.Details.ResponseBytes != null ? Result.Details.ResponseBytes : Array.Empty<byte>();
-
-                //ViewModel_Modbus.AddDataOnView(new ModbusDataDisplayed()
-                //{
-                //    OperationID = ViewModel_Modbus.PackageNumber,
-                //    FuncNumber = ReadFunction.DisplayedNumber,
-                //    Address = SelectedAddress,
-                //    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, Result.ReadedData == null ? 0 : Result.ReadedData.Length),
-                //    Data = Result.ReadedData,
-                //    ViewData = ViewModel_Modbus.CreateViewData(Result.ReadedData)
-                //},
-                //RequestBytes,
-                //ResponseBytes);
+                Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                return;
             }
 
-            catch (ModbusException error)
+            if (NumberOfRegisters == 0)
             {
-                //ViewModel_Modbus.AddDataOnView(new ModbusDataDisplayed()
-                //{
-                //    OperationID = ViewModel_Modbus.PackageNumber,
-                //    FuncNumber = ReadFunction?.DisplayedNumber,
-                //    Address = SelectedAddress,
-                //    ViewAddress = ViewModel_Modbus.CreateViewAddress(SelectedAddress, 1),
-                //    Data = new UInt16[1],
-                //    ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
-                //},
-                //error.RequestBytes,
-                //error.ResponseBytes);
-
-                throw new Exception(
-                    "Ошибка Modbus.\n\n" +
-                    "Код функции: " + error.FunctionCode.ToString() + "\n" +
-                    "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
-                    error.Message);
+                Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                return;
             }
 
-            catch (Exception error)
+            if (Period_ms < Model.Host_ReadTimeout + TimeForReadHandler)
             {
-                ModbusExceptionInfo? Info = error.InnerException as ModbusExceptionInfo;
+                Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
+                    TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
+                    "Таймаут чтения: " + Model.Host_ReadTimeout + " мс.", MessageType.Warning);
 
-                if (Info != null)
-                {
-                    //ViewModel_Modbus.AddDataOnView(null, Info.Request, Info.Response);
-                }
-
-                throw new Exception("Возникла ошибка чтения Modbus регистра:\n\n" + error.Message);
+                return;
             }
+
+            ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+
+            Model.Modbus.CycleMode_Period = Period_ms;
+            Model.Modbus.CycleMode_Start(async () =>
+            {
+                await Modbus_Read(SelectedSlaveID, SelectedAddress, ReadFunction, NumberOfRegisters, CheckSum_IsEnable);
+            });
         }
     }
 }

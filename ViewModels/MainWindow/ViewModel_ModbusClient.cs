@@ -4,7 +4,6 @@ using ReactiveUI;
 using Core.Models;
 using Core.Models.Modbus;
 using Core.Models.Modbus.Message;
-using System.Globalization;
 using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
@@ -33,6 +32,10 @@ namespace ViewModels.MainWindow
 
     public class ViewModel_ModbusClient : ReactiveObject
     {
+        // Добавлять данные в DataGrid можно только из UI потока.
+        // Поэтому используется событие, обработчик которого вызывается в behind code у файла с разметкой DataGrid.
+        public static event EventHandler<ModbusDataDisplayed?>? AddDataOnTable;
+
         private object? _currentModeViewModel;
 
         public object? CurrentModeViewModel
@@ -99,14 +102,6 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
         }
 
-        private ObservableCollection<ModbusDataDisplayed> _dataInDataGrid = new ObservableCollection<ModbusDataDisplayed>();
-
-        public ObservableCollection<ModbusDataDisplayed> DataInDataGrid
-        {
-            get => _dataInDataGrid;
-            set => this.RaiseAndSetIfChanged(ref _dataInDataGrid, value);
-        }
-
         private ObservableCollection<RequestResponseField_ItemData> _requestResponseItems = new ObservableCollection<RequestResponseField_ItemData>();
 
         public ObservableCollection<RequestResponseField_ItemData> RequestResponseItems
@@ -123,120 +118,12 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _logData, value);
         }
 
-        private string? _slaveID;
-
-        public string? SlaveID
-        {
-            get => _slaveID;
-            set => this.RaiseAndSetIfChanged(ref _slaveID, value);
-        }
-
-        private bool _checkSum_Enable;
-
-        public bool CheckSum_Enable
-        {
-            get => _checkSum_Enable;
-            set => this.RaiseAndSetIfChanged(ref _checkSum_Enable, value);
-        }
-
-        private bool _checkSum_IsVisible;
-
-        public bool CheckSum_IsVisible
-        {
-            get => _checkSum_IsVisible;
-            set => this.RaiseAndSetIfChanged(ref _checkSum_IsVisible, value);
-        }
-
-        private bool _selectedNumberFormat_Hex;
-
-        public bool SelectedNumberFormat_Hex
-        {
-            get => _selectedNumberFormat_Hex;
-            set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Hex, value);
-        }
-
-        private bool _selectedNumberFormat_Dec;
-
-        public bool SelectedNumberFormat_Dec
-        {
-            get => _selectedNumberFormat_Dec;
-            set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Dec, value);
-        }
-
-        private string? _numberFormat;
-
-        public string? NumberFormat
-        {
-            get => _numberFormat;
-            set => this.RaiseAndSetIfChanged(ref _numberFormat, value);
-        }
-
-        private string? _address;
-
-        public string? Address
-        {
-            get => _address;
-            set => this.RaiseAndSetIfChanged(ref _address, value);
-        }
-
-        private string? _numberOfRegisters;
-
-        public string? NumberOfRegisters
-        {
-            get => _numberOfRegisters;
-            set => this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
-        }
-
-        private string? _writeData;
-
-        public string? WriteData
-        {
-            get => _writeData;
-            set => this.RaiseAndSetIfChanged(ref _writeData, value);
-        }
-
-        private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
-
-        public ObservableCollection<string> ReadFunctions
-        {
-            get => _readFunctions;
-            set => this.RaiseAndSetIfChanged(ref _readFunctions, value);
-        }
-
-        private string? _selectedReadFunction;
-
-        public string? SelectedReadFunction
-        {
-            get => _selectedReadFunction;
-            set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
-        }
-
-        private ObservableCollection<string> _writeFunctions = new ObservableCollection<string>();
-
-        public ObservableCollection<string> WriteFunctions
-        {
-            get => _writeFunctions;
-            set => this.RaiseAndSetIfChanged(ref _writeFunctions, value);
-        }
-
-        private string? _selectedWriteFunction;
-
-        public string? SelectedWriteFunction
-        {
-            get => _selectedWriteFunction;
-            set => this.RaiseAndSetIfChanged(ref _selectedWriteFunction, value);
-        }
-
         #endregion
 
         #region Commands
 
         public ReactiveCommand<Unit, Unit> Command_Open_ModbusScanner { get; }
-
         public ReactiveCommand<Unit, Unit> Command_ClearData { get; }
-
-        public ReactiveCommand<Unit, Unit> Command_Write { get; }
-        public ReactiveCommand<Unit, Unit> Command_Read { get; }        
 
         public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
         public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }
@@ -249,15 +136,7 @@ namespace ViewModels.MainWindow
 
         public static ModbusMessage? ModbusMessageType { get; private set; }
 
-        private readonly List<UInt16> WriteBuffer = new List<UInt16>();
-
-        private NumberStyles NumberViewStyle;
-
-        public static UInt16 PackageNumber { get; private set; } = 0;
-
-        private byte SelectedSlaveID = 0;
-        private UInt16 SelectedAddress = 0;
-        private UInt16 SelectedNumberOfRegisters = 1;
+        private UInt16 PackageNumber = 0;
 
         private ModbusFunction? CurrentFunction;
 
@@ -278,8 +157,8 @@ namespace ViewModels.MainWindow
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Mode_Normal_VM = new ViewModel_ModbusClient_Mode_Normal(MessageBox);
-            Mode_Cycle_VM = new ViewModel_ModbusClient_Mode_Cycle(MessageBox);
+            Mode_Normal_VM = new ViewModel_ModbusClient_Mode_Normal(MessageBox, Modbus_Write, Modbus_Read);
+            Mode_Cycle_VM = new ViewModel_ModbusClient_Mode_Cycle(MessageBox, Modbus_Read);
 
             /****************************************************/
             //
@@ -290,25 +169,6 @@ namespace ViewModels.MainWindow
             Selected_Modbus_RTU_ASCII = Modbus_RTU_ASCII.First();
 
             ModbusMode_Name = ModbusMode_Name_Default;
-
-            CheckSum_Enable = true;
-            CheckSum_IsVisible = true;
-
-            SelectedNumberFormat_Hex = true;
-
-            foreach (ModbusReadFunction element in Function.AllReadFunctions)
-            {
-                ReadFunctions.Add(element.DisplayedName);
-            }
-
-            SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
-
-            foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
-            {
-                WriteFunctions.Add(element.DisplayedName);
-            }
-
-            SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
 
             /****************************************************/
             //
@@ -348,22 +208,25 @@ namespace ViewModels.MainWindow
             });
             Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
+            Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(Open_ModbusScanner);
+
             Command_ClearData = ReactiveCommand.Create(() =>
             {
-                DataInDataGrid.Clear();
+                AddDataOnTable?.Invoke(this, null);
+
                 RequestResponseItems.Clear();
                 LogData = string.Empty;
             });
             Command_ClearData.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
 
-            Command_Write = ReactiveCommand.CreateFromTask(Modbus_Write);
-            Command_Read = ReactiveCommand.CreateFromTask(Modbus_Read);
-
-            Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(Open_ModbusScanner);
-
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
                 {
+                    if (!IsCycleMode)
+                    {
+                        Mode_Cycle_VM.Start_Stop_Handler(false);
+                    }
+
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
 
@@ -390,150 +253,6 @@ namespace ViewModels.MainWindow
                         }
                     }
                 });
-
-            this.WhenAnyValue(x => x.SlaveID)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedSlaveID))
-                .Subscribe(x => SlaveID = x);
-
-            this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
-                .Subscribe(values =>
-                {
-                    if (values.Item1 == true && values.Item2 == true)
-                    {
-                        return;
-                    }
-
-                    // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
-                    if (values.Item1)
-                    {
-                        SelectNumberFormat_Hex();
-                    }
-
-                    // Выбран десятичный формат числа в полях Адрес и Данные
-                    else if (values.Item2)
-                    {
-                        SelectNumberFormat_Dec();
-                    }
-                });
-
-            this.WhenAnyValue(x => x.Address)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedAddress))
-                .Subscribe(x => Address = x.ToUpper());
-
-            this.WhenAnyValue(x => x.NumberOfRegisters)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedNumberOfRegisters))
-                .Subscribe(x => NumberOfRegisters = x);
-
-            this.WhenAnyValue(x => x.SelectedWriteFunction)
-                .WhereNotNull()
-                .Where(x => x != String.Empty)
-                .Subscribe(_ => WriteData = String.Empty);
-
-            this.WhenAnyValue(x => x.WriteData)
-                .WhereNotNull()
-                .Subscribe(x => WriteData = WriteData_TextChanged(x));
-        }
-
-        public void SelectNumberFormat_Hex()
-        {
-            NumberFormat = "(hex)";
-            NumberViewStyle = NumberStyles.HexNumber;
-
-            if (Address != null)
-            {
-                Address = Convert.ToInt32(Address).ToString("X");
-            }            
-
-            WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
-        }
-
-        private void SelectNumberFormat_Dec()
-        {
-            NumberFormat = "(dec)";
-            NumberViewStyle = NumberStyles.Number;
-
-            if (Address != null)
-            {
-                Address = Int32.Parse(Address, NumberStyles.HexNumber).ToString();
-            }            
-
-            WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
-        }
-
-        private string ConvertDataTextIn(NumberStyles Style, string? Text)
-        {
-            if (Text == null)
-            {
-                return String.Empty;
-            }
-
-            string[] SplitString = Text.Split(' ');
-
-            string[] Values = SplitString.Where(element => element != "").ToArray();
-
-            string DataString = "";
-
-            if (Style == NumberStyles.Number)
-            {
-                foreach (string element in Values)
-                {
-                    DataString += Int32.Parse(element, NumberStyles.HexNumber).ToString() + " ";
-                }
-            }
-
-            else if (Style == NumberStyles.HexNumber)
-            {
-                foreach (string element in Values)
-                {
-                    DataString += Convert.ToInt32(element).ToString("X") + " ";
-                }
-            }
-
-            return DataString;
-        }
-
-        private string WriteData_TextChanged(string EnteredText)
-        {
-            try
-            {
-                if (SelectedWriteFunction == Function.PresetMultipleRegisters.DisplayedName ||
-                    SelectedWriteFunction == Function.ForceMultipleCoils.DisplayedName)
-                {
-                    WriteBuffer.Clear();
-
-                    string[] SplitString = EnteredText.Split(' ');
-
-                    string[] Values = SplitString.Where(element => element != "").ToArray();
-
-                    UInt16 Buffer = 0;
-
-                    for (int i = 0; i < Values.Length; i++)
-                    {
-                        Values[i] = StringValue.CheckNumber(Values[i], NumberViewStyle, out Buffer);
-                        WriteBuffer.Add(Buffer);
-                    }
-
-                    // Если при второй итерации последний элемент в SplitString равен "",
-                    // то в конце был пробел.
-                    return string.Join(" ", Values).ToUpper() + (SplitString.Last() == "" ? " " : "");
-                }
-
-                else
-                {
-                    return StringValue.CheckNumber(WriteData, NumberViewStyle, out UInt16 _).ToUpper();
-                }
-            }
-
-            catch (Exception error)
-            {
-                Message.Invoke("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
-                    error.Message, MessageType.Error);
-
-                return String.Empty;
-            }
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -541,8 +260,6 @@ namespace ViewModels.MainWindow
             if (e.ConnectedDevice is IPClient)
             {
                 ModbusMessageType = new ModbusTCP_Message();
-
-                CheckSum_IsVisible = false;
 
                 Connection_IsSerialPort = false;
             }
@@ -565,8 +282,6 @@ namespace ViewModels.MainWindow
                     return;
                 }
 
-                CheckSum_IsVisible = true;
-
                 Connection_IsSerialPort = true;
             }
 
@@ -575,8 +290,6 @@ namespace ViewModels.MainWindow
                 Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
                 return;
             }
-
-            WriteBuffer.Clear();
 
             ModbusMode_Name = ModbusMessageType.ProtocolName;
 
@@ -587,8 +300,6 @@ namespace ViewModels.MainWindow
         {
             UI_IsEnable = false;
 
-            CheckSum_IsVisible = true;
-
             Connection_IsSerialPort = false;
 
             ModbusMode_Name = ModbusMode_Name_Default;
@@ -596,7 +307,7 @@ namespace ViewModels.MainWindow
             PackageNumber = 0;
         }
 
-        private async Task Modbus_Write()
+        private async Task Modbus_Write(byte SlaveID, UInt16 Address, ModbusWriteFunction WriteFunction, UInt16[] ModbusWriteData, bool CheckSum_Enable)
         {
             byte[] RequestBytes = Array.Empty<byte>();
             byte[] ResponseBytes = Array.Empty<byte>();
@@ -615,46 +326,11 @@ namespace ViewModels.MainWindow
                     return;
                 }
 
-                if (SlaveID == null || SlaveID == String.Empty)
-                {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
-                    return;
-                }
-
-                if (Address == null || Address == String.Empty)
-                {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
-                    return;
-                }
-
-                if (WriteData == null || WriteData == String.Empty)
-                {
-                    Message.Invoke("Укажите данные для записи в Modbus регистр.", MessageType.Warning);
-                    return;
-                }
-
-                ModbusWriteFunction WriteFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
-
                 CurrentFunction = WriteFunction;
-
-                UInt16[] ModbusWriteData;
-
-                if (WriteFunction == Function.PresetMultipleRegisters ||
-                    WriteFunction == Function.ForceMultipleCoils)
-                {
-                    ModbusWriteData = WriteBuffer.ToArray();
-                }
-
-                else
-                {
-                    ModbusWriteData = new UInt16[1];
-
-                    StringValue.CheckNumber(WriteData, NumberViewStyle, out ModbusWriteData[0]);
-                }
                                 
                 MessageData Data = new WriteTypeMessage(
-                    SelectedSlaveID,
-                    SelectedAddress,
+                    SlaveID,
+                    Address,
                     ModbusWriteData,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);                                
 
@@ -668,8 +344,8 @@ namespace ViewModels.MainWindow
                 {
                     OperationID = PackageNumber,
                     FuncNumber = WriteFunction.DisplayedNumber,
-                    Address = SelectedAddress,
-                    ViewAddress = CreateViewAddress(SelectedAddress, ModbusWriteData.Length),
+                    Address = Address,
+                    ViewAddress = CreateViewAddress(Address, ModbusWriteData.Length),
                     Data = ModbusWriteData,
                     ViewData = CreateViewData(ModbusWriteData)
                 },
@@ -678,7 +354,7 @@ namespace ViewModels.MainWindow
 
             catch (ModbusException error)
             {
-                ModbusErrorHandler(error);
+                ModbusErrorHandler(Address, error);
             }
 
             catch (Exception error)
@@ -690,11 +366,11 @@ namespace ViewModels.MainWindow
                     AddDataOnView(null, Info.Details);
                 }
 
-                Message.Invoke("Возникла ошибка при нажатии на кнопку \"Записать\":\n\n" + error.Message, MessageType.Error);
+                Message.Invoke("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error);
             }
         }
 
-        private async Task Modbus_Read()
+        private async Task Modbus_Read(byte SlaveID, UInt16 Address, ModbusReadFunction ReadFunction, int NumberOfRegisters, bool CheckSum_Enable)
         {
             ModbusOperationResult? Result;
 
@@ -703,6 +379,12 @@ namespace ViewModels.MainWindow
 
             try
             {
+                if (Model.HostIsConnect == false)
+                {
+                    Message.Invoke("Modbus клиент отключен.", MessageType.Error);
+                    return;
+                }
+
                 if (Model.Modbus == null)
                 {
                     Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
@@ -715,38 +397,12 @@ namespace ViewModels.MainWindow
                     return;
                 }
 
-                if (SlaveID == null || SlaveID == String.Empty)
-                {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
-                    return;
-                }
-
-                if (Address == null || Address == String.Empty)
-                {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
-                    return;
-                }
-
-                if (NumberOfRegisters == null || NumberOfRegisters == String.Empty)
-                {
-                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
-                    return;
-                }
-
-                if (SelectedNumberOfRegisters < 1)
-                {
-                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
-                    return;
-                }
-
-                ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
-
                 CurrentFunction = ReadFunction;               
 
                 MessageData Data = new ReadTypeMessage(
-                    SelectedSlaveID,
-                    SelectedAddress,
-                    SelectedNumberOfRegisters,
+                    SlaveID,
+                    Address,
+                    NumberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);
                                 
                 Result = await Model.Modbus.ReadRegister(
@@ -758,8 +414,8 @@ namespace ViewModels.MainWindow
                 {
                     OperationID = PackageNumber,
                     FuncNumber = ReadFunction.DisplayedNumber,
-                    Address = SelectedAddress,
-                    ViewAddress = CreateViewAddress(SelectedAddress, Result.ReadedData == null ? 0 : Result.ReadedData.Length),
+                    Address = Address,
+                    ViewAddress = CreateViewAddress(Address, Result.ReadedData == null ? 0 : Result.ReadedData.Length),
                     Data = Result.ReadedData,
                     ViewData = CreateViewData(Result.ReadedData)
                 },
@@ -768,7 +424,7 @@ namespace ViewModels.MainWindow
 
             catch (ModbusException error)
             {
-                ModbusErrorHandler(error);
+                ModbusErrorHandler(Address, error);
             }
 
             catch (Exception error)
@@ -780,18 +436,18 @@ namespace ViewModels.MainWindow
                     AddDataOnView(null, Info.Details);
                 }                
 
-                Message.Invoke("Возникла ошибка при нажатии нажатии на кнопку \"Прочитать\": \n\n" + error.Message, MessageType.Error);
+                Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error);
             }
         }
 
-        private void ModbusErrorHandler(ModbusException error)
+        private void ModbusErrorHandler(UInt16 Address, ModbusException error)
         {
             AddDataOnView(new ModbusDataDisplayed()
             {
                 OperationID = PackageNumber,
                 FuncNumber = CurrentFunction?.DisplayedNumber,
-                Address = SelectedAddress,
-                ViewAddress = CreateViewAddress(SelectedAddress, 1),
+                Address = Address,
+                ViewAddress = CreateViewAddress(Address, 1),
                 Data = new UInt16[1],
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             },
@@ -879,7 +535,7 @@ namespace ViewModels.MainWindow
 
             if (Data != null)
             {
-                DataInDataGrid.Add(Data);
+                AddDataOnTable?.Invoke(this, Data);
             }            
 
             PackageNumber++;

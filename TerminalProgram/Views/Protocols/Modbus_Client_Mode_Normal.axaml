@@ -3,13 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="500" d:DesignHeight="350"
+			 d:DesignWidth="500" d:DesignHeight="320"
              x:Class="TerminalProgram.Views.Protocols.Modbus_Client_Mode_Normal">
 
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/RadioButton.axaml"/>
 
 		<Style Selector="ComboBox.Functions">
 			<Setter Property="FontSize" Value="14"/>
@@ -45,20 +46,18 @@
 
 				<Grid>
 
-					<Button Content="Сканнер"
-							IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							Width="80" Height="32"
-							HorizontalAlignment="Left" VerticalAlignment="Center"
-							HorizontalContentAlignment="Center"
-							VerticalContentAlignment="Center"
-							Command="{Binding Command_Open_ModbusScanner}"/>
-
 					<TextBlock Text="Slave ID"
 							   FontSize="16"
 							   Foreground="{DynamicResource MainWindow_Color_Text}"
-							   Margin="95,0,0,0"
+							   Margin="50,0,0,0"
 							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
+					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+							   FontSize="16"
+							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+							   Margin="120,0,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					
 					<TextBox Classes="InputField"
 							 Width="50"
 							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"

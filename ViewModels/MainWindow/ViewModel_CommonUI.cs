@@ -279,14 +279,17 @@ namespace ViewModels.MainWindow
             {
                 case AppMode.NoProtocol:
                     CurrentViewModel = NoProtocol_VM;
+                    Model.SetProtocol_NoProtocol();
                     break;
 
                 case AppMode.ModbusClient:
                     CurrentViewModel = ModbusClient_VM;
+                    Model.SetProtocol_Modbus();
                     break;
 
                 default:
                     CurrentViewModel = NoProtocol_VM;
+                    Model.SetProtocol_NoProtocol();
                     SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
                     break;
             }
