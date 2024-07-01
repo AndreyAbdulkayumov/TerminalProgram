@@ -20,9 +20,9 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
         }
 
-        private string _slaveID;
+        private string? _slaveID;
 
-        public string SlaveID
+        public string? SlaveID
         {
             get => _slaveID;
             set => this.RaiseAndSetIfChanged(ref _slaveID, value);
@@ -112,8 +112,6 @@ namespace ViewModels.MainWindow
 
         private byte SelectedSlaveID = 0;
         private UInt16 SelectedAddress = 0;
-
-        private ModbusReadFunction ReadFunction;
 
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient

@@ -60,7 +60,10 @@ public partial class MainWindow : Window
 
         dataObject.Set(DataFormats.Text, Data);
 
-        await clipboard.SetDataObjectAsync(dataObject);
+        if (clipboard != null)
+        {
+            await clipboard.SetDataObjectAsync(dataObject);
+        }        
     }
 
     private void Set_Dark_Theme()
