@@ -165,6 +165,7 @@ namespace ViewModels.MainWindow
 
 
         public ViewModel_CommonUI(
+            Func<Action, Task> RunInUIThread,
             Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
             Action Set_Dark_Theme_Handler,
@@ -185,7 +186,7 @@ namespace ViewModels.MainWindow
             StringValue.ShowMessageView = Message;
 
             NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
-            ModbusClient_VM = new ViewModel_ModbusClient(Open_ModbusScanner, MessageBox, CopyToClipboard);
+            ModbusClient_VM = new ViewModel_ModbusClient(RunInUIThread, Open_ModbusScanner, MessageBox, CopyToClipboard);
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;

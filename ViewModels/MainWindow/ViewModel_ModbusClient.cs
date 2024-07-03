@@ -132,6 +132,8 @@ namespace ViewModels.MainWindow
 
         private readonly ConnectedHost Model;
 
+        private readonly Func<Action, Task> RunInUIThread;
+
         private readonly Action<string, MessageType> Message;
 
         public static ModbusMessage? ModbusMessageType { get; private set; }
@@ -145,11 +147,14 @@ namespace ViewModels.MainWindow
 
 
         public ViewModel_ModbusClient(
+            Func<Action, Task> RunInUIThread,
             Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
             Func<string, Task> CopyToClipboard
             )
         {
+            this.RunInUIThread = RunInUIThread;
+
             Message = MessageBox;
 
             Model = ConnectedHost.Model;
@@ -505,9 +510,11 @@ namespace ViewModels.MainWindow
 
                 // Добавление данных в "Последний запрос"
 
-                RequestResponseItems.Clear();
-                RequestResponseItems.AddRange(GetDataForLastRequest(Request.Bytes, Response.Bytes));
-
+                RunInUIThread.Invoke(() => {
+                    RequestResponseItems.Clear();
+                    RequestResponseItems.AddRange(GetDataForLastRequest(Request.Bytes, Response.Bytes));
+                });
+                
                 // Добавление данных в "Лог"
 
                 if (LogData != string.Empty)

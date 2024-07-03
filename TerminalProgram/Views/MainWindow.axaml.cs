@@ -24,13 +24,20 @@ public partial class MainWindow : Window
 
     private readonly IMessageBox Message;
 
+    private readonly double WorkspaceOpacity_Default;
+    private readonly double WorkspaceOpacity_OpenChildWindow = 0.3;
+
+
     public MainWindow()
     {
         InitializeComponent();
 
+        WorkspaceOpacity_Default = Grid_Workspace.Opacity;
+
         Message = new MessageBox(this, "Терминальная программа");
 
         ViewModel = new ViewModel_CommonUI(
+                RunInUIThread,
                 OpenWindow_ModbusScanner,
                 Message.Show,
                 Set_Dark_Theme,
@@ -41,9 +48,14 @@ public partial class MainWindow : Window
         DataContext = ViewModel;
     }
 
+    private async Task RunInUIThread(Action RunnedAction)
+    {
+        await Dispatcher.UIThread.InvokeAsync(RunnedAction);
+    }
+
     private async Task OpenWindow_ModbusScanner()
     {
-        await Dispatcher.UIThread.Invoke(async () =>
+        await OpenWindowWithDimmer(async () =>
         {
             ModbusScannerWindow window = new ModbusScannerWindow();
 
@@ -169,17 +181,41 @@ public partial class MainWindow : Window
 
     private async void Button_OpenSettings_Click(object? sender, RoutedEventArgs e)
     {
-        SettingsWindow window = new SettingsWindow(Message, Set_Dark_Theme, Set_Light_Theme);
+        await OpenWindowWithDimmer(async () =>
+        {
+            SettingsWindow window = new SettingsWindow(Message, Set_Dark_Theme, Set_Light_Theme);
 
-        await window.ShowDialog(this);
+            await window.ShowDialog(this);
 
-        await ViewModel.Command_UpdatePresets.Execute();
+            await ViewModel.Command_UpdatePresets.Execute();
+        });
     }
 
     private async void Button_About_Click(object? sender, RoutedEventArgs e)
     {
-        AboutWindow window = new AboutWindow();
+        await OpenWindowWithDimmer(async () =>
+        {
+            AboutWindow window = new AboutWindow();
 
-        await window.ShowDialog(this);
+            await window.ShowDialog(this);
+        });
+    }
+
+    /********************************************************/
+    //
+    //  Служебный функционал
+    //
+    /********************************************************/
+
+    private async Task OpenWindowWithDimmer(Func<Task> OpenAction)
+    {
+        await Dispatcher.UIThread.Invoke(async () =>
+        {
+            Grid_Workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
+
+            await OpenAction();
+
+            Grid_Workspace.Opacity = WorkspaceOpacity_Default;
+        });
     }
 }
