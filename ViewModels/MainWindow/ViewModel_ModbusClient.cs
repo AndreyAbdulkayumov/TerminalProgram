@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
 using DynamicData;
+using System.Xml.Linq;
 
 namespace ViewModels.MainWindow
 {
@@ -18,6 +19,23 @@ namespace ViewModels.MainWindow
         public string? RequestData { get; set; }
         public string? ResponseDataType { get; set; }
         public string? ResponseData { get; set; }
+    }
+
+    public class BinaryRepresentation_ItemData
+    {
+        public string? Address { get; set; }
+        public BinaryDataItemGroup[]? BinaryData { get; set; }
+    }
+
+    public class BinaryDataItemGroup
+    {
+        public BinaryDataItem[]? GroupData { get; set; }
+    }
+
+    public class BinaryDataItem
+    {
+        public string? Bit { get; set; } = "0";
+        public bool IsChange { get; set; } = true;
     }
 
     public class ModbusDataDisplayed
@@ -102,6 +120,10 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
         }
 
+        #endregion
+
+        #region Representations Data
+
         private ObservableCollection<RequestResponseField_ItemData> _requestResponseItems = new ObservableCollection<RequestResponseField_ItemData>();
 
         public ObservableCollection<RequestResponseField_ItemData> RequestResponseItems
@@ -111,11 +133,19 @@ namespace ViewModels.MainWindow
         }
 
         private string _logData = string.Empty;
-        
+
         public string LogData
         {
             get => _logData;
             set => this.RaiseAndSetIfChanged(ref _logData, value);
+        }
+
+        private ObservableCollection<BinaryRepresentation_ItemData> _binaryRepresentationItems = new ObservableCollection<BinaryRepresentation_ItemData>();
+
+        public ObservableCollection<BinaryRepresentation_ItemData> BinaryRepresentationItems
+        {
+            get => _binaryRepresentationItems;
+            set => this.RaiseAndSetIfChanged(ref _binaryRepresentationItems, value);
         }
 
         #endregion
@@ -127,6 +157,8 @@ namespace ViewModels.MainWindow
 
         public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
         public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }
+
+        public ReactiveCommand<Unit, Unit> Command_Copy_BinaryWord { get; }
 
         #endregion
 
@@ -171,6 +203,95 @@ namespace ViewModels.MainWindow
             //
             /****************************************************/
 
+            // DEMO
+
+            //BinaryRepresentationItems.Add(
+            //    new BinaryRepresentation_ItemData() 
+            //    { 
+            //        Address = "0x0AB1", 
+            //        BinaryData = [ 
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "1", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                ]
+            //            },
+
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = true },
+            //                ]
+            //            },
+
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "1", IsChange = true },
+            //                ]
+            //            },
+
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "1", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = true },
+            //                ]
+            //            },
+            //        ],
+            //    });
+
+            //BinaryRepresentationItems.Add(
+            //    new BinaryRepresentation_ItemData()
+            //    {
+            //        Address = "0x0001",
+            //        BinaryData = [
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "1", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                ]
+            //            },
+
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "1", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                ]
+            //            },
+
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = true },
+            //                ]
+            //            },
+
+            //            new BinaryDataItemGroup() {
+            //                GroupData = [
+            //                    new BinaryDataItem() { Bit = "1", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = true },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                    new BinaryDataItem() { Bit = "0", IsChange = false },
+            //                ]
+            //            },
+            //        ],
+            //    });
+
+
             Selected_Modbus_RTU_ASCII = Modbus_RTU_ASCII.First();
 
             ModbusMode_Name = ModbusMode_Name_Default;
@@ -212,6 +333,12 @@ namespace ViewModels.MainWindow
                 await CopyToClipboard(Data);
             });
             Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+
+            Command_Copy_BinaryWord = ReactiveCommand.CreateFromTask(async () =>
+            {
+                await CopyToClipboard("Test Data");
+            });
+            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
             Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(Open_ModbusScanner);
 
@@ -501,8 +628,65 @@ namespace ViewModels.MainWindow
             return (DataBytes, StringForLog);
         }
 
+        private BinaryRepresentation_ItemData GetBinaryRepresentation(UInt16 Address, string InputData)
+        {
+            char[] BitsValue = InputData.ToCharArray();
+
+            List<BinaryDataItemGroup> ItemGroup = new List<BinaryDataItemGroup>();
+
+            List<BinaryDataItem> Items = new List<BinaryDataItem>();
+
+            for (int i = 0; i < BitsValue.Length; i++)
+            {
+                BinaryDataItem Item = new BinaryDataItem()
+                {
+                    Bit = BitsValue[i].ToString(),
+                    IsChange = false
+                };
+
+                Items.Add(Item);
+
+                if ((i + 1) % 4 == 0)
+                {
+                    ItemGroup.Add(new BinaryDataItemGroup() { GroupData = Items.ToArray() });
+                    Items.Clear();
+                }
+            }
+
+            return new BinaryRepresentation_ItemData()
+            {
+                Address = Address.ToString("X2"),
+                BinaryData = ItemGroup.ToArray()
+            };
+        }
+
         public void AddDataOnView(ModbusDataDisplayed? Data, ModbusActionDetails? Details)
         {
+            // Добавление строки в таблицу 
+
+            if (Data != null)
+            {
+                AddDataOnTable?.Invoke(this, Data);
+
+                string[]? Words = Data.Data?.Select(e => Convert.ToString(e, 2).PadLeft(16, '0')).ToArray();
+
+                List<BinaryRepresentation_ItemData> qw = new List<BinaryRepresentation_ItemData>();
+
+                UInt16 CurrentAddress = Data.Address;
+
+                foreach (string element in Words)
+                {
+                    qw.Add(GetBinaryRepresentation(CurrentAddress, element));
+                    CurrentAddress += 1;
+                }
+
+                RunInUIThread.Invoke(() =>
+                {
+                    BinaryRepresentationItems.Clear();
+                    BinaryRepresentationItems.AddRange(qw);
+                });                    
+            }
+
             if (Details != null)
             {
                 (string[] Bytes, string LogString) Request = ParseData(Details.RequestBytes);
@@ -510,7 +694,8 @@ namespace ViewModels.MainWindow
 
                 // Добавление данных в "Последний запрос"
 
-                RunInUIThread.Invoke(() => {
+                RunInUIThread.Invoke(() => 
+                {
                     RequestResponseItems.Clear();
                     RequestResponseItems.AddRange(GetDataForLastRequest(Request.Bytes, Response.Bytes));
                 });
@@ -537,13 +722,6 @@ namespace ViewModels.MainWindow
                     LogData += Details.Response_ExecutionTime.ToString("HH : mm : ss . fff") + "   <-   " + Response.LogString;
                 }
             }
-
-            // Добавление строки в таблицу 
-
-            if (Data != null)
-            {
-                AddDataOnTable?.Invoke(this, Data);
-            }            
 
             PackageNumber++;
         }

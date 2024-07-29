@@ -18,11 +18,11 @@
 		Background="Transparent"
 		KeyDown="Window_KeyDown">
 
-	<Window.Styles>
+	<!--<Window.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
 		
-	</Window.Styles>
+	</Window.Styles>-->
 
 	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
 			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"

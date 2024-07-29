@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" Height="160"
-             x:Class="TerminalProgram.Views.Protocols.Modbus_Client_LastRequest">
+             x:Class="TerminalProgram.Views.Protocols.ModbusRepresentations.LastRequest">
 	
 	
 	<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
@@ -31,11 +31,11 @@
 				</Grid.RowDefinitions>
 				
 				<TextBlock Grid.Row="1"
-                       Text="Запрос"
-                       FontSize="16"
-                       Foreground="{DynamicResource MainWindow_Color_Text}"
-                       Margin="0,0,10,0"
-                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+						   Text="Запрос"
+                           FontSize="16"
+                           Foreground="{DynamicResource MainWindow_Color_Text}"
+                           Margin="0,0,10,0"
+                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
 				<TextBlock Grid.Row="2"
 						   Text="Ответ"
