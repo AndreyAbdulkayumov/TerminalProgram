@@ -71,4 +71,8 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Protocols\Modbus_Client_Mode_Normal.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Styles\TabItem.axaml" />
+  </ItemGroup>
 </Project>

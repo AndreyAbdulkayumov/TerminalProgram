@@ -24,6 +24,7 @@
 		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/TabItem.axaml"/>
 	
 	</Window.Styles>
 	
@@ -180,36 +181,20 @@
 
 						<TabControl >
 
-							<TabItem Header="Подключение"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
-									 FontSize="16">
-
+							<TabItem Header="Подключение">
 								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
-
 							</TabItem>
 
-							<TabItem Header="Без протокола"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
-									 FontSize="16">
-
+							<TabItem Header="Без протокола">
 								<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
-
 							</TabItem>
 
-							<TabItem Header="Modbus"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
-									 FontSize="16">
-
+							<TabItem Header="Modbus">
 								<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
-
 							</TabItem>
 
-							<TabItem Header="Внешний вид"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
-									 FontSize="16">
-
+							<TabItem Header="Внешний вид">
 								<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
-
 							</TabItem>
 
 						</TabControl>

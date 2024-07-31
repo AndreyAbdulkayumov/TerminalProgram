@@ -10,21 +10,21 @@
 	<UserControl.Resources>
 		<Local:Binary_BoolToColorConverter x:Key="BoolToColorConverter"/>
 	</UserControl.Resources>
-	
-	<ScrollViewer HorizontalScrollBarVisibility="Auto"
-				  VerticalScrollBarVisibility="Auto"
-				  Margin="3">
 
-		<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
+	<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
 				BorderThickness="1"
 				CornerRadius="10"
 				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+		
+		<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto"
+					Margin="3">		
 
-			<ItemsControl ItemsSource="{Binding BinaryRepresentationItems, Mode=OneWay}">
+			<ItemsControl Margin="0,0,0,5" ItemsSource="{Binding BinaryRepresentationItems, Mode=OneWay}">
 
 				<ItemsControl.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Vertical"/>
+						<StackPanel Orientation="Vertical" Spacing="5"/>
 					</ItemsPanelTemplate>
 				</ItemsControl.ItemsPanel>
 
@@ -125,9 +125,9 @@
 				</ItemsControl.ItemTemplate>
 
 			</ItemsControl>
-			
-		</Border>
 
-	</ScrollViewer>
+		</ScrollViewer>
+		
+	</Border>
 	
 </UserControl>

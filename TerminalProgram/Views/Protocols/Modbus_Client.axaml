@@ -13,6 +13,7 @@
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://TerminalProgram/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://TerminalProgram/Styles/TabItem.axaml"/>
 
 	</UserControl.Styles>
 
@@ -184,28 +185,16 @@
 
 			<TabControl>
 
-				<TabItem Header="Последний запрос"
-						 Foreground="{DynamicResource MainWindow_Color_Text}"
-						 FontSize="16">
-
-					<ModbusRepresentations:LastRequest Height="160"/>
-                    
+				<TabItem Header="Последний запрос">
+					<ModbusRepresentations:LastRequest Margin="0,5,0,5"/>                    
 				</TabItem>
 
-				<TabItem Header="Лог"
-						 Foreground="{DynamicResource MainWindow_Color_Text}"
-						 FontSize="16">
-
-					<ModbusRepresentations:Log Margin="0,5,0,5"/>
-					
+				<TabItem Header="Лог">
+					<ModbusRepresentations:Log Margin="0,5,0,5"/>					
 				</TabItem>
 
-				<TabItem Header="Бинарное представление"
-						 Foreground="{DynamicResource MainWindow_Color_Text}"
-						 FontSize="16">
-
+				<TabItem Header="Бинарное представление">
 					<ModbusRepresentations:Binary Margin="0,5,0,5"/>
-
 				</TabItem>
 
 			</TabControl>
