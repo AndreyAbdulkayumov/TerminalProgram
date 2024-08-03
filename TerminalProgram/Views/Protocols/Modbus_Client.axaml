@@ -12,8 +12,8 @@
 
 	<UserControl.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/GridSplitter.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/TabItem.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
 
 	</UserControl.Styles>
 

@@ -47,15 +47,18 @@
 
 							<TextBlock Grid.Row="0" Grid.Column="0"
 									   Text="Адрес"
+									   FontSize="16"
 									   HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
 							<TextBlock Grid.Row="0" Grid.Column="1"
 									   Text="{Binding Address, Mode=OneWay}"
+									   FontSize="16"
 									   Margin="10,0,0,0"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 							<TextBlock Grid.Row="1" Grid.Column="0"
 									   Text="Значение"
+									   FontSize="16"
 									   HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
 							<ItemsControl Grid.Row="1" Grid.Column="1"
@@ -89,6 +92,7 @@
 
 														<TextBlock Text="{Binding Bit, Mode=OneWay}"
 																   Foreground="Black"
+																   FontSize="16"
 																   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 													</Border>

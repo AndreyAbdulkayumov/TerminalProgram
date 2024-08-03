@@ -10,10 +10,10 @@
 
 	<UserControl.Styles>
 		
-		<StyleInclude Source="avares://TerminalProgram/Styles/CheckBox.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/RadioButton.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/TX_RX_Field.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TX_RX_Field.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
 		
 	</UserControl.Styles>
 

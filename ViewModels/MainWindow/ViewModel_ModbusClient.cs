@@ -566,7 +566,7 @@ namespace ViewModels.MainWindow
 
             return new BinaryRepresentation_ItemData()
             {
-                Address = Address.ToString("X2"),
+                Address = "0x" + Address.ToString("X2"),
                 BinaryData = ItemGroup.ToArray()
             };
         }

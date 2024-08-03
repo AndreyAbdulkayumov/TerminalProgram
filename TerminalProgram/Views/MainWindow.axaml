@@ -21,9 +21,9 @@
 	
 	<Window.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 
 	</Window.Styles>
 	
@@ -185,12 +185,6 @@
 								Height="40"
 								HorizontalAlignment="Stretch"
 								Command="{Binding Command_ProtocolMode_Modbus}"/>
-
-						<Button Content="Modbus TCP сервер"
-								Height="40"
-								IsEnabled="False"
-								HorizontalAlignment="Stretch"
-								Command="{Binding Select_Modbus_Server_View}"/>
 
 					</StackPanel>
 

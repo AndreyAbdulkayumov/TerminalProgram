@@ -15,9 +15,9 @@
 
 	<Window.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/ComboBox.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 
 	</Window.Styles>
 	

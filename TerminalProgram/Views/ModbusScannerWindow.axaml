@@ -18,11 +18,11 @@
 	
 	<Window.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/TX_RX_Field.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TX_RX_Field.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 		
 	</Window.Styles>
 	

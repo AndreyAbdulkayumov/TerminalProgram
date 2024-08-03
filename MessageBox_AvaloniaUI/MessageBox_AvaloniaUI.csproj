@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\MessageBox_Core\MessageBox_Core.csproj" />
   </ItemGroup>
 </Project>

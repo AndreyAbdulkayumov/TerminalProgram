@@ -11,11 +11,6 @@
 
   
   <ItemGroup>
-    <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
-
-  
-  <ItemGroup>
     <None Remove="Resources\Copy.png" />
     <None Remove="Resources\MainLogo.ico" />
   </ItemGroup>
@@ -31,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\MessageBox_AvaloniaUI\MessageBox_AvaloniaUI.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
@@ -70,9 +66,5 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Protocols\Modbus_Client_Mode_Normal.axaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Styles\TabItem.axaml" />
   </ItemGroup>
 </Project>

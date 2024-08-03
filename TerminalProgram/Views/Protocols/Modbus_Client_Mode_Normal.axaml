@@ -8,9 +8,9 @@
 
 	<UserControl.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/CheckBox.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
 
 		<Style Selector="ComboBox.Functions">
 			<Setter Property="FontSize" Value="14"/>

@@ -11,8 +11,8 @@
 
 	<UserControl.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/CheckBox.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
 
 	</UserControl.Styles>
 	

@@ -8,8 +8,8 @@
 
 	<UserControl.Styles>
 
-		<StyleInclude Source="avares://TerminalProgram/Styles/TextBlock.axaml"/>
-		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>

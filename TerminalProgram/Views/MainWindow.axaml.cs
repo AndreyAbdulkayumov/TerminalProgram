@@ -85,9 +85,9 @@ public partial class MainWindow : Window
             Application.Current.Resources.MergedDictionaries.Clear();
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
-                new Uri("avares://TerminalProgram/Themes/Dark.axaml"))
+                new Uri("avares://AppDesign/Themes/Dark.axaml"))
             {
-                Source = new Uri("avares://TerminalProgram/Themes/Dark.axaml")
+                Source = new Uri("avares://AppDesign/Themes/Dark.axaml")
             });
 
             //Application.Current.RequestedThemeVariant =
@@ -102,9 +102,9 @@ public partial class MainWindow : Window
             Application.Current.Resources.MergedDictionaries.Clear();
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
-                new Uri("avares://TerminalProgram/Themes/Light.axaml"))
+                new Uri("avares://AppDesign/Themes/Light.axaml"))
             {
-                Source = new Uri("avares://TerminalProgram/Themes/Light.axaml")
+                Source = new Uri("avares://AppDesign/Themes/Light.axaml")
             });
 
             //Application.Current.RequestedThemeVariant =

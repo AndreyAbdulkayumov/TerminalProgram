@@ -12,7 +12,7 @@ namespace TerminalProgram.Views.Protocols.ModbusRepresentations
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool IsChange)
-                return IsChange ? Brushes.LightPink : Brushes.Silver;
+                return IsChange ? Brushes.LightPink : Brush.Parse("#FFDFDFDF");
             else
                 throw new ArgumentException("Значение не является булевым.");
         }

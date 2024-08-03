@@ -8,7 +8,7 @@
 
 	<UserControl.Styles>
 		
-		<StyleInclude Source="avares://TerminalProgram/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		
 		<Style Selector="TextBlock">
 			<Setter Property="Foreground" Value="{DynamicResource Settings_Color_Text}"/>

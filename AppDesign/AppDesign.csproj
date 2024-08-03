@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Styles\Button.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\CheckBox.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\ComboBox.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\GridSplitter.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\InputField.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\RadioButton.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\TabItem.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\TextBlock.axaml">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="Styles\TX_RX_Field.axaml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+
+</Project>
