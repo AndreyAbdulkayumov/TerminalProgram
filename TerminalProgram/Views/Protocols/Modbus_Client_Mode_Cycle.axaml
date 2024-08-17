@@ -24,8 +24,8 @@
 			<Grid>
 
 				<StackPanel Orientation="Vertical"
-							Spacing="15"
-							Margin="0,10,0,10"
+							Spacing="10"
+							Margin="10"
 							HorizontalAlignment="Center" VerticalAlignment="Stretch">
 
 					<Grid>
