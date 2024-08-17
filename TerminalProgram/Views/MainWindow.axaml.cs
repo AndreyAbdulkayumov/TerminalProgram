@@ -10,7 +10,8 @@ using Avalonia.Threading;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using TerminalProgram.Views.Settings;
-using ViewModels.MainWindow;
+using ViewModels;
+using ViewModels.ModbusClient;
 
 
 namespace TerminalProgram.Views;
@@ -20,7 +21,7 @@ public partial class MainWindow : Window
     private CornerRadius WindowCornerRadius;
     private CornerRadius ButtonCloseRadius;
 
-    private readonly ViewModel_CommonUI ViewModel;
+    private readonly CommonUI_VM ViewModel;
 
     private readonly IMessageBox Message;
 
@@ -36,7 +37,7 @@ public partial class MainWindow : Window
 
         Message = new MessageBox(this, "Терминальная программа");
 
-        ViewModel = new ViewModel_CommonUI(
+        ViewModel = new CommonUI_VM(
                 RunInUIThread,
                 OpenWindow_ModbusScanner,
                 Message.Show,
@@ -59,7 +60,7 @@ public partial class MainWindow : Window
         {
             ModbusScannerWindow window = new ModbusScannerWindow();
 
-            window.DataContext = new ViewModel_ModbusScanner(Message.Show);
+            window.DataContext = new ModbusScanner_VM(Message.Show);
 
             await window.ShowDialog(this);
         });

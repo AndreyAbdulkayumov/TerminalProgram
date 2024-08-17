@@ -8,11 +8,12 @@ using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
 using DynamicData;
-using ViewModels.MainWindow.Modbus;
+using ViewModels.ModbusClient.DataTypes;
+using ViewModels.ModbusClient.ModbusRepresentations;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.ModbusClient
 {
-    public class ViewModel_ModbusClient : ReactiveObject
+    public class ModbusClient_VM : ReactiveObject
     {
         public static string ViewContent_NumberStyle_dec = "(dec)";
         public const string ViewContent_NumberStyle_hex = "(hex)";
@@ -137,15 +138,15 @@ namespace ViewModels.MainWindow
 
         public static ModbusMessage? ModbusMessageType { get; private set; }
 
-        private UInt16 PackageNumber = 0;
+        private ushort PackageNumber = 0;
 
         private ModbusFunction? CurrentFunction;
 
-        private readonly ViewModel_ModbusClient_Mode_Normal Mode_Normal_VM;
-        private readonly ViewModel_ModbusClient_Mode_Cycle Mode_Cycle_VM;
+        private readonly ModbusClient_Mode_Normal_VM Mode_Normal_VM;
+        private readonly ModbusClient_Mode_Cycle_VM Mode_Cycle_VM;
 
 
-        public ViewModel_ModbusClient(
+        public ModbusClient_VM(
             Func<Action, Task> RunInUIThread,
             Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
@@ -161,8 +162,8 @@ namespace ViewModels.MainWindow
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Mode_Normal_VM = new ViewModel_ModbusClient_Mode_Normal(MessageBox, Modbus_Write, Modbus_Read);
-            Mode_Cycle_VM = new ViewModel_ModbusClient_Mode_Cycle(MessageBox, Modbus_Read);
+            Mode_Normal_VM = new ModbusClient_Mode_Normal_VM(MessageBox, Modbus_Write, Modbus_Read);
+            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(MessageBox, Modbus_Read);
 
             /****************************************************/
             //
@@ -280,7 +281,7 @@ namespace ViewModels.MainWindow
                 {
                     ModbusMessageType = new ModbusRTU_Message();
                 }
-                
+
                 else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
                 {
                     ModbusMessageType = new ModbusASCII_Message();
@@ -317,7 +318,7 @@ namespace ViewModels.MainWindow
             PackageNumber = 0;
         }
 
-        private async Task Modbus_Write(byte SlaveID, UInt16 Address, ModbusWriteFunction WriteFunction, UInt16[] ModbusWriteData, bool CheckSum_Enable)
+        private async Task Modbus_Write(byte SlaveID, ushort Address, ModbusWriteFunction WriteFunction, ushort[] ModbusWriteData, bool CheckSum_Enable)
         {
             byte[] RequestBytes = Array.Empty<byte>();
             byte[] ResponseBytes = Array.Empty<byte>();
@@ -337,16 +338,16 @@ namespace ViewModels.MainWindow
                 }
 
                 CurrentFunction = WriteFunction;
-                                
+
                 MessageData Data = new WriteTypeMessage(
                     SlaveID,
                     Address,
                     ModbusWriteData,
-                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);                                
+                    ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);
 
-                ModbusOperationResult Result = 
+                ModbusOperationResult Result =
                     await Model.Modbus.WriteRegister(
-                        WriteFunction, 
+                        WriteFunction,
                         Data,
                         ModbusMessageType);
 
@@ -380,7 +381,7 @@ namespace ViewModels.MainWindow
             }
         }
 
-        private async Task Modbus_Read(byte SlaveID, UInt16 Address, ModbusReadFunction ReadFunction, int NumberOfRegisters, bool CheckSum_Enable)
+        private async Task Modbus_Read(byte SlaveID, ushort Address, ModbusReadFunction ReadFunction, int NumberOfRegisters, bool CheckSum_Enable)
         {
             ModbusOperationResult? Result;
 
@@ -407,14 +408,14 @@ namespace ViewModels.MainWindow
                     return;
                 }
 
-                CurrentFunction = ReadFunction;               
+                CurrentFunction = ReadFunction;
 
                 MessageData Data = new ReadTypeMessage(
                     SlaveID,
                     Address,
                     NumberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : CheckSum_Enable);
-                                
+
                 Result = await Model.Modbus.ReadRegister(
                                 ReadFunction,
                                 Data,
@@ -440,17 +441,17 @@ namespace ViewModels.MainWindow
             catch (Exception error)
             {
                 ModbusExceptionInfo? Info = error.InnerException as ModbusExceptionInfo;
-                
+
                 if (Info != null)
                 {
                     AddDataOnView(null, Info.Details);
-                }                
+                }
 
                 Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error);
             }
         }
 
-        private void ModbusErrorHandler(UInt16 Address, ModbusException error)
+        private void ModbusErrorHandler(ushort Address, ModbusException error)
         {
             AddDataOnView(new ModbusDataDisplayed()
             {
@@ -458,12 +459,12 @@ namespace ViewModels.MainWindow
                 FuncNumber = CurrentFunction?.DisplayedNumber,
                 Address = Address,
                 ViewAddress = CreateViewAddress(Address, 1),
-                Data = new UInt16[1],
+                Data = new ushort[1],
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             },
             error.Details);
 
-            string Addition = String.Empty;
+            string Addition = string.Empty;
 
             if (CurrentFunction == Function.ForceSingleCoil && error.ErrorCode == 3)
             {
@@ -480,12 +481,6 @@ namespace ViewModels.MainWindow
                 Addition,
                 MessageType.Error);
         }
-
-        /*************************************************************************/
-        //
-        // Следующие три метода используются в ViewModel_Modbus_CycleMode
-        //
-        /*************************************************************************/
 
         private (string[], string) ParseData(byte[]? Data)
         {
@@ -506,63 +501,23 @@ namespace ViewModels.MainWindow
             return (DataBytes, StringForLog);
         }
 
-        private BinaryRepresentation_ItemData GetBinaryRepresentation(UInt16 Address, string InputData)
-        {
-            char[] BitsValue = InputData.ToCharArray();
-
-            List<BinaryDataItemGroup> ItemGroup = new List<BinaryDataItemGroup>();
-
-            List<BinaryDataItem> Items = new List<BinaryDataItem>();
-
-            for (int i = 0; i < BitsValue.Length; i++)
-            {
-                BinaryDataItem Item = new BinaryDataItem()
-                {
-                    Bit = BitsValue[i].ToString(),
-                    IsChange = false
-                };
-
-                Items.Add(Item);
-
-                if ((i + 1) % 4 == 0)
-                {
-                    ItemGroup.Add(new BinaryDataItemGroup() { GroupData = Items.ToArray() });
-                    Items.Clear();
-                }
-            }
-
-            return new BinaryRepresentation_ItemData()
-            {
-                Address = "0x" + Address.ToString("X2"),
-                BinaryData = ItemGroup.ToArray()
-            };
-        }
+        /*************************************************************************/
+        //
+        // Следующие три метода используются в Modbus_Mode_Cycle_VM
+        //
+        /*************************************************************************/
 
         public void AddDataOnView(ModbusDataDisplayed? Data, ModbusActionDetails? Details)
         {
-            // Добавление строки в таблицу 
-
             if (Data != null)
             {
                 AddDataOnTable?.Invoke(this, Data);
 
-                string[]? Words = Data.Data?.Select(e => Convert.ToString(e, 2).PadLeft(16, '0')).ToArray();
-
-                List<BinaryRepresentation_ItemData> qw = new List<BinaryRepresentation_ItemData>();
-
-                UInt16 CurrentAddress = Data.Address;
-
-                foreach (string element in Words)
-                {
-                    qw.Add(GetBinaryRepresentation(CurrentAddress, element));
-                    CurrentAddress += 1;
-                }
-
                 RunInUIThread.Invoke(() =>
                 {
                     BinaryRepresentationItems.Clear();
-                    BinaryRepresentationItems.AddRange(qw);
-                });                    
+                    BinaryRepresentationItems.AddRange(BinaryRepresentation.GetData(Data));
+                });                
             }
 
             if (Details != null)
@@ -570,73 +525,31 @@ namespace ViewModels.MainWindow
                 (string[] Bytes, string LogString) Request = ParseData(Details.RequestBytes);
                 (string[] Bytes, string LogString) Response = ParseData(Details.ResponseBytes);
 
-                // Добавление данных в "Последний запрос"
-
-                RunInUIThread.Invoke(() => 
+                RunInUIThread.Invoke(() =>
                 {
                     RequestResponseItems.Clear();
-                    RequestResponseItems.AddRange(GetDataForLastRequest(Request.Bytes, Response.Bytes));
+                    RequestResponseItems.AddRange(LastRequestRepresentation.GetData(Request.Bytes, Response.Bytes));
                 });
-                
-                // Добавление данных в "Лог"
 
                 if (LogData != string.Empty)
                 {
                     LogData += "\n\n";
                 }
 
-                if (Request.Bytes.Length > 0)
-                {
-                    LogData += Details.Request_ExecutionTime.ToString("HH : mm : ss . fff") + "   ->   " + Request.LogString;
-                }
-
-                if (Response.Bytes.Length > 0)
-                {
-                    if (Request.Bytes.Length > 0)
-                    {
-                        LogData += "\n";
-                    }
-
-                    LogData += Details.Response_ExecutionTime.ToString("HH : mm : ss . fff") + "   <-   " + Response.LogString;
-                }
+                LogData += LogRepresentation.GetData(
+                    Details.Request_ExecutionTime, Request.LogString, 
+                    Details.Response_ExecutionTime, Response.LogString);
             }
 
             PackageNumber++;
         }
 
-        private RequestResponseField_ItemData[] GetDataForLastRequest(string[] RequestBytes, string[] ResponseBytes)
+        public static string CreateViewAddress(ushort StartAddress, int NumberOfRegisters)
         {
-            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
+            string DisplayedString = string.Empty;
 
-            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
+            ushort CurrentAddress = StartAddress;
 
-            for (int i = 0; i < Items.Length; i++)
-            {
-                Items[i] = new RequestResponseField_ItemData();
-                Items[i].ItemNumber = (i + 1).ToString();
-            }
-
-            for (int i = 0; i < RequestBytes.Length; i++)
-            {
-                Items[i].RequestDataType = i.ToString() + "X";
-                Items[i].RequestData = RequestBytes[i];
-            }
-
-            for (int i = 0; i < ResponseBytes.Length; i++)
-            {
-                Items[i].ResponseDataType = i.ToString() + "Y";
-                Items[i].ResponseData = ResponseBytes[i];
-            }
-
-            return Items;
-        }
-
-        public static string CreateViewAddress(UInt16 StartAddress, int NumberOfRegisters)
-        {
-            string DisplayedString = String.Empty;
-
-            UInt16 CurrentAddress = StartAddress;
-            
             for (int i = 0; i < NumberOfRegisters; i++)
             {
                 DisplayedString += "0x" + CurrentAddress.ToString("X") +
@@ -653,14 +566,14 @@ namespace ViewModels.MainWindow
             return DisplayedString;
         }
 
-        public static string CreateViewData(UInt16[]? ModbusData)
+        public static string CreateViewData(ushort[]? ModbusData)
         {
             if (ModbusData == null)
             {
-                return String.Empty;
+                return string.Empty;
             }
-            
-            string DisplayedString = String.Empty;
+
+            string DisplayedString = string.Empty;
 
             for (int i = 0; i < ModbusData.Length; i++)
             {
@@ -674,6 +587,6 @@ namespace ViewModels.MainWindow
             }
 
             return DisplayedString;
-        }        
+        }
     }
 }

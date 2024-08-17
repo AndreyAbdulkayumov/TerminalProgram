@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using ReactiveUI;
 using Core.Models.Settings;
 using MessageBox_Core;
-using ViewModels.MainWindow;
 
 namespace ViewModels.Settings
 {
@@ -135,7 +134,7 @@ namespace ViewModels.Settings
         {
             UpdateListOfPresets();
 
-            SelectedPreset = Presets.Single(x => x == ViewModel_CommonUI.SettingsDocument);
+            SelectedPreset = Presets.Single(x => x == CommonUI_VM.SettingsDocument);
         }
 
         private void UpdateListOfPresets()
@@ -253,7 +252,7 @@ namespace ViewModels.Settings
 
                 SettingsFile.SavePreset(SelectedPreset, Data);
 
-                ViewModel_CommonUI.SettingsDocument = SelectedPreset;
+                CommonUI_VM.SettingsDocument = SelectedPreset;
 
                 if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port == null ||
                     Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port == String.Empty)

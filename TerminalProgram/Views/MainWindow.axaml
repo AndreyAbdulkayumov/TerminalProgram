@@ -3,11 +3,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
-		xmlns:ViewModels="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
+		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
 		mc:Ignorable="d"
 		Width="1300" Height="820"
         x:Class="TerminalProgram.Views.MainWindow"
-		x:DataType="ViewModels:ViewModel_CommonUI"
+		x:DataType="ViewModels:CommonUI_VM"
         Icon="/Resources/MainLogo.ico"
         Title="Терминальная программа"
 		Background="Transparent"
@@ -30,11 +30,11 @@
 	
 	<Window.DataTemplates>
 
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_NoProtocol}">
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol.NoProtocol_VM}">
 			<Views:NoProtocol/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_ModbusClient}">
+		<DataTemplate DataType="{x:Type ViewModels:ModbusClient.ModbusClient_VM}">
 			<Views:Modbus_Client/>
 		</DataTemplate>
 

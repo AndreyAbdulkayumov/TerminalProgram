@@ -5,9 +5,9 @@ using Core.Models;
 using ReactiveUI;
 using MessageBox_Core;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.NoProtocol
 {
-    public class ViewModel_NoProtocol : ReactiveObject
+    public class NoProtocol_VM : ReactiveObject
     {
         private object? _currentModeViewModel;
 
@@ -47,7 +47,7 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _interfaceType, value);
         }
 
-        private string _rx_String = String.Empty;
+        private string _rx_String = string.Empty;
 
         public string RX_String
         {
@@ -71,7 +71,7 @@ namespace ViewModels.MainWindow
 
         #endregion
 
-        
+
         public ReactiveCommand<Unit, Unit> Command_ClearRX { get; }
 
 
@@ -79,11 +79,11 @@ namespace ViewModels.MainWindow
 
         private readonly Action<string, MessageType> Message;
 
-        private readonly ViewModel_NoProtocol_Mode_Normal Mode_Normal_VM;
-        private readonly ViewModel_NoProtocol_Mode_Cycle Mode_Cycle_VM;
+        private readonly NoProtocol_Mode_Normal_VM Mode_Normal_VM;
+        private readonly NoProtocol_Mode_Cycle_VM Mode_Cycle_VM;
 
 
-        public ViewModel_NoProtocol(Action<string, MessageType> MessageBox)
+        public NoProtocol_VM(Action<string, MessageType> MessageBox)
         {
             Message = MessageBox;
 
@@ -97,8 +97,8 @@ namespace ViewModels.MainWindow
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX.Clear(); RX_String = RX.ToString(); });
 
-            Mode_Normal_VM = new ViewModel_NoProtocol_Mode_Normal(MessageBox);
-            Mode_Cycle_VM = new ViewModel_NoProtocol_Mode_Cycle(MessageBox);
+            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(MessageBox);
+            Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(MessageBox);
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
@@ -110,7 +110,7 @@ namespace ViewModels.MainWindow
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
-        }        
+        }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
@@ -146,7 +146,7 @@ namespace ViewModels.MainWindow
             {
                 e += "\n";
             }
-            
+
             if (RX.Length + e.Length > RX.MaxCapacity)
             {
                 RX.Remove(0, RX.Length + e.Length - RX.MaxCapacity);

@@ -9,9 +9,9 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.ModbusClient
 {
-    public class ViewModel_ModbusClient_Mode_Normal : ReactiveObject
+    public class ModbusClient_Mode_Normal_VM : ReactiveObject
     {
         private bool ui_IsEnable = false;
 
@@ -126,9 +126,9 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _selectedWriteFunction, value);
         }
 
-        private ObservableCollection<ViewModel_ModbusClient_WriteData> _writeDataCollection = new ObservableCollection<ViewModel_ModbusClient_WriteData>();
+        private ObservableCollection<ModbusClient_WriteData_VM> _writeDataCollection = new ObservableCollection<ModbusClient_WriteData_VM>();
 
-        public ObservableCollection<ViewModel_ModbusClient_WriteData> WriteDataCollection
+        public ObservableCollection<ModbusClient_WriteData_VM> WriteDataCollection
         {
             get => _writeDataCollection;
             set => this.RaiseAndSetIfChanged(ref _writeDataCollection, value);
@@ -146,23 +146,23 @@ namespace ViewModels.MainWindow
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
         public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
-        private readonly List<UInt16> WriteBuffer = new List<UInt16>();
+        private readonly List<ushort> WriteBuffer = new List<ushort>();
 
         private NumberStyles NumberViewStyle;
 
         private byte SelectedSlaveID = 0;
-        private UInt16 SelectedAddress = 0;
-        private UInt16 SelectedNumberOfRegisters = 1;
+        private ushort SelectedAddress = 0;
+        private ushort SelectedNumberOfRegisters = 1;
 
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
 
 
-        public ViewModel_ModbusClient_Mode_Normal(
+        public ModbusClient_Mode_Normal_VM(
             Action<string, MessageType> MessageBox,
-            Func<byte, UInt16, ModbusWriteFunction, UInt16[], bool, Task> Modbus_Write,
-            Func<byte, UInt16, ModbusReadFunction, int, bool, Task> Modbus_Read
+            Func<byte, ushort, ModbusWriteFunction, ushort[], bool, Task> Modbus_Write,
+            Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read
             )
         {
             Message = MessageBox;
@@ -178,19 +178,19 @@ namespace ViewModels.MainWindow
             //
             /****************************************************/
 
-            WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+            WriteDataCollection.Add(new ModbusClient_WriteData_VM(
                 Address: 16248,
                 Data: 26529,
                 DataFormat: "bin"
                 ));
 
-            WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+            WriteDataCollection.Add(new ModbusClient_WriteData_VM(
                 Address: 16249,
                 Data: 65457,
                 DataFormat: "hex"
                 ));
 
-            WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+            WriteDataCollection.Add(new ModbusClient_WriteData_VM(
                 Address: 16250,
                 Data: 45865,
                 DataFormat: "dec"
@@ -223,19 +223,19 @@ namespace ViewModels.MainWindow
 
             Command_Read = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (SlaveID == null || SlaveID == String.Empty)
+                if (SlaveID == null || SlaveID == string.Empty)
                 {
                     Message.Invoke("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
-                if (Address == null || Address == String.Empty)
+                if (Address == null || Address == string.Empty)
                 {
                     Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
-                if (NumberOfRegisters == null || NumberOfRegisters == String.Empty)
+                if (NumberOfRegisters == null || NumberOfRegisters == string.Empty)
                 {
                     Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
                     return;
@@ -254,19 +254,19 @@ namespace ViewModels.MainWindow
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (SlaveID == null || SlaveID == String.Empty)
+                if (SlaveID == null || SlaveID == string.Empty)
                 {
                     Message.Invoke("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
-                if (Address == null || Address == String.Empty)
+                if (Address == null || Address == string.Empty)
                 {
                     Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
-                if (WriteData == null || WriteData == String.Empty)
+                if (WriteData == null || WriteData == string.Empty)
                 {
                     Message.Invoke("Укажите данные для записи в Modbus регистр.", MessageType.Warning);
                     return;
@@ -274,7 +274,7 @@ namespace ViewModels.MainWindow
 
                 ModbusWriteFunction WriteFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                UInt16[] ModbusWriteData;
+                ushort[] ModbusWriteData;
 
                 if (WriteFunction == Function.PresetMultipleRegisters ||
                     WriteFunction == Function.ForceMultipleCoils)
@@ -284,7 +284,7 @@ namespace ViewModels.MainWindow
 
                 else
                 {
-                    ModbusWriteData = new UInt16[1];
+                    ModbusWriteData = new ushort[1];
 
                     StringValue.CheckNumber(WriteData, NumberViewStyle, out ModbusWriteData[0]);
                 }
@@ -294,12 +294,12 @@ namespace ViewModels.MainWindow
 
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
-                WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
-                    Address:(ushort)(WriteDataCollection.Last().Address + 1),
+                WriteDataCollection.Add(new ModbusClient_WriteData_VM(
+                    Address: (ushort)(WriteDataCollection.Last().Address + 1),
                     Data: 0,
                     DataFormat: "hex"
                     ));
-            }); 
+            });
 
             this.WhenAnyValue(x => x.SlaveID)
                 .WhereNotNull()
@@ -365,7 +365,7 @@ namespace ViewModels.MainWindow
 
         public void SelectNumberFormat_Hex()
         {
-            NumberFormat = ViewModel_ModbusClient.ViewContent_NumberStyle_hex;
+            NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             NumberViewStyle = NumberStyles.HexNumber;
 
             if (SlaveID != null)
@@ -385,17 +385,17 @@ namespace ViewModels.MainWindow
 
         private void SelectNumberFormat_Dec()
         {
-            NumberFormat = ViewModel_ModbusClient.ViewContent_NumberStyle_dec;
+            NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             NumberViewStyle = NumberStyles.Number;
 
             if (SlaveID != null)
             {
-                SlaveID = Int32.Parse(SlaveID, NumberStyles.HexNumber).ToString();
+                SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
             }
 
             if (Address != null)
             {
-                Address = Int32.Parse(Address, NumberStyles.HexNumber).ToString();
+                Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
             }
 
             WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
@@ -405,23 +405,23 @@ namespace ViewModels.MainWindow
 
         private void UpdateWriteDataCollection(string AddressNumberFormat, NumberStyles AddressViewStyle)
         {
-            ViewModel_ModbusClient_WriteData[] NewWriteDataCollection = WriteDataCollection.ToArray();
+            ModbusClient_WriteData_VM[] NewWriteDataCollection = WriteDataCollection.ToArray();
 
-            foreach (ViewModel_ModbusClient_WriteData element in NewWriteDataCollection)
+            foreach (ModbusClient_WriteData_VM element in NewWriteDataCollection)
             {
-                element.ViewAddress = ViewModel_ModbusClient_WriteData.ConvertNumberToString(element.Address, AddressViewStyle);
+                element.ViewAddress = ModbusClient_WriteData_VM.ConvertNumberToString(element.Address, AddressViewStyle);
                 element.AddressNumberFormat = AddressNumberFormat;
             }
 
             WriteDataCollection.Clear();
             WriteDataCollection.AddRange(NewWriteDataCollection);
         }
-        
+
         private string ConvertDataTextIn(NumberStyles Style, string? Text)
         {
             if (Text == null)
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             string[] SplitString = Text.Split(' ');
@@ -434,7 +434,7 @@ namespace ViewModels.MainWindow
             {
                 foreach (string element in Values)
                 {
-                    DataString += Int32.Parse(element, NumberStyles.HexNumber).ToString() + " ";
+                    DataString += int.Parse(element, NumberStyles.HexNumber).ToString() + " ";
                 }
             }
 
@@ -462,7 +462,7 @@ namespace ViewModels.MainWindow
 
                     string[] Values = SplitString.Where(element => element != "").ToArray();
 
-                    UInt16 Buffer = 0;
+                    ushort Buffer = 0;
 
                     for (int i = 0; i < Values.Length; i++)
                     {
@@ -477,7 +477,7 @@ namespace ViewModels.MainWindow
 
                 else
                 {
-                    return StringValue.CheckNumber(WriteData, NumberViewStyle, out UInt16 _).ToUpper();
+                    return StringValue.CheckNumber(WriteData, NumberViewStyle, out ushort _).ToUpper();
                 }
             }
 
@@ -486,7 +486,7 @@ namespace ViewModels.MainWindow
                 Message.Invoke("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
                     error.Message, MessageType.Error);
 
-                return String.Empty;
+                return string.Empty;
             }
         }
 

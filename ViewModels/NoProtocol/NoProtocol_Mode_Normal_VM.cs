@@ -4,7 +4,7 @@ using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.NoProtocol
 {
     internal enum SendMessageType
     {
@@ -12,7 +12,7 @@ namespace ViewModels.MainWindow
         Char
     }
 
-    public class ViewModel_NoProtocol_Mode_Normal : ReactiveObject
+    public class NoProtocol_Mode_Normal_VM : ReactiveObject
     {
         private bool ui_IsEnable = false;
 
@@ -22,7 +22,7 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
         }
 
-        private string _tx_String = String.Empty;
+        private string _tx_String = string.Empty;
 
         public string TX_String
         {
@@ -75,7 +75,7 @@ namespace ViewModels.MainWindow
         private readonly Action<string, MessageType> Message;
 
 
-        public ViewModel_NoProtocol_Mode_Normal(Action<string, MessageType> MessageBox)
+        public NoProtocol_Mode_Normal_VM(Action<string, MessageType> MessageBox)
         {
             Message = MessageBox;
 
@@ -86,13 +86,13 @@ namespace ViewModels.MainWindow
 
             this.WhenAnyValue(x => x.TX_String)
                 .WhereNotNull()
-                .Where(x => x != String.Empty)
+                .Where(x => x != string.Empty)
                 .Subscribe(async _ =>
                 {
                     try
                     {
                         if (Model.HostIsConnect &&
-                            TX_String != String.Empty &&
+                            TX_String != string.Empty &&
                             TypeOfSendMessage == SendMessageType.Char)
                         {
                             await Model.NoProtocol.Send(TX_String.Last().ToString(), CR_Enable, LF_Enable);
@@ -108,13 +108,13 @@ namespace ViewModels.MainWindow
             Command_Select_Char = ReactiveCommand.Create(() =>
             {
                 TypeOfSendMessage = SendMessageType.Char;
-                TX_String = String.Empty;
+                TX_String = string.Empty;
             });
 
             Command_Select_String = ReactiveCommand.Create(() =>
             {
                 TypeOfSendMessage = SendMessageType.String;
-                TX_String = String.Empty;
+                TX_String = string.Empty;
             });
 
             Command_Send = ReactiveCommand.CreateFromTask(async () =>

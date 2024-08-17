@@ -4,9 +4,9 @@ using ReactiveUI;
 using MessageBox_Core;
 using System.Reactive;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.NoProtocol
 {
-    public class ViewModel_NoProtocol_Mode_Cycle : ReactiveObject
+    public class NoProtocol_Mode_Cycle_VM : ReactiveObject
     {
         private bool ui_IsEnable = false;
 
@@ -18,19 +18,19 @@ namespace ViewModels.MainWindow
 
         #region Message
 
-        private string _message_Content = String.Empty;
+        private string _message_Content = string.Empty;
 
         public string Message_Content
         {
             get => _message_Content;
             set => this.RaiseAndSetIfChanged(ref _message_Content, value);
-        }              
+        }
 
         private bool _message_CR = false;
 
         public bool Message_CR
         {
-            get => _message_CR; 
+            get => _message_CR;
             set => this.RaiseAndSetIfChanged(ref _message_CR, value);
         }
 
@@ -67,7 +67,7 @@ namespace ViewModels.MainWindow
 
         public bool Response_Time
         {
-            get => _response_Time; 
+            get => _response_Time;
             set => this.RaiseAndSetIfChanged(ref _response_Time, value);
         }
 
@@ -79,7 +79,7 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _response_String_Start_Enable, value);
         }
 
-        private string _response_String_Start = String.Empty;
+        private string _response_String_Start = string.Empty;
 
         public string Response_String_Start
         {
@@ -95,7 +95,7 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _response_String_End_Enable, value);
         }
 
-        private string _response_String_End = String.Empty;
+        private string _response_String_End = string.Empty;
 
         public string Response_String_End
         {
@@ -145,7 +145,7 @@ namespace ViewModels.MainWindow
         private readonly Action<string, MessageType> Message;
 
 
-        public ViewModel_NoProtocol_Mode_Cycle(
+        public NoProtocol_Mode_Cycle_VM(
             Action<string, MessageType> MessageBox
             )
         {
@@ -204,11 +204,11 @@ namespace ViewModels.MainWindow
                     Response_Date_Enable = Response_Date,
                     Response_Time_Enable = Response_Time,
 
-                    Response_String_Start_Enable = this.Response_String_Start_Enable,
-                    Response_String_Start = this.Response_String_Start,
+                    Response_String_Start_Enable = Response_String_Start_Enable,
+                    Response_String_Start = Response_String_Start,
 
-                    Response_String_End_Enable = this.Response_String_End_Enable,
-                    Response_String_End = this.Response_String_End,
+                    Response_String_End_Enable = Response_String_End_Enable,
+                    Response_String_End = Response_String_End,
 
                     Response_CR_Enable = Response_CR,
                     Response_LF_Enable = Response_LF,
@@ -219,14 +219,14 @@ namespace ViewModels.MainWindow
                 Button_Content = Button_Content_Stop;
             }
 
-            else 
-            {                
+            else
+            {
                 Model.NoProtocol.CycleMode_Stop();
 
                 Button_Content = Button_Content_Start;
             }
 
             IsStart = StartPolling;
-        }        
+        }
     }
 }

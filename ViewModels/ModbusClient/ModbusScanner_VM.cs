@@ -7,9 +7,9 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.ModbusClient
 {
-    public class ViewModel_ModbusScanner : ReactiveObject
+    public class ModbusScanner_VM : ReactiveObject
     {
         private bool _searchInProcess = false;
 
@@ -118,9 +118,9 @@ namespace ViewModels.MainWindow
         private Task? SearchTask;
         private CancellationTokenSource? SearchCancel;
 
-        private UInt32 PauseBetweenRequests_ForWork;
+        private uint PauseBetweenRequests_ForWork;
 
-        public ViewModel_ModbusScanner(Action<string, MessageType> MessageBox)
+        public ModbusScanner_VM(Action<string, MessageType> MessageBox)
         {
             this.MessageBox = MessageBox;
 
@@ -137,7 +137,7 @@ namespace ViewModels.MainWindow
                     return;
                 }
 
-                StartPolling();       
+                StartPolling();
             });
             Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => MessageBox.Invoke(error.Message, MessageType.Error));
 
@@ -204,10 +204,10 @@ namespace ViewModels.MainWindow
         {
             try
             {
-                UInt16 Address = 0;
+                ushort Address = 0;
                 int NumberOfRegisters = 2;
                 ModbusMessage ModbusMessageType = new ModbusRTU_Message();
-                UInt16 CRC16_Polynom = 0xA001;
+                ushort CRC16_Polynom = 0xA001;
 
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.Number == 3);
@@ -235,7 +235,7 @@ namespace ViewModels.MainWindow
                             "dec:   " + i + "\n" +
                             "hex:   " + i.ToString("X2") + "\n\n";
                     }
-                    
+
                     catch (TimeoutException)
                     {
                         continue;
@@ -264,7 +264,7 @@ namespace ViewModels.MainWindow
 
             catch (OperationCanceledException)
             {
-                
+
             }
 
             catch (Exception error)

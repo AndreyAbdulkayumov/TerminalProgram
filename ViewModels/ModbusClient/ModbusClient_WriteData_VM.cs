@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.ModbusClient
 {
-    public class ViewModel_ModbusClient_WriteData : ReactiveObject
+    public class ModbusClient_WriteData_VM : ReactiveObject
     {
         private ushort _address = 0;
 
@@ -22,7 +22,7 @@ namespace ViewModels.MainWindow
         public string? ViewAddress
         {
             get => _viewAddress;
-            set 
+            set
             {
                 this.RaiseAndSetIfChanged(ref _viewAddress, value);
             }
@@ -81,7 +81,7 @@ namespace ViewModels.MainWindow
         }
 
 
-        public ViewModel_ModbusClient_WriteData(ushort Address, ushort Data, string DataFormat)
+        public ModbusClient_WriteData_VM(ushort Address, ushort Data, string DataFormat)
         {
             SelectedDataFormat = DataFormat;
 
@@ -116,14 +116,14 @@ namespace ViewModels.MainWindow
             ViewData = ConvertNumberToString(Data, DataFormat);
         }
 
-        public static UInt16 ConvertStringToNumber(string? value, NumberStyles format)
+        public static ushort ConvertStringToNumber(string? value, NumberStyles format)
         {
             if (value == null)
             {
-                return UInt16.MinValue;
+                return ushort.MinValue;
             }
 
-            return UInt16.Parse(value, format);
+            return ushort.Parse(value, format);
         }
 
         public static string ConvertNumberToString(ushort number, NumberStyles format)

@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using ViewModels.MainWindow;
+using ViewModels.ModbusClient;
 
 namespace TerminalProgram.Views
 {
@@ -19,7 +19,7 @@ namespace TerminalProgram.Views
 
         private async void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            ViewModel_ModbusScanner? Context = this.DataContext as ViewModel_ModbusScanner;
+            ModbusScanner_VM? Context = this.DataContext as ModbusScanner_VM;
 
             if (Context != null)
             {

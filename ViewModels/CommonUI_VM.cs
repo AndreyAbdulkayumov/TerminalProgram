@@ -7,8 +7,10 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using ViewModels.NoProtocol;
+using ViewModels.ModbusClient;
 
-namespace ViewModels.MainWindow
+namespace ViewModels
 {
     public class DocArgs : EventArgs
     {
@@ -20,7 +22,7 @@ namespace ViewModels.MainWindow
         }
     }
 
-    public class ViewModel_CommonUI : ReactiveObject
+    public class CommonUI_VM : ReactiveObject
     {
         private bool ui_IsConnectedState = false;
 
@@ -160,11 +162,11 @@ namespace ViewModels.MainWindow
 
         private readonly Action Set_Dark_Theme, Set_Light_Theme;
 
-        private readonly ViewModel_NoProtocol NoProtocol_VM;
-        private readonly ViewModel_ModbusClient ModbusClient_VM;
+        private readonly NoProtocol_VM NoProtocol_VM;
+        private readonly ModbusClient_VM ModbusClient_VM;
 
 
-        public ViewModel_CommonUI(
+        public CommonUI_VM(
             Func<Action, Task> RunInUIThread,
             Func<Task> Open_ModbusScanner,
             Action<string, MessageType> MessageBox,
@@ -185,8 +187,8 @@ namespace ViewModels.MainWindow
 
             StringValue.ShowMessageView = Message;
 
-            NoProtocol_VM = new ViewModel_NoProtocol(MessageBox);
-            ModbusClient_VM = new ViewModel_ModbusClient(RunInUIThread, Open_ModbusScanner, MessageBox, CopyToClipboard);
+            NoProtocol_VM = new NoProtocol_VM(MessageBox);
+            ModbusClient_VM = new ModbusClient_VM(RunInUIThread, Open_ModbusScanner, MessageBox, CopyToClipboard);
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -219,11 +221,11 @@ namespace ViewModels.MainWindow
             {
                 SettingsFile.SaveAppInfo(SettingsFile.AppData);
             });
-            
+
             Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
             Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
 
-            Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() => 
+            Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
                 CurrentViewModel = NoProtocol_VM;
                 Model.SetProtocol_NoProtocol();
@@ -315,13 +317,13 @@ namespace ViewModels.MainWindow
 
                     if (Settings.Connection_SerialPort != null)
                     {
-                        if ((Settings.Connection_SerialPort.BaudRate_IsCustom == false &&
-                             (Settings.Connection_SerialPort.BaudRate == null || Settings.Connection_SerialPort.BaudRate == String.Empty)) ||
-                            (Settings.Connection_SerialPort.BaudRate_IsCustom == true &&
-                             (Settings.Connection_SerialPort.BaudRate_Custom == null || Settings.Connection_SerialPort.BaudRate_Custom == String.Empty)) ||
-                            Settings.Connection_SerialPort.Parity == null || Settings.Connection_SerialPort.Parity == String.Empty ||
-                            Settings.Connection_SerialPort.DataBits == null || Settings.Connection_SerialPort.DataBits == String.Empty ||
-                            Settings.Connection_SerialPort.StopBits == null || Settings.Connection_SerialPort.StopBits == String.Empty)
+                        if (Settings.Connection_SerialPort.BaudRate_IsCustom == false &&
+                             (Settings.Connection_SerialPort.BaudRate == null || Settings.Connection_SerialPort.BaudRate == string.Empty) ||
+                            Settings.Connection_SerialPort.BaudRate_IsCustom == true &&
+                             (Settings.Connection_SerialPort.BaudRate_Custom == null || Settings.Connection_SerialPort.BaudRate_Custom == string.Empty) ||
+                            Settings.Connection_SerialPort.Parity == null || Settings.Connection_SerialPort.Parity == string.Empty ||
+                            Settings.Connection_SerialPort.DataBits == null || Settings.Connection_SerialPort.DataBits == string.Empty ||
+                            Settings.Connection_SerialPort.StopBits == null || Settings.Connection_SerialPort.StopBits == string.Empty)
                         {
                             ConnectionString = "Не заданы настройки для последовательного порта";
                         }
@@ -329,7 +331,7 @@ namespace ViewModels.MainWindow
                         else
                         {
                             ConnectionString =
-                                (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == String.Empty ?
+                                (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == string.Empty ?
                                     "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
                                 Separator +
                                 (Settings.Connection_SerialPort.BaudRate_IsCustom == true ?
@@ -355,10 +357,10 @@ namespace ViewModels.MainWindow
                     if (Settings.Connection_IP != null)
                     {
                         ConnectionString =
-                            (Settings.Connection_IP.IP_Address == null || Settings.Connection_IP.IP_Address == String.Empty ?
+                            (Settings.Connection_IP.IP_Address == null || Settings.Connection_IP.IP_Address == string.Empty ?
                                 "IP адрес не задан" : Settings.Connection_IP.IP_Address) +
                             Separator +
-                            (Settings.Connection_IP.Port == null || Settings.Connection_IP.Port == String.Empty ?
+                            (Settings.Connection_IP.Port == null || Settings.Connection_IP.Port == string.Empty ?
                                 "Порт не задан" : Settings.Connection_IP.Port);
                     }
 
@@ -380,9 +382,9 @@ namespace ViewModels.MainWindow
         {
             ConnectionTime = ConnectionTime.Add(new TimeSpan(0, 0, 0, 0, ConnectionTimer_Interval_ms));
 
-            ConnectionTimer_View = string.Format("{0:D2} : {1:D2} : {2:D2}", 
-                ConnectionTime.Days * 24 + ConnectionTime.Hours, 
-                ConnectionTime.Minutes, 
+            ConnectionTimer_View = string.Format("{0:D2} : {1:D2} : {2:D2}",
+                ConnectionTime.Days * 24 + ConnectionTime.Hours,
+                ConnectionTime.Minutes,
                 ConnectionTime.Seconds);
         }
 
@@ -395,7 +397,7 @@ namespace ViewModels.MainWindow
 
                 // Использовать для демонстрации работы уведомлений приема и передачи.
                 //Task.Run(Model.Client.Notifications.DemoVisualization);
-            }         
+            }
 
             UI_IsConnectedState = true;
 

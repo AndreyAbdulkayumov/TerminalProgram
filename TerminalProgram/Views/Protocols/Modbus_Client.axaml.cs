@@ -1,8 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Collections.ObjectModel;
-using ViewModels.MainWindow;
-using ViewModels.MainWindow.Modbus;
+using ViewModels.ModbusClient;
+using ViewModels.ModbusClient.DataTypes;
 
 namespace TerminalProgram.Views.Protocols
 {
@@ -16,7 +16,7 @@ namespace TerminalProgram.Views.Protocols
 
             DataGrid_ModbusData.ItemsSource = DataInDataGrid;
 
-            ViewModel_ModbusClient.AddDataOnTable += ViewModel_ModbusClient_AddDataOnTable;
+            ModbusClient_VM.AddDataOnTable += ViewModel_ModbusClient_AddDataOnTable;
         }
 
         private void ViewModel_ModbusClient_AddDataOnTable(object? sender, ModbusDataDisplayed? e)

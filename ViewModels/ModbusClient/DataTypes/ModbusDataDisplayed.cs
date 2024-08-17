@@ -1,12 +1,12 @@
-﻿namespace ViewModels.MainWindow.Modbus
+﻿namespace ViewModels.ModbusClient.DataTypes
 {
     public class ModbusDataDisplayed
     {
-        public UInt16 OperationID { get; set; }
+        public ushort OperationID { get; set; }
         public string? FuncNumber { get; set; }
-        public UInt16 Address { get; set; }
+        public ushort Address { get; set; }
         public string? ViewAddress { get; set; }
-        public UInt16[]? Data { get; set; }
+        public ushort[]? Data { get; set; }
         public string? ViewData { get; set; }
     }
 }

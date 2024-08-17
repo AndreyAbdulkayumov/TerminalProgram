@@ -1,4 +1,4 @@
-﻿namespace ViewModels.MainWindow.Modbus
+﻿namespace ViewModels.ModbusClient.DataTypes
 {
     public class RequestResponseField_ItemData
     {

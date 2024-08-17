@@ -8,9 +8,9 @@ using System.Reactive.Linq;
 using MessageBox_Core;
 using Core.Clients;
 
-namespace ViewModels.MainWindow
+namespace ViewModels.ModbusClient
 {
-    public class ViewModel_ModbusClient_Mode_Cycle : ReactiveObject
+    public class ModbusClient_Mode_Cycle_VM : ReactiveObject
     {
         private bool ui_IsEnable = false;
 
@@ -76,9 +76,9 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Dec, value);
         }
 
-        private UInt16 _numberOfRegisters = 1;
+        private ushort _numberOfRegisters = 1;
 
-        public UInt16 NumberOfRegisters
+        public ushort NumberOfRegisters
         {
             get => _numberOfRegisters;
             set => this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
@@ -111,20 +111,20 @@ namespace ViewModels.MainWindow
         private NumberStyles NumberViewStyle;
 
         private byte SelectedSlaveID = 0;
-        private UInt16 SelectedAddress = 0;
+        private ushort SelectedAddress = 0;
 
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
         private const int TimeForReadHandler = 100;
 
-        private readonly Func<byte, UInt16, ModbusReadFunction, int, bool, Task> Modbus_Read;
+        private readonly Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read;
 
         private bool CheckSum_IsEnable;
 
 
-        public ViewModel_ModbusClient_Mode_Cycle(
+        public ModbusClient_Mode_Cycle_VM(
             Action<string, MessageType> MessageBox,
-            Func<byte, UInt16, ModbusReadFunction, int, bool, Task> Modbus_Read
+            Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read
             )
         {
             Message = MessageBox;
@@ -139,7 +139,7 @@ namespace ViewModels.MainWindow
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
             Period_ms = 600;
-            
+
             Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
                 Start_Stop_Handler(!IsStart);
@@ -227,7 +227,7 @@ namespace ViewModels.MainWindow
             if (Address != null)
             {
                 Address = Convert.ToInt32(Address).ToString("X");
-            }            
+            }
         }
 
         private void SelectNumberFormat_Dec()
@@ -236,9 +236,9 @@ namespace ViewModels.MainWindow
 
             if (Address != null)
             {
-                Address = Int32.Parse(Address, NumberStyles.HexNumber).ToString();
-            }           
-        }        
+                Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
+            }
+        }
 
         public void Start_Stop_Handler(bool StartPolling)
         {
@@ -253,13 +253,13 @@ namespace ViewModels.MainWindow
                 Model.Modbus.CycleMode_Stop();
                 Button_Content = Button_Content_Start;
             }
-            
-            IsStart = StartPolling;            
+
+            IsStart = StartPolling;
         }
 
         private void StartAction()
         {
-            if (Address == null || Address == String.Empty)
+            if (Address == null || Address == string.Empty)
             {
                 Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                 return;
