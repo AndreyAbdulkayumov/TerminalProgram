@@ -174,7 +174,8 @@
 
 			<ContentControl Grid.Column="2"
 							Content="{Binding CurrentModeViewModel}"/>
-			
+
+
 		</Grid>
 
 		<GridSplitter Grid.Row="2"
@@ -186,7 +187,9 @@
 			<TabControl>
 
 				<TabItem Header="Последний запрос">
-					<ModbusRepresentations:LastRequest Margin="0,5,0,5"/>                    
+					<ScrollViewer>
+						<ModbusRepresentations:LastRequest Margin="0,5,0,5"/>
+					</ScrollViewer>
 				</TabItem>
 
 				<TabItem Header="Лог">

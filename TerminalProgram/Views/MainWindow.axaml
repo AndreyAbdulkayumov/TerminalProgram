@@ -5,7 +5,7 @@
 		xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
 		xmlns:ViewModels="clr-namespace:ViewModels.MainWindow;assembly=ViewModels"
 		mc:Ignorable="d"
-		Width="1300" Height="800"
+		Width="1300" Height="820"
         x:Class="TerminalProgram.Views.MainWindow"
 		x:DataType="ViewModels:ViewModel_CommonUI"
         Icon="/Resources/MainLogo.ico"

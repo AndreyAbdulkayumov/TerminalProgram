@@ -26,7 +26,7 @@
             {
                 SelectedPresetFileName = DefaultPresetName,
                 ThemeName = AppTheme.Dark,
-                SelectedMode = AppMode.NoProtocol
+                SelectedMode = AppMode.ModbusClient
             };
         }
     }

@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Collections.ObjectModel;
 using ViewModels.MainWindow;
+using ViewModels.MainWindow.Modbus;
 
 namespace TerminalProgram.Views.Protocols
 {

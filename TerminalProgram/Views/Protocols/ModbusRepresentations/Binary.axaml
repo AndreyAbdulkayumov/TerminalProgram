@@ -17,8 +17,8 @@
 				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
-					VerticalScrollBarVisibility="Auto"
-					Margin="3">		
+					  VerticalScrollBarVisibility="Auto"
+					  Margin="3">		
 
 			<ItemsControl Margin="0,0,0,5" ItemsSource="{Binding BinaryRepresentationItems, Mode=OneWay}">
 

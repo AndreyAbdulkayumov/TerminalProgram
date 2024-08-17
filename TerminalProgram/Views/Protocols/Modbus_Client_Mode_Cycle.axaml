@@ -21,7 +21,8 @@
 				BorderThickness="1"
 				Margin="10">
 
-			<Grid>
+			<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					      VerticalScrollBarVisibility="Auto">
 
 				<StackPanel Orientation="Vertical"
 							Spacing="10"
@@ -132,8 +133,8 @@
 							Command="{Binding Command_Start_Stop_Polling}"/>
 					
 				</StackPanel>
-				
-			</Grid>
+
+			</ScrollViewer>
 			
 		</Border>
 		

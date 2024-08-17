@@ -8,48 +8,15 @@ using System.Reactive.Linq;
 using Core.Clients;
 using MessageBox_Core;
 using DynamicData;
-using System.Xml.Linq;
+using ViewModels.MainWindow.Modbus;
 
 namespace ViewModels.MainWindow
 {
-    public class RequestResponseField_ItemData
-    {
-        public string? ItemNumber { get; set; }
-        public string? RequestDataType { get; set; }
-        public string? RequestData { get; set; }
-        public string? ResponseDataType { get; set; }
-        public string? ResponseData { get; set; }
-    }
-
-    public class BinaryRepresentation_ItemData
-    {
-        public string? Address { get; set; }
-        public BinaryDataItemGroup[]? BinaryData { get; set; }
-    }
-
-    public class BinaryDataItemGroup
-    {
-        public BinaryDataItem[]? GroupData { get; set; }
-    }
-
-    public class BinaryDataItem
-    {
-        public string? Bit { get; set; } = "0";
-        public bool IsChange { get; set; } = true;
-    }
-
-    public class ModbusDataDisplayed
-    {
-        public UInt16 OperationID { get; set; }
-        public string? FuncNumber { get; set; }
-        public UInt16 Address { get; set; }
-        public string? ViewAddress { get; set; }
-        public UInt16[]? Data { get; set; }
-        public string? ViewData { get; set; }
-    }
-
     public class ViewModel_ModbusClient : ReactiveObject
     {
+        public static string ViewContent_NumberStyle_dec = "(dec)";
+        public const string ViewContent_NumberStyle_hex = "(hex)";
+
         // Добавлять данные в DataGrid можно только из UI потока.
         // Поэтому используется событие, обработчик которого вызывается в behind code у файла с разметкой DataGrid.
         public static event EventHandler<ModbusDataDisplayed?>? AddDataOnTable;

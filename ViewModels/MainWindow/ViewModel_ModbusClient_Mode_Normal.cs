@@ -1,6 +1,7 @@
 ﻿using Core.Clients;
 using Core.Models;
 using Core.Models.Modbus;
+using DynamicData;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -10,7 +11,7 @@ using System.Reactive.Linq;
 
 namespace ViewModels.MainWindow
 {
-    public class ViewModel_ModbusClient_Mode_Normal :ReactiveObject
+    public class ViewModel_ModbusClient_Mode_Normal : ReactiveObject
     {
         private bool ui_IsEnable = false;
 
@@ -125,9 +126,25 @@ namespace ViewModels.MainWindow
             set => this.RaiseAndSetIfChanged(ref _selectedWriteFunction, value);
         }
 
+        private ObservableCollection<ViewModel_ModbusClient_WriteData> _writeDataCollection = new ObservableCollection<ViewModel_ModbusClient_WriteData>();
 
-        public ReactiveCommand<Unit, Unit> Command_Write { get; }
+        public ObservableCollection<ViewModel_ModbusClient_WriteData> WriteDataCollection
+        {
+            get => _writeDataCollection;
+            set => this.RaiseAndSetIfChanged(ref _writeDataCollection, value);
+        }
+
+        private bool _registerCanAdded;
+
+        public bool RegisterCanAdded
+        {
+            get => _registerCanAdded;
+            set => this.RaiseAndSetIfChanged(ref _registerCanAdded, value);
+        }
+
         public ReactiveCommand<Unit, Unit> Command_Read { get; }
+        public ReactiveCommand<Unit, Unit> Command_Write { get; }
+        public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
         private readonly List<UInt16> WriteBuffer = new List<UInt16>();
 
@@ -161,6 +178,24 @@ namespace ViewModels.MainWindow
             //
             /****************************************************/
 
+            WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+                Address: 16248,
+                Data: 26529,
+                DataFormat: "bin"
+                ));
+
+            WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+                Address: 16249,
+                Data: 65457,
+                DataFormat: "hex"
+                ));
+
+            WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+                Address: 16250,
+                Data: 45865,
+                DataFormat: "dec"
+                ));
+
             CheckSum_Enable = true;
             CheckSum_IsVisible = true;
 
@@ -185,6 +220,37 @@ namespace ViewModels.MainWindow
             // Настройка свойств и команд модели отображения
             //
             /****************************************************/
+
+            Command_Read = ReactiveCommand.CreateFromTask(async () =>
+            {
+                if (SlaveID == null || SlaveID == String.Empty)
+                {
+                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    return;
+                }
+
+                if (Address == null || Address == String.Empty)
+                {
+                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    return;
+                }
+
+                if (NumberOfRegisters == null || NumberOfRegisters == String.Empty)
+                {
+                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                    return;
+                }
+
+                if (SelectedNumberOfRegisters < 1)
+                {
+                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
+                    return;
+                }
+
+                ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
+
+                await Modbus_Read(SelectedSlaveID, SelectedAddress, ReadFunction, SelectedNumberOfRegisters, CheckSum_Enable);
+            });
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -226,36 +292,14 @@ namespace ViewModels.MainWindow
                 await Modbus_Write(SelectedSlaveID, SelectedAddress, WriteFunction, ModbusWriteData, CheckSum_Enable);
             });
 
-            Command_Read = ReactiveCommand.CreateFromTask(async () =>
+            Command_AddRegister = ReactiveCommand.Create(() =>
             {
-                if (SlaveID == null || SlaveID == String.Empty)
-                {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
-                    return;
-                }
-
-                if (Address == null || Address == String.Empty)
-                {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
-                    return;
-                }
-
-                if (NumberOfRegisters == null || NumberOfRegisters == String.Empty)
-                {
-                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
-                    return;
-                }
-
-                if (SelectedNumberOfRegisters < 1)
-                {
-                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
-                    return;
-                }
-
-                ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
-
-                await Modbus_Read(SelectedSlaveID, SelectedAddress, ReadFunction, SelectedNumberOfRegisters, CheckSum_Enable);
-            });
+                WriteDataCollection.Add(new ViewModel_ModbusClient_WriteData(
+                    Address:(ushort)(WriteDataCollection.Last().Address + 1),
+                    Data: 0,
+                    DataFormat: "hex"
+                    ));
+            }); 
 
             this.WhenAnyValue(x => x.SlaveID)
                 .WhereNotNull()
@@ -293,10 +337,26 @@ namespace ViewModels.MainWindow
                 .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedNumberOfRegisters))
                 .Subscribe(x => NumberOfRegisters = x);
 
+            //this.WhenAnyValue(x => x.SelectedWriteFunction)
+            //    .WhereNotNull()
+            //    .Where(x => x != String.Empty)
+            //    .Subscribe(_ => WriteData = String.Empty);
+
             this.WhenAnyValue(x => x.SelectedWriteFunction)
                 .WhereNotNull()
-                .Where(x => x != String.Empty)
-                .Subscribe(_ => WriteData = String.Empty);
+                .Subscribe(x =>
+                {
+                    if (x == Function.ForceMultipleCoils.DisplayedName ||
+                        x == Function.PresetMultipleRegisters.DisplayedName)
+                    {
+                        RegisterCanAdded = true;
+                    }
+
+                    else
+                    {
+                        RegisterCanAdded = false;
+                    }
+                });
 
             this.WhenAnyValue(x => x.WriteData)
                 .WhereNotNull()
@@ -305,7 +365,7 @@ namespace ViewModels.MainWindow
 
         public void SelectNumberFormat_Hex()
         {
-            NumberFormat = "(hex)";
+            NumberFormat = ViewModel_ModbusClient.ViewContent_NumberStyle_hex;
             NumberViewStyle = NumberStyles.HexNumber;
 
             if (SlaveID != null)
@@ -319,11 +379,13 @@ namespace ViewModels.MainWindow
             }
 
             WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
+
+            UpdateWriteDataCollection(NumberFormat, NumberViewStyle);
         }
 
         private void SelectNumberFormat_Dec()
         {
-            NumberFormat = "(dec)";
+            NumberFormat = ViewModel_ModbusClient.ViewContent_NumberStyle_dec;
             NumberViewStyle = NumberStyles.Number;
 
             if (SlaveID != null)
@@ -337,8 +399,24 @@ namespace ViewModels.MainWindow
             }
 
             WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
+
+            UpdateWriteDataCollection(NumberFormat, NumberViewStyle);
         }
 
+        private void UpdateWriteDataCollection(string AddressNumberFormat, NumberStyles AddressViewStyle)
+        {
+            ViewModel_ModbusClient_WriteData[] NewWriteDataCollection = WriteDataCollection.ToArray();
+
+            foreach (ViewModel_ModbusClient_WriteData element in NewWriteDataCollection)
+            {
+                element.ViewAddress = ViewModel_ModbusClient_WriteData.ConvertNumberToString(element.Address, AddressViewStyle);
+                element.AddressNumberFormat = AddressNumberFormat;
+            }
+
+            WriteDataCollection.Clear();
+            WriteDataCollection.AddRange(NewWriteDataCollection);
+        }
+        
         private string ConvertDataTextIn(NumberStyles Style, string? Text)
         {
             if (Text == null)

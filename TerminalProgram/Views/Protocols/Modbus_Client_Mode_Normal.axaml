@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="500" d:DesignHeight="320"
+			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="TerminalProgram.Views.Protocols.Modbus_Client_Mode_Normal">
 
 	<UserControl.Styles>
@@ -39,119 +39,126 @@
 				BorderThickness="1"
 				Margin="10">
 
-			<StackPanel Orientation="Vertical"
-						Spacing="10"
-						Margin="0,10,0,10"
-						HorizontalAlignment="Center" VerticalAlignment="Stretch">
+			<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					      VerticalScrollBarVisibility="Auto">
 
-				<Grid>
+				<StackPanel Orientation="Vertical"
+							Spacing="10"
+							Margin="10"
+							HorizontalAlignment="Center" VerticalAlignment="Stretch">
 
-					<TextBlock Text="Slave ID"
-							   FontSize="16"
-							   Foreground="{DynamicResource MainWindow_Color_Text}"
-							   Margin="50,0,0,0"
-							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					<Grid>
 
-					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-							   FontSize="16"
-							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-							   Margin="120,0,0,0"
-							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<TextBlock Text="Формат числа"
+								   FontSize="16"
+							       Foreground="{DynamicResource MainWindow_Color_Text}"
+								   Margin="50,0,0,0"
+							       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+						<RadioButton Content="hex"
+									 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+									 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+									 FontSize="16"
+									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Margin="190,0,0,0"
+									 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<RadioButton Content="dec"
+									 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+									 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+									 FontSize="16"
+									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Margin="265,0,0,0"
+									 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+					</Grid>
+
+					<Separator Background="Silver" />
+
+					<Grid>
+
+						<TextBlock Text="Slave ID"
+								   FontSize="16"
+								   Foreground="{DynamicResource MainWindow_Color_Text}"
+								   Margin="50,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+								   FontSize="16"
+								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Margin="120,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBox Classes="InputField"
+								 Width="50"
+								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								 Text="{Binding SlaveID, Mode=TwoWay}"
+								 Margin="170,0,0,0"
+								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
+								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								  Content="Контрольная сумма"
+								  FontSize="14"
+								  Foreground="{DynamicResource MainWindow_Color_Text}"
+								  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
+								  Width="170"
+								  Margin="240,0,0,0"
+								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					</Grid>
+
+					<Separator Background="Silver" />
 					
-					<TextBox Classes="InputField"
-							 Width="50"
-							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							 Text="{Binding SlaveID, Mode=TwoWay}"
-							 Margin="170,0,0,0"
-							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					<Grid>
 
-					<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
-							  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							  Content="Контрольная сумма"
-							  FontSize="14"
-							  Foreground="{DynamicResource MainWindow_Color_Text}"
-							  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
-							  Width="170"
-							  Margin="240,0,0,0"
-							  HorizontalAlignment="Left" VerticalAlignment="Center"/>
-				</Grid>
+						<TextBlock Text="Адрес"
+								   FontSize="16"
+								   Foreground="{DynamicResource MainWindow_Color_Text}"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-				<TextBlock Text="Формат числа"
-						   FontSize="16"
-						   Foreground="{DynamicResource MainWindow_Color_Text}"
-						   Margin="150,0,0,0"
-						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+								   FontSize="16"
+								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Margin="60,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-				<Grid>
-
-					<RadioButton Content="Шестнадцетиричный"
-								 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+						<TextBox Classes="InputField"
+								 Width="70"
 								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-								 FontSize="14"
-								 Foreground="{DynamicResource MainWindow_Color_Text}"
-								 Margin="60,0,0,0"
+								 Text="{Binding Address, Mode=TwoWay}"
+								 Margin="110,0,0,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-					<RadioButton Content="Десятичный"
-								 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+						<TextBlock Text="Кол-во регистров"
+								   FontSize="16"
+								   Foreground="{DynamicResource MainWindow_Color_Text}"
+								   Margin="210,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBox Classes="InputField"
+								 Width="40"
 								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-								 FontSize="14"
-								 Foreground="{DynamicResource MainWindow_Color_Text}"
-								 Margin="270,0,0,0"
+								 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
+								 Margin="370,0,0,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-				</Grid>
+					</Grid>
 
-				<Grid>
+					<Grid>
 
-					<TextBlock Text="Адрес"
-							   FontSize="16"
-							   Foreground="{DynamicResource MainWindow_Color_Text}"
-							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<ComboBox Classes="Functions"
+								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								  ItemsSource="{Binding ReadFunctions}"
+								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
 
-					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-							   FontSize="16"
-							   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-							   Margin="60,0,0,0"
-							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						<Button Classes="ModbusAction"
+								IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								Content="Прочитать"
+								Command="{Binding Command_Read}"/>
 
-					<TextBox Classes="InputField"
-							 Width="70"
-							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							 Text="{Binding Address, Mode=TwoWay}"
-							 Margin="110,0,0,0"
-							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					</Grid>
 
-					<TextBlock Text="Кол-во регистров"
-							   FontSize="16"
-							   Foreground="{DynamicResource MainWindow_Color_Text}"
-							   Margin="210,0,0,0"
-							   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-					<TextBox Classes="InputField"
-							 Width="40"
-							 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
-							 Margin="370,0,0,0"
-							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-				</Grid>
-
-				<Grid>
-
-					<ComboBox Classes="Functions"
-							  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							  ItemsSource="{Binding ReadFunctions}"
-							  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
-
-					<Button Classes="ModbusAction"
-							IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							Content="Прочитать"
-							Command="{Binding Command_Read}"/>
-
-				</Grid>
-
-				<Grid>
+					<!--<Grid>
 
 					<TextBlock Text="Значение"
 							   FontSize="16"
@@ -173,23 +180,82 @@
 							 HorizontalContentAlignment="Left"
 							 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-				</Grid>
+				</Grid>-->
+					
+					<Separator Background="Silver" />
 
-				<Grid>
+					<Grid>
 
-					<ComboBox Classes="Functions"
-							  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							  ItemsSource="{Binding WriteFunctions}"
-							  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
+						<ComboBox Classes="Functions"
+								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								  ItemsSource="{Binding WriteFunctions}"
+								  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
 
-					<Button Classes="ModbusAction"
+						<Button Classes="ModbusAction"
+								IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+								Content="Записать"
+								Command="{Binding Command_Write}"/>
+
+					</Grid>
+
+					<Grid>
+
+						<ItemsControl ItemsSource="{Binding WriteDataCollection, Mode=OneWay}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Orientation="Vertical" Spacing="5"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+
+							<ItemsControl.ItemTemplate>
+
+								<DataTemplate>
+
+									<StackPanel Orientation="Horizontal" Spacing="10">
+
+										<TextBox Classes="InputField"
+												 Text="{Binding ViewAddress, Mode=OneWay}"
+												 IsReadOnly="True"
+												 MinWidth="70"
+												 Width="70"
+												 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+										<TextBlock Text="{Binding AddressNumberFormat, Mode=OneWay}"
+												   FontSize="16"
+												   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+												   Width="40"
+												   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+										<TextBox Classes="InputField"
+												 Text="{Binding ViewData, Mode=TwoWay}"
+												 Width="170"
+												 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+										<ComboBox Classes="Functions"
+												  Width="100"
+												  ItemsSource="{Binding FormatItems}"
+												  SelectedItem="{Binding SelectedDataFormat}"/>
+
+									</StackPanel>
+
+								</DataTemplate>
+
+							</ItemsControl.ItemTemplate>
+
+						</ItemsControl>
+
+					</Grid>
+
+					<Button Content="Добавить регистр"
+							FontSize="14"
 							IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-							Content="Записать"
-							Command="{Binding Command_Write}"/>
+							IsVisible="{Binding RegisterCanAdded, Mode=OneWay}"
+							HorizontalAlignment="Center" VerticalAlignment="Center"
+							Command="{Binding Command_AddRegister}"/>
+					
+				</StackPanel>
 
-				</Grid>
-
-			</StackPanel>
+			</ScrollViewer>			
 
 		</Border>
 
