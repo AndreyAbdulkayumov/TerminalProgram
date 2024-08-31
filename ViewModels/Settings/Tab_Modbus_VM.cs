@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Tab_Modbus : ReactiveObject
+    public class Tab_Modbus_VM : ReactiveObject
     {
         private string _writeTimeout = string.Empty;
 
@@ -21,7 +21,7 @@ namespace ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _readTimeout, value);
         }
 
-        public ViewModel_Tab_Modbus()
+        public Tab_Modbus_VM()
         {
             this.WhenAnyValue(x => x.WriteTimeout)
                 .WhereNotNull()

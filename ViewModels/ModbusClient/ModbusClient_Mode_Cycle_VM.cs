@@ -12,12 +12,12 @@ namespace ViewModels.ModbusClient
 {
     public class ModbusClient_Mode_Cycle_VM : ReactiveObject
     {
-        private bool ui_IsEnable = false;
+        private bool _ui_IsEnable = false;
 
         public bool UI_IsEnable
         {
-            get => ui_IsEnable;
-            set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
+            get => _ui_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref _ui_IsEnable, value);
         }
 
         private string? _slaveID;
@@ -102,34 +102,34 @@ namespace ViewModels.ModbusClient
         #endregion
 
 
-        private bool IsStart = false;
+        private bool _isStart = false;
 
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
 
-        private NumberStyles NumberViewStyle;
+        private NumberStyles _numberViewStyle;
 
-        private byte SelectedSlaveID = 0;
-        private ushort SelectedAddress = 0;
+        private byte _selectedSlaveID = 0;
+        private ushort _selectedAddress = 0;
+
+        private bool _checkSum_IsEnable;
 
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
         private const int TimeForReadHandler = 100;
 
-        private readonly Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read;
-
-        private bool CheckSum_IsEnable;
+        private readonly Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read;      
 
 
         public ModbusClient_Mode_Cycle_VM(
-            Action<string, MessageType> MessageBox,
-            Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read
+            Action<string, MessageType> messageBox,
+            Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
-            Message = MessageBox;
+            Message = messageBox;
 
-            this.Modbus_Read = Modbus_Read;
+            Modbus_Read = modbus_Read;
 
             Model = ConnectedHost.Model;
 
@@ -142,7 +142,7 @@ namespace ViewModels.ModbusClient
 
             Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
-                Start_Stop_Handler(!IsStart);
+                Start_Stop_Handler(!_isStart);
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -157,12 +157,12 @@ namespace ViewModels.ModbusClient
 
             this.WhenAnyValue(x => x.SlaveID)
                 .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedSlaveID))
+                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedSlaveID))
                 .Subscribe(x => SlaveID = x);
 
             this.WhenAnyValue(x => x.Address)
                 .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedAddress))
+                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedAddress))
                 .Subscribe(x => Address = x.ToUpper());
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
@@ -197,7 +197,7 @@ namespace ViewModels.ModbusClient
         {
             UI_IsEnable = true;
 
-            CheckSum_IsEnable = e.ConnectedDevice is SerialPortClient;
+            _checkSum_IsEnable = e.ConnectedDevice is SerialPortClient;
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
@@ -211,10 +211,10 @@ namespace ViewModels.ModbusClient
         {
             Model.Modbus.CycleMode_Stop();
 
-            if (IsStart)
+            if (_isStart)
             {
                 Button_Content = Button_Content_Start;
-                IsStart = false;
+                _isStart = false;
             }
 
             Message.Invoke(e, MessageType.Error);
@@ -222,7 +222,7 @@ namespace ViewModels.ModbusClient
 
         public void SelectNumberFormat_Hex()
         {
-            NumberViewStyle = NumberStyles.HexNumber;
+            _numberViewStyle = NumberStyles.HexNumber;
 
             if (Address != null)
             {
@@ -232,7 +232,7 @@ namespace ViewModels.ModbusClient
 
         private void SelectNumberFormat_Dec()
         {
-            NumberViewStyle = NumberStyles.Number;
+            _numberViewStyle = NumberStyles.Number;
 
             if (Address != null)
             {
@@ -240,9 +240,9 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        public void Start_Stop_Handler(bool StartPolling)
+        public void Start_Stop_Handler(bool startPolling)
         {
-            if (StartPolling)
+            if (startPolling)
             {
                 StartAction();
                 Button_Content = Button_Content_Stop;
@@ -254,7 +254,7 @@ namespace ViewModels.ModbusClient
                 Button_Content = Button_Content_Start;
             }
 
-            IsStart = StartPolling;
+            _isStart = startPolling;
         }
 
         private void StartAction()
@@ -285,7 +285,7 @@ namespace ViewModels.ModbusClient
             Model.Modbus.CycleMode_Period = Period_ms;
             Model.Modbus.CycleMode_Start(async () =>
             {
-                await Modbus_Read(SelectedSlaveID, SelectedAddress, ReadFunction, NumberOfRegisters, CheckSum_IsEnable);
+                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, NumberOfRegisters, _checkSum_IsEnable);
             });
         }
     }

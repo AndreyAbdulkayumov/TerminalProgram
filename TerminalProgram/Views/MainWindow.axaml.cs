@@ -18,15 +18,15 @@ namespace TerminalProgram.Views;
 
 public partial class MainWindow : Window
 {
-    private CornerRadius WindowCornerRadius;
-    private CornerRadius ButtonCloseRadius;
+    private CornerRadius _windowCornerRadius;
+    private CornerRadius _buttonCloseRadius;
 
     private readonly CommonUI_VM ViewModel;
 
     private readonly IMessageBox Message;
 
     private readonly double WorkspaceOpacity_Default;
-    private readonly double WorkspaceOpacity_OpenChildWindow = 0.3;
+    private const double WorkspaceOpacity_OpenChildWindow = 0.3;
 
 
     public MainWindow()
@@ -58,7 +58,7 @@ public partial class MainWindow : Window
     {
         await OpenWindowWithDimmer(async () =>
         {
-            ModbusScannerWindow window = new ModbusScannerWindow();
+            var window = new ModbusScannerWindow();
 
             window.DataContext = new ModbusScanner_VM(Message.Show);
 
@@ -139,30 +139,30 @@ public partial class MainWindow : Window
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        this.BeginMoveDrag(e);
+        BeginMoveDrag(e);
     }
 
     private void Button_Minimize_Click(object? sender, RoutedEventArgs e)
     {
-        this.WindowState = WindowState.Minimized;
+        WindowState = WindowState.Minimized;
     }
 
     private void Button_Maximize_Click(object? sender, RoutedEventArgs e)
     {
-        if (this.WindowState == WindowState.Maximized)
+        if (WindowState == WindowState.Maximized)
         {
-            this.WindowState = WindowState.Normal;
+            WindowState = WindowState.Normal;
 
-            Border_Window.CornerRadius = WindowCornerRadius;
-            Button_Close.CornerRadius = ButtonCloseRadius;
+            Border_Window.CornerRadius = _windowCornerRadius;
+            Button_Close.CornerRadius = _buttonCloseRadius;
         }
 
         else
         {
-            WindowCornerRadius = Border_Window.CornerRadius;
-            ButtonCloseRadius = Button_Close.CornerRadius;
+            _windowCornerRadius = Border_Window.CornerRadius;
+            _buttonCloseRadius = Button_Close.CornerRadius;
 
-            this.WindowState = WindowState.Maximized;
+            WindowState = WindowState.Maximized;
 
             Border_Window.CornerRadius = new CornerRadius(0, 0, 0, 0);
             Button_Close.CornerRadius = new CornerRadius(0, 0, 0, 0);
@@ -171,7 +171,7 @@ public partial class MainWindow : Window
 
     private void Button_Close_Click(object? sender, RoutedEventArgs e)
     {
-        this.Close();
+        Close();
     }
 
     /********************************************************/
@@ -184,7 +184,7 @@ public partial class MainWindow : Window
     {
         await OpenWindowWithDimmer(async () =>
         {
-            SettingsWindow window = new SettingsWindow(Message, Set_Dark_Theme, Set_Light_Theme);
+            var window = new SettingsWindow(Message, Set_Dark_Theme, Set_Light_Theme);
 
             await window.ShowDialog(this);
 
@@ -196,7 +196,7 @@ public partial class MainWindow : Window
     {
         await OpenWindowWithDimmer(async () =>
         {
-            AboutWindow window = new AboutWindow();
+            var window = new AboutWindow();
 
             await window.ShowDialog(this);
         });

@@ -4,9 +4,9 @@
     {
         public readonly bool IsStarted;
 
-        public NotificationArgs(bool IsStarted)
+        public NotificationArgs(bool isStarted)
         {
-            this.IsStarted = IsStarted;
+            IsStarted = isStarted;
         }
     }
 
@@ -25,7 +25,7 @@
         private readonly int RX_ViewLatency_ms;
         private readonly int CheckInterval_ms;
 
-        private CancellationTokenSource? NotificationCancelSource;
+        private CancellationTokenSource? _notificationCancelSource;
 
 
         public NotificationSource(int TX_ViewLatency_ms, int RX_ViewLatency_ms, int CheckInterval_ms)
@@ -47,15 +47,15 @@
 
         public void StartMonitor()
         {
-            NotificationCancelSource = new CancellationTokenSource();
+            _notificationCancelSource = new CancellationTokenSource();
 
-            TX_Notification_ControlTask = Task.Run(() => TX_Notification_Control(NotificationCancelSource.Token));
-            RX_Notification_ControlTask = Task.Run(() => RX_Notification_Control(NotificationCancelSource.Token));            
+            TX_Notification_ControlTask = Task.Run(() => TX_Notification_Control(_notificationCancelSource.Token));
+            RX_Notification_ControlTask = Task.Run(() => RX_Notification_Control(_notificationCancelSource.Token));            
         }
 
         public async Task StopMonitor()
         {
-            NotificationCancelSource?.Cancel();
+            _notificationCancelSource?.Cancel();
 
             if (TX_Notification_ControlTask != null && RX_Notification_ControlTask != null)
             {
@@ -63,11 +63,11 @@
             }            
         }
 
-        private async Task TX_Notification_Control(CancellationToken NotificationCancel)
+        private async Task TX_Notification_Control(CancellationToken notificationCancel)
         {
             try
             {
-                bool IsStarted = false;
+                bool isStarted = false;
 
                 while (true)
                 {
@@ -75,26 +75,26 @@
                     {
                         TX_Counter = 0;
 
-                        if (IsStarted == false)
+                        if (isStarted == false)
                         {
                             TX_Notification?.Invoke(null, new NotificationArgs(true));
 
-                            IsStarted = true;
+                            isStarted = true;
                         }
                     }
 
-                    else if (IsStarted)
+                    else if (isStarted)
                     {
                         await Task.Delay(TX_ViewLatency_ms);
 
                         TX_Notification?.Invoke(null, new NotificationArgs(false));
 
-                        IsStarted = false;
+                        isStarted = false;
                     }
 
                     await Task.Delay(CheckInterval_ms);
 
-                    NotificationCancel.ThrowIfCancellationRequested();
+                    notificationCancel.ThrowIfCancellationRequested();
                 }
             }
 
@@ -105,11 +105,11 @@
             }
         }
 
-        private async Task RX_Notification_Control(CancellationToken NotificationCancel)
+        private async Task RX_Notification_Control(CancellationToken notificationCancel)
         {
             try
             {
-                bool IsStarted = false;
+                bool isStarted = false;
 
                 while (true)
                 {
@@ -117,26 +117,26 @@
                     {
                         RX_Counter = 0;
 
-                        if (IsStarted == false)
+                        if (isStarted == false)
                         {
                             RX_Notification?.Invoke(null, new NotificationArgs(true));
 
-                            IsStarted = true;
+                            isStarted = true;
                         }
                     }
 
-                    else if (IsStarted)
+                    else if (isStarted)
                     {
                         await Task.Delay(RX_ViewLatency_ms);
 
                         RX_Notification?.Invoke(null, new NotificationArgs(false));
 
-                        IsStarted = false;
+                        isStarted = false;
                     }
 
                     await Task.Delay(CheckInterval_ms);
 
-                    NotificationCancel.ThrowIfCancellationRequested();
+                    notificationCancel.ThrowIfCancellationRequested();
                 }
             }
 

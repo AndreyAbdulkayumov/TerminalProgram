@@ -4,31 +4,29 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 {
     internal static class LastRequestRepresentation
     {
-        public static RequestResponseField_ItemData[] GetData(string[] RequestBytes, string[] ResponseBytes)
+        public static RequestResponseField_ItemData[] GetData(string[] requestBytes, string[] responseBytes)
         {
-            int MaxLength = RequestBytes.Length > ResponseBytes.Length ? RequestBytes.Length : ResponseBytes.Length;
+            int maxLength = requestBytes.Length > responseBytes.Length ? requestBytes.Length : responseBytes.Length;
 
-            RequestResponseField_ItemData[] Items = new RequestResponseField_ItemData[MaxLength];
+            var items = new RequestResponseField_ItemData[maxLength];
 
-            for (int i = 0; i < Items.Length; i++)
+            for (int i = 0; i < items.Length; i++)
             {
-                Items[i] = new RequestResponseField_ItemData();
-                Items[i].ItemNumber = (i + 1).ToString();
+                items[i] = new RequestResponseField_ItemData();
+                items[i].ItemNumber = (i + 1).ToString();
             }
 
-            for (int i = 0; i < RequestBytes.Length; i++)
+            for (int i = 0; i < requestBytes.Length; i++)
             {
-                Items[i].RequestDataType = i.ToString() + "X";
-                Items[i].RequestData = RequestBytes[i];
+                items[i].RequestData = requestBytes[i];
             }
 
-            for (int i = 0; i < ResponseBytes.Length; i++)
+            for (int i = 0; i < responseBytes.Length; i++)
             {
-                Items[i].ResponseDataType = i.ToString() + "Y";
-                Items[i].ResponseData = ResponseBytes[i];
+                items[i].ResponseData = responseBytes[i];
             }
 
-            return Items;
+            return items;
         }
     }
 }

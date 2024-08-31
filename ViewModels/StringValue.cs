@@ -7,17 +7,17 @@ namespace ViewModels
     {
         public static Action<string, MessageType>? ShowMessageView;
 
-        public static string CheckNumber(string? StringNumber, NumberStyles Style, out Byte Number)
+        public static string CheckNumber(string? stringNumber, NumberStyles style, out Byte number)
         {
-            if (StringNumber == null || StringNumber == String.Empty)
+            if (stringNumber == null || stringNumber == String.Empty)
             {
-                Number = 0;
+                number = 0;
                 return String.Empty;
             }
 
-            if (Byte.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out Number) == false)
+            if (Byte.TryParse(stringNumber, style, CultureInfo.InvariantCulture, out number) == false)
             {
-                if (Style == NumberStyles.HexNumber)
+                if (style == NumberStyles.HexNumber)
                 {
                     ShowMessageView?.Invoke("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x00 до 0xFF.", MessageType.Warning);
                 }
@@ -27,33 +27,33 @@ namespace ViewModels
                     ShowMessageView?.Invoke("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 255.", MessageType.Warning);
                 }
 
-                StringNumber = CorrectString(StringNumber, Style, 2, 3);
+                stringNumber = CorrectString(stringNumber, style, 2, 3);
 
                 // Предполагаем что конвертация строки в число проходит успешно всегда,
                 // т.к. ненужные символы были отсеяны в методе выше.
-                UInt64.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out UInt64 ResultValue);
+                UInt64.TryParse(stringNumber, style, CultureInfo.InvariantCulture, out UInt64 resultValue);
 
-                if (ResultValue > Byte.MaxValue)
+                if (resultValue > Byte.MaxValue)
                 {
-                    Number = Byte.MaxValue;
-                    StringNumber = Byte.MaxValue.ToString();
+                    number = Byte.MaxValue;
+                    stringNumber = Byte.MaxValue.ToString();
                 }
             }
 
-            return StringNumber;
+            return stringNumber;
         }
 
-        public static string CheckNumber(string? StringNumber, NumberStyles Style, out UInt16 Number)
+        public static string CheckNumber(string? stringNumber, NumberStyles style, out UInt16 number)
         {
-            if (StringNumber == null || StringNumber == String.Empty)
+            if (stringNumber == null || stringNumber == String.Empty)
             {
-                Number = 0;
+                number = 0;
                 return String.Empty;
             }
 
-            if (UInt16.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out Number) == false)
+            if (UInt16.TryParse(stringNumber, style, CultureInfo.InvariantCulture, out number) == false)
             {
-                if (Style == NumberStyles.HexNumber)
+                if (style == NumberStyles.HexNumber)
                 {
                     ShowMessageView?.Invoke("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x0000 до 0xFFFF.", MessageType.Warning);
                 }
@@ -63,33 +63,33 @@ namespace ViewModels
                     ShowMessageView?.Invoke("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 65535.", MessageType.Warning);
                 }
 
-                StringNumber = CorrectString(StringNumber, Style, 4, 5);
+                stringNumber = CorrectString(stringNumber, style, 4, 5);
 
                 // Предполагаем что конвертация строки в число проходит успешно всегда,
                 // т.к. ненужные символы были отсеяны в методе выше.
-                UInt64.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out UInt64 ResultValue);
+                UInt64.TryParse(stringNumber, style, CultureInfo.InvariantCulture, out UInt64 resultValue);
 
-                if (ResultValue > UInt16.MaxValue)
+                if (resultValue > UInt16.MaxValue)
                 {
-                    Number = UInt16.MaxValue;
-                    StringNumber = UInt16.MaxValue.ToString();
+                    number = UInt16.MaxValue;
+                    stringNumber = UInt16.MaxValue.ToString();
                 }
             }
 
-            return StringNumber;
+            return stringNumber;
         }
 
-        public static string CheckNumber(string? StringNumber, NumberStyles Style, out UInt32 Number)
+        public static string CheckNumber(string? stringNumber, NumberStyles style, out UInt32 number)
         {
-            if (StringNumber == null || StringNumber == String.Empty)
+            if (stringNumber == null || stringNumber == String.Empty)
             {
-                Number = 0;
+                number = 0;
                 return String.Empty;
             }
 
-            if (UInt32.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out Number) == false)
+            if (UInt32.TryParse(stringNumber, style, CultureInfo.InvariantCulture, out number) == false)
             {
-                if (Style == NumberStyles.HexNumber)
+                if (style == NumberStyles.HexNumber)
                 {
                     ShowMessageView?.Invoke("Допустим ввод только чисел в шестнадцатеричной системе счисления.\n\nДиапазон чисел от 0x00000000 до 0xFFFFFFFF.", MessageType.Warning);
                 }
@@ -99,48 +99,48 @@ namespace ViewModels
                     ShowMessageView?.Invoke("Допустим ввод только чисел в десятичной системе счисления.\n\nДиапазон чисел от 0 до 2^32.", MessageType.Warning);
                 }
 
-                StringNumber = CorrectString(StringNumber, Style, 8, 10);
+                stringNumber = CorrectString(stringNumber, style, 8, 10);
 
                 // Предполагаем что конвертация строки в число проходит успешно всегда,
                 // т.к. ненужные символы были отсеяны в методе выше.
-                UInt64.TryParse(StringNumber, Style, CultureInfo.InvariantCulture, out UInt64 ResultValue);
+                UInt64.TryParse(stringNumber, style, CultureInfo.InvariantCulture, out UInt64 resultValue);
 
-                if (ResultValue > UInt32.MaxValue)
+                if (resultValue > UInt32.MaxValue)
                 {
-                    Number = UInt32.MaxValue;
-                    StringNumber = UInt32.MaxValue.ToString();
+                    number = UInt32.MaxValue;
+                    stringNumber = UInt32.MaxValue.ToString();
                 }
             }
 
-            return StringNumber;
+            return stringNumber;
         }
 
-        private static string CorrectString(string StringNumber, NumberStyles Style, int MaxLength_Hex, int MaxLength_Dec)
+        private static string CorrectString(string stringNumber, NumberStyles style, int maxLength_Hex, int maxLength_Dec)
         {
-            if (Style == NumberStyles.HexNumber)
+            if (style == NumberStyles.HexNumber)
             {
                 // Удаляем все нецифровые символы из введенного текста
-                StringNumber = new string(StringNumber.Where(x => char.IsDigit(x) || "ABCDEFabcdef".Contains(x)).ToArray());
+                stringNumber = new string(stringNumber.Where(x => char.IsDigit(x) || "ABCDEFabcdef".Contains(x)).ToArray());
 
                 // Ограничиваем длину строки до MaxLength_Hex символов (для шестнадцатеричного числа)
-                StringNumber = StringNumber.Substring(0, Math.Min(StringNumber.Length, MaxLength_Hex));
+                stringNumber = stringNumber.Substring(0, Math.Min(stringNumber.Length, maxLength_Hex));
             }
 
             else
             {
                 // Удаляем все нецифровые символы из введенного текста
-                StringNumber = new string(StringNumber.Where(char.IsDigit).ToArray());
+                stringNumber = new string(stringNumber.Where(char.IsDigit).ToArray());
 
                 // Ограничиваем длину строки до MaxLength_Dec символов (для десятичного числа)
-                StringNumber = StringNumber.Substring(0, Math.Min(StringNumber.Length, MaxLength_Dec));
+                stringNumber = stringNumber.Substring(0, Math.Min(stringNumber.Length, maxLength_Dec));
             }
 
-            if (StringNumber == null)
+            if (stringNumber == null)
             {
                 return String.Empty;
             }
 
-            return StringNumber;
+            return stringNumber;
         }
     }
 }

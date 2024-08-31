@@ -12,13 +12,13 @@
     {
         public int NumberOfRegisters;
 
-        public ReadTypeMessage(byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CheckSum_IsEnable, UInt16 Polynom = 0xA001)
+        public ReadTypeMessage(byte slaveID, UInt16 address, int numberOfRegisters, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
         {
-            this.SlaveID = SlaveID;
-            this.Address = Address;
-            this.NumberOfRegisters = NumberOfRegisters;
-            this.CheckSum_IsEnable = CheckSum_IsEnable;
-            this.Polynom = Polynom;
+            SlaveID = slaveID;
+            Address = address;
+            NumberOfRegisters = numberOfRegisters;
+            CheckSum_IsEnable = checkSum_IsEnable;
+            Polynom = polynom;
         }
     }
 
@@ -26,13 +26,13 @@
     {
         public UInt16[] WriteData;
 
-        public WriteTypeMessage(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable, UInt16 Polynom = 0xA001)
+        public WriteTypeMessage(byte slaveID, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
         {
-            this.SlaveID = SlaveID;
-            this.Address = Address;
-            this.WriteData = WriteData;
-            this.CheckSum_IsEnable = CheckSum_IsEnable;
-            this.Polynom = Polynom;
+            SlaveID = slaveID;
+            Address = address;
+            WriteData = writeData;
+            CheckSum_IsEnable = checkSum_IsEnable;
+            Polynom = polynom;
         }
     }
 }

@@ -21,29 +21,29 @@ namespace Core.Models.Modbus.Message
         /// <summary>
         /// Метод расчета CRC с указанным полиномом
         /// </summary>
-        /// <param name="Message"></param>
+        /// <param name="message"></param>
         /// <returns></returns>
-        public static byte[] Calculate_CRC16(byte[] Message, UInt16 Polynom = 0xA001)
+        public static byte[] Calculate_CRC16(byte[] message, UInt16 polynom = 0xA001)
         {            
-            ushort Register = 0xFFFF; // создаем регистр, в котором будем сохранять высчитанный CRC
+            ushort register = 0xFFFF; // создаем регистр, в котором будем сохранять высчитанный CRC
             //ushort Polynom = 0xA001; // Указываем полином, он может быть как 0xA001(старший бит справа), так и его реверс 0x8005(старший бит слева, здесь не рассматривается), при сдвиге вправо используется 0xA001
 
             // Два последних элемента массива предназначены для хранения байтов CRC.
             // Поэтому их не учитываем в расчете.
-            for (int i = 0; i < Message.Length - 2; i++) // для каждого байта в принятом\отправляемом сообщении проводим следующие операции(байты сообщения без принятого CRC)
+            for (int i = 0; i < message.Length - 2; i++) // для каждого байта в принятом\отправляемом сообщении проводим следующие операции(байты сообщения без принятого CRC)
             {
-                Register = (ushort)(Register ^ Message[i]); // Делим через XOR регистр на выбранный байт сообщения(от младшего к старшему)
+                register = (ushort)(register ^ message[i]); // Делим через XOR регистр на выбранный байт сообщения(от младшего к старшему)
 
                 for (int j = 0; j < 8; j++) // для каждого бита в выбранном байте делим полученный регистр на полином
                 {
-                    if ((ushort)(Register & 0x01) == 1) //если старший бит равен 1 то
+                    if ((ushort)(register & 0x01) == 1) //если старший бит равен 1 то
                     {
-                        Register = (ushort)(Register >> 1); //сдвигаем на один бит вправо
-                        Register = (ushort)(Register ^ Polynom); //делим регистр на полином по XOR
+                        register = (ushort)(register >> 1); //сдвигаем на один бит вправо
+                        register = (ushort)(register ^ polynom); //делим регистр на полином по XOR
                     }
                     else //если старший бит равен 0 то
                     {
-                        Register = (ushort)(Register >> 1); // сдвигаем регистр вправо
+                        register = (ushort)(register >> 1); // сдвигаем регистр вправо
                     }
                 }
             }
@@ -51,19 +51,19 @@ namespace Core.Models.Modbus.Message
             // выдаваемый массив CRC
             byte[] CRC16 = new byte[2];
 
-            CRC16[0] = (byte)(Register & 0x00FF); // присваеваем младший байт 
-            CRC16[1] = (byte)(Register >> 8); // присваеваем старший байт
+            CRC16[0] = (byte)(register & 0x00FF); // присваеваем младший байт 
+            CRC16[1] = (byte)(register >> 8); // присваеваем старший байт
 
             return CRC16;
         }
 
-        public static byte[] Calculate_LRC8(byte[] MainPart)
+        public static byte[] Calculate_LRC8(byte[] mainPart)
         {
             byte LRC8 = 0;
 
-            foreach (byte Element in MainPart)
+            foreach (byte element in mainPart)
             {
-                LRC8 += Element;
+                LRC8 += element;
             }
 
             LRC8 = (byte)((LRC8 ^ 0xFF) + 1);

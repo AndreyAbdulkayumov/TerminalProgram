@@ -8,7 +8,7 @@ using System.Reactive.Linq;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Tab_Connection_SerialPort : ReactiveObject
+    public class Tab_Connection_SerialPort_VM : ReactiveObject
     {
         /************************************/
         //
@@ -168,11 +168,11 @@ namespace ViewModels.Settings
         private readonly Model_Settings SettingsFile;
 
 
-        public ViewModel_Tab_Connection_SerialPort(ViewModel_Settings Main_VM)
+        public Tab_Connection_SerialPort_VM(Settings_VM main_VM)
         {
-            Main_VM.SettingsFileChanged += Main_VM_SettingsFileChanged;
+            main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
 
-            Message = Main_VM.Message;
+            Message = main_VM.Message;
 
             SettingsFile = Model_Settings.Model;
 
@@ -244,19 +244,19 @@ namespace ViewModels.Settings
             }
         }
 
-        private void ReScan_COMPorts(SerialPort_Info? Info)
+        private void ReScan_COMPorts(SerialPort_Info? info)
         {
-            string[] PortsList = SerialPort.GetPortNames();
+            string[] portsList = SerialPort.GetPortNames();
 
             COM_Ports.Clear();
 
-            foreach (string Port in PortsList)
+            foreach (string port in portsList)
             {
-                COM_Ports.Add(Port);
+                COM_Ports.Add(port);
             }
 
-            if (Info == null ||
-                Info.COMPort == null || Info.COMPort == String.Empty)
+            if (info == null ||
+                info.COMPort == null || info.COMPort == String.Empty)
             {
                 Selected_COM_Port = null;
                 Message_PortNotFound = "Порт не задан";
@@ -265,23 +265,23 @@ namespace ViewModels.Settings
                 return;
             }
 
-            string SelectedPort = Info.COMPort;
-            string? FoundPort = null;
+            string selectedPort = info.COMPort;
+            string? foundPort = null;
 
-            foreach (string Port in COM_Ports)
+            foreach (string port in COM_Ports)
             {
-                if (Port == SelectedPort)
+                if (port == selectedPort)
                 {
-                    FoundPort = Port;
+                    foundPort = port;
                     break;
                 }
             }
 
-            Selected_COM_Port = FoundPort;
+            Selected_COM_Port = foundPort;
 
             if (Selected_COM_Port == null)
             {
-                Message_PortNotFound = SelectedPort + " не найден";
+                Message_PortNotFound = selectedPort + " не найден";
                 Message_PortNotFound_IsVisible = true;
             }
 

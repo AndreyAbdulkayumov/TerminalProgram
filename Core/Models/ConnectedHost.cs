@@ -8,11 +8,11 @@ namespace Core.Models
 {
     public class ConnectArgs : EventArgs
     {
-        public IConnection? ConnectedDevice;
+        public readonly IConnection? ConnectedDevice;
 
-        public ConnectArgs(IConnection? ConnectedDevice)
+        public ConnectArgs(IConnection? connectedDevice)
         {
-            this.ConnectedDevice = ConnectedDevice;
+            ConnectedDevice = connectedDevice;
         }
     }
 
@@ -86,19 +86,19 @@ namespace Core.Models
             SelectedProtocol = new ProtocolMode_Modbus(Client, Model_Settings.Model.Settings);
         }
 
-        public void Connect(ConnectionInfo Information)
+        public void Connect(ConnectionInfo information)
         {
             if (SelectedProtocol == null)
             {
                 throw new Exception("Не выбран протокол.");
             }
 
-            if (Information.Info as SerialPortInfo != null)
+            if (information.Info as SerialPortInfo != null)
             {
                 Client = new SerialPortClient();
             }
 
-            else if (Information.Info as SocketInfo != null)
+            else if (information.Info as SocketInfo != null)
             {
                 Client = new IPClient();
             }
@@ -108,13 +108,13 @@ namespace Core.Models
                 throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
             }
 
-            Client.Connect(Information);
+            Client.Connect(information);
 
-            GlobalEncoding = Information.GlobalEncoding;
+            GlobalEncoding = information.GlobalEncoding;
 
-            ProtocolMode_Modbus? ModbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
+            var modbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
 
-            ModbusProtocol?.UpdateTimeouts(Model_Settings.Model.Settings);
+            modbusProtocol?.UpdateTimeouts(Model_Settings.Model.Settings);
 
             SelectedProtocol.InitMode(Client);
 

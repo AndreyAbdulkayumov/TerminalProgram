@@ -12,7 +12,7 @@ namespace Core.Clients
         {
             get
             {
-                if (DeviceSerialPort == null || DeviceSerialPort.IsOpen == false)
+                if (_deviceSerialPort == null || _deviceSerialPort.IsOpen == false)
                 {
                     return false;
                 }
@@ -25,9 +25,9 @@ namespace Core.Clients
         {
             get
             {
-                if (DeviceSerialPort != null)
+                if (_deviceSerialPort != null)
                 {
-                    return DeviceSerialPort.WriteTimeout;
+                    return _deviceSerialPort.WriteTimeout;
                 }
 
                 return 0;
@@ -35,9 +35,9 @@ namespace Core.Clients
 
             set
             {
-                if (DeviceSerialPort != null)
+                if (_deviceSerialPort != null)
                 {
-                    DeviceSerialPort.WriteTimeout = value;
+                    _deviceSerialPort.WriteTimeout = value;
                 }
             }
         }
@@ -46,9 +46,9 @@ namespace Core.Clients
         {
             get
             {
-                if (DeviceSerialPort != null)
+                if (_deviceSerialPort != null)
                 {
-                    return DeviceSerialPort.ReadTimeout;
+                    return _deviceSerialPort.ReadTimeout;
                 }
 
                 return 0;
@@ -56,19 +56,19 @@ namespace Core.Clients
 
             set
             {
-                if (DeviceSerialPort != null)
+                if (_deviceSerialPort != null)
                 {
-                    DeviceSerialPort.ReadTimeout = value;
+                    _deviceSerialPort.ReadTimeout = value;
                 }
             }
         }
 
-        private SerialPort? DeviceSerialPort = null;
-
-        private Task? ReadThread = null;
-        private CancellationTokenSource? ReadCancelSource = null;
-
         public NotificationSource Notifications { get; private set; }
+
+        private SerialPort? _deviceSerialPort;
+
+        private Task? _readThread;
+        private CancellationTokenSource? _readCancelSource;      
 
 
         public SerialPortClient()
@@ -80,160 +80,160 @@ namespace Core.Clients
                 );
         }
 
-        public void SetReadMode(ReadMode Mode)
+        public void SetReadMode(ReadMode mode)
         {
-            switch (Mode)
+            switch (mode)
             {
                 case ReadMode.Async:
 
-                    if (DeviceSerialPort != null && IsConnected)
+                    if (_deviceSerialPort != null && IsConnected)
                     {
-                        ReadCancelSource = new CancellationTokenSource();
+                        _readCancelSource = new CancellationTokenSource();
 
-                        DeviceSerialPort.BaseStream.WriteTimeout = 500;
-                        DeviceSerialPort.BaseStream.ReadTimeout = -1;   // Бесконечно
+                        _deviceSerialPort.BaseStream.WriteTimeout = 500;
+                        _deviceSerialPort.BaseStream.ReadTimeout = -1;   // Бесконечно
 
-                        ReadThread = Task.Run(() => AsyncThread_Read(DeviceSerialPort.BaseStream, ReadCancelSource.Token));
+                        _readThread = Task.Run(() => AsyncThread_Read(_deviceSerialPort.BaseStream, _readCancelSource.Token));
                     }
 
                     break;
 
                 case ReadMode.Sync:
 
-                    if (DeviceSerialPort != null && IsConnected)
+                    if (_deviceSerialPort != null && IsConnected)
                     {
-                        ReadCancelSource?.Cancel();
+                        _readCancelSource?.Cancel();
 
-                        if (ReadThread != null)
+                        if (_readThread != null)
                         {
-                            Task.WaitAll(ReadThread);
+                            Task.WaitAll(_readThread);
                         }
 
-                        DeviceSerialPort.DiscardInBuffer();
-                        DeviceSerialPort.DiscardOutBuffer();
+                        _deviceSerialPort.DiscardInBuffer();
+                        _deviceSerialPort.DiscardOutBuffer();
                     }
 
                     break;
 
                 default:
-                    throw new Exception("У клиента задан неизвестный режим чтения: " + Mode.ToString());
+                    throw new Exception("У клиента задан неизвестный режим чтения: " + mode.ToString());
             }
         }
 
-        public void Connect(ConnectionInfo Information)
+        public void Connect(ConnectionInfo information)
         {
-            SerialPortInfo? PortInfo = Information.Info as SerialPortInfo;
+            var portInfo = information.Info as SerialPortInfo;
 
             try
             {
-                if (PortInfo == null)
+                if (portInfo == null)
                 {
                     throw new Exception("Нет информации о настройках подключения по последовательному порту.");
                 }
 
-                if (PortInfo.COM_Port == null || PortInfo.COM_Port == String.Empty ||
-                    PortInfo.BaudRate == null || PortInfo.BaudRate == String.Empty ||
-                    PortInfo.Parity == null || PortInfo.Parity == String.Empty ||
-                    PortInfo.DataBits == null || PortInfo.DataBits == String.Empty ||
-                    PortInfo.StopBits == null || PortInfo.StopBits == String.Empty)
+                if (portInfo.COM_Port == null || portInfo.COM_Port == String.Empty ||
+                    portInfo.BaudRate == null || portInfo.BaudRate == String.Empty ||
+                    portInfo.Parity == null || portInfo.Parity == String.Empty ||
+                    portInfo.DataBits == null || portInfo.DataBits == String.Empty ||
+                    portInfo.StopBits == null || portInfo.StopBits == String.Empty)
                 {
                     throw new Exception(
-                        (PortInfo.COM_Port == null || PortInfo.COM_Port == String.Empty ? "Не задан СОМ порт.\n" : "") +
-                        (PortInfo.BaudRate == null || PortInfo.BaudRate == String.Empty ? "Не задан BaudRate.\n" : "") +
-                        (PortInfo.Parity == null || PortInfo.Parity == String.Empty ? "Не задан Parity.\n" : "") +
-                        (PortInfo.DataBits == null || PortInfo.DataBits == String.Empty ? "Не задан DataBits\n" : "") +
-                        (PortInfo.StopBits == null || PortInfo.StopBits == String.Empty ? "Не задан StopBits\n" : "")
+                        (portInfo.COM_Port == null || portInfo.COM_Port == String.Empty ? "Не задан СОМ порт.\n" : "") +
+                        (portInfo.BaudRate == null || portInfo.BaudRate == String.Empty ? "Не задан BaudRate.\n" : "") +
+                        (portInfo.Parity == null || portInfo.Parity == String.Empty ? "Не задан Parity.\n" : "") +
+                        (portInfo.DataBits == null || portInfo.DataBits == String.Empty ? "Не задан DataBits\n" : "") +
+                        (portInfo.StopBits == null || portInfo.StopBits == String.Empty ? "Не задан StopBits\n" : "")
                         );
                 }
 
-                DeviceSerialPort = new SerialPort();
+                _deviceSerialPort = new SerialPort();
 
-                if (int.TryParse(PortInfo.BaudRate, out int BaudRate) == false)
+                if (int.TryParse(portInfo.BaudRate, out int BaudRate) == false)
                 {
                     throw new Exception("Не удалось преобразовать значение BaudRate в целочисленное значение.\n" +
-                        "Полученное значение BaudRate: " + PortInfo.BaudRate);
+                        "Полученное значение BaudRate: " + portInfo.BaudRate);
                 }
 
-                Parity SelectedParity;
+                Parity selectedParity;
 
-                switch (PortInfo.Parity)
+                switch (portInfo.Parity)
                 {
                     case "None":
-                        SelectedParity = Parity.None;
+                        selectedParity = Parity.None;
                         break;
 
                     case "Even":
-                        SelectedParity = Parity.Even;
+                        selectedParity = Parity.Even;
                         break;
 
                     case "Odd":
-                        SelectedParity = Parity.Odd;
+                        selectedParity = Parity.Odd;
                         break;
 
                     case "Space":
-                        SelectedParity = Parity.Space;
+                        selectedParity = Parity.Space;
                         break;
 
                     case "Mark":
-                        SelectedParity = Parity.Mark;
+                        selectedParity = Parity.Mark;
                         break;
 
                     default:
                         throw new Exception("Неправильно задано значение Parity.");
                 }
 
-                if (int.TryParse(PortInfo.DataBits, out int DataBits) == false)
+                if (int.TryParse(portInfo.DataBits, out int DataBits) == false)
                 {
                     throw new Exception("Не удалось преобразовать значение DataBits в целочисленное значение.\n" +
-                        "Полученное значение DataBits: " + PortInfo.DataBits);
+                        "Полученное значение DataBits: " + portInfo.DataBits);
                 }
 
-                StopBits SelectedStopBits;
+                StopBits selectedStopBits;
 
-                switch (PortInfo.StopBits)
+                switch (portInfo.StopBits)
                 {
                     case "1":
-                        SelectedStopBits = StopBits.One;
+                        selectedStopBits = StopBits.One;
                         break;
 
                     case "1.5":
-                        SelectedStopBits = StopBits.OnePointFive;
+                        selectedStopBits = StopBits.OnePointFive;
                         break;
 
                     case "2":
-                        SelectedStopBits = StopBits.Two;
+                        selectedStopBits = StopBits.Two;
                         break;
 
                     default:
                         throw new Exception("Неправильно задано значение StopBits");
                 }
 
-                DeviceSerialPort.PortName = PortInfo.COM_Port;
-                DeviceSerialPort.BaudRate = BaudRate;
-                DeviceSerialPort.Parity = SelectedParity;
-                DeviceSerialPort.DataBits = DataBits;
-                DeviceSerialPort.StopBits = SelectedStopBits;
+                _deviceSerialPort.PortName = portInfo.COM_Port;
+                _deviceSerialPort.BaudRate = BaudRate;
+                _deviceSerialPort.Parity = selectedParity;
+                _deviceSerialPort.DataBits = DataBits;
+                _deviceSerialPort.StopBits = selectedStopBits;
 
-                DeviceSerialPort.Open();
+                _deviceSerialPort.Open();
 
                 Notifications.StartMonitor();
             }
 
             catch (Exception error)
             {
-                DeviceSerialPort?.Close();
+                _deviceSerialPort?.Close();
 
                 string CommonMessage = "Не удалось подключиться к СОМ порту.\n\n";
 
-                if (PortInfo != null)
+                if (portInfo != null)
                 {
                     throw new Exception(CommonMessage +
                         "Данные подключения:" + "\n" +
-                        "COM - Port: " + PortInfo.COM_Port + "\n" +
-                        "BaudRate: " + PortInfo.BaudRate + "\n" +
-                        "Parity: " + PortInfo.Parity + "\n" +
-                        "DataBits: " + PortInfo.DataBits + "\n" +
-                        "StopBits: " + PortInfo.StopBits + "\n\n" +
+                        "COM - Port: " + portInfo.COM_Port + "\n" +
+                        "BaudRate: " + portInfo.BaudRate + "\n" +
+                        "Parity: " + portInfo.Parity + "\n" +
+                        "DataBits: " + portInfo.DataBits + "\n" +
+                        "StopBits: " + portInfo.StopBits + "\n\n" +
                         error.Message);
                 }
 
@@ -245,23 +245,23 @@ namespace Core.Clients
         {
             try
             {
-                if (DeviceSerialPort != null && DeviceSerialPort.IsOpen)
+                if (_deviceSerialPort != null && _deviceSerialPort.IsOpen)
                 {
                     ProtocolMode? SelectedProtocol = ConnectedHost.SelectedProtocol;
 
                     if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
                     {
-                        ReadCancelSource?.Cancel();
+                        _readCancelSource?.Cancel();
 
-                        if (ReadThread != null)
+                        if (_readThread != null)
                         {
-                            await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                            await Task.WhenAll(_readThread).ConfigureAwait(false);
 
                             await Task.Delay(100);
                         }
                     }
 
-                    DeviceSerialPort.Close();
+                    _deviceSerialPort.Close();
                 }
 
                 await Notifications.StopMonitor();
@@ -273,9 +273,9 @@ namespace Core.Clients
             }
         }
 
-        public async Task<ModbusOperationInfo> Send(byte[] Message, int NumberOfBytes)
+        public async Task<ModbusOperationInfo> Send(byte[] message, int numberOfBytes)
         {
-            if (DeviceSerialPort == null)
+            if (_deviceSerialPort == null)
             {
                 return new ModbusOperationInfo(DateTime.Now, null);
             }
@@ -286,7 +286,7 @@ namespace Core.Clients
             {
                 if (IsConnected)
                 {
-                    await DeviceSerialPort.BaseStream.WriteAsync(Message, 0, NumberOfBytes);
+                    await _deviceSerialPort.BaseStream.WriteAsync(message, 0, numberOfBytes);
 
                     ExecutionTime = DateTime.Now;
                     
@@ -300,19 +300,19 @@ namespace Core.Clients
             {
                 throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут передачи: " +
-                    (DeviceSerialPort.WriteTimeout == Timeout.Infinite ?
-                    "бесконечно" : DeviceSerialPort.WriteTimeout.ToString() + " мс."));
+                    (_deviceSerialPort.WriteTimeout == Timeout.Infinite ?
+                    "бесконечно" : _deviceSerialPort.WriteTimeout.ToString() + " мс."));
             }
         }
 
         public async Task<ModbusOperationInfo> Receive()
         {
-            if (DeviceSerialPort == null)
+            if (_deviceSerialPort == null)
             {
                 return new ModbusOperationInfo(DateTime.Now, Array.Empty<byte>());
             }
 
-            List<byte> ReceivedBytes = new List<byte>();
+            var ReceivedBytes = new List<byte>();
 
             DateTime ExecutionTime = new DateTime();
 
@@ -328,31 +328,31 @@ namespace Core.Clients
                     // Для использования небольших скоростей передачи данных (Baud Rate)
                     // значение задержки взято с запасом.
 
-                    byte[] Buffer;
+                    byte[] buffer;
 
-                    int NumberOfReceivedBytes;
+                    int numberOfReceivedBytes;
 
-                    bool IsFirstPackage = true;
+                    bool isFirstPackage = true;
 
                     do
                     {
-                        Buffer = new byte[100];
+                        buffer = new byte[100];
 
-                        NumberOfReceivedBytes = DeviceSerialPort.Read(Buffer, 0, Buffer.Length);
+                        numberOfReceivedBytes = _deviceSerialPort.Read(buffer, 0, buffer.Length);
 
-                        if (IsFirstPackage)
+                        if (isFirstPackage)
                         {
                             ExecutionTime = DateTime.Now;
-                            IsFirstPackage = false;
+                            isFirstPackage = false;
                         }
 
-                        Array.Resize(ref Buffer, NumberOfReceivedBytes);
+                        Array.Resize(ref buffer, numberOfReceivedBytes);
 
-                        ReceivedBytes.AddRange(Buffer);
+                        ReceivedBytes.AddRange(buffer);
 
                         await Task.Delay(70);
 
-                    } while (DeviceSerialPort.BytesToRead > 0);
+                    } while (_deviceSerialPort.BytesToRead > 0);
 
                     if (ReceivedBytes.Count > 0)
                     {
@@ -371,35 +371,35 @@ namespace Core.Clients
             catch (Exception error)
             {
                 throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
-                    "Таймаут приема: " + DeviceSerialPort.ReadTimeout + " мс.");
+                    "Таймаут приема: " + _deviceSerialPort.ReadTimeout + " мс.");
             }
         }
 
-        private async Task AsyncThread_Read(Stream CurrentStream, CancellationToken ReadCancel)
+        private async Task AsyncThread_Read(Stream currentStream, CancellationToken readCancel)
         {
             try
             {
-                byte[] BufferRX = new byte[50];
+                byte[] bufferRX = new byte[50];
 
-                int NumberOfReceiveBytes;
+                int numberOfReceiveBytes;
 
-                Task<int> ReadResult;
+                Task<int> readResult;
 
-                Task WaitCancel = Task.Run(async () =>
+                Task waitCancel = Task.Run(async () =>
                 {
-                    while (ReadCancel.IsCancellationRequested == false)
+                    while (readCancel.IsCancellationRequested == false)
                     {
-                        await Task.Delay(50, ReadCancel);
+                        await Task.Delay(50, readCancel);
                     }
                 });
 
-                Task CompletedTask;
+                Task completedTask;
 
                 while (true)
                 {
-                    ReadCancel.ThrowIfCancellationRequested();
+                    readCancel.ThrowIfCancellationRequested();
 
-                    if (CurrentStream != null)
+                    if (currentStream != null)
                     {
                         /// Метод асинхронного чтения у объекта класса Stream, 
                         /// который содержится в объекте класса SerialPort,
@@ -408,33 +408,33 @@ namespace Core.Clients
                         /// неуправляемые вызовы никоуровневого API.
                         /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
 
-                        ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
+                        readResult = currentStream.ReadAsync(bufferRX, 0, bufferRX.Length, readCancel);
 
-                        CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
+                        completedTask = await Task.WhenAny(readResult, waitCancel).ConfigureAwait(false);
 
-                        ReadCancel.ThrowIfCancellationRequested();
+                        readCancel.ThrowIfCancellationRequested();
 
-                        if (CompletedTask == WaitCancel)
+                        if (completedTask == waitCancel)
                         {
                             throw new OperationCanceledException();
                         }
 
-                        NumberOfReceiveBytes = ReadResult.Result;
+                        numberOfReceiveBytes = readResult.Result;
 
-                        DataFromDevice Data = new DataFromDevice(NumberOfReceiveBytes);
+                        var Data = new DataFromDevice(numberOfReceiveBytes);
 
-                        for (int i = 0; i < NumberOfReceiveBytes; i++)
+                        for (int i = 0; i < numberOfReceiveBytes; i++)
                         {
-                            Data.RX[i] = BufferRX[i];
+                            Data.RX[i] = bufferRX[i];
                         }
 
-                        ReadCancel.ThrowIfCancellationRequested();
+                        readCancel.ThrowIfCancellationRequested();
 
                         DataReceived?.Invoke(this, Data);
 
                         Notifications.ReceiveEvent();
 
-                        Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
+                        Array.Clear(bufferRX, 0, numberOfReceiveBytes);
                     }
                 }
             }

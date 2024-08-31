@@ -11,7 +11,7 @@ namespace TerminalProgram.Views.Protocols
 
         private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
         {
-            TextBox? element = sender as TextBox;
+            var element = sender as TextBox;
 
             // Прокрутка текста в конец
 

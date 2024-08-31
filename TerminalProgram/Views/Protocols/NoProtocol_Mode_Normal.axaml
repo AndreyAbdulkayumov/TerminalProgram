@@ -16,59 +16,55 @@
 		<TextBox Grid.Row="0"
 				 Classes="TX_RX_Field"
 				 Margin="10,10,10,0"
-				 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 				 Text="{Binding TX_String, Mode=TwoWay}"/>
 
 		<Grid Grid.Row="1">
 
-			<TextBlock Text="Добавить в конце строки:"
-					   Foreground="{DynamicResource MainWindow_Color_Text}"
-					   FontSize="14"
-					   Margin="20,0,0,0"
-					   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+			<StackPanel Orientation="Horizontal" Spacing="15"
+						Margin="20,0,0,0"
+						HorizontalAlignment="Left">
 
-			<CheckBox x:Name="CheckBox_CR"
-					  Foreground="{DynamicResource MainWindow_Color_Text}"
-					  FontSize="14"
-					  Margin="210,2,0,0"
-					  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-					  IsChecked="{Binding CR_Enable, Mode=TwoWay}"
-					  Content="CR ( &#8216;\r &#8217;, 0x0D)"
-					  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<TextBlock Text="Добавить в конце строки:"
+						   Foreground="{DynamicResource MainWindow_Color_Text}"
+					       FontSize="14"
+						   VerticalAlignment="Center"/>
 
-			<CheckBox x:Name="CheckBox_LF"
-					  Foreground="{DynamicResource MainWindow_Color_Text}"
-					  FontSize="14"
-					  Margin="350,2,0,0"
-					  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-					  IsChecked="{Binding LF_Enable, Mode=TwoWay}"
-					  Content="LF ( &#8216;\n	&#8216;, 0x0A)"
-					  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<CheckBox x:Name="CheckBox_CR"
+						  Foreground="{DynamicResource MainWindow_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding CR_Enable, Mode=TwoWay}"
+						  Content="CR ( &#8216;\r &#8217;, 0x0D)"/>
 
-			<RadioButton x:Name="RadioButton_Char"
-						 Margin="0,0,210,0"
-						 Content="Символ"
-						 Foreground="{DynamicResource MainWindow_Color_Text}"
-						 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-						 HorizontalAlignment="Right" VerticalAlignment="Center"
-						 Command="{Binding Command_Select_Char}"/>
+				<CheckBox x:Name="CheckBox_LF"
+						  Foreground="{DynamicResource MainWindow_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding LF_Enable, Mode=TwoWay}"
+						  Content="LF ( &#8216;\n	&#8216;, 0x0A)"/>
+				
+			</StackPanel>
 
-			<RadioButton x:Name="RadioButton_String"
-						 Margin="0,0,125,0"
-						 Content="Строка"
-						 IsChecked="True"
-						 Foreground="{DynamicResource MainWindow_Color_Text}"
-						 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-						 HorizontalAlignment="Right" VerticalAlignment="Center"
-						 Command="{Binding Command_Select_String}"/>
+			<StackPanel Orientation="Horizontal" Spacing="15"
+						Margin="0,0,20,0"
+						HorizontalAlignment="Right">
 
-			<Button x:Name="Button_Send"
-					Margin="0,0,20,0"
-					Width="95"
-					Content="Отправить"
-					IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-					HorizontalAlignment="Right" VerticalAlignment="Center"
-					Command="{Binding Command_Send}"/>
+				<RadioButton x:Name="RadioButton_Char"
+						     Content="Символ"
+							 Foreground="{DynamicResource MainWindow_Color_Text}"
+							 Command="{Binding Command_Select_Char}"/>
+
+				<RadioButton x:Name="RadioButton_String"
+							 Content="Строка"
+							 IsChecked="True"
+							 Foreground="{DynamicResource MainWindow_Color_Text}"
+							 Command="{Binding Command_Select_String}"/>
+
+				<Button x:Name="Button_Send"
+						Width="95"
+						Content="Отправить"
+						IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+						Command="{Binding Command_Send}"/>
+				
+			</StackPanel>			
 
 		</Grid>
 

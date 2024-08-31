@@ -1,39 +1,21 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Reactive;
 
 namespace ViewModels.ModbusClient
 {
     public class ModbusClient_WriteData_VM : ReactiveObject
     {
-        private ushort _address = 0;
+        private string? _startAddressAddition;
 
-        public ushort Address
+        public string? StartAddressAddition
         {
-            get => _address;
+            get => _startAddressAddition;
             set
             {
-                _address = value;
+                this.RaiseAndSetIfChanged(ref _startAddressAddition, value);
             }
-        }
-
-        private string? _viewAddress;
-
-        public string? ViewAddress
-        {
-            get => _viewAddress;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _viewAddress, value);
-            }
-        }
-
-        private string? _addressNumberFormat;
-
-        public string? AddressNumberFormat
-        {
-            get => _addressNumberFormat;
-            set => this.RaiseAndSetIfChanged(ref _addressNumberFormat, value);
         }
 
         private ushort _data = 0;
@@ -80,15 +62,37 @@ namespace ViewModels.ModbusClient
             set => SetNumberFormat(value);
         }
 
+        public readonly Guid Id;
+        public readonly bool CanRemove;
 
-        public ModbusClient_WriteData_VM(ushort Address, ushort Data, string DataFormat)
+        public ReactiveCommand<Unit, Unit>? Command_RemoveItem { get; set; }
+
+
+        public ModbusClient_WriteData_VM(
+            bool canRemove,
+            int startAddressAddition, 
+            ushort data, string dataFormat,
+            Action<Guid> removeItemHandler)
         {
-            SelectedDataFormat = DataFormat;
+            Id = Guid.NewGuid();
 
-            this.Address = Address;
-            this.Data = Data;
+            CanRemove = canRemove;
 
-            ViewData = ConvertNumberToString(Data, this.DataFormat);
+            StartAddressAddition = $"+{startAddressAddition}";
+
+            SelectedDataFormat = dataFormat;
+            //SelectedDataFormat = "bin";
+
+            Data = data;
+            ViewData = ConvertNumberToString(data, DataFormat);
+                        
+            if (canRemove)
+            {
+                Command_RemoveItem = ReactiveCommand.Create(() =>
+                {
+                    removeItemHandler?.Invoke(Id);
+                });
+            }            
         }
 
         private void SetNumberFormat(string? format)
@@ -118,37 +122,43 @@ namespace ViewModels.ModbusClient
 
         public static ushort ConvertStringToNumber(string? value, NumberStyles format)
         {
-            if (value == null)
+            if (value == null || value == string.Empty)
             {
                 return ushort.MinValue;
             }
 
-            return ushort.Parse(value, format);
+            return ushort.Parse(value.Replace(" ", "").Replace("_", ""), format);
         }
 
         public static string ConvertNumberToString(ushort number, NumberStyles format)
         {
-            int baseFormat;
-
             switch (format)
             {
                 case NumberStyles.BinaryNumber:
-                    baseFormat = 2;
-                    break;
+                    return GetFormattedBinaryNumber(number);
 
                 case NumberStyles.Number:
-                    baseFormat = 10;
-                    break;
+                    return Convert.ToString(number, 10);
 
                 case NumberStyles.HexNumber:
-                    baseFormat = 16;
-                    break;
+                    return Convert.ToString(number, 16).ToUpper();
 
                 default:
                     throw new ArgumentException("Неподдерживаемый формат числа.");
-            }
+            }            
+        }
 
-            return Convert.ToString(number, baseFormat).ToUpper();
+        private static string GetFormattedBinaryNumber(ushort number)
+        {
+            string binaryRepresentation = Convert.ToString(number, 2).PadLeft(16, '0');
+
+            return string.Join(" ", new[]
+            {
+                binaryRepresentation.Substring(0, 4),
+                binaryRepresentation.Substring(4, 4),
+                binaryRepresentation.Substring(8, 4),
+                binaryRepresentation.Substring(12, 4)
+            });
         }
     }
 }

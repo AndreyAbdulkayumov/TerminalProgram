@@ -16,20 +16,20 @@ namespace ViewModels
     {
         public readonly string? FilePath;
 
-        public DocArgs(string? FilePath)
+        public DocArgs(string? filePath)
         {
-            this.FilePath = FilePath;
+            FilePath = filePath;
         }
     }
 
     public class CommonUI_VM : ReactiveObject
     {
-        private bool ui_IsConnectedState = false;
+        private bool _ui_IsConnectedState = false;
 
         public bool UI_IsConnectedState
         {
-            get => ui_IsConnectedState;
-            set => this.RaiseAndSetIfChanged(ref ui_IsConnectedState, value);
+            get => _ui_IsConnectedState;
+            set => this.RaiseAndSetIfChanged(ref _ui_IsConnectedState, value);
         }
 
         private object? _currentViewModel;
@@ -126,9 +126,9 @@ namespace ViewModels
         }
 
         private const int ConnectionTimer_Interval_ms = 1000;
-        private readonly System.Timers.Timer ConnectionTimer;
+        private readonly System.Timers.Timer _connectionTimer;
 
-        private TimeSpan ConnectionTime = new TimeSpan();
+        private TimeSpan _connectionTime = new TimeSpan();
 
         // Нужно выставить true, а затем при инициализации false,
         // чтобы сработало выставление цвета после запуска программы
@@ -167,34 +167,34 @@ namespace ViewModels
 
 
         public CommonUI_VM(
-            Func<Action, Task> RunInUIThread,
-            Func<Task> Open_ModbusScanner,
-            Action<string, MessageType> MessageBox,
-            Action Set_Dark_Theme_Handler,
-            Action Set_Light_Theme_Handler,
-            Func<string, Task> CopyToClipboard
+            Func<Action, Task> runInUIThread,
+            Func<Task> open_ModbusScanner,
+            Action<string, MessageType> messageBox,
+            Action set_Dark_Theme_Handler,
+            Action set_Light_Theme_Handler,
+            Func<string, Task> copyToClipboard
             )
         {
             Model = ConnectedHost.Model;
             SettingsFile = Model_Settings.Model;
 
-            Message = MessageBox;
+            Message = messageBox;
 
-            Set_Dark_Theme = Set_Dark_Theme_Handler;
-            Set_Light_Theme = Set_Light_Theme_Handler;
+            Set_Dark_Theme = set_Dark_Theme_Handler;
+            Set_Light_Theme = set_Light_Theme_Handler;
 
             SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
 
             StringValue.ShowMessageView = Message;
 
-            NoProtocol_VM = new NoProtocol_VM(MessageBox);
-            ModbusClient_VM = new ModbusClient_VM(RunInUIThread, Open_ModbusScanner, MessageBox, CopyToClipboard);
+            NoProtocol_VM = new NoProtocol_VM(messageBox);
+            ModbusClient_VM = new ModbusClient_VM(runInUIThread, open_ModbusScanner, messageBox, copyToClipboard);
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            ConnectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
-            ConnectionTimer.Elapsed += ConnectionTimer_Elapsed;
+            _connectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
+            _connectionTimer.Elapsed += ConnectionTimer_Elapsed;
 
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
@@ -257,9 +257,9 @@ namespace ViewModels
             SetAppMode(SettingsFile.AppData.SelectedMode);
         }
 
-        private void SetAppTheme(AppTheme ThemeName)
+        private void SetAppTheme(AppTheme themeName)
         {
-            switch (ThemeName)
+            switch (themeName)
             {
                 case AppTheme.Dark:
                     Set_Dark_Theme?.Invoke();
@@ -276,9 +276,9 @@ namespace ViewModels
             }
         }
 
-        private void SetAppMode(AppMode Mode)
+        private void SetAppMode(AppMode mode)
         {
-            switch (Mode)
+            switch (mode)
             {
                 case AppMode.NoProtocol:
                     CurrentViewModel = NoProtocol_VM;
@@ -305,87 +305,87 @@ namespace ViewModels
                 throw new Exception("Настройки не инициализированы.");
             }
 
-            DeviceData Settings = (DeviceData)SettingsFile.Settings.Clone();
+            DeviceData settings = (DeviceData)SettingsFile.Settings.Clone();
 
-            string Separator = " : ";
+            string separator = " : ";
 
-            string ConnectionString;
+            string connectionString;
 
-            switch (Settings.TypeOfConnection)
+            switch (settings.TypeOfConnection)
             {
                 case DeviceData.ConnectionName_SerialPort:
 
-                    if (Settings.Connection_SerialPort != null)
+                    if (settings.Connection_SerialPort != null)
                     {
-                        if (Settings.Connection_SerialPort.BaudRate_IsCustom == false &&
-                             (Settings.Connection_SerialPort.BaudRate == null || Settings.Connection_SerialPort.BaudRate == string.Empty) ||
-                            Settings.Connection_SerialPort.BaudRate_IsCustom == true &&
-                             (Settings.Connection_SerialPort.BaudRate_Custom == null || Settings.Connection_SerialPort.BaudRate_Custom == string.Empty) ||
-                            Settings.Connection_SerialPort.Parity == null || Settings.Connection_SerialPort.Parity == string.Empty ||
-                            Settings.Connection_SerialPort.DataBits == null || Settings.Connection_SerialPort.DataBits == string.Empty ||
-                            Settings.Connection_SerialPort.StopBits == null || Settings.Connection_SerialPort.StopBits == string.Empty)
+                        if (settings.Connection_SerialPort.BaudRate_IsCustom == false &&
+                             (settings.Connection_SerialPort.BaudRate == null || settings.Connection_SerialPort.BaudRate == string.Empty) ||
+                            settings.Connection_SerialPort.BaudRate_IsCustom == true &&
+                             (settings.Connection_SerialPort.BaudRate_Custom == null || settings.Connection_SerialPort.BaudRate_Custom == string.Empty) ||
+                            settings.Connection_SerialPort.Parity == null || settings.Connection_SerialPort.Parity == string.Empty ||
+                            settings.Connection_SerialPort.DataBits == null || settings.Connection_SerialPort.DataBits == string.Empty ||
+                            settings.Connection_SerialPort.StopBits == null || settings.Connection_SerialPort.StopBits == string.Empty)
                         {
-                            ConnectionString = "Не заданы настройки для последовательного порта";
+                            connectionString = "Не заданы настройки для последовательного порта";
                         }
 
                         else
                         {
-                            ConnectionString =
-                                (Settings.Connection_SerialPort.COMPort == null || Settings.Connection_SerialPort.COMPort == string.Empty ?
-                                    "Порт не задан" : Settings.Connection_SerialPort.COMPort) +
-                                Separator +
-                                (Settings.Connection_SerialPort.BaudRate_IsCustom == true ?
-                                    Settings.Connection_SerialPort.BaudRate_Custom : Settings.Connection_SerialPort.BaudRate) +
-                                Separator +
-                                Settings.Connection_SerialPort.Parity +
-                                Separator +
-                                Settings.Connection_SerialPort.DataBits +
-                                Separator +
-                                Settings.Connection_SerialPort.StopBits;
+                            connectionString =
+                                (settings.Connection_SerialPort.COMPort == null || settings.Connection_SerialPort.COMPort == string.Empty ?
+                                    "Порт не задан" : settings.Connection_SerialPort.COMPort) +
+                                separator +
+                                (settings.Connection_SerialPort.BaudRate_IsCustom == true ?
+                                    settings.Connection_SerialPort.BaudRate_Custom : settings.Connection_SerialPort.BaudRate) +
+                                separator +
+                                settings.Connection_SerialPort.Parity +
+                                separator +
+                                settings.Connection_SerialPort.DataBits +
+                                separator +
+                                settings.Connection_SerialPort.StopBits;
                         }
                     }
 
                     else
                     {
-                        ConnectionString = "Настройки не заданы";
+                        connectionString = "Настройки не заданы";
                     }
 
                     break;
 
                 case DeviceData.ConnectionName_Ethernet:
 
-                    if (Settings.Connection_IP != null)
+                    if (settings.Connection_IP != null)
                     {
-                        ConnectionString =
-                            (Settings.Connection_IP.IP_Address == null || Settings.Connection_IP.IP_Address == string.Empty ?
-                                "IP адрес не задан" : Settings.Connection_IP.IP_Address) +
-                            Separator +
-                            (Settings.Connection_IP.Port == null || Settings.Connection_IP.Port == string.Empty ?
-                                "Порт не задан" : Settings.Connection_IP.Port);
+                        connectionString =
+                            (settings.Connection_IP.IP_Address == null || settings.Connection_IP.IP_Address == string.Empty ?
+                                "IP адрес не задан" : settings.Connection_IP.IP_Address) +
+                            separator +
+                            (settings.Connection_IP.Port == null || settings.Connection_IP.Port == string.Empty ?
+                                "Порт не задан" : settings.Connection_IP.Port);
                     }
 
                     else
                     {
-                        ConnectionString = "Настройки не заданы";
+                        connectionString = "Настройки не заданы";
                     }
 
                     break;
 
                 default:
-                    throw new Exception("Задан неизвестный тип подключения: " + Settings.TypeOfConnection);
+                    throw new Exception("Задан неизвестный тип подключения: " + settings.TypeOfConnection);
             }
 
-            return ConnectionString;
+            return connectionString;
         }
 
         private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            ConnectionTime = ConnectionTime.Add(new TimeSpan(0, 0, 0, 0, ConnectionTimer_Interval_ms));
+            _connectionTime = _connectionTime.Add(new TimeSpan(0, 0, 0, 0, ConnectionTimer_Interval_ms));
 
             ConnectionTimer_View = string.Format("{0:D2} : {1:D2} : {2:D2}",
-                ConnectionTime.Days * 24 + ConnectionTime.Hours,
-                ConnectionTime.Minutes,
-                ConnectionTime.Seconds);
+                _connectionTime.Days * 24 + _connectionTime.Hours,
+                _connectionTime.Minutes,
+                _connectionTime.Seconds);
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -405,14 +405,14 @@ namespace ViewModels
 
             ConnectionTimer_IsVisible = true;
 
-            ConnectionTime = new TimeSpan();
+            _connectionTime = new TimeSpan();
 
             ConnectionTimer_View = string.Format("{0:D2} : {1:D2} : {2:D2}",
-                ConnectionTime.Days * 24 + ConnectionTime.Hours,
-                ConnectionTime.Minutes,
-                ConnectionTime.Seconds);
+                _connectionTime.Days * 24 + _connectionTime.Hours,
+                _connectionTime.Minutes,
+                _connectionTime.Seconds);
 
-            ConnectionTimer.Start();
+            _connectionTimer.Start();
         }
 
         private void Notifications_TX_Notification(object? sender, NotificationArgs e)
@@ -445,7 +445,7 @@ namespace ViewModels
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
-            ConnectionTimer.Stop();
+            _connectionTimer.Stop();
 
             if (Model.Client != null)
             {
@@ -462,11 +462,11 @@ namespace ViewModels
 
         private void UpdateListOfPresets()
         {
-            string[] FileNames = SettingsFile.FindFilesOfPresets();
+            string[] fileNames = SettingsFile.FindFilesOfPresets();
 
             Presets.Clear();
 
-            foreach (string element in FileNames)
+            foreach (string element in fileNames)
             {
                 Presets.Add(element);
             }
@@ -489,33 +489,33 @@ namespace ViewModels
                 throw new Exception("Настройки не инициализированы.");
             }
 
-            DeviceData Settings = (DeviceData)SettingsFile.Settings.Clone();
+            DeviceData settings = (DeviceData)SettingsFile.Settings.Clone();
 
-            ConnectionInfo Info;
+            ConnectionInfo info;
 
-            switch (Settings.TypeOfConnection)
+            switch (settings.TypeOfConnection)
             {
                 case DeviceData.ConnectionName_SerialPort:
 
-                    Info = new ConnectionInfo(new SerialPortInfo(
-                        Settings.Connection_SerialPort?.COMPort,
-                        Settings.Connection_SerialPort?.BaudRate_IsCustom == true ?
-                            Settings.Connection_SerialPort?.BaudRate_Custom : Settings.Connection_SerialPort?.BaudRate,
-                        Settings.Connection_SerialPort?.Parity,
-                        Settings.Connection_SerialPort?.DataBits,
-                        Settings.Connection_SerialPort?.StopBits
+                    info = new ConnectionInfo(new SerialPortInfo(
+                        settings.Connection_SerialPort?.COMPort,
+                        settings.Connection_SerialPort?.BaudRate_IsCustom == true ?
+                            settings.Connection_SerialPort?.BaudRate_Custom : settings.Connection_SerialPort?.BaudRate,
+                        settings.Connection_SerialPort?.Parity,
+                        settings.Connection_SerialPort?.DataBits,
+                        settings.Connection_SerialPort?.StopBits
                         ),
-                        GetEncoding(Settings.GlobalEncoding));
+                        GetEncoding(settings.GlobalEncoding));
 
                     break;
 
                 case DeviceData.ConnectionName_Ethernet:
 
-                    Info = new ConnectionInfo(new SocketInfo(
-                        Settings.Connection_IP?.IP_Address,
-                        Settings.Connection_IP?.Port
+                    info = new ConnectionInfo(new SocketInfo(
+                        settings.Connection_IP?.IP_Address,
+                        settings.Connection_IP?.Port
                         ),
-                        GetEncoding(Settings.GlobalEncoding));
+                        GetEncoding(settings.GlobalEncoding));
 
                     break;
 
@@ -523,12 +523,12 @@ namespace ViewModels
                     throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
             }
 
-            Model.Connect(Info);
+            Model.Connect(info);
         }
 
-        public Encoding GetEncoding(string? EncodingName)
+        public Encoding GetEncoding(string? encodingName)
         {
-            switch (EncodingName)
+            switch (encodingName)
             {
                 case "ASCII":
                     return Encoding.ASCII;
@@ -543,7 +543,7 @@ namespace ViewModels
                     return Encoding.UTF8;
 
                 default:
-                    throw new Exception("Задан неизвестный тип кодировки: " + EncodingName);
+                    throw new Exception("Задан неизвестный тип кодировки: " + encodingName);
             }
         }
     }

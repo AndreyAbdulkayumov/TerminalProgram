@@ -2,10 +2,11 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
 		mc:Ignorable="d"
-		Width="1300" Height="820"
+		Width="1300" Height="825"
         x:Class="TerminalProgram.Views.MainWindow"
 		x:DataType="ViewModels:CommonUI_VM"
         Icon="/Resources/MainLogo.ico"
@@ -24,6 +25,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuButton.axaml"/>
 
 	</Window.Styles>
 	
@@ -152,16 +154,26 @@
 
 					<StackPanel Orientation="Horizontal"
 								Spacing="10"
-								Margin="10">
+								Margin="10,0,0,0">
 
-						<Button Content="S"
-								HorizontalAlignment="Stretch"
+						<Button Classes="MenuButton" 
+								ToolTip.Tip="Настройки"				
 								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
-								Click="Button_OpenSettings_Click"/>
+								Click="Button_OpenSettings_Click">
+							
+							<Icons:MaterialIcon Kind="Cog"
+												Foreground="Gray"/>
+						
+						</Button>
 
-						<Button Content="A"
-								HorizontalAlignment="Stretch"
-								Click="Button_About_Click"/>
+						<Button Classes="MenuButton" 
+								ToolTip.Tip="О программе"
+								Click="Button_About_Click">
+							
+							<Icons:MaterialIcon Kind="Info"
+												Foreground="#2B67A8"/>
+							
+						</Button>
 
 					</StackPanel>
 

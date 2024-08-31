@@ -8,13 +8,13 @@ namespace TerminalProgram.Views.Protocols
 {
     public partial class Modbus_Client : UserControl
     {
-        private ObservableCollection<ModbusDataDisplayed> DataInDataGrid = new ObservableCollection<ModbusDataDisplayed>();
+        private ObservableCollection<ModbusDataDisplayed> _dataInDataGrid = new ObservableCollection<ModbusDataDisplayed>();
 
         public Modbus_Client()
         {
             InitializeComponent();
 
-            DataGrid_ModbusData.ItemsSource = DataInDataGrid;
+            DataGrid_ModbusData.ItemsSource = _dataInDataGrid;
 
             ModbusClient_VM.AddDataOnTable += ViewModel_ModbusClient_AddDataOnTable;
         }
@@ -25,12 +25,12 @@ namespace TerminalProgram.Views.Protocols
             {
                 if (e != null)
                 {
-                    DataInDataGrid.Add(e);
+                    _dataInDataGrid.Add(e);
                     DataGrid_ModbusData.ScrollIntoView(e, null);
                     return;
                 }
 
-                DataInDataGrid.Clear();
+                _dataInDataGrid.Clear();
             });            
         }
     }

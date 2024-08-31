@@ -6,41 +6,41 @@ namespace Core.Models.Modbus.Message
     {
         public override string ProtocolName { get; } = "Modbus ASCII";
 
-        public override byte[] CreateMessage(ModbusFunction Function, MessageData Data)
+        public override byte[] CreateMessage(ModbusFunction function, MessageData data)
         {
-            byte[] PDU = Modbus_PDU.Create(Function, Data);
+            byte[] PDU = Modbus_PDU.Create(function, data);
 
             // В этом массиве содержится SlaveID + PDU
-            byte[] MainPart = new byte[1 + PDU.Length];
+            byte[] mainPart = new byte[1 + PDU.Length];
 
             // Slave ID
-            MainPart[0] = Data.SlaveID;
+            mainPart[0] = data.SlaveID;
 
-            Array.Copy(PDU, 0, MainPart, 1, PDU.Length);
+            Array.Copy(PDU, 0, mainPart, 1, PDU.Length);
 
-            byte[] MainPart_ASCII = ConvertArrayToASCII(MainPart);
+            byte[] mainPart_ASCII = ConvertArrayToASCII(mainPart);
 
             byte[] TX;
 
-            if (Data.CheckSum_IsEnable)
+            if (data.CheckSum_IsEnable)
             {
-                TX = new byte[5 + MainPart_ASCII.Length];
+                TX = new byte[5 + mainPart_ASCII.Length];
             }
 
             else
             {
-                TX = new byte[3 + MainPart_ASCII.Length];
+                TX = new byte[3 + mainPart_ASCII.Length];
             }
 
             // Символ начала кадра (префикс)
             TX[0] = 0x3A;
 
-            Array.Copy(MainPart_ASCII, 0, TX, 1, MainPart_ASCII.Length);
+            Array.Copy(mainPart_ASCII, 0, TX, 1, mainPart_ASCII.Length);
 
             // LRC8
-            if (Data.CheckSum_IsEnable)
+            if (data.CheckSum_IsEnable)
             {
-                byte[] LRC8 = CheckSum.Calculate_LRC8(MainPart);
+                byte[] LRC8 = CheckSum.Calculate_LRC8(mainPart);
                 TX[TX.Length - 4] = LRC8[0];
                 TX[TX.Length - 3] = LRC8[1];
             }
@@ -52,121 +52,121 @@ namespace Core.Models.Modbus.Message
             return TX;
         }
 
-        public override ModbusResponse DecodingMessage(ModbusFunction CurrentFunction, byte[] SourceArray)
+        public override ModbusResponse DecodingMessage(ModbusFunction currentFunction, byte[] sourceArray)
         {
-            int SizeOfArray = 0;
+            int sizeOfArray = 0;
 
-            for (int i = 0; i < SourceArray.Length; i++)
+            for (int i = 0; i < sourceArray.Length; i++)
             {
-                if (i + 1 <= SourceArray.Length)
+                if (i + 1 <= sourceArray.Length)
                 {
                     // Спец. символы 0x0D и 0x0A встречаются только в конце значимой части массива
-                    if (SourceArray[i] == 0x0D && SourceArray[i + 1] == 0x0A) 
+                    if (sourceArray[i] == 0x0D && sourceArray[i + 1] == 0x0A) 
                     {
-                        SizeOfArray = i + 2;
+                        sizeOfArray = i + 2;
                         break;
                     }
                 }
                 
                 else
                 {
-                    SizeOfArray = SourceArray.Length;
+                    sizeOfArray = sourceArray.Length;
                     break;
                 }
             }
 
-            byte[] SplitArray = new byte[SizeOfArray];
+            byte[] splitArray = new byte[sizeOfArray];
 
-            Array.Copy(SourceArray, 0, SplitArray, 0, SizeOfArray);
+            Array.Copy(sourceArray, 0, splitArray, 0, sizeOfArray);
 
-            byte[] MainPart = new byte[SplitArray.Length - 5];
+            byte[] mainPart = new byte[splitArray.Length - 5];
 
-            Array.Copy(SplitArray, 1, MainPart, 0, MainPart.Length);
+            Array.Copy(splitArray, 1, mainPart, 0, mainPart.Length);
 
-            byte[] ConvertedArray = ConvertArrayToBytes(MainPart);
+            byte[] convertedArray = ConvertArrayToBytes(mainPart);
 
-            ModbusResponse DecodingResponse = new ModbusResponse
+            var decodingResponse = new ModbusResponse
             {
-                SlaveID = ConvertedArray[0],
-                Command = ConvertedArray[1]
+                SlaveID = convertedArray[0],
+                Command = convertedArray[1]
             };
 
-            CheckErrorCode(TypeOfModbus.ASCII, ref DecodingResponse, ConvertedArray);
+            CheckErrorCode(TypeOfModbus.ASCII, ref decodingResponse, convertedArray);
 
-            if (CurrentFunction is ModbusReadFunction)
+            if (currentFunction is ModbusReadFunction)
             {
-                DecodingResponse.LengthOfData = ConvertedArray[2];
+                decodingResponse.LengthOfData = convertedArray[2];
 
-                if (DecodingResponse.LengthOfData == 0)
+                if (decodingResponse.LengthOfData == 0)
                 {
                     throw new Exception("Длина информационной части пакета равна 0.\n" +
-                        "Код функции: " + CurrentFunction.Number.ToString() + "\n" +
+                        "Код функции: " + currentFunction.Number.ToString() + "\n" +
                         "Возможно нарушение целостности пакета Modbus ASCII.");
                 }
 
-                DecodingResponse.Data = new byte[DecodingResponse.LengthOfData];
+                decodingResponse.Data = new byte[decodingResponse.LengthOfData];
 
                 // Согласно документации на протокол Modbus:
                 // В ответном пакете Modbus ASCII на команды чтения
                 // информационная часть начинается с 3 байта.
 
-                Array.Copy(ConvertedArray, 3, DecodingResponse.Data, 0, DecodingResponse.LengthOfData);
+                Array.Copy(convertedArray, 3, decodingResponse.Data, 0, decodingResponse.LengthOfData);
 
                 // Реверс байтов не нужен функциям, работающими с флагами (номера 1 и 2).
-                if (CurrentFunction != Function.ReadCoilStatus &&
-                    CurrentFunction != Function.ReadDiscreteInputs)
+                if (currentFunction != Function.ReadCoilStatus &&
+                    currentFunction != Function.ReadDiscreteInputs)
                 {
-                    DecodingResponse.Data = ReverseLowAndHighBytesInWords(DecodingResponse.Data);
+                    decodingResponse.Data = ReverseLowAndHighBytesInWords(decodingResponse.Data);
                 }
             }
 
-            else if (CurrentFunction is ModbusWriteFunction)
+            else if (currentFunction is ModbusWriteFunction)
             {
-                DecodingResponse.LengthOfData = -1;
+                decodingResponse.LengthOfData = -1;
             }
 
             else
             {
-                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + CurrentFunction.Number + ")");
+                throw new Exception("Неподдерживаемый код Modbus команды (Код: " + currentFunction.Number + ")");
             }
 
-            return DecodingResponse;
+            return decodingResponse;
         }
 
-        public static byte[] ConvertArrayToASCII(byte[] Bytes_Array)
+        public static byte[] ConvertArrayToASCII(byte[] arrayBytes)
         {
             // В Modbus ASCII один байт представлен двумя ASCII символами
-            char[] ASCII_Array = new char[Bytes_Array.Length * 2];
+            char[] ASCII_Array = new char[arrayBytes.Length * 2];
 
-            string Element;
+            string element;
 
-            for (int i = 0; i < Bytes_Array.Length; i++)
+            for (int i = 0; i < arrayBytes.Length; i++)
             {
-                Element = Bytes_Array[i].ToString("X2");  // Представление двух разрядов числа в шестнацатеричном виде
+                element = arrayBytes[i].ToString("X2");  // Представление двух разрядов числа в шестнацатеричном виде
 
-                ASCII_Array[i * 2] = Element.First();
-                ASCII_Array[i * 2 + 1] = Element.Last();
+                ASCII_Array[i * 2] = element.First();
+                ASCII_Array[i * 2 + 1] = element.Last();
             }
 
             return Encoding.ASCII.GetBytes(ASCII_Array);
         }
 
-        public static byte[] ConvertArrayToBytes(byte[] Array)
+        public static byte[] ConvertArrayToBytes(byte[] array)
         {
-            char[] Chars_Array = Encoding.ASCII.GetChars(Array);
+            char[] arrayChars = Encoding.ASCII.GetChars(array);
 
-            string[] JoinChars_Array = new string[Chars_Array.Length / 2];
+            string[] arrayJoinChars = new string[arrayChars.Length / 2];
 
             // В Modbus ASCII один байт представлен двумя ASCII символами
-            for (int i = 0; i < JoinChars_Array.Length; i++)
+            for (int i = 0; i < arrayJoinChars.Length; i++)
             {
-                JoinChars_Array[i] = string.Concat(Chars_Array[i * 2], Chars_Array[i * 2 + 1]);
+                arrayJoinChars[i] = string.Concat(arrayChars[i * 2], arrayChars[i * 2 + 1]);
             }
 
-            byte[] Bytes_Array = JoinChars_Array.Where(x => x != null)
+            byte[] arrayBytes = arrayJoinChars.Where(x => x != null)
                 .Select(x => byte.Parse(x, System.Globalization.NumberStyles.HexNumber)).ToArray();
 
-            return Bytes_Array;
+            return arrayBytes;
         }
     }
 }

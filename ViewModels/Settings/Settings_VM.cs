@@ -7,8 +7,10 @@ using MessageBox_Core;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Settings : ReactiveObject
+    public class Settings_VM : ReactiveObject
     {
+        public event EventHandler<EventArgs>? _settingsFileChanged;
+
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -24,7 +26,34 @@ namespace ViewModels.Settings
             get => _selectedPreset;
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
-                
+
+        private readonly Tab_Connection_VM _tab_Connection_VM;
+
+        public Tab_Connection_VM Tab_Connection_VM
+        {
+            get => _tab_Connection_VM;
+        }
+
+        private readonly Tab_NoProtocol_VM _tab_NoProtocol_VM;
+
+        public Tab_NoProtocol_VM Tab_NoProtocol_VM
+        {
+            get => _tab_NoProtocol_VM;
+        }
+
+        private readonly Tab_Modbus_VM _tab_Modbus_VM;
+
+        public Tab_Modbus_VM Tab_Modbus_VM
+        {
+            get => _tab_Modbus_VM;
+        }
+
+        private readonly Tab_UI_VM _tab_UI_VM;
+
+        public Tab_UI_VM Tab_UI_VM
+        {
+            get => _tab_UI_VM;
+        }
 
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
@@ -33,66 +62,35 @@ namespace ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
-
         public readonly Action<string, MessageType> Message;
+
         private readonly Func<string, MessageType, Task<MessageBoxResult>> MessageDialog;
         private readonly Func<string, Task<string?>> Get_FilePath;
         private readonly Func<Task<string?>> Get_NewFileName;
 
         private readonly Model_Settings SettingsFile;
 
-        public event EventHandler<EventArgs>? SettingsFileChanged;
 
-
-        private readonly ViewModel_Tab_Connection _tab_Connection_VM;
-
-        public ViewModel_Tab_Connection Tab_Connection_VM
-        {
-            get => _tab_Connection_VM;
-        }
-
-        private readonly ViewModel_Tab_NoProtocol _tab_NoProtocol_VM;
-
-        public ViewModel_Tab_NoProtocol Tab_NoProtocol_VM
-        {
-            get => _tab_NoProtocol_VM;
-        }
-
-        private readonly ViewModel_Tab_Modbus _tab_Modbus_VM;
-
-        public ViewModel_Tab_Modbus Tab_Modbus_VM
-        {
-            get => _tab_Modbus_VM;
-        }
-
-        private readonly ViewModel_Tab_UI _tab_UI_VM;
-
-        public ViewModel_Tab_UI Tab_UI_VM
-        {
-            get => _tab_UI_VM;
-        }       
-
-
-        public ViewModel_Settings(
-            Action<string, MessageType> MessageBox,
-            Func<string, MessageType, Task<MessageBoxResult>> MessageBoxDialog,
-            Func<string, Task<string?>> Get_FilePath_Handler,
-            Func<Task<string?>> Get_NewFileName_Handler,
-            Action Set_Dark_Theme_Handler,
-            Action Set_Light_Theme_Handler
+        public Settings_VM(
+            Action<string, MessageType> messageBox,
+            Func<string, MessageType, Task<MessageBoxResult>> messageBoxDialog,
+            Func<string, Task<string?>> get_FilePath_Handler,
+            Func<Task<string?>> get_NewFileName_Handler,
+            Action set_Dark_Theme_Handler,
+            Action set_Light_Theme_Handler
             )
         {
-            Message = MessageBox;
-            MessageDialog = MessageBoxDialog;
-            Get_FilePath = Get_FilePath_Handler;
-            Get_NewFileName = Get_NewFileName_Handler;
+            Message = messageBox;
+            MessageDialog = messageBoxDialog;
+            Get_FilePath = get_FilePath_Handler;
+            Get_NewFileName = get_NewFileName_Handler;
 
             SettingsFile = Model_Settings.Model;
 
-            _tab_Connection_VM = new ViewModel_Tab_Connection(this);
-            _tab_NoProtocol_VM = new ViewModel_Tab_NoProtocol();
-            _tab_Modbus_VM = new ViewModel_Tab_Modbus();
-            _tab_UI_VM = new ViewModel_Tab_UI(Set_Dark_Theme_Handler, Set_Light_Theme_Handler, MessageBox);
+            _tab_Connection_VM = new Tab_Connection_VM(this);
+            _tab_NoProtocol_VM = new Tab_NoProtocol_VM();
+            _tab_Modbus_VM = new Tab_Modbus_VM();
+            _tab_UI_VM = new Tab_UI_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
@@ -107,16 +105,16 @@ namespace ViewModels.Settings
                 .Subscribe(UpdateUI);
         }
 
-        private void UpdateUI(string FileName)
+        private void UpdateUI(string fileName)
         {
-            DeviceData Settings = SettingsFile.ReadPreset(FileName);
+            DeviceData settings = SettingsFile.ReadPreset(fileName);
 
-            Tab_NoProtocol_VM.SelectedEncoding = Settings.GlobalEncoding ?? string.Empty;
+            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? string.Empty;
 
-            Tab_Modbus_VM.WriteTimeout = Settings.TimeoutWrite ?? string.Empty;
-            Tab_Modbus_VM.ReadTimeout = Settings.TimeoutRead ?? string.Empty;
+            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? string.Empty;
+            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? string.Empty;
 
-            switch (Settings.TypeOfConnection)
+            switch (settings.TypeOfConnection)
             {
                 case DeviceData.ConnectionName_SerialPort:
                     Tab_Connection_VM.Selected_SerialPort = true;
@@ -127,7 +125,7 @@ namespace ViewModels.Settings
                     break;
             }
 
-            SettingsFileChanged?.Invoke(this, new EventArgs());
+            _settingsFileChanged?.Invoke(this, new EventArgs());
         }
 
         private void Loaded_EventHandler()
@@ -139,11 +137,11 @@ namespace ViewModels.Settings
 
         private void UpdateListOfPresets()
         {
-            string[] FileNames = SettingsFile.FindFilesOfPresets();
+            string[] fileNames = SettingsFile.FindFilesOfPresets();
 
             Presets.Clear();
 
-            foreach (string element in FileNames)
+            foreach (string element in fileNames)
             {
                 Presets.Add(element);
             }
@@ -151,15 +149,15 @@ namespace ViewModels.Settings
 
         private async Task File_CreateNew_Handler()
         {
-            string? FileName = await Get_NewFileName();
+            string? fileName = await Get_NewFileName();
 
-            if (FileName != null && FileName != String.Empty)
+            if (fileName != null && fileName != String.Empty)
             {
-                SettingsFile.SavePreset(FileName, DeviceData.GetDefault());
+                SettingsFile.SavePreset(fileName, DeviceData.GetDefault());
 
                 UpdateListOfPresets();
 
-                SelectedPreset = Presets.Single(x => x == FileName);
+                SelectedPreset = Presets.Single(x => x == fileName);
             }
         }
 
@@ -167,18 +165,18 @@ namespace ViewModels.Settings
         {
             try
             {
-                string? FilePath = await Get_FilePath.Invoke("Добавление уже существующего файла настроек");
+                string? filePath = await Get_FilePath.Invoke("Добавление уже существующего файла настроек");
 
-                if (FilePath == null)
+                if (filePath == null)
                 {
                     return;
                 }
 
-                string FileName = SettingsFile.CopyFrom(FilePath);
+                string fileName = SettingsFile.CopyFrom(filePath);
 
                 UpdateListOfPresets();
 
-                SelectedPreset = Presets.Single(x => x == FileName);
+                SelectedPreset = Presets.Single(x => x == fileName);
             }
             
             catch (Exception error)
@@ -197,9 +195,9 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                MessageBoxResult DialogResult = await MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+                MessageBoxResult dialogResult = await MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
 
-                if (DialogResult != MessageBoxResult.Yes)
+                if (dialogResult != MessageBoxResult.Yes)
                 {
                     return;
                 }
@@ -221,16 +219,16 @@ namespace ViewModels.Settings
         {
             try
             {
-                string ConnectionType = Tab_Connection_VM.Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
+                string connectionType = Tab_Connection_VM.Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
 
-                DeviceData Data = new DeviceData()
+                var data = new DeviceData()
                 {
                     GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
 
                     TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
                     TimeoutRead = Tab_Modbus_VM.ReadTimeout,
 
-                    TypeOfConnection = ConnectionType,
+                    TypeOfConnection = connectionType,
                                         
                     Connection_SerialPort = new SerialPort_Info()
                     {
@@ -250,7 +248,7 @@ namespace ViewModels.Settings
                     }
                 };
 
-                SettingsFile.SavePreset(SelectedPreset, Data);
+                SettingsFile.SavePreset(SelectedPreset, data);
 
                 CommonUI_VM.SettingsDocument = SelectedPreset;
 

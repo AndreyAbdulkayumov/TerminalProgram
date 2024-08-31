@@ -10,7 +10,7 @@ namespace MessageBox_AvaloniaUI.Views
     {
         Default,
         YesNo
-    }    
+    }
 
     public class ButtonContent
     {
@@ -32,16 +32,16 @@ namespace MessageBox_AvaloniaUI.Views
         private const string Content_Yes = "Да";
         private const string Content_No = "Нет";
 
-        public MessageBoxView(string Message, string Title, MessageBoxToolType Type)
+        public MessageBoxView(string message, string title, MessageBoxToolType type)
         {
             InitializeComponent();
 
             DataContext = this;
 
-            TextBlock_Content.Text = Message;
-            TextBlock_Title.Text = Title;
+            TextBlock_Content.Text = message;
+            TextBlock_Title.Text = title;
 
-            switch (Type)
+            switch (type)
             {
                 case MessageBoxToolType.Default:
                     Buttons.Add(new ButtonContent(Content_OK));
@@ -60,11 +60,11 @@ namespace MessageBox_AvaloniaUI.Views
 
         private void Button_Click(object? sender, RoutedEventArgs e)
         {
-            Button? ClickedButton = sender as Button;
+            var clickedButton = sender as Button;
 
-            if (ClickedButton != null)
+            if (clickedButton != null)
             {
-                switch (ClickedButton.Content)
+                switch (clickedButton.Content)
                 {
                     case Content_Yes:
                         Result = MessageBoxResult.Yes;
@@ -75,7 +75,7 @@ namespace MessageBox_AvaloniaUI.Views
                         break;
                 }
 
-                this.Close();
+                Close();
             }
         }
 
@@ -84,18 +84,18 @@ namespace MessageBox_AvaloniaUI.Views
             if (e.Key == Key.Escape ||
                 e.Key == Key.Enter)
             {
-                this.Close();
+                Close();
             }
         }
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            this.BeginMoveDrag(e);
+            BeginMoveDrag(e);
         }
 
         private void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
     }
 }

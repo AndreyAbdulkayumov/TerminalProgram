@@ -2,11 +2,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
 		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"
-		x:DataType="ViewModels:ViewModel_Settings"
+		x:DataType="ViewModels:Settings_VM"
         Title="SettingsWindow"
 		Width="540" Height="530"
 		Background="Transparent"
@@ -15,7 +16,7 @@
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly"
+		SystemDecorations="None"
 		Loaded="Window_Loaded"
 		KeyDown="Window_KeyDown">
 
@@ -23,9 +24,10 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
-	
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuButton.axaml"/>
+		
 	</Window.Styles>
 	
 	
@@ -101,49 +103,37 @@
 									Spacing="10"
 									Margin="10">
 
-							<Button Content="AN"
+							<Button Classes="MenuButton" 
 									ToolTip.Tip="Создать новый файл"
 									Command="{Binding Command_File_AddNew}">
-
-								<Button.Styles>
-									<Style Selector="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-									</Style>
-								</Button.Styles>
+								
+								<Icons:MaterialIcon Kind="FilePlusOutline"/>
+								
 							</Button>
 
 
-							<Button Content="AE"
+							<Button Classes="MenuButton" 
 									ToolTip.Tip="Добавить существующий файл"
 									Command="{Binding Command_File_AddExisting}">
 
-								<Button.Styles>
-									<Style Selector="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-									</Style>
-								</Button.Styles>
+								<Icons:MaterialIcon Kind="FolderOpenOutline"/>
+								
 							</Button>
 
-							<Button Content="D"
+							<Button Classes="MenuButton" 
 									ToolTip.Tip="Удалить выбранный файл"
 									Command="{Binding Command_File_Delete}">
 
-								<Button.Styles>
-									<Style Selector="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-									</Style>
-								</Button.Styles>
+								<Icons:MaterialIcon Kind="FileRemoveOutline"/>
+								
 							</Button>
 
-							<Button Content="S"
+							<Button Classes="MenuButton" 
 									ToolTip.Tip="Сохранить выбранный файл"
 									Command="{Binding Command_File_Save}">
 
-								<Button.Styles>
-									<Style Selector="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-									</Style>
-								</Button.Styles>
+								<Icons:MaterialIcon Kind="ContentSave"/>
+								
 							</Button>
 
 						</StackPanel>

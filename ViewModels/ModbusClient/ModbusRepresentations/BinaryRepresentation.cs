@@ -4,55 +4,55 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 {
     internal static class BinaryRepresentation
     {
-        public static List<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed Data)
+        public static List<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data)
         {
-            var Words = Data.Data?.Select(e => Convert.ToString(e, 2).PadLeft(16, '0'));
+            var words = data.Data?.Select(e => Convert.ToString(e, 2).PadLeft(16, '0'));
 
-            if (Words == null)
+            if (words == null)
                 return null;
 
-            List<BinaryRepresentation_ItemData> Items = new List<BinaryRepresentation_ItemData>();
+            var items = new List<BinaryRepresentation_ItemData>();
 
-            ushort CurrentAddress = Data.Address;
+            ushort currentAddress = data.Address;
 
-            foreach (string element in Words)
+            foreach (string element in words)
             {
-                Items.Add(GetBinaryRepresentation(CurrentAddress, element));
-                CurrentAddress += 1;
+                items.Add(GetBinaryRepresentation(currentAddress, element));
+                currentAddress += 1;
             }
 
-            return Items;
+            return items;
         }
 
-        private static BinaryRepresentation_ItemData GetBinaryRepresentation(ushort Address, string InputData)
+        private static BinaryRepresentation_ItemData GetBinaryRepresentation(ushort address, string inputData)
         {
-            char[] BitsValue = InputData.ToCharArray();
+            char[] bitsValue = inputData.ToCharArray();
 
-            List<BinaryDataItemGroup> ItemGroup = new List<BinaryDataItemGroup>();
+            var itemGroup = new List<BinaryDataItemGroup>();
 
-            List<BinaryDataItem> Items = new List<BinaryDataItem>();
+            var items = new List<BinaryDataItem>();
 
-            for (int i = 0; i < BitsValue.Length; i++)
+            for (int i = 0; i < bitsValue.Length; i++)
             {
-                BinaryDataItem Item = new BinaryDataItem()
+                var item = new BinaryDataItem()
                 {
-                    Bit = BitsValue[i].ToString(),
+                    Bit = bitsValue[i].ToString(),
                     IsChange = false
                 };
 
-                Items.Add(Item);
+                items.Add(item);
 
                 if ((i + 1) % 4 == 0)
                 {
-                    ItemGroup.Add(new BinaryDataItemGroup() { GroupData = Items.ToArray() });
-                    Items.Clear();
+                    itemGroup.Add(new BinaryDataItemGroup() { GroupData = items.ToArray() });
+                    items.Clear();
                 }
             }
 
             return new BinaryRepresentation_ItemData()
             {
-                Address = "0x" + Address.ToString("X2"),
-                BinaryData = ItemGroup.ToArray()
+                Address = "0x" + address.ToString("X2"),
+                BinaryData = itemGroup.ToArray()
             };
         }
     }

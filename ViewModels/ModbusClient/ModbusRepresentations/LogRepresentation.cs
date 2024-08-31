@@ -2,26 +2,28 @@
 {
     internal static class LogRepresentation
     {
-        public static string GetData(DateTime Request_ExecutionTime, string RequestString, DateTime Response_ExecutionTime, string ResponseString)
+        public static string GetData(
+            DateTime request_ExecutionTime, string requestString, 
+            DateTime response_ExecutionTime, string responseString)
         {
-            string Data = string.Empty;
+            string data = string.Empty;
 
-            if (RequestString != string.Empty)
+            if (requestString != string.Empty)
             {
-                Data += Request_ExecutionTime.ToString("HH : mm : ss . fff") + "   ->   " + RequestString;
+                data += request_ExecutionTime.ToString("HH : mm : ss . fff") + "   ->   " + requestString;
             }
 
-            if (ResponseString != string.Empty)
+            if (responseString != string.Empty)
             {
-                if (RequestString != string.Empty)
+                if (requestString != string.Empty)
                 {
-                    Data += "\n";
+                    data += "\n";
                 }
 
-                Data += Response_ExecutionTime.ToString("HH : mm : ss . fff") + "   <-   " + ResponseString;
+                data += response_ExecutionTime.ToString("HH : mm : ss . fff") + "   <-   " + responseString;
             }
 
-            return Data;
+            return data;
         }
     }
 }

@@ -13,20 +13,20 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            int NumberOfChars;
+            int numberOfChars;
 
-            char[] AppVersion_Chars = new char[20];
+            char[] appVersion_Chars = new char[20];
 
-            if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(AppVersion_Chars, 3, out NumberOfChars) == true)
+            if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(appVersion_Chars, 3, out numberOfChars) == true)
             {
-                TextBlock_App_Version.Text = new string(AppVersion_Chars, 0, NumberOfChars);
+                TextBlock_App_Version.Text = new string(appVersion_Chars, 0, numberOfChars);
             }
 
             char[] GUIVersion_Chars = new char[20];
 
-            if (typeof(AvaloniaObject).Assembly.GetName().Version?.TryFormat(GUIVersion_Chars, 3, out NumberOfChars) == true)
+            if (typeof(AvaloniaObject).Assembly.GetName().Version?.TryFormat(GUIVersion_Chars, 3, out numberOfChars) == true)
             {
-                TextBlock_GUI_Version.Text = new string(GUIVersion_Chars, 0, NumberOfChars);
+                TextBlock_GUI_Version.Text = new string(GUIVersion_Chars, 0, numberOfChars);
             }
 
             TextBlock_Runtime_Version.Text = Environment.Version.ToString();
@@ -34,19 +34,19 @@ namespace TerminalProgram.Views
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            this.BeginMoveDrag(e);
+            BeginMoveDrag(e);
         }
 
         private void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Window_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape || e.Key == Key.Space || e.Key == Key.Enter)
             {
-                this.Close();
+                Close();
             }
         }
     }

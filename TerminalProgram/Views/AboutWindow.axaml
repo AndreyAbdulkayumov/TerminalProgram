@@ -12,7 +12,7 @@
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly"
+		SystemDecorations="None"
 		KeyDown="Window_KeyDown">
 
 	<Window.Styles>

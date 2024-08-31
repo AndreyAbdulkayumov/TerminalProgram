@@ -14,20 +14,19 @@ namespace TerminalProgram.Views.Settings
 {
     public partial class SettingsWindow : Window
     {
-        private readonly ViewModel_Settings ViewModel;
+        private readonly Settings_VM ViewModel;
 
-
-        public SettingsWindow(IMessageBox Message, Action Set_Dark_Theme, Action Set_Light_Theme)
+        public SettingsWindow(IMessageBox message, Action set_Dark_Theme, Action set_Light_Theme)
         {
             InitializeComponent();
 
-            ViewModel = new ViewModel_Settings(
-                Message.Show,
-                Message.ShowYesNoDialog,
+            ViewModel = new Settings_VM(
+                message.Show,
+                message.ShowYesNoDialog,
                 Get_FilePath,
                 Get_NewFileName,
-                Set_Dark_Theme,
-                Set_Light_Theme
+                set_Dark_Theme,
+                set_Light_Theme
                 );
 
             DataContext = ViewModel;
@@ -47,19 +46,19 @@ namespace TerminalProgram.Views.Settings
                     break;
 
                 case Key.Escape:
-                    this.Close();
+                    Close();
                     break;
             }
         }
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            this.BeginMoveDrag(e);
+            BeginMoveDrag(e);
         }
 
         private void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private async Task<string?> Get_FilePath(string WindowTitle)
@@ -88,7 +87,7 @@ namespace TerminalProgram.Views.Settings
 
         private async Task<string?> Get_NewFileName()
         {
-            ServiceWindow window = new ServiceWindow();
+            var window = new ServiceWindow();
 
             await window.ShowDialog(this);
 

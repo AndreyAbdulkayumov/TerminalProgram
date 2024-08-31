@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Tab_Connection : ReactiveObject
+    public class Tab_Connection_VM : ReactiveObject
     {
         private bool _selected_SerialPort;
 
@@ -29,14 +29,14 @@ namespace ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _currentConnectionViewModel, value);
         }
 
-        public readonly ViewModel_Tab_Connection_SerialPort Connection_SerialPort_VM;
-        public readonly ViewModel_Tab_Connection_Ethernet Connection_Ethernet_VM;
+        public readonly Tab_Connection_SerialPort_VM Connection_SerialPort_VM;
+        public readonly Tab_Connection_Ethernet_VM Connection_Ethernet_VM;
 
 
-        public ViewModel_Tab_Connection(ViewModel_Settings Main_VM)
+        public Tab_Connection_VM(Settings_VM main_VM)
         {
-            Connection_SerialPort_VM = new ViewModel_Tab_Connection_SerialPort(Main_VM);
-            Connection_Ethernet_VM = new ViewModel_Tab_Connection_Ethernet(Main_VM);
+            Connection_SerialPort_VM = new Tab_Connection_SerialPort_VM(main_VM);
+            Connection_Ethernet_VM = new Tab_Connection_Ethernet_VM(main_VM);
 
             this.WhenAnyValue(x => x.Selected_SerialPort)
                 .Where(x => x == true)

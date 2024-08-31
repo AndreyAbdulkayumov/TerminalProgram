@@ -115,14 +115,14 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private Task? SearchTask;
-        private CancellationTokenSource? SearchCancel;
+        private Task? _searchTask;
+        private CancellationTokenSource? _searchCancel;
 
-        private uint PauseBetweenRequests_ForWork;
+        private uint _pauseBetweenRequests_ForWork;
 
-        public ModbusScanner_VM(Action<string, MessageType> MessageBox)
+        public ModbusScanner_VM(Action<string, MessageType> messageBox)
         {
-            this.MessageBox = MessageBox;
+            MessageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -139,11 +139,11 @@ namespace ViewModels.ModbusClient
 
                 StartPolling();
             });
-            Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => MessageBox.Invoke(error.Message, MessageType.Error));
+            Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => messageBox.Invoke(error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.PauseBetweenRequests)
                 .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out PauseBetweenRequests_ForWork))
+                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out _pauseBetweenRequests_ForWork))
                 .Subscribe(x => PauseBetweenRequests = x);
 
             // Значения по умолчанию
@@ -152,11 +152,11 @@ namespace ViewModels.ModbusClient
 
         public async Task Close_EventHandler()
         {
-            if (SearchInProcess && SearchTask != null)
+            if (SearchInProcess && _searchTask != null)
             {
-                SearchCancel?.Cancel();
+                _searchCancel?.Cancel();
 
-                await Task.WhenAny(SearchTask);
+                await Task.WhenAny(_searchTask);
             }
         }
 
@@ -175,18 +175,18 @@ namespace ViewModels.ModbusClient
 
             ErrorIsVisible = false;
 
-            SearchCancel = new CancellationTokenSource();
+            _searchCancel = new CancellationTokenSource();
 
-            SearchTask = Task.Run(() => SearchDevices(SearchCancel.Token));
+            _searchTask = Task.Run(() => SearchDevices(_searchCancel.Token));
         }
 
         private async Task StopPolling()
         {
-            SearchCancel?.Cancel();
+            _searchCancel?.Cancel();
 
-            if (SearchTask != null)
+            if (_searchTask != null)
             {
-                await Task.WhenAny(SearchTask);
+                await Task.WhenAny(_searchTask);
             }
 
             StopPolling_UI_Actions();
@@ -200,36 +200,36 @@ namespace ViewModels.ModbusClient
             ProgressBar_Value = ProgressBar_Minimun;
         }
 
-        private async Task SearchDevices(CancellationToken TaskCancel)
+        private async Task SearchDevices(CancellationToken taskCancel)
         {
             try
             {
-                ushort Address = 0;
-                int NumberOfRegisters = 2;
-                ModbusMessage ModbusMessageType = new ModbusRTU_Message();
+                ushort address = 0;
+                int numberOfRegisters = 2;
+                ModbusMessage modbusMessageType = new ModbusRTU_Message();
                 ushort CRC16_Polynom = 0xA001;
 
 
-                ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.Number == 3);
+                ModbusReadFunction readFunction = Function.AllReadFunctions.Single(x => x.Number == 3);
 
-                MessageData Data = new ReadTypeMessage(
+                var data = new ReadTypeMessage(
                     0,
-                    Address,
-                    NumberOfRegisters,
-                    ModbusMessageType is ModbusTCP_Message ? false : true,
+                    address,
+                    numberOfRegisters,
+                    modbusMessageType is ModbusTCP_Message ? false : true,
                     CRC16_Polynom);
 
-                ModbusOperationResult Result;
+                ModbusOperationResult result;
 
                 for (int i = ProgressBar_Minimun; i <= ProgressBar_Maximun; i++)
                 {
                     try
                     {
-                        Data.SlaveID = (byte)i;
+                        data.SlaveID = (byte)i;
 
                         CurrentSlaveID = i + " (0x" + i.ToString("X2") + ")";
 
-                        Result = await Model.Modbus.ReadRegister(ReadFunction, Data, ModbusMessageType);
+                        result = await Model.Modbus.ReadRegister(readFunction, data, modbusMessageType);
 
                         SlavesAddresses += "Slave ID:\n" +
                             "dec:   " + i + "\n" +
@@ -252,7 +252,7 @@ namespace ViewModels.ModbusClient
                     {
                         ProgressBar_Value++;
 
-                        await Task.Delay((int)PauseBetweenRequests_ForWork, TaskCancel);
+                        await Task.Delay((int)_pauseBetweenRequests_ForWork, taskCancel);
                     }
                 }
 

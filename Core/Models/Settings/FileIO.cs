@@ -4,41 +4,39 @@ namespace Core.Models.Settings
 {
     internal static class FileIO
     {
-        public static void Save<T>(string FilePath, T Data)
+        public static void Save<T>(string filePath, T data)
         {
-            if (File.Exists(FilePath) == false)
+            if (File.Exists(filePath) == false)
             {
-                File.Create(FilePath).Close();
+                File.Create(filePath).Close();
             }
 
-            File.WriteAllText(FilePath, string.Empty);
+            File.WriteAllText(filePath, string.Empty);
 
-            var Options = new JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 WriteIndented = true
             };
 
-            using (FileStream Stream = new FileStream(FilePath, FileMode.Open))
-            {
-                JsonSerializer.Serialize(Stream, Data, Options);
-            }
+            using var stream = new FileStream(filePath, FileMode.Open);
+            
+            JsonSerializer.Serialize(stream, data, options);            
         }
 
-        public static T? Read<T>(string FilePath)
+        public static T? Read<T>(string filePath)
         {
-            if (File.Exists(FilePath) == false)
+            if (File.Exists(filePath) == false)
             {
-                throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + FilePath);
+                throw new Exception("Файл настроек не существует.\n\n" + "Путь: " + filePath);
             }
 
-            T? Data;
+            T? data;
 
             try
             {
-                using (FileStream Stream = new FileStream(FilePath, FileMode.Open))
-                {
-                    Data = JsonSerializer.Deserialize<T>(Stream);
-                }
+                using var stream = new FileStream(filePath, FileMode.Open);
+                
+                data = JsonSerializer.Deserialize<T>(stream);
             }
 
             // Если в файле некоректные данные.
@@ -47,28 +45,28 @@ namespace Core.Models.Settings
                 return default;
             }
 
-            return Data;
+            return data;
         }
 
-        public static T ReadOrCreateDefault<T>(string FilePath, T DefaultData)
+        public static T ReadOrCreateDefault<T>(string filePath, T defaultData)
         {
             try
             {
-                T? Data = Read<T>(FilePath);
+                T? data = Read<T>(filePath);
 
-                if (Data == null)
+                if (data == null)
                 {
-                    Save(FilePath, DefaultData);
+                    Save(filePath, defaultData);
 
-                    Data = DefaultData;
+                    data = defaultData;
                 }
 
-                return Data;
+                return data;
             }
             
             catch (Exception)
             {
-                return DefaultData;
+                return defaultData;
             }
         }
     }

@@ -65,19 +65,18 @@ namespace ViewModels.NoProtocol
 
         public ReactiveCommand<Unit, Unit> Command_Select_Char { get; }
         public ReactiveCommand<Unit, Unit> Command_Select_String { get; }
-
         public ReactiveCommand<Unit, Unit> Command_Send { get; }
-
-        private SendMessageType TypeOfSendMessage;
-
+                
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
 
+        private SendMessageType _typeOfSendMessage;
 
-        public NoProtocol_Mode_Normal_VM(Action<string, MessageType> MessageBox)
+
+        public NoProtocol_Mode_Normal_VM(Action<string, MessageType> messageBox)
         {
-            Message = MessageBox;
+            Message = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -93,7 +92,7 @@ namespace ViewModels.NoProtocol
                     {
                         if (Model.HostIsConnect &&
                             TX_String != string.Empty &&
-                            TypeOfSendMessage == SendMessageType.Char)
+                            _typeOfSendMessage == SendMessageType.Char)
                         {
                             await Model.NoProtocol.Send(TX_String.Last().ToString(), CR_Enable, LF_Enable);
                         }
@@ -107,13 +106,13 @@ namespace ViewModels.NoProtocol
 
             Command_Select_Char = ReactiveCommand.Create(() =>
             {
-                TypeOfSendMessage = SendMessageType.Char;
+                _typeOfSendMessage = SendMessageType.Char;
                 TX_String = string.Empty;
             });
 
             Command_Select_String = ReactiveCommand.Create(() =>
             {
-                TypeOfSendMessage = SendMessageType.String;
+                _typeOfSendMessage = SendMessageType.String;
                 TX_String = string.Empty;
             });
 

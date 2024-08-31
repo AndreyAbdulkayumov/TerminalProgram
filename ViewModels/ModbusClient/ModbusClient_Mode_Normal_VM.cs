@@ -148,11 +148,11 @@ namespace ViewModels.ModbusClient
 
         private readonly List<ushort> WriteBuffer = new List<ushort>();
 
-        private NumberStyles NumberViewStyle;
+        private NumberStyles _numberViewStyle;
 
-        private byte SelectedSlaveID = 0;
-        private ushort SelectedAddress = 0;
-        private ushort SelectedNumberOfRegisters = 1;
+        private byte _selectedSlaveID = 0;
+        private ushort _selectedAddress = 0;
+        private ushort _selectedNumberOfRegisters = 1;
 
         private readonly ConnectedHost Model;
 
@@ -160,12 +160,12 @@ namespace ViewModels.ModbusClient
 
 
         public ModbusClient_Mode_Normal_VM(
-            Action<string, MessageType> MessageBox,
-            Func<byte, ushort, ModbusWriteFunction, ushort[], bool, Task> Modbus_Write,
-            Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read
+            Action<string, MessageType> messageBox,
+            Func<byte, ushort, ModbusWriteFunction, ushort[], bool, Task> modbus_Write,
+            Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
-            Message = MessageBox;
+            Message = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -177,24 +177,6 @@ namespace ViewModels.ModbusClient
             // Первоначальная настройка UI
             //
             /****************************************************/
-
-            WriteDataCollection.Add(new ModbusClient_WriteData_VM(
-                Address: 16248,
-                Data: 26529,
-                DataFormat: "bin"
-                ));
-
-            WriteDataCollection.Add(new ModbusClient_WriteData_VM(
-                Address: 16249,
-                Data: 65457,
-                DataFormat: "hex"
-                ));
-
-            WriteDataCollection.Add(new ModbusClient_WriteData_VM(
-                Address: 16250,
-                Data: 45865,
-                DataFormat: "dec"
-                ));
 
             CheckSum_Enable = true;
             CheckSum_IsVisible = true;
@@ -241,7 +223,7 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                if (SelectedNumberOfRegisters < 1)
+                if (_selectedNumberOfRegisters < 1)
                 {
                     Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
                     return;
@@ -249,7 +231,7 @@ namespace ViewModels.ModbusClient
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-                await Modbus_Read(SelectedSlaveID, SelectedAddress, ReadFunction, SelectedNumberOfRegisters, CheckSum_Enable);
+                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_Enable);
             });
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
@@ -266,9 +248,9 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                if (WriteData == null || WriteData == string.Empty)
+                if (WriteDataCollection.Count == 0)
                 {
-                    Message.Invoke("Укажите данные для записи в Modbus регистр.", MessageType.Warning);
+                    Message.Invoke("Укажите данные для записи в Modbus регистры.", MessageType.Warning);
                     return;
                 }
 
@@ -279,31 +261,31 @@ namespace ViewModels.ModbusClient
                 if (WriteFunction == Function.PresetMultipleRegisters ||
                     WriteFunction == Function.ForceMultipleCoils)
                 {
-                    ModbusWriteData = WriteBuffer.ToArray();
+                    ModbusWriteData = WriteDataCollection.Select(e => e.Data).ToArray();
                 }
 
                 else
                 {
-                    ModbusWriteData = new ushort[1];
-
-                    StringValue.CheckNumber(WriteData, NumberViewStyle, out ModbusWriteData[0]);
+                    ModbusWriteData = [WriteDataCollection.First().Data];
                 }
 
-                await Modbus_Write(SelectedSlaveID, SelectedAddress, WriteFunction, ModbusWriteData, CheckSum_Enable);
+                await modbus_Write(_selectedSlaveID, _selectedAddress, WriteFunction, ModbusWriteData, CheckSum_Enable);
             });
 
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
                 WriteDataCollection.Add(new ModbusClient_WriteData_VM(
-                    Address: (ushort)(WriteDataCollection.Last().Address + 1),
-                    Data: 0,
-                    DataFormat: "hex"
+                    canRemove: true,
+                    startAddressAddition: WriteDataCollection.Count,
+                    data: 0,
+                    dataFormat: "hex",
+                    removeItemHandler: RemoveWriteDataItem
                     ));
             });
 
             this.WhenAnyValue(x => x.SlaveID)
                 .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedSlaveID))
+                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedSlaveID))
                 .Subscribe(x => SlaveID = x);
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
@@ -329,18 +311,13 @@ namespace ViewModels.ModbusClient
 
             this.WhenAnyValue(x => x.Address)
                 .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberViewStyle, out SelectedAddress))
+                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedAddress))
                 .Subscribe(x => Address = x.ToUpper());
 
             this.WhenAnyValue(x => x.NumberOfRegisters)
                 .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out SelectedNumberOfRegisters))
+                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out _selectedNumberOfRegisters))
                 .Subscribe(x => NumberOfRegisters = x);
-
-            //this.WhenAnyValue(x => x.SelectedWriteFunction)
-            //    .WhereNotNull()
-            //    .Where(x => x != String.Empty)
-            //    .Subscribe(_ => WriteData = String.Empty);
 
             this.WhenAnyValue(x => x.SelectedWriteFunction)
                 .WhereNotNull()
@@ -349,13 +326,37 @@ namespace ViewModels.ModbusClient
                     if (x == Function.ForceMultipleCoils.DisplayedName ||
                         x == Function.PresetMultipleRegisters.DisplayedName)
                     {
+                        UpdateWriteDataCollection([
+                            new ModbusClient_WriteData_VM(
+                                canRemove: true,
+                                startAddressAddition: 0,
+                                data: WriteDataCollection.Count == 0 ? (ushort)0 : WriteDataCollection.First().Data,
+                                dataFormat: WriteDataCollection.Count == 0 ? "hex" : WriteDataCollection.First().SelectedDataFormat,
+                                removeItemHandler: RemoveWriteDataItem
+                            )]);
+
                         RegisterCanAdded = true;
+                        return;
+                    }
+
+                    if (WriteDataCollection.Count == 0)
+                    {
+                        UpdateWriteDataCollection([ 
+                            new ModbusClient_WriteData_VM(
+                                canRemove: false,
+                                startAddressAddition: 0,
+                                data: 0,
+                                dataFormat: "hex",
+                                removeItemHandler: RemoveWriteDataItem
+                            )]);
                     }
 
                     else
                     {
-                        RegisterCanAdded = false;
-                    }
+                        UpdateWriteDataCollection([WriteDataCollection.First()]);
+                    }                   
+
+                    RegisterCanAdded = false;
                 });
 
             this.WhenAnyValue(x => x.WriteData)
@@ -363,10 +364,23 @@ namespace ViewModels.ModbusClient
                 .Subscribe(x => WriteData = WriteData_TextChanged(x));
         }
 
+        private void UpdateWriteDataCollection(ModbusClient_WriteData_VM[] newItems)
+        {
+            WriteDataCollection.Clear();
+            WriteDataCollection.AddRange(newItems);
+        }
+
+        private void RemoveWriteDataItem(Guid selectedId)
+        {
+            var newCollection = WriteDataCollection.Where(e => e.Id != selectedId).ToArray();
+
+            UpdateWriteDataCollection(newCollection);
+        }
+
         public void SelectNumberFormat_Hex()
         {
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
-            NumberViewStyle = NumberStyles.HexNumber;
+            _numberViewStyle = NumberStyles.HexNumber;
 
             if (SlaveID != null)
             {
@@ -378,15 +392,13 @@ namespace ViewModels.ModbusClient
                 Address = Convert.ToInt32(Address).ToString("X");
             }
 
-            WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
-
-            UpdateWriteDataCollection(NumberFormat, NumberViewStyle);
+            WriteData = ConvertDataTextIn(_numberViewStyle, WriteData);
         }
 
         private void SelectNumberFormat_Dec()
         {
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
-            NumberViewStyle = NumberStyles.Number;
+            _numberViewStyle = NumberStyles.Number;
 
             if (SlaveID != null)
             {
@@ -398,39 +410,24 @@ namespace ViewModels.ModbusClient
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
             }
 
-            WriteData = ConvertDataTextIn(NumberViewStyle, WriteData);
-
-            UpdateWriteDataCollection(NumberFormat, NumberViewStyle);
+            WriteData = ConvertDataTextIn(_numberViewStyle, WriteData);
         }
 
-        private void UpdateWriteDataCollection(string AddressNumberFormat, NumberStyles AddressViewStyle)
+
+        private string ConvertDataTextIn(NumberStyles style, string? text)
         {
-            ModbusClient_WriteData_VM[] NewWriteDataCollection = WriteDataCollection.ToArray();
-
-            foreach (ModbusClient_WriteData_VM element in NewWriteDataCollection)
-            {
-                element.ViewAddress = ModbusClient_WriteData_VM.ConvertNumberToString(element.Address, AddressViewStyle);
-                element.AddressNumberFormat = AddressNumberFormat;
-            }
-
-            WriteDataCollection.Clear();
-            WriteDataCollection.AddRange(NewWriteDataCollection);
-        }
-
-        private string ConvertDataTextIn(NumberStyles Style, string? Text)
-        {
-            if (Text == null)
+            if (text == null)
             {
                 return string.Empty;
             }
 
-            string[] SplitString = Text.Split(' ');
+            string[] SplitString = text.Split(' ');
 
             string[] Values = SplitString.Where(element => element != "").ToArray();
 
             string DataString = "";
 
-            if (Style == NumberStyles.Number)
+            if (style == NumberStyles.Number)
             {
                 foreach (string element in Values)
                 {
@@ -438,7 +435,7 @@ namespace ViewModels.ModbusClient
                 }
             }
 
-            else if (Style == NumberStyles.HexNumber)
+            else if (style == NumberStyles.HexNumber)
             {
                 foreach (string element in Values)
                 {
@@ -449,7 +446,7 @@ namespace ViewModels.ModbusClient
             return DataString;
         }
 
-        private string WriteData_TextChanged(string EnteredText)
+        private string WriteData_TextChanged(string enteredText)
         {
             try
             {
@@ -458,26 +455,26 @@ namespace ViewModels.ModbusClient
                 {
                     WriteBuffer.Clear();
 
-                    string[] SplitString = EnteredText.Split(' ');
+                    string[] splitString = enteredText.Split(' ');
 
-                    string[] Values = SplitString.Where(element => element != "").ToArray();
+                    string[] values = splitString.Where(element => element != "").ToArray();
 
-                    ushort Buffer = 0;
+                    ushort buffer = 0;
 
-                    for (int i = 0; i < Values.Length; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        Values[i] = StringValue.CheckNumber(Values[i], NumberViewStyle, out Buffer);
-                        WriteBuffer.Add(Buffer);
+                        values[i] = StringValue.CheckNumber(values[i], _numberViewStyle, out buffer);
+                        WriteBuffer.Add(buffer);
                     }
 
                     // Если при второй итерации последний элемент в SplitString равен "",
                     // то в конце был пробел.
-                    return string.Join(" ", Values).ToUpper() + (SplitString.Last() == "" ? " " : "");
+                    return string.Join(" ", values).ToUpper() + (splitString.Last() == "" ? " " : "");
                 }
 
                 else
                 {
-                    return StringValue.CheckNumber(WriteData, NumberViewStyle, out ushort _).ToUpper();
+                    return StringValue.CheckNumber(WriteData, _numberViewStyle, out ushort _).ToUpper();
                 }
             }
 

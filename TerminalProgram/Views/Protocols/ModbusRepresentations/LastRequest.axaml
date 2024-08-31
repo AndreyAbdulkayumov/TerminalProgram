@@ -2,8 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" 
-			 d:DesignWidth="500" Height="160"
+			 d:DesignWidth="500" Height="150"
              x:Class="TerminalProgram.Views.Protocols.ModbusRepresentations.LastRequest">
 	
 	
@@ -69,14 +70,12 @@
 
 							<DataTemplate>
 
-								<Grid>
+								<Grid Width="50">
 
 									<Grid.RowDefinitions>
+										<RowDefinition Height="0.6*"/>
 										<RowDefinition Height="1*"/>
 										<RowDefinition Height="1*"/>
-										<RowDefinition Height="1.5*"/>
-										<RowDefinition Height="1*"/>
-										<RowDefinition Height="1.5*"/>
 									</Grid.RowDefinitions>
 
 									<Border Grid.Row="0"
@@ -96,19 +95,6 @@
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="DarkGreen">
-
-										<TextBlock Text="{Binding RequestDataType, Mode=OneWay}"
-                                                   FontSize="12"
-                                                   Foreground="Black"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-									</Border>
-
-									<Border Grid.Row="2"
-                                            BorderBrush="Black"
-                                            BorderThickness="1"
-                                            CornerRadius="5"
                                             Background="{DynamicResource ModbusDataField_Color_DataBackground}">
 
 										<TextBlock Text="{Binding RequestData, Mode=OneWay}"
@@ -118,21 +104,8 @@
                                                    Margin="10"/>
 
 									</Border>
-
-									<Border Grid.Row="3"
-                                            BorderBrush="Black"
-                                            BorderThickness="1"
-                                            CornerRadius="5"
-                                            Background="DarkGreen">
-
-										<TextBlock Text="{Binding ResponseDataType, Mode=OneWay}"
-                                                   FontSize="12"
-                                                   Foreground="Black"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-									</Border>
 									
-									<Border Grid.Row="4"
+									<Border Grid.Row="2"
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             CornerRadius="5"
@@ -180,8 +153,18 @@
 							<Setter Property="Foreground" Value="Black"/>
 						</Style>
 					</Button.Styles>
-					
-					<Image Source="avares://TerminalProgram/Resources/Copy.png"/>
+
+					<Icons:MaterialIcon Kind="ContentCopy"
+										Foreground="Black"
+										Height="25" Width="25">
+						
+						<Icons:MaterialIcon.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="-1" />
+							</TransformGroup>
+						</Icons:MaterialIcon.RenderTransform>
+						
+					</Icons:MaterialIcon>
 
 				</Button>
 
@@ -198,8 +181,18 @@
 							<Setter Property="Foreground" Value="Black"/>
 						</Style>
 					</Button.Styles>
-					
-					<Image Source="avares://TerminalProgram/Resources/Copy.png"/>
+
+					<Icons:MaterialIcon Kind="ContentCopy"
+										Foreground="Black"
+										Height="25" Width="25">
+
+						<Icons:MaterialIcon.RenderTransform>
+							<TransformGroup>
+								<ScaleTransform ScaleX="-1" />
+							</TransformGroup>
+						</Icons:MaterialIcon.RenderTransform>
+
+					</Icons:MaterialIcon>
 
 				</Button>
 				

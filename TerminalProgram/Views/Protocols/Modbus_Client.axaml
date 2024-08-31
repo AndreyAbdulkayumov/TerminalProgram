@@ -35,7 +35,7 @@
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="2*"/>
 			<RowDefinition Height="3"/>
-			<RowDefinition Height="220"/>
+			<RowDefinition Height="210"/>
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">

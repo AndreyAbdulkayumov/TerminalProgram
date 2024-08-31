@@ -83,9 +83,9 @@ namespace ViewModels.NoProtocol
         private readonly NoProtocol_Mode_Cycle_VM Mode_Cycle_VM;
 
 
-        public NoProtocol_VM(Action<string, MessageType> MessageBox)
+        public NoProtocol_VM(Action<string, MessageType> messageBox)
         {
-            Message = MessageBox;
+            Message = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -97,8 +97,8 @@ namespace ViewModels.NoProtocol
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX.Clear(); RX_String = RX.ToString(); });
 
-            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(MessageBox);
-            Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(MessageBox);
+            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox);
+            Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox);
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>

@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace Core.Clients
+﻿namespace Core.Clients
 {
     public enum ReadMode
     {
@@ -13,10 +11,20 @@ namespace Core.Clients
         public readonly DateTime ExecutionTime;
         public readonly byte[]? ResponseBytes;
 
-        public ModbusOperationInfo(DateTime ExecutionTime, byte[]? ResponseBytes)
+        public ModbusOperationInfo(DateTime executionTime, byte[]? responseBytes)
         {
-            this.ExecutionTime = ExecutionTime;
-            this.ResponseBytes = ResponseBytes;
+            ExecutionTime = executionTime;
+            ResponseBytes = responseBytes;
+        }
+    }
+
+    public class DataFromDevice : EventArgs
+    {
+        public readonly byte[] RX;
+
+        public DataFromDevice(int RX_ArrayLength)
+        {
+            RX = new byte[RX_ArrayLength];
         }
     }
 
@@ -54,19 +62,19 @@ namespace Core.Clients
         /// <summary>
         /// Система уведомлений о приеме и передачи данных.
         /// </summary>
-        NotificationSource Notifications {  get; }
+        NotificationSource Notifications { get; }
 
         /// <summary>
         /// Установка синхронного или асинхронного режима чтения.
         /// </summary>
         /// <param name="Mode"></param>
-        void SetReadMode(ReadMode Mode);
+        void SetReadMode(ReadMode mode);
 
         /// <summary>
         /// Подключение к указанному хосту.
         /// </summary>
         /// <param name="Info"></param>
-        void Connect(ConnectionInfo Info);
+        void Connect(ConnectionInfo info);
 
         /// <summary>
         /// Закрытие открытого соединения.
@@ -78,75 +86,11 @@ namespace Core.Clients
         /// </summary>
         /// <param name="Message"></param>
         /// <param name="NumberOfBytes"></param>
-        Task<ModbusOperationInfo> Send(byte[] Message, int NumberOfBytes);
+        Task<ModbusOperationInfo> Send(byte[] message, int numberOfBytes);
 
         /// <summary>
         /// Сихронно считывает данные из соединения. Возвращает принятые байты.
         /// </summary>
         Task<ModbusOperationInfo> Receive();
-    }
-
-    public class DataFromDevice : EventArgs
-    {
-        public readonly byte[] RX;
-
-        public DataFromDevice(int RX_ArrayLength)
-        {
-            RX = new byte[RX_ArrayLength];
-        }
-    }
-
-    public interface ITypeOfInfo
-    {
-
-    }
-
-    public class SocketInfo : ITypeOfInfo
-    {
-        public string? IP;
-        public string? Port;
-
-        public SocketInfo(string? IP, string? Port)
-        {
-            this.IP = IP;
-            this.Port = Port;
-        }
-    }
-
-    public class SerialPortInfo : ITypeOfInfo
-    {
-        public string? COM_Port;
-        public string? BaudRate;
-        public string? Parity;
-        public string? DataBits;
-        public string? StopBits;
-
-        public SerialPortInfo(string? COM_Port, string? BaudRate, string? Parity, string? DataBits, string? StopBits)
-        {
-            this.COM_Port = COM_Port;
-            this.BaudRate = BaudRate;
-            this.Parity = Parity;
-            this.DataBits = DataBits;
-            this.StopBits = StopBits;
-        }
-    }
-
-    public class ConnectionInfo
-    {
-        public ITypeOfInfo Info;
-
-        public readonly Encoding GlobalEncoding;
-
-        public ConnectionInfo(SocketInfo Info, Encoding GlobalEncoding)
-        {
-            this.Info = Info;
-            this.GlobalEncoding = GlobalEncoding;
-        }
-
-        public ConnectionInfo(SerialPortInfo Info, Encoding GlobalEncoding)
-        {
-            this.Info = Info;
-            this.GlobalEncoding = GlobalEncoding;
-        }
     }
 }

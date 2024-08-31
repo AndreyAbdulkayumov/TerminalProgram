@@ -33,7 +33,7 @@
 		
 		<Grid.RowDefinitions>
 			<RowDefinition Height="50"/>
-			<RowDefinition Height="0.4*"/>
+			<RowDefinition Height="170"/>
 			<RowDefinition Height="3"/>
 			<RowDefinition Height="1*"/>
 		</Grid.RowDefinitions>
@@ -87,20 +87,21 @@
 
 			<Grid Grid.Row="1">
 
-				<Button x:Name="Button_SaveAs"
-                        Margin="20,0,0,0"
-                        Width="130"
-                        Content="Сохранить как..."
-                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<StackPanel Orientation="Horizontal" Spacing="30"
+							HorizontalAlignment="Left"
+							Margin="20,0,0,0">
 
-				<CheckBox x:Name="CheckBox_NextLine"
-                          Foreground="{DynamicResource MainWindow_Color_Text}"
-                          FontSize="14"
-                          Margin="180,0,0,0"
-						  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-						  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
-                          Content="LF ( &#8216;\n	&#8216;, 0x0A)"
-                          HorizontalAlignment="Left" VerticalAlignment="Center"/>
+					<Button x:Name="Button_SaveAs"
+							Width="130"
+							Content="Сохранить как..."/>
+
+					<CheckBox x:Name="CheckBox_NextLine"
+							  Foreground="{DynamicResource MainWindow_Color_Text}"
+							  FontSize="14"
+							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
+							  Content="LF ( &#8216;\n	&#8216;, 0x0A)"/>
+					
+				</StackPanel>				
 
 				<Button x:Name="Button_ClearFieldRX"
                         Margin="0,0,20,0"

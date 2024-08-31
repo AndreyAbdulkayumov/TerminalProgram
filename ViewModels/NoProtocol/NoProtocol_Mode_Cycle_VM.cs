@@ -138,18 +138,16 @@ namespace ViewModels.NoProtocol
 
         #endregion
 
-        private bool IsStart = false;
+        private bool _isStart = false;
 
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
 
 
-        public NoProtocol_Mode_Cycle_VM(
-            Action<string, MessageType> MessageBox
-            )
+        public NoProtocol_Mode_Cycle_VM(Action<string, MessageType> messageBox)
         {
-            Message = MessageBox;
+            Message = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -160,7 +158,7 @@ namespace ViewModels.NoProtocol
 
             Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
-                Start_Stop_Handler(!IsStart);
+                Start_Stop_Handler(!_isStart);
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
         }
@@ -188,13 +186,13 @@ namespace ViewModels.NoProtocol
             Model.NoProtocol.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
         }
 
-        public void Start_Stop_Handler(bool StartPolling)
+        public void Start_Stop_Handler(bool startPolling)
         {
-            if (StartPolling)
+            if (startPolling)
             {
                 Model.NoProtocol.CycleMode_Period = Message_Period_ms;
 
-                CycleModeParameters Info = new CycleModeParameters()
+                var info = new CycleModeParameters()
                 {
                     Message = Message_Content,
 
@@ -214,7 +212,7 @@ namespace ViewModels.NoProtocol
                     Response_LF_Enable = Response_LF,
                 };
 
-                Model.NoProtocol.CycleMode_Start(Info);
+                Model.NoProtocol.CycleMode_Start(info);
 
                 Button_Content = Button_Content_Stop;
             }
@@ -226,7 +224,7 @@ namespace ViewModels.NoProtocol
                 Button_Content = Button_Content_Start;
             }
 
-            IsStart = StartPolling;
+            _isStart = startPolling;
         }
     }
 }

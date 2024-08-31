@@ -5,7 +5,7 @@ using MessageBox_Core;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Tab_Connection_Ethernet : ReactiveObject
+    public class Tab_Connection_Ethernet_VM : ReactiveObject
     {
         private string? _ip_address = String.Empty;
 
@@ -28,11 +28,11 @@ namespace ViewModels.Settings
         private readonly Action<string, MessageType> Message;
 
 
-        public ViewModel_Tab_Connection_Ethernet(ViewModel_Settings Main_VM)
+        public Tab_Connection_Ethernet_VM(Settings_VM main_VM)
         {
-            Main_VM.SettingsFileChanged += Main_VM_SettingsFileChanged;
+            main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
 
-            Message = Main_VM.Message;
+            Message = main_VM.Message;
             
             SettingsFile = Model_Settings.Model;
 

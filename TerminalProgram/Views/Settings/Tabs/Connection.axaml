@@ -19,11 +19,11 @@
 	
 	<UserControl.DataTemplates>
 
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection_SerialPort}">
+		<DataTemplate DataType="{x:Type ViewModels:Tab_Connection_SerialPort_VM}">
 			<ConnectionViews:Connection_SerialPort/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModels:ViewModel_Tab_Connection_Ethernet}">
+		<DataTemplate DataType="{x:Type ViewModels:Tab_Connection_Ethernet_VM}">
 			<ConnectionViews:Connection_Ethernet/>
 		</DataTemplate>
 

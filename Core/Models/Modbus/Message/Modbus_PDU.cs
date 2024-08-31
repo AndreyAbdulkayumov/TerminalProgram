@@ -2,100 +2,100 @@
 {
     public static class Modbus_PDU
     {
-        public static byte[] Create(ModbusFunction Function, MessageData Data)
+        public static byte[] Create(ModbusFunction function, MessageData data)
         {
-            WriteTypeMessage? DataForWrite = Data as WriteTypeMessage;
-            ReadTypeMessage? DataForRead = Data as ReadTypeMessage;
+            WriteTypeMessage? dataForWrite = data as WriteTypeMessage;
+            ReadTypeMessage? dataForRead = data as ReadTypeMessage;
 
-            if (DataForRead != null && Function.Number >= 1 && Function.Number <= 4)
+            if (dataForRead != null && function.Number >= 1 && function.Number <= 4)
             {
-                return Create_Read(Function, DataForRead);
+                return Create_Read(function, dataForRead);
             }
 
-            else if (DataForWrite != null && (Function.Number == 5 || Function.Number == 6))
+            else if (dataForWrite != null && (function.Number == 5 || function.Number == 6))
             {
-                return Create_Write(Function, DataForWrite);
+                return Create_Write(function, dataForWrite);
             }
 
-            else if (DataForWrite != null && (Function.Number == 15 || Function.Number == 16))
+            else if (dataForWrite != null && (function.Number == 15 || function.Number == 16))
             {
-                return Create_WriteMultiple(Function, DataForWrite);
+                return Create_WriteMultiple(function, dataForWrite);
             }
 
             else
             {
                 throw new Exception("Ошибка при формировании PDU.\n" +
-                    "Неподдерживаемый код функции: " + Function.Number);
+                    "Неподдерживаемый код функции: " + function.Number);
             }
         }
 
-        private static byte[] Create_Read(ModbusFunction ReadFunction, ReadTypeMessage Data)
+        private static byte[] Create_Read(ModbusFunction readFunction, ReadTypeMessage data)
         {
             byte[] PDU = new byte[5];
 
-            byte[] AddressArray = BitConverter.GetBytes(Data.Address);
-            byte[] NumberOfRegistersArray = BitConverter.GetBytes(Data.NumberOfRegisters);
+            byte[] addressArray = BitConverter.GetBytes(data.Address);
+            byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
 
             // Function number
-            PDU[0] = ReadFunction.Number;
+            PDU[0] = readFunction.Number;
             // Address 
-            PDU[1] = AddressArray[1];
-            PDU[2] = AddressArray[0];
+            PDU[1] = addressArray[1];
+            PDU[2] = addressArray[0];
             // Amount of readed registers
-            PDU[3] = NumberOfRegistersArray[1];
-            PDU[4] = NumberOfRegistersArray[0];
+            PDU[3] = numberOfRegistersArray[1];
+            PDU[4] = numberOfRegistersArray[0];
 
             return PDU;
         }
 
-        private static byte[] Create_Write(ModbusFunction WriteFunction, WriteTypeMessage Data)
+        private static byte[] Create_Write(ModbusFunction writeFunction, WriteTypeMessage data)
         {
             byte[] PDU = new byte[5];
 
-            byte[] AddressArray = BitConverter.GetBytes(Data.Address);
-            byte[] DataArray = BitConverter.GetBytes(Data.WriteData[0]);
+            byte[] addressArray = BitConverter.GetBytes(data.Address);
+            byte[] dataArray = BitConverter.GetBytes(data.WriteData[0]);
 
             // Function number
-            PDU[0] = WriteFunction.Number;
+            PDU[0] = writeFunction.Number;
             // Address 
-            PDU[1] = AddressArray[1];
-            PDU[2] = AddressArray[0];
+            PDU[1] = addressArray[1];
+            PDU[2] = addressArray[0];
             // Data
-            PDU[3] = DataArray[1];
-            PDU[4] = DataArray[0];
+            PDU[3] = dataArray[1];
+            PDU[4] = dataArray[0];
 
             return PDU;
         }
 
-        private static byte[] Create_WriteMultiple(ModbusFunction WriteFunction, WriteTypeMessage Data)
+        private static byte[] Create_WriteMultiple(ModbusFunction writeFunction, WriteTypeMessage data)
         {
-            byte[] PDU = new byte[6 + Data.WriteData.Length * 2];
+            byte[] PDU = new byte[6 + data.WriteData.Length * 2];
 
-            byte[] AddressArray = BitConverter.GetBytes(Data.Address);
-            byte[] NumberOfRegistersArray = BitConverter.GetBytes(Data.WriteData.Length);
+            byte[] addressArray = BitConverter.GetBytes(data.Address);
+            byte[] numberOfRegistersArray = BitConverter.GetBytes(data.WriteData.Length);
 
             // Function number
-            PDU[0] = WriteFunction.Number;
+            PDU[0] = writeFunction.Number;
             // Address 
-            PDU[1] = AddressArray[1];
-            PDU[2] = AddressArray[0];
+            PDU[1] = addressArray[1];
+            PDU[2] = addressArray[0];
             // Amount of write registers
-            PDU[3] = NumberOfRegistersArray[1];
-            PDU[4] = NumberOfRegistersArray[0];
+            PDU[3] = numberOfRegistersArray[1];
+            PDU[4] = numberOfRegistersArray[0];
             // Amount of byte next
-            PDU[5] = (byte)(Data.WriteData.Length * 2);
+            PDU[5] = (byte)(data.WriteData.Length * 2);
 
-            byte[] DataArray;
-            int ElementCounter = 6;
+            byte[] dataArray;
+            int elementCounter = 6;
 
-            foreach (UInt16 element in Data.WriteData)
+            foreach (UInt16 element in data.WriteData)
             {
-                DataArray = BitConverter.GetBytes(element);
+                dataArray = BitConverter.GetBytes(element);
 
-                PDU[ElementCounter] = DataArray[1];
-                PDU[ElementCounter + 1] = DataArray[0];
+                PDU[elementCounter] = dataArray[1];
+                PDU[elementCounter + 1] = dataArray[0];
 
-                ElementCounter += 2;
+                elementCounter += 2;
             }
 
             return PDU;

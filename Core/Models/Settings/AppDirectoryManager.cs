@@ -46,93 +46,93 @@ namespace Core.Models.Settings
 
         public AppDirectoryManager()
         {
-            string FolderInDocuments = Path.Combine(
+            string folderInDocuments = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.Personal), ProgramFolderName);
 
             // Создание путей к папкам приложения
 
-            SettingsFiles_Directory = Path.Combine(FolderInDocuments, SettingsFiles_FolderName);
+            SettingsFiles_Directory = Path.Combine(folderInDocuments, SettingsFiles_FolderName);
 
-            LogFiles_Directory = Path.Combine(FolderInDocuments, LogFiles_FolderName);
+            LogFiles_Directory = Path.Combine(folderInDocuments, LogFiles_FolderName);
 
-            CommonFiles_Directory = Path.Combine(FolderInDocuments, CommonFiles_FolderName);
+            CommonFiles_Directory = Path.Combine(folderInDocuments, CommonFiles_FolderName);
         }
 
         /// <summary>
         /// Проверка наличия файлов в указанной директории. Если директория пуста, то создается один файл с заданными данными по умолчанию.
         /// </summary>
-        /// <param name="SelectedDirectory"></param>
-        /// <param name="DefaultFileName"></param>
-        /// <param name="Extension"></param>
-        /// <param name="DefaultData"></param>
+        /// <param name="selectedDirectory"></param>
+        /// <param name="defaultFileName"></param>
+        /// <param name="extension"></param>
+        /// <param name="defaultData"></param>
         /// <returns>Возвращает массив имен файлов в заданной директории.</returns>
-        public string[] CheckFiles(string SelectedDirectory, string DefaultFileName, string Extension, object DefaultData)
+        public string[] CheckFiles(string selectedDirectory, string defaultFileName, string extension, object defaultData)
         {
-            if (Directory.Exists(SelectedDirectory) == false)
+            if (Directory.Exists(selectedDirectory) == false)
             {
-                Directory.CreateDirectory(SelectedDirectory);
+                Directory.CreateDirectory(selectedDirectory);
             }
 
-            string[] ArrayOfFileNames = Directory.GetFiles(SelectedDirectory, "*" + Extension);           
+            string[] arrayOfFileNames = Directory.GetFiles(selectedDirectory, "*" + extension);           
 
             // Создание файла по умолчанию, если в папке нет ни одного файла.
-            if (ArrayOfFileNames.Length == 0)
+            if (arrayOfFileNames.Length == 0)
             {
-                CreateDefaultFile(SelectedDirectory, DefaultFileName, Extension, DefaultData);
+                CreateDefaultFile(selectedDirectory, defaultFileName, extension, defaultData);
 
-                ArrayOfFileNames = Directory.GetFiles(SelectedDirectory, "*" + Extension);
+                arrayOfFileNames = Directory.GetFiles(selectedDirectory, "*" + extension);
             }
 
-            for (int i = 0; i < ArrayOfFileNames.Length; i++)
+            for (int i = 0; i < arrayOfFileNames.Length; i++)
             {
-                ArrayOfFileNames[i] = Path.GetFileNameWithoutExtension(ArrayOfFileNames[i]);
+                arrayOfFileNames[i] = Path.GetFileNameWithoutExtension(arrayOfFileNames[i]);
             }
 
-            return ArrayOfFileNames;
+            return arrayOfFileNames;
         }
 
         /// <summary>
         /// Поиск файла по заданному пути. Если файл не найден, то будет создан новый файл с заданными данными по умолчанию.
         /// </summary>
-        /// <param name="SelectedDirectory"></param>
-        /// <param name="SelectedFileName"></param>
-        /// <param name="Extension"></param>
-        /// <param name="DefaultData"></param>
+        /// <param name="selectedDirectory"></param>
+        /// <param name="fileName"></param>
+        /// <param name="extension"></param>
+        /// <param name="defaultData"></param>
         /// <returns>Возвращает полный путь к файлу.</returns>
-        public string FindOrCreateFile(string SelectedDirectory, string FileName, string Extension, object DefaultData)
+        public string FindOrCreateFile(string selectedDirectory, string fileName, string extension, object defaultData)
         {
-            if (Directory.Exists(SelectedDirectory) == false)
+            if (Directory.Exists(selectedDirectory) == false)
             {
-                Directory.CreateDirectory(SelectedDirectory);
+                Directory.CreateDirectory(selectedDirectory);
             }
 
-            string[] ArrayOfFileNames = Directory.GetFiles(SelectedDirectory, FileName + Extension);
+            string[] arrayOfFileNames = Directory.GetFiles(selectedDirectory, fileName + extension);
 
             // Создание файла по умолчанию, если в папке нет ни одного файла.
-            if (ArrayOfFileNames.Length == 0)
+            if (arrayOfFileNames.Length == 0)
             {
-                CreateDefaultFile(SelectedDirectory, FileName, Extension, DefaultData);
+                CreateDefaultFile(selectedDirectory, fileName, extension, defaultData);
 
-                ArrayOfFileNames = Directory.GetFiles(SelectedDirectory, FileName + Extension);
+                arrayOfFileNames = Directory.GetFiles(selectedDirectory, fileName + extension);
             }
 
-            return ArrayOfFileNames.First();
+            return arrayOfFileNames.First();
         }
 
-        private void CreateDefaultFile(string SelectedDirectory, string DefaultFileName, string Extension, object DefaultData)
+        private void CreateDefaultFile(string selectedDirectory, string defaultFileName, string extension, object defaultData)
         {
-            string DefaultFile_FullPath = Path.Combine(SelectedDirectory, DefaultFileName + Extension);
+            string defaultFile_FullPath = Path.Combine(selectedDirectory, defaultFileName + extension);
 
-            File.Create(DefaultFile_FullPath).Close();
+            File.Create(defaultFile_FullPath).Close();
 
-            JsonSerializerOptions Options = new JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 WriteIndented = true
             };
 
-            using (FileStream stream = new FileStream(DefaultFile_FullPath, FileMode.Open))
+            using (var stream = new FileStream(defaultFile_FullPath, FileMode.Open))
             {
-                JsonSerializer.Serialize(stream, DefaultData, Options);
+                JsonSerializer.Serialize(stream, defaultData, options);
             }
         }
     }

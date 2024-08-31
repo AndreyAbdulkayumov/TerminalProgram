@@ -16,7 +16,7 @@
 
     public interface IMessageBox
     {
-        void Show(string Message, MessageType Type);
-        Task<MessageBoxResult> ShowYesNoDialog(string Message, MessageType Type);
+        void Show(string message, MessageType type);
+        Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type);
     }
 }

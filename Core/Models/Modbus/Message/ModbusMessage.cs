@@ -18,42 +18,42 @@
 
         public readonly ModbusActionDetails Details = new ModbusActionDetails();
 
-        public ModbusException(byte FunctionCode, byte ErrorCode, string Message)
+        public ModbusException(byte functionCode, byte errorCode, string message)
         {
-            this.FunctionCode = FunctionCode;
-            this.ErrorCode = ErrorCode;
-            this.Message = Message;
+            FunctionCode = functionCode;
+            ErrorCode = errorCode;
+            Message = message;
         }
 
-        public ModbusException(ModbusException ErrorObject)
+        public ModbusException(ModbusException errorObject)
         {
-            FunctionCode= ErrorObject.FunctionCode;
-            ErrorCode = ErrorObject.ErrorCode;
-            Message = ErrorObject.Message;
-            Details.RequestBytes = ErrorObject.Details.RequestBytes;
-            Details.ResponseBytes = ErrorObject.Details.ResponseBytes;
+            FunctionCode= errorObject.FunctionCode;
+            ErrorCode = errorObject.ErrorCode;
+            Message = errorObject.Message;
+            Details.RequestBytes = errorObject.Details.RequestBytes;
+            Details.ResponseBytes = errorObject.Details.ResponseBytes;
         }
 
-        public ModbusException(byte FunctionCode, byte ErrorCode, string Message, 
-            byte[] RequestBytes, byte[] ResponseBytes)
+        public ModbusException(byte functionCode, byte errorCode, string message, 
+            byte[] requestBytes, byte[] responseBytes)
         {
-            this.FunctionCode = FunctionCode;
-            this.ErrorCode = ErrorCode;
-            this.Message = Message;
-            this.Details.RequestBytes = RequestBytes;
-            this.Details.ResponseBytes = ResponseBytes;
+            FunctionCode = functionCode;
+            ErrorCode = errorCode;
+            Message = message;
+            Details.RequestBytes = requestBytes;
+            Details.ResponseBytes = responseBytes;
         }
 
-        public ModbusException(ModbusException ErrorObject, byte[] RequestBytes, byte[] ResponseBytes, 
-            DateTime Request_ExecutionTime, DateTime Response_ExecutionTime)
+        public ModbusException(ModbusException errorObject, byte[] requestBytes, byte[] responseBytes, 
+            DateTime request_ExecutionTime, DateTime response_ExecutionTime)
         {
-            FunctionCode = ErrorObject.FunctionCode;
-            ErrorCode = ErrorObject.ErrorCode;
-            Message = ErrorObject.Message;
-            this.Details.RequestBytes = RequestBytes;
-            this.Details.ResponseBytes = ResponseBytes;
-            this.Details.Request_ExecutionTime = Request_ExecutionTime;
-            this.Details.Response_ExecutionTime = Response_ExecutionTime;
+            FunctionCode = errorObject.FunctionCode;
+            ErrorCode = errorObject.ErrorCode;
+            Message = errorObject.Message;
+            Details.RequestBytes = requestBytes;
+            Details.ResponseBytes = responseBytes;
+            Details.Request_ExecutionTime = request_ExecutionTime;
+            Details.Response_ExecutionTime = response_ExecutionTime;
         }
     }
 
@@ -87,24 +87,24 @@
             ASCII
         }
 
-        protected void CheckErrorCode(TypeOfModbus ModbusType, ref ModbusResponse Decoding, byte[] massive)
+        protected void CheckErrorCode(TypeOfModbus modbusType, ref ModbusResponse decoding, byte[] massive)
         {
             // Согласно документации на протокол Modbus:
             // Если значение в поле команды больше 0x80, то это ошибка.
             // Значение команды = значение в поле команды - 0x80
 
-            if (Decoding.Command > 0x80)
+            if (decoding.Command > 0x80)
             {
-                int FunctionCode = Decoding.Command - 0x80;
+                int functionCode = decoding.Command - 0x80;
 
-                Decoding.Data = new byte[1]; // Код ошибки занимает 1 байт
+                decoding.Data = new byte[1]; // Код ошибки занимает 1 байт
 
                 // Modbus TCP
                 // [0],[1] - Package ID, [2],[3] - Modbus ID, [4],[5] - Length of PDU
                 // [6] - Slave ID, [7] - Command, [8] - Error code
-                if (ModbusType == TypeOfModbus.TCP)
+                if (modbusType == TypeOfModbus.TCP)
                 {
-                    Decoding.Data[0] = massive[8];
+                    decoding.Data[0] = massive[8];
                 }
 
                 // Modbus RTU / ASCII 
@@ -112,67 +112,67 @@
                 // [3] - CheckSum_low, [4] - CheckSum_high
                 else
                 {
-                    Decoding.Data[0] = massive[2];
+                    decoding.Data[0] = massive[2];
                 }
 
-                GetModbusException(Decoding.Data[0], (byte)FunctionCode);
+                GetModbusException(decoding.Data[0], (byte)functionCode);
             }
         }
 
-        protected byte[] ReverseLowAndHighBytesInWords(byte[] SourceArray)
+        protected byte[] ReverseLowAndHighBytesInWords(byte[] sourceArray)
         {
-            if (SourceArray.Length < 2)
+            if (sourceArray.Length < 2)
             {
-                return SourceArray;
+                return sourceArray;
             }
 
             byte temp;
 
-            for (int i = 0; i < SourceArray.Length; i += 2)
+            for (int i = 0; i < sourceArray.Length; i += 2)
             {
-                temp = SourceArray[i];
-                SourceArray[i] = SourceArray[i + 1];
-                SourceArray[i + 1] = temp;
+                temp = sourceArray[i];
+                sourceArray[i] = sourceArray[i + 1];
+                sourceArray[i + 1] = temp;
             }
 
-            return SourceArray;
+            return sourceArray;
         }
 
-        private void GetModbusException(byte ErrorCode, byte FunctionCode)
+        private void GetModbusException(byte errorCode, byte functionCode)
         {
-            switch (ErrorCode)
+            switch (errorCode)
             {
                 case 1:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Принятый код функции не может быть обработан.");
 
                 case 2:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Адрес данных, указанный в запросе, недоступен.");
 
                 case 3:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Значение, содержащееся в поле данных запроса, " +
                         "является недопустимой величиной.");
 
                 case 4:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Невосстанавливаемая ошибка имела место, " +
                         "пока ведомое устройство пыталось выполнить затребованное действие.");
 
                 case 5:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Ведомое устройство приняло запрос и обрабатывает его, " +
                         "но это требует много времени. " +
                         "Этот ответ предохраняет ведущее устройство от генерации ошибки тайм-аута.");
 
                 case 6:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Ведомое устройство занято обработкой команды. " +
                         "Ведущее устройство должно повторить сообщение позже, когда ведомое освободится.");
 
                 case 7:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Ведомое устройство не может выполнить программную функцию, заданную в запросе. " +
                         "Этот код возвращается для неуспешного программного запроса, " +
                         "использующего функции с номерами 13 или 14. " +
@@ -180,22 +180,22 @@
                         "или информацию об ошибках от ведомого.");
 
                 case 8:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Ведомое устройство при чтении расширенной памяти обнаружило ошибку контроля четности. " +
                         "Master может повторить запрос позже, " +
                         "но обычно в таких случаях требуется ремонт оборудования.");
 
                 case 10:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Шлюз неправильно настроен или перегружен запросами.");
 
                 case 11:
-                    throw new ModbusException(FunctionCode, ErrorCode,
+                    throw new ModbusException(functionCode, errorCode,
                         "Slave устройства нет в сети или от него нет ответа.");
 
                 default:
-                    throw new Exception("Код функции: " + FunctionCode.ToString() + "\n" +
-                        "Неизвестная ошибка Modbus (Код " + ErrorCode + ")");
+                    throw new Exception("Код функции: " + functionCode.ToString() + "\n" +
+                        "Неизвестная ошибка Modbus (Код " + errorCode + ")");
             }
         }
     }

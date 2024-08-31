@@ -11,12 +11,12 @@ namespace TerminalProgram.Views.Protocols.ModbusRepresentations
 
         private void TextBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
         {
-            TextBox? LogText = sender as TextBox;
+            var logText = sender as TextBox;
 
-            if (LogText != null)
+            if (logText != null)
             {
-                LogText.CaretIndex = 0;
-                LogText.CaretIndex = LogText.Text == null ? 0 : LogText.Text.Length;
+                logText.CaretIndex = 0;
+                logText.CaretIndex = logText.Text == null ? 0 : logText.Text.Length;
             }
         }
     }

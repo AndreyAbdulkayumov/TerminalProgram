@@ -3,10 +3,6 @@
 
 	<Style Selector="ComboBox">
 
-		<Style Selector="^ TextBlock">
-			<Setter Property="Foreground" Value="Black"/>
-		</Style>
-				
 		<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Enabled_Background}"/>
 		<Setter Property="BorderThickness" Value="0"/>
 		
@@ -14,6 +10,10 @@
 		
 		<Setter Property="HorizontalContentAlignment" Value="Left"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
+
+		<Style Selector="^ TextBlock">
+			<Setter Property="Foreground" Value="Black"/>
+		</Style>
 
 		<Style Selector="^:pointerover /template/ Border#Background">
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_MouseOver_Background}"/>

@@ -35,23 +35,23 @@
         /// <summary>
         /// Сохранение данных в файл. Если файл с таким именем не найден, то он создается.
         /// </summary>
-        /// <param name="FileName"></param>
-        /// <param name="Data"></param>
+        /// <param name="fileName"></param>
+        /// <param name="data"></param>
         /// <exception cref="Exception"></exception>
-        public void SavePreset(string FileName, DeviceData Data)
+        public void SavePreset(string fileName, DeviceData data)
         {
             try
             {
-                if (FileName == string.Empty)
+                if (fileName == string.Empty)
                 {
                     throw new Exception("Не задано имя файла настроек.");
                 }
 
-                string FilePath = Path.Combine(FolderPath_Settings, FileName + FileExtension);
+                string filePath = Path.Combine(FolderPath_Settings, fileName + FileExtension);
 
-                FileIO.Save(FilePath, Data);
+                FileIO.Save(filePath, data);
 
-                Settings = (DeviceData)Data.Clone();
+                Settings = (DeviceData)data.Clone();
             }
 
             catch (Exception error)
@@ -63,21 +63,21 @@
         /// <summary>
         /// Чтение настроек из файла. Если файл содержит битые данные, то он перезаписывается значениями по умолчанию.
         /// </summary>
-        /// <param name="FileName"></param>
+        /// <param name="fileName"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public DeviceData ReadPreset(string FileName)
+        public DeviceData ReadPreset(string fileName)
         {
             try
             {
-                if (FileName == string.Empty)
+                if (fileName == string.Empty)
                 {
                     throw new Exception("Не задано имя файла настроек.");
                 }
 
-                string FilePath = Path.Combine(FolderPath_Settings, FileName + FileExtension);
+                string filePath = Path.Combine(FolderPath_Settings, fileName + FileExtension);
 
-                Settings = FileIO.ReadOrCreateDefault(FilePath, DeviceData.GetDefault());
+                Settings = FileIO.ReadOrCreateDefault(filePath, DeviceData.GetDefault());
 
                 return Settings;
             }
@@ -94,38 +94,38 @@
         /// <summary>
         /// Удаляет файл по указанному пути, если он существует.
         /// </summary>
-        /// <param name="FileName"></param>
-        public void Delete(string FileName)
+        /// <param name="fileName"></param>
+        public void Delete(string fileName)
         {
-            string[] ArrayOfFiles = Directory.GetFiles(DirectoryManager.SettingsFiles_Directory);
+            string[] arrayOfFiles = Directory.GetFiles(DirectoryManager.SettingsFiles_Directory);
 
-            string SelectedFile_FullPath = Path.Combine(DirectoryManager.SettingsFiles_Directory, FileName + FileExtension);
+            string selectedFile_FullPath = Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName + FileExtension);
 
-            if (ArrayOfFiles.Contains(SelectedFile_FullPath))
+            if (arrayOfFiles.Contains(selectedFile_FullPath))
             {
-                File.Delete(Path.Combine(DirectoryManager.SettingsFiles_Directory, FileName) + FileExtension);
+                File.Delete(Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName) + FileExtension);
             }
 
             else
             {
-                throw new Exception("Не удалось найти файл \"" + FileName + "\" в папке " + DirectoryManager.SettingsFiles_Directory);
+                throw new Exception("Не удалось найти файл \"" + fileName + "\" в папке " + DirectoryManager.SettingsFiles_Directory);
             }
         }
 
         /// <summary>
         /// Копирует файл с указанным путем в директорию приложения.
         /// </summary>
-        /// <param name="FilePath"></param>
+        /// <param name="filePath"></param>
         /// <returns>Имя скопированного файла без расширения.</returns>
-        public string CopyFrom(string FilePath)
+        public string CopyFrom(string filePath)
         {
-            string destFilePath = Path.Combine(DirectoryManager.SettingsFiles_Directory, Path.GetFileName(FilePath));
+            string destFilePath = Path.Combine(DirectoryManager.SettingsFiles_Directory, Path.GetFileName(filePath));
 
-            string FileName = Path.GetFileNameWithoutExtension(FilePath);
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-            File.Copy(FilePath, destFilePath);
+            File.Copy(filePath, destFilePath);
 
-            return FileName;
+            return fileName;
         }
 
         /// <summary>
@@ -134,29 +134,29 @@
         /// <returns></returns>
         public string[] FindFilesOfPresets()
         {
-            string[] ArrayOfPresets = DirectoryManager.CheckFiles(
+            string[] arrayOfPresets = DirectoryManager.CheckFiles(
                 DirectoryManager.SettingsFiles_Directory, 
                 FileName_DefaultPreset, 
                 FileExtension, 
                 DeviceData.GetDefault()
                 );
 
-            return ArrayOfPresets;
+            return arrayOfPresets;
         }
 
         /// <summary>
         /// Сохранение файла настроек приложения
         /// </summary>
-        /// <param name="Data"></param>
-        public void SaveAppInfo(AppInfo Data)
+        /// <param name="data"></param>
+        public void SaveAppInfo(AppInfo data)
         {
             try
             {
-                string FilePath = Path.Combine(DirectoryManager.CommonFiles_Directory, FileName_AppData + FileExtension);
+                string filePath = Path.Combine(DirectoryManager.CommonFiles_Directory, FileName_AppData + FileExtension);
 
-                FileIO.Save(FilePath, Data);
+                FileIO.Save(filePath, data);
 
-                AppData = Data;
+                AppData = data;
             }
             
             catch (Exception error)
@@ -171,14 +171,14 @@
         /// <returns></returns>
         private AppInfo ReadAppInfo()
         {
-            string FilePath = DirectoryManager.FindOrCreateFile(
+            string filePath = DirectoryManager.FindOrCreateFile(
                 DirectoryManager.CommonFiles_Directory,
                 FileName_AppData,
                 FileExtension,
                 AppInfo.GetDefault(FileName_DefaultPreset)
                 );
 
-            return FileIO.ReadOrCreateDefault(FilePath, AppInfo.GetDefault(FileName_DefaultPreset));
+            return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
         }
     }
 }

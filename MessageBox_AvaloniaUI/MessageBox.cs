@@ -12,27 +12,27 @@ namespace MessageBox_AvaloniaUI
 
         private readonly string Title;
 
-        public MessageBox(Window Owner, string Title)
+        public MessageBox(Window owner, string title)
         {
-            this.Owner = Owner;
-            this.Title = Title;
+            Owner = owner;
+            Title = title;
         }
 
-        public void Show(string Message, MessageType Type)
+        public void Show(string message, MessageType type)
         {
             Dispatcher.UIThread.Invoke(async () =>
             {
-                MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.Default);
+                var window = new MessageBoxView(message, Title, MessageBoxToolType.Default);
 
                 await CallMessageBox(window);
             });
         }
 
-        public async Task<MessageBoxResult> ShowYesNoDialog(string Message, MessageType Type)
+        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type)
         {
             return await Dispatcher.UIThread.Invoke(async () => 
             {
-                MessageBoxView window = new MessageBoxView(Message, Title, MessageBoxToolType.YesNo);
+                var window = new MessageBoxView(message, Title, MessageBoxToolType.YesNo);
 
                 await CallMessageBox(window);
 

@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace ViewModels.Settings
 {
-    public class ViewModel_Tab_NoProtocol : ReactiveObject
+    public class Tab_NoProtocol_VM : ReactiveObject
     {
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
         {
@@ -24,7 +24,7 @@ namespace ViewModels.Settings
         }
 
 
-        public ViewModel_Tab_NoProtocol()
+        public Tab_NoProtocol_VM()
         {
 
         }

@@ -20,11 +20,11 @@
         public AppMode SelectedMode { get; set; }
 
 
-        public static AppInfo GetDefault(string DefaultPresetName)
+        public static AppInfo GetDefault(string defaultPresetName)
         {
             return new AppInfo()
             {
-                SelectedPresetFileName = DefaultPresetName,
+                SelectedPresetFileName = defaultPresetName,
                 ThemeName = AppTheme.Dark,
                 SelectedMode = AppMode.ModbusClient
             };

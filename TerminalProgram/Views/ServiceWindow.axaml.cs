@@ -51,12 +51,12 @@ namespace TerminalProgram.Views
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            this.BeginMoveDrag(e);
+            BeginMoveDrag(e);
         }
 
         private void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void Button_Select_Click(object? sender, RoutedEventArgs e)
@@ -72,7 +72,7 @@ namespace TerminalProgram.Views
                     break;
             }
 
-            this.Close();
+            Close();
         }
 
         private void TextBox_ResultHandler()
@@ -82,16 +82,16 @@ namespace TerminalProgram.Views
 
         private void ComboBox_ResultHandler()
         {
-            string? SelectedFile = ComboBox_SelectFileName.SelectedItem?.ToString();
+            string? selectedFile = ComboBox_SelectFileName.SelectedItem?.ToString();
 
-            if (SelectedFile == null)
+            if (selectedFile == null)
             {
                 Message.Show("Не удалось выбрать документ.", MessageType.Error);
             }
 
             else
             {
-                SelectedFilePath = SelectedFile;
+                SelectedFilePath = selectedFile;
             }
         }
     }

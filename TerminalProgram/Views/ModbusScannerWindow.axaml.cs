@@ -14,19 +14,19 @@ namespace TerminalProgram.Views
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            this.BeginMoveDrag(e);
+            BeginMoveDrag(e);
         }
 
         private async void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            ModbusScanner_VM? Context = this.DataContext as ModbusScanner_VM;
+            var context = DataContext as ModbusScanner_VM;
 
-            if (Context != null)
+            if (context != null)
             {
-                await Context.Close_EventHandler();
+                await context.Close_EventHandler();
             }
                 
-            this.Close();
+            Close();
         }
     }
 }
