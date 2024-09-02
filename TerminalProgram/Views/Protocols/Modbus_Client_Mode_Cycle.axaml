@@ -36,7 +36,6 @@
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBox Classes="InputField"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Width="60"
 								 Text="{Binding SlaveID, Mode=TwoWay}"
 								 Margin="90,0,0,0"
@@ -51,7 +50,6 @@
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<ComboBox Width="280"
-								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								  ItemsSource="{Binding ReadFunctions}"
 								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
 								  Margin="90,0,0,0"
@@ -66,7 +64,6 @@
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBox Classes="InputField"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Width="60"
 								 Text="{Binding Period_ms, Mode=TwoWay}"
 								 Margin="90,0,0,0"
@@ -86,14 +83,12 @@
 								   VerticalAlignment="Center"/>
 
 						<TextBox Classes="InputField"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Width="60"
 								 Margin="160,0,0,0"
 								 Text="{Binding Address, Mode=TwoWay}"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<RadioButton Content="Hex"
-									 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 									 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource MainWindow_Color_Text}"
@@ -101,7 +96,6 @@
 									 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<RadioButton Content="Dec"
-									 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 									 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource MainWindow_Color_Text}"
@@ -117,7 +111,6 @@
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBox Classes="InputField"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Width="60"
 								 Margin="160,0,0,0"
 								 Text="{Binding NumberOfRegisters, Mode=TwoWay}"

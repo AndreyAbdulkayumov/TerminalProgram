@@ -57,7 +57,6 @@
 						
 						<RadioButton Content="hex"
 									 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
-									 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource MainWindow_Color_Text}"
 									 Margin="190,0,0,0"
@@ -65,7 +64,6 @@
 
 						<RadioButton Content="dec"
 									 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
-									 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource MainWindow_Color_Text}"
 									 Margin="265,0,0,0"
@@ -91,13 +89,11 @@
 
 						<TextBox Classes="InputField"
 								 Width="50"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Text="{Binding SlaveID, Mode=TwoWay}"
 								 Margin="170,0,0,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
-								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								  Content="Контрольная сумма"
 								  FontSize="14"
 								  Foreground="{DynamicResource MainWindow_Color_Text}"
@@ -124,7 +120,6 @@
 
 						<TextBox Classes="InputField"
 								 Width="70"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Text="{Binding Address, Mode=TwoWay}"
 								 Margin="110,0,0,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -137,7 +132,6 @@
 
 						<TextBox Classes="InputField"
 								 Width="40"
-								 IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
 								 Margin="375,0,0,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -147,7 +141,6 @@
 					<Grid>
 
 						<ComboBox Classes="Functions"
-								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								  ItemsSource="{Binding ReadFunctions}"
 								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
 
@@ -163,7 +156,6 @@
 					<Grid>
 
 						<ComboBox Classes="Functions"
-								  IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 								  ItemsSource="{Binding WriteFunctions}"
 								  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
 
@@ -233,7 +225,6 @@
 
 					<Button Content="Добавить регистр"
 							FontSize="14"
-							IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
 							IsVisible="{Binding RegisterCanAdded, Mode=OneWay}"
 							HorizontalAlignment="Center" VerticalAlignment="Center"
 							Command="{Binding Command_AddRegister}"/>

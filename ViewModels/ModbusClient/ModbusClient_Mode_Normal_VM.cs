@@ -364,7 +364,7 @@ namespace ViewModels.ModbusClient
                 .Subscribe(x => WriteData = WriteData_TextChanged(x));
         }
 
-        private void UpdateWriteDataCollection(ModbusClient_WriteData_VM[] newItems)
+        private void UpdateWriteDataCollection(IEnumerable<ModbusClient_WriteData_VM> newItems)
         {
             WriteDataCollection.Clear();
             WriteDataCollection.AddRange(newItems);
@@ -372,7 +372,18 @@ namespace ViewModels.ModbusClient
 
         private void RemoveWriteDataItem(Guid selectedId)
         {
-            var newCollection = WriteDataCollection.Where(e => e.Id != selectedId).ToArray();
+            int AddressCounter = 0;
+
+            var newCollection = WriteDataCollection
+                .Where(e => e.Id != selectedId)
+                .ToList();
+
+            newCollection.ForEach(e =>
+            {
+                e.StartAddressAddition = "+" + AddressCounter.ToString();
+
+                AddressCounter++;
+            });
 
             UpdateWriteDataCollection(newCollection);
         }

@@ -126,8 +126,6 @@ namespace ViewModels.ModbusClient
         public ReactiveCommand<Unit, Unit> Command_Copy_Request { get; }
         public ReactiveCommand<Unit, Unit> Command_Copy_Response { get; }
 
-        public ReactiveCommand<Unit, Unit> Command_Copy_BinaryWord { get; }
-
         #endregion
 
         public static ModbusMessage? ModbusMessageType { get; private set; }
@@ -145,6 +143,7 @@ namespace ViewModels.ModbusClient
         private readonly ModbusClient_Mode_Normal_VM Mode_Normal_VM;
         private readonly ModbusClient_Mode_Cycle_VM Mode_Cycle_VM;
 
+        private readonly Func<string, Task> _copyToClipboard;
 
         public ModbusClient_VM(
             Func<Action, Task> runInUIThread,
@@ -156,6 +155,8 @@ namespace ViewModels.ModbusClient
             RunInUIThread = runInUIThread;
 
             Message = messageBox;
+
+            _copyToClipboard = copyToClipboard;
 
             Model = ConnectedHost.Model;
 
@@ -212,12 +213,6 @@ namespace ViewModels.ModbusClient
                 await copyToClipboard(Data);
             });
             Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
-
-            Command_Copy_BinaryWord = ReactiveCommand.CreateFromTask(async () =>
-            {
-                await copyToClipboard("Test Data");
-            });
-            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
             Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(open_ModbusScanner);
 
@@ -507,7 +502,7 @@ namespace ViewModels.ModbusClient
                 RunInUIThread.Invoke(() =>
                 {
                     BinaryRepresentationItems.Clear();
-                    BinaryRepresentationItems.AddRange(BinaryRepresentation.GetData(data));
+                    BinaryRepresentationItems.AddRange(BinaryRepresentation.GetData(data, Message, _copyToClipboard));
                 });                
             }
 

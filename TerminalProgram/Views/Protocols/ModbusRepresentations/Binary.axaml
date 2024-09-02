@@ -121,8 +121,8 @@
 								</Button.Styles>
 
 								<Icons:MaterialIcon Kind="ContentCopy"
-										Foreground="Black"
-										Height="22" Width="22">
+													Foreground="Black"
+													Height="22" Width="22">
 
 									<Icons:MaterialIcon.RenderTransform>
 										<TransformGroup>

@@ -1,10 +1,12 @@
-﻿using ViewModels.ModbusClient.DataTypes;
+﻿using MessageBox_Core;
+using ViewModels.ModbusClient.DataTypes;
 
 namespace ViewModels.ModbusClient.ModbusRepresentations
 {
     internal static class BinaryRepresentation
     {
-        public static List<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data)
+        public static List<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data, Action<string,
+            MessageType> messageBox, Func<string, Task> copyToClipboard)
         {
             var words = data.Data?.Select(e => Convert.ToString(e, 2).PadLeft(16, '0'));
 
@@ -17,14 +19,15 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 
             foreach (string element in words)
             {
-                items.Add(GetBinaryRepresentation(currentAddress, element));
+                items.Add(GetBinaryRepresentation(currentAddress, element, messageBox, copyToClipboard));
                 currentAddress += 1;
             }
 
             return items;
         }
 
-        private static BinaryRepresentation_ItemData GetBinaryRepresentation(ushort address, string inputData)
+        private static BinaryRepresentation_ItemData GetBinaryRepresentation(ushort address, string inputData, 
+            Action<string, MessageType> messageBox, Func<string, Task> copyToClipboard)
         {
             char[] bitsValue = inputData.ToCharArray();
 
@@ -44,16 +47,16 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 
                 if ((i + 1) % 4 == 0)
                 {
-                    itemGroup.Add(new BinaryDataItemGroup() { GroupData = items.ToArray() });
+                    itemGroup.Add(new BinaryDataItemGroup(items.ToArray()));
                     items.Clear();
                 }
             }
 
-            return new BinaryRepresentation_ItemData()
-            {
-                Address = "0x" + address.ToString("X2"),
-                BinaryData = itemGroup.ToArray()
-            };
+            return new BinaryRepresentation_ItemData(
+                address: "0x" + address.ToString("X2"),
+                binaryData: itemGroup.ToArray(),
+                messageBox, 
+                copyToClipboard);
         }
     }
 }
