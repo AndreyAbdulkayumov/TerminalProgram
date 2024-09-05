@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using ReactiveUI;
 using Core.Models.Settings;
 using MessageBox_Core;
+using ViewModels.Settings.Tabs;
 
 namespace ViewModels.Settings
 {
@@ -27,30 +28,30 @@ namespace ViewModels.Settings
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
 
-        private readonly Tab_Connection_VM _tab_Connection_VM;
+        private readonly Connection_VM _tab_Connection_VM;
 
-        public Tab_Connection_VM Tab_Connection_VM
+        public Connection_VM Tab_Connection_VM
         {
             get => _tab_Connection_VM;
         }
 
-        private readonly Tab_NoProtocol_VM _tab_NoProtocol_VM;
+        private readonly NoProtocol_VM _tab_NoProtocol_VM;
 
-        public Tab_NoProtocol_VM Tab_NoProtocol_VM
+        public NoProtocol_VM Tab_NoProtocol_VM
         {
             get => _tab_NoProtocol_VM;
         }
 
-        private readonly Tab_Modbus_VM _tab_Modbus_VM;
+        private readonly Modbus_VM _tab_Modbus_VM;
 
-        public Tab_Modbus_VM Tab_Modbus_VM
+        public Modbus_VM Tab_Modbus_VM
         {
             get => _tab_Modbus_VM;
         }
 
-        private readonly Tab_UI_VM _tab_UI_VM;
+        private readonly UI_VM _tab_UI_VM;
 
-        public Tab_UI_VM Tab_UI_VM
+        public UI_VM Tab_UI_VM
         {
             get => _tab_UI_VM;
         }
@@ -87,10 +88,10 @@ namespace ViewModels.Settings
 
             SettingsFile = Model_Settings.Model;
 
-            _tab_Connection_VM = new Tab_Connection_VM(this);
-            _tab_NoProtocol_VM = new Tab_NoProtocol_VM();
-            _tab_Modbus_VM = new Tab_Modbus_VM();
-            _tab_UI_VM = new Tab_UI_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
+            _tab_Connection_VM = new Connection_VM(this);
+            _tab_NoProtocol_VM = new NoProtocol_VM();
+            _tab_Modbus_VM = new Modbus_VM();
+            _tab_UI_VM = new UI_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 

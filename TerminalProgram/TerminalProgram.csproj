@@ -48,8 +48,32 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\Protocols\ModbusRepresentations\LastRequest.axaml.cs">
+    <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">
       <DependentUpon>LastRequest.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\ModbusClient_View.axaml.cs">
+      <DependentUpon>ModbusClient_View.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\TransmitMode\Normal.axaml.cs">
+      <DependentUpon>Normal.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\TransmitMode\Cycle.axaml.cs">
+      <DependentUpon>Cycle.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\WriteFields\MultipleRegisters.axaml.cs">
+      <DependentUpon>MultipleRegisters.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\WriteFields\SingleRegister.axaml.cs">
+      <DependentUpon>SingleRegister.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NoProtocol\TransmitMode\Cycle.axaml.cs">
+      <DependentUpon>Cycle.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NoProtocol\TransmitMode\Normal.axaml.cs">
+      <DependentUpon>Normal.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NoProtocol\NoProtocol_View.axaml.cs">
+      <DependentUpon>NoProtocol_View.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -61,6 +85,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Protocols\Modbus_Client_Mode_Normal.axaml" />
+    <UpToDateCheckInput Remove="Views\NoProtocol\Modbus_Client_Mode_Normal.axaml" />
   </ItemGroup>
 </Project>

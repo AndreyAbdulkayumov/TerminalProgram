@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+			 d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TerminalProgram.Views.ModbusClient.WriteFields.SingleRegister">
+
+	<StackPanel Orientation="Horizontal" Spacing="10">
+
+		<Border Width="60" Height="32"
+				CornerRadius="4"
+				Background="{DynamicResource TextInputField_Color_Enabled_Background}"
+				BorderThickness="0">
+
+			<TextBlock Text="{Binding StartAddressAddition, Mode=OneWay}"
+					   FontSize="16"
+					   Foreground="Black"
+					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+		</Border>
+
+
+		<!--<MaskedTextBox Classes="InputField" Mask="9999 9999 9999 9999" ResetOnSpace="True"
+													   Text="{Binding ViewData, Mode=TwoWay}"
+												 Width="230"
+												 HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
+
+		<TextBox Classes="InputField"
+				 Text="{Binding ViewData, Mode=TwoWay}"
+				 Width="230"
+				 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+		<ComboBox Classes="Functions"
+				  Width="105"
+				  ItemsSource="{Binding FormatItems}"
+				  SelectedItem="{Binding SelectedDataFormat}"/>
+
+	</StackPanel>
+	
+</UserControl>

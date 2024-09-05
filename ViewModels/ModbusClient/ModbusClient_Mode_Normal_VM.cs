@@ -1,13 +1,13 @@
 ﻿using Core.Clients;
 using Core.Models;
 using Core.Models.Modbus;
-using DynamicData;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
+using ViewModels.ModbusClient.WriteFields;
 
 namespace ViewModels.ModbusClient
 {
@@ -20,7 +20,6 @@ namespace ViewModels.ModbusClient
             get => ui_IsEnable;
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
         }
-
 
         private string? _slaveID;
 
@@ -126,25 +125,18 @@ namespace ViewModels.ModbusClient
             set => this.RaiseAndSetIfChanged(ref _selectedWriteFunction, value);
         }
 
-        private ObservableCollection<ModbusClient_WriteData_VM> _writeDataCollection = new ObservableCollection<ModbusClient_WriteData_VM>();
+        private IWriteField_VM? _currentWriteFieldViewModel;
 
-        public ObservableCollection<ModbusClient_WriteData_VM> WriteDataCollection
+        public IWriteField_VM? CurrentWriteFieldViewModel
         {
-            get => _writeDataCollection;
-            set => this.RaiseAndSetIfChanged(ref _writeDataCollection, value);
+            get => _currentWriteFieldViewModel;
+            set => this.RaiseAndSetIfChanged(ref _currentWriteFieldViewModel, value);
         }
 
-        private bool _registerCanAdded;
-
-        public bool RegisterCanAdded
-        {
-            get => _registerCanAdded;
-            set => this.RaiseAndSetIfChanged(ref _registerCanAdded, value);
-        }
 
         public ReactiveCommand<Unit, Unit> Command_Read { get; }
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
-        public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
+        
 
         private readonly List<ushort> WriteBuffer = new List<ushort>();
 
@@ -157,6 +149,11 @@ namespace ViewModels.ModbusClient
         private readonly ConnectedHost Model;
 
         private readonly Action<string, MessageType> Message;
+
+        private readonly IWriteField_VM WriteField_MultipleCoils_VM;
+        private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
+        private readonly IWriteField_VM WriteField_SingleCoil_VM;
+        private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
 
         public ModbusClient_Mode_Normal_VM(
@@ -171,6 +168,11 @@ namespace ViewModels.ModbusClient
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+
+            WriteField_MultipleCoils_VM = new MultipleCoils_VM();
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();
+            WriteField_SingleCoil_VM = new SingleCoil_VM();
+            WriteField_SingleRegister_VM = new SingleRegister_VM(); 
 
             /****************************************************/
             //
@@ -248,40 +250,24 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                if (WriteDataCollection.Count == 0)
+                if (CurrentWriteFieldViewModel == null)
                 {
-                    Message.Invoke("Укажите данные для записи в Modbus регистры.", MessageType.Warning);
+                    Message.Invoke("Не выбран тип поля записи Modbus.", MessageType.Warning);
                     return;
                 }
 
                 ModbusWriteFunction WriteFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                ushort[] ModbusWriteData;
+                ushort[] ModbusWriteData = CurrentWriteFieldViewModel.GetData();
 
-                if (WriteFunction == Function.PresetMultipleRegisters ||
-                    WriteFunction == Function.ForceMultipleCoils)
+                if (ModbusWriteData.Length == 0)
                 {
-                    ModbusWriteData = WriteDataCollection.Select(e => e.Data).ToArray();
-                }
-
-                else
-                {
-                    ModbusWriteData = [WriteDataCollection.First().Data];
+                    Message.Invoke("Укажите данные для записи.", MessageType.Warning);
+                    return;
                 }
 
                 await modbus_Write(_selectedSlaveID, _selectedAddress, WriteFunction, ModbusWriteData, CheckSum_Enable);
-            });
-
-            Command_AddRegister = ReactiveCommand.Create(() =>
-            {
-                WriteDataCollection.Add(new ModbusClient_WriteData_VM(
-                    canRemove: true,
-                    startAddressAddition: WriteDataCollection.Count,
-                    data: 0,
-                    dataFormat: "hex",
-                    removeItemHandler: RemoveWriteDataItem
-                    ));
-            });
+            });            
 
             this.WhenAnyValue(x => x.SlaveID)
                 .WhereNotNull()
@@ -323,70 +309,31 @@ namespace ViewModels.ModbusClient
                 .WhereNotNull()
                 .Subscribe(x =>
                 {
-                    if (x == Function.ForceMultipleCoils.DisplayedName ||
-                        x == Function.PresetMultipleRegisters.DisplayedName)
+                    if (x == Function.ForceMultipleCoils.DisplayedName)
                     {
-                        UpdateWriteDataCollection([
-                            new ModbusClient_WriteData_VM(
-                                canRemove: true,
-                                startAddressAddition: 0,
-                                data: WriteDataCollection.Count == 0 ? (ushort)0 : WriteDataCollection.First().Data,
-                                dataFormat: WriteDataCollection.Count == 0 ? "hex" : WriteDataCollection.First().SelectedDataFormat,
-                                removeItemHandler: RemoveWriteDataItem
-                            )]);
-
-                        RegisterCanAdded = true;
-                        return;
+                        CurrentWriteFieldViewModel = WriteField_MultipleCoils_VM;
                     }
 
-                    if (WriteDataCollection.Count == 0)
+                    else if (x == Function.PresetMultipleRegisters.DisplayedName)
                     {
-                        UpdateWriteDataCollection([ 
-                            new ModbusClient_WriteData_VM(
-                                canRemove: false,
-                                startAddressAddition: 0,
-                                data: 0,
-                                dataFormat: "hex",
-                                removeItemHandler: RemoveWriteDataItem
-                            )]);
+                        CurrentWriteFieldViewModel = WriteField_MultipleRegisters_VM;
                     }
 
-                    else
+                    else if (x == Function.ForceSingleCoil.DisplayedName)
                     {
-                        UpdateWriteDataCollection([WriteDataCollection.First()]);
-                    }                   
+                        CurrentWriteFieldViewModel = WriteField_SingleCoil_VM;
+                    }
 
-                    RegisterCanAdded = false;
+                    else if (x == Function.PresetSingleRegister.DisplayedName)
+                    {
+                        CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
+                    }
                 });
 
             this.WhenAnyValue(x => x.WriteData)
                 .WhereNotNull()
                 .Subscribe(x => WriteData = WriteData_TextChanged(x));
-        }
-
-        private void UpdateWriteDataCollection(IEnumerable<ModbusClient_WriteData_VM> newItems)
-        {
-            WriteDataCollection.Clear();
-            WriteDataCollection.AddRange(newItems);
-        }
-
-        private void RemoveWriteDataItem(Guid selectedId)
-        {
-            int AddressCounter = 0;
-
-            var newCollection = WriteDataCollection
-                .Where(e => e.Id != selectedId)
-                .ToList();
-
-            newCollection.ForEach(e =>
-            {
-                e.StartAddressAddition = "+" + AddressCounter.ToString();
-
-                AddressCounter++;
-            });
-
-            UpdateWriteDataCollection(newCollection);
-        }
+        }              
 
         public void SelectNumberFormat_Hex()
         {

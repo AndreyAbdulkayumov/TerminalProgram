@@ -2,12 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
 			 xmlns:ConnectionViews="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
-             x:Class="TerminalProgram.Views.Settings.Tabs.Connection"
-			 Design.DataContext="ViewModels.ViewModel_Tab_Connection">
+             x:Class="TerminalProgram.Views.Settings.Tabs.Connection">
 
 	<UserControl.Styles>
 
@@ -19,11 +18,11 @@
 	
 	<UserControl.DataTemplates>
 
-		<DataTemplate DataType="{x:Type ViewModels:Tab_Connection_SerialPort_VM}">
+		<DataTemplate DataType="{x:Type ViewModels:Connection_SerialPort_VM}">
 			<ConnectionViews:Connection_SerialPort/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModels:Tab_Connection_Ethernet_VM}">
+		<DataTemplate DataType="{x:Type ViewModels:Connection_Ethernet_VM}">
 			<ConnectionViews:Connection_Ethernet/>
 		</DataTemplate>
 

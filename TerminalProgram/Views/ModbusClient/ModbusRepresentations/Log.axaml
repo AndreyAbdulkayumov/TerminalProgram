@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+			 d:DesignWidth="500" d:DesignHeight="200"
+             x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.Log">
+
+	<TextBox Text="{Binding LogData, Mode=OneWay}"
+			 AcceptsReturn="True"
+			 IsReadOnly="True"
+			 CornerRadius="10"
+			 TextWrapping="Wrap"
+			 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			 TextChanged="TextBox_TextChanged">
+
+		<TextBox.Styles>
+
+			<Style Selector="TextBox">
+
+				<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+				<Setter Property="Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+				<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush}"/>
+				<Setter Property="BorderThickness" Value="1"/>
+
+				<Style Selector="^:pointerover /template/ Border">
+					<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+					<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+					<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_MouseOver}"/>
+					<Setter Property="CornerRadius" Value="10"/>
+				</Style>
+
+				<Style Selector="^:focus /template/ Border" >
+					<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+					<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+					<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_Focused}"/>
+					<Setter Property="CornerRadius" Value="10"/>
+				</Style>
+
+			</Style>
+
+		</TextBox.Styles>
+
+	</TextBox>
+	
+</UserControl>

@@ -37,7 +37,7 @@ namespace ViewModels.ModbusClient
             get => _viewData;
             set
             {
-                Data = ConvertStringToNumber(value, DataFormat);
+                //Data = ConvertStringToNumber(value, DataFormat);
                 this.RaiseAndSetIfChanged(ref _viewData, value);
             }
         }
@@ -92,7 +92,15 @@ namespace ViewModels.ModbusClient
                 {
                     removeItemHandler?.Invoke(Id);
                 });
-            }            
+            }
+
+            this.WhenAnyValue(x => x.ViewData)
+                .WhereNotNull()
+                .Subscribe(x =>
+                {
+                    Data = ConvertStringToNumber(x, DataFormat);
+                    ViewData = x;
+                });
         }
 
         private void SetNumberFormat(string? format)

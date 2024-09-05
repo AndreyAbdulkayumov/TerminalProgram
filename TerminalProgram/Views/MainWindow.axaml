@@ -3,7 +3,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-		xmlns:Views="clr-namespace:TerminalProgram.Views.Protocols;assembly=TerminalProgram"
+		xmlns:ModbusClientView="clr-namespace:TerminalProgram.Views.ModbusClient;assembly=TerminalProgram"
+		xmlns:NoProtocolView="clr-namespace:TerminalProgram.Views.NoProtocol;assembly=TerminalProgram"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
 		mc:Ignorable="d"
 		Width="1300" Height="825"
@@ -33,11 +34,11 @@
 	<Window.DataTemplates>
 
 		<DataTemplate DataType="{x:Type ViewModels:NoProtocol.NoProtocol_VM}">
-			<Views:NoProtocol/>
+			<NoProtocolView:NoProtocol_View/>
 		</DataTemplate>
 
 		<DataTemplate DataType="{x:Type ViewModels:ModbusClient.ModbusClient_VM}">
-			<Views:Modbus_Client/>
+			<ModbusClientView:ModbusClient_View/>
 		</DataTemplate>
 
 	</Window.DataTemplates>
