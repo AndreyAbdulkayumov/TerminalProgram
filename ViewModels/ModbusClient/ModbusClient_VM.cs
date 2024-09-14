@@ -313,7 +313,7 @@ namespace ViewModels.ModbusClient
             _packageNumber = 0;
         }
 
-        private async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, ushort[] modbusWriteData, bool checkSum_Enable)
+        private async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[] modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
         {
             try
             {
@@ -335,6 +335,7 @@ namespace ViewModels.ModbusClient
                     slaveID,
                     address,
                     modbusWriteData,
+                    numberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
                 ModbusOperationResult result = await Model.Modbus.WriteRegister(
@@ -347,9 +348,9 @@ namespace ViewModels.ModbusClient
                     OperationID = _packageNumber,
                     FuncNumber = writeFunction.DisplayedNumber,
                     Address = address,
-                    ViewAddress = CreateViewAddress(address, modbusWriteData.Length),
+                    ViewAddress = CreateViewAddress(address, numberOfRegisters),
                     Data = modbusWriteData,
-                    ViewData = CreateViewData(modbusWriteData)
+                    ViewData = CreateViewData(modbusWriteData, writeFunction, numberOfRegisters)
                 },
                 result.Details);
             }
@@ -414,7 +415,7 @@ namespace ViewModels.ModbusClient
                     Address = address,
                     ViewAddress = CreateViewAddress(address, result.ReadedData == null ? 0 : result.ReadedData.Length),
                     Data = result.ReadedData,
-                    ViewData = CreateViewData(result.ReadedData)
+                    ViewData = CreateViewData(result.ReadedData, readFunction, numberOfRegisters)
                 },
                 result.Details);
             }
@@ -445,7 +446,7 @@ namespace ViewModels.ModbusClient
                 FuncNumber = _currentFunction?.DisplayedNumber,
                 Address = address,
                 ViewAddress = CreateViewAddress(address, 1),
-                Data = new ushort[1],
+                Data = Array.Empty<byte>(),
                 ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
             },
             error.Details);
@@ -552,25 +553,70 @@ namespace ViewModels.ModbusClient
             return displayedString;
         }
 
-        public static string CreateViewData(ushort[]? modbusData)
+        public static string CreateViewData(byte[]? modbusData, ModbusFunction function, int numberOfRegisters)
         {
             if (modbusData == null)
             {
                 return string.Empty;
             }
 
+            if (function.Number == Function.ForceMultipleCoils.Number)
+            {
+                return GetViewData_ForceMultipleCoils(modbusData, numberOfRegisters);
+            }
+
+            return GetViewData_Standart(modbusData);           
+        }
+
+        private static string GetViewData_Standart(byte[] modbusData)
+        {
             string displayedString = string.Empty;
 
-            for (int i = 0; i < modbusData.Length; i++)
-            {
-                displayedString += "0x" + modbusData[i].ToString("X") +
-                    " (" + modbusData[i].ToString() + ")";
+            UInt16 temp;
 
-                if (i != modbusData.Length - 1)
+            for (int i = 0; i < modbusData.Length - 1; i += 2)
+            {
+                temp = (UInt16)((modbusData[i + 1] << 8) | modbusData[i]);
+
+                displayedString += "0x" + temp.ToString("X") +
+                    " (" + temp.ToString() + ")\n";
+            }
+
+            // Обработка последнего байта, если длина массива нечетная
+            if (modbusData.Length % 2 != 0)
+            {
+                temp = modbusData.Last();
+
+                displayedString += "0x" + temp.ToString("X") +
+                    " (" + temp.ToString() + ")\n";
+            }
+
+            displayedString = displayedString.TrimEnd('\n');
+
+            return displayedString;
+        }
+
+        private static string GetViewData_ForceMultipleCoils(byte[] modbusData, int numberOfRegisters)
+        {
+            string displayedString = string.Empty;
+
+            int registerCounter = 0;
+
+            foreach (byte element in modbusData) 
+            {
+                for (int i = 0; i < 8; i++)
                 {
-                    displayedString += "\n";
+                    if (registerCounter == numberOfRegisters)
+                    {
+                        break;
+                    }
+
+                    displayedString += (element & (1 << (i))) != 0 ? "1\n" : "0\n";
+                    registerCounter++;                    
                 }
             }
+
+            displayedString = displayedString.TrimEnd('\n');
 
             return displayedString;
         }

@@ -21,7 +21,7 @@ namespace Core.Models.Modbus
 
     public class ModbusOperationResult
     {
-        public UInt16[]? ReadedData;
+        public byte[]? ReadedData;
 
         public ModbusActionDetails? Details;
     }
@@ -204,22 +204,7 @@ namespace Core.Models.Modbus
 
                     ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX);
 
-                    if (DeviceResponse.Data.Length < 2)
-                    {
-                        Result.ReadedData = new UInt16[1];
-
-                        Result.ReadedData[0] = DeviceResponse.Data[0];
-                    }
-
-                    else
-                    {
-                        Result.ReadedData = new UInt16[DeviceResponse.Data.Length / 2];
-
-                        for (int i = 0; i < Result.ReadedData.Length; i++)
-                        {
-                            Result.ReadedData[i] = BitConverter.ToUInt16(DeviceResponse.Data, i * 2);
-                        }
-                    }
+                    Result.ReadedData = DeviceResponse.Data;
                 }
                 
                 else

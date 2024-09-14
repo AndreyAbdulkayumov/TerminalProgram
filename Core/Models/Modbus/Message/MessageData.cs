@@ -6,12 +6,11 @@
         public UInt16 Address;
         public bool CheckSum_IsEnable;
         public UInt16 Polynom;
+        public int NumberOfRegisters;
     }
 
     public class ReadTypeMessage : MessageData
     {
-        public int NumberOfRegisters;
-
         public ReadTypeMessage(byte slaveID, UInt16 address, int numberOfRegisters, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
         {
             SlaveID = slaveID;
@@ -24,13 +23,14 @@
 
     public class WriteTypeMessage : MessageData
     {
-        public UInt16[] WriteData;
+        public byte[] WriteData;
 
-        public WriteTypeMessage(byte slaveID, UInt16 address, UInt16[] writeData, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
+        public WriteTypeMessage(byte slaveID, UInt16 address, byte[] writeData, int numberOfRegisters, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
         {
             SlaveID = slaveID;
             Address = address;
             WriteData = writeData;
+            NumberOfRegisters = numberOfRegisters;
             CheckSum_IsEnable = checkSum_IsEnable;
             Polynom = polynom;
         }

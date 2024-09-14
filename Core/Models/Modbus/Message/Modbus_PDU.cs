@@ -53,7 +53,6 @@
             byte[] PDU = new byte[5];
 
             byte[] addressArray = BitConverter.GetBytes(data.Address);
-            byte[] dataArray = BitConverter.GetBytes(data.WriteData[0]);
 
             // Function number
             PDU[0] = writeFunction.Number;
@@ -61,18 +60,18 @@
             PDU[1] = addressArray[1];
             PDU[2] = addressArray[0];
             // Data
-            PDU[3] = dataArray[1];
-            PDU[4] = dataArray[0];
+            PDU[3] = data.WriteData[1];
+            PDU[4] = data.WriteData[0];
 
             return PDU;
         }
 
         private static byte[] Create_WriteMultiple(ModbusFunction writeFunction, WriteTypeMessage data)
         {
-            byte[] PDU = new byte[6 + data.WriteData.Length * 2];
+            byte[] PDU = new byte[6 + data.WriteData.Length];
 
             byte[] addressArray = BitConverter.GetBytes(data.Address);
-            byte[] numberOfRegistersArray = BitConverter.GetBytes(data.WriteData.Length);
+            byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
 
             // Function number
             PDU[0] = writeFunction.Number;
@@ -83,19 +82,14 @@
             PDU[3] = numberOfRegistersArray[1];
             PDU[4] = numberOfRegistersArray[0];
             // Amount of byte next
-            PDU[5] = (byte)(data.WriteData.Length * 2);
+            PDU[5] = (byte)data.WriteData.Length;
 
-            byte[] dataArray;
             int elementCounter = 6;
 
-            foreach (UInt16 element in data.WriteData)
+            foreach (byte element in data.WriteData)
             {
-                dataArray = BitConverter.GetBytes(element);
-
-                PDU[elementCounter] = dataArray[1];
-                PDU[elementCounter + 1] = dataArray[0];
-
-                elementCounter += 2;
+                PDU[elementCounter] = element;
+                elementCounter++;
             }
 
             return PDU;

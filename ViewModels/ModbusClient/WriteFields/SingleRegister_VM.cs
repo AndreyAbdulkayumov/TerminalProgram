@@ -4,28 +4,18 @@ using System.Globalization;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
-    public class SingleRegister_VM : ReactiveObject, IWriteField_VM
+    public class SingleRegister_VM : ModbusDataFormatter, IWriteField_VM
     {
-        private ushort _data = 0;
-
-        public ushort Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-                //ViewData = ConvertNumberToString(value, DataFormat);
-            }
-        }
+        private UInt16 _data = 0;
 
         private string? _viewData;
 
-        public string? ViewData
+        public override string? ViewData
         {
             get => _viewData;
             set
             {
-                //Data = ConvertStringToNumber(value, DataFormat);
+                _data = ConvertStringToNumber(value, DataFormat);
                 this.RaiseAndSetIfChanged(ref _viewData, value);
             }
         }
@@ -34,7 +24,7 @@ namespace ViewModels.ModbusClient.WriteFields
 
         private ObservableCollection<string> _formatItems = new ObservableCollection<string>()
         {
-            "dec", "hex", "bin"
+            DataFormatName_dec, DataFormatName_hex, DataFormatName_bin
         };
 
         public ObservableCollection<string> FormatItems
@@ -42,14 +32,49 @@ namespace ViewModels.ModbusClient.WriteFields
             get => _formatItems;
         }
 
-        public SingleRegister_VM()
-        {
+        private string? _selectedDataFormat;
 
+        public string? SelectedDataFormat
+        {
+            get => _selectedDataFormat;
+            set => SetDataFormat(value);
         }
 
-        public UInt16[] GetData()
+        public SingleRegister_VM()
         {
-            return [Data];
+            SelectedDataFormat = DataFormatName_hex;
+        }
+
+        public WriteData GetData()
+        {
+            byte[] data = BitConverter.GetBytes(_data);
+
+            return new WriteData(data, 1);
+        }
+
+        public override void SetDataFormat(string? format)
+        {
+            switch (format)
+            {
+                case DataFormatName_dec:
+                    DataFormat = NumberStyles.Number;
+                    break;
+
+                case DataFormatName_hex:
+                    DataFormat = NumberStyles.HexNumber;
+                    break;
+
+                case DataFormatName_bin:
+                    DataFormat = NumberStyles.BinaryNumber;
+                    break;
+
+                default:
+                    throw new Exception("Неподдерживаемый формат числа: " + format);
+            }
+
+            _selectedDataFormat = format;
+
+            ViewData = ConvertNumberToString(_data, DataFormat);
         }
     }
 }

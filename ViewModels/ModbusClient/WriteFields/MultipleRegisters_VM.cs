@@ -2,14 +2,15 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using ViewModels.ModbusClient.WriteFields.DataItems;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
     public class MultipleRegisters_VM : ReactiveObject, IWriteField_VM
     {
-        private ObservableCollection<ModbusClient_WriteData_VM> _writeDataCollection = new ObservableCollection<ModbusClient_WriteData_VM>();
+        private ObservableCollection<MultipleRegisters_Item> _writeDataCollection = new ObservableCollection<MultipleRegisters_Item>();
 
-        public ObservableCollection<ModbusClient_WriteData_VM> WriteDataCollection
+        public ObservableCollection<MultipleRegisters_Item> WriteDataCollection
         {
             get => _writeDataCollection;
             set => this.RaiseAndSetIfChanged(ref _writeDataCollection, value);
@@ -22,7 +23,7 @@ namespace ViewModels.ModbusClient.WriteFields
         {
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
-                WriteDataCollection.Add(new ModbusClient_WriteData_VM(
+                WriteDataCollection.Add(new MultipleRegisters_Item(
                     canRemove: true,
                     startAddressAddition: WriteDataCollection.Count,
                     data: 0,
@@ -32,9 +33,16 @@ namespace ViewModels.ModbusClient.WriteFields
             });
         }
 
-        public UInt16[] GetData()
+        public WriteData GetData()
         {
-            return WriteDataCollection.Select(x => x.Data).ToArray();
+            byte[] data = WriteDataCollection.SelectMany(x => new byte[]
+            {
+                (byte)(x.Data & 0xFF),       // младший байт
+                (byte)((x.Data >> 8) & 0xFF) // старший байт
+            })
+            .ToArray();
+
+            return new WriteData(data, data.Length);
         }
 
         private void RemoveWriteDataItem(Guid selectedId)

@@ -1,7 +1,19 @@
 ﻿namespace ViewModels.ModbusClient.WriteFields
 {
+    public class WriteData
+    {
+        public readonly byte[] Data;
+        public readonly int NumberOfRegisters;
+
+        public WriteData(byte[] data, int numberOfRegisters)
+        {
+            Data = data;
+            NumberOfRegisters = numberOfRegisters;
+        }
+    }
+
     public interface IWriteField_VM
     {
-        UInt16[] GetData();
+        WriteData GetData();
     }
 }

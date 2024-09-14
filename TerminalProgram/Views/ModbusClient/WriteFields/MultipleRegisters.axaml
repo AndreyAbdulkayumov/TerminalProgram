@@ -52,8 +52,17 @@
 								  SelectedItem="{Binding SelectedDataFormat}"/>
 
 						<Button Content="X"
+								ToolTip.Tip="Удалить элемент"
 								FontSize="14"
-								Command="{Binding Command_RemoveItem}"/>
+								Command="{Binding Command_RemoveItem}">
+
+							<Button.Styles>
+								<Style Selector="TextBlock">
+									<Setter Property="Foreground" Value="Black"/>
+								</Style>
+							</Button.Styles>
+							
+						</Button>
 
 					</StackPanel>
 

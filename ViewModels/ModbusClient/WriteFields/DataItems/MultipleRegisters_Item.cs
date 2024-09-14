@@ -3,9 +3,9 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 
-namespace ViewModels.ModbusClient
+namespace ViewModels.ModbusClient.WriteFields.DataItems
 {
-    public class ModbusClient_WriteData_VM : ReactiveObject
+    public class MultipleRegisters_Item : ModbusDataFormatter
     {
         private string? _startAddressAddition;
 
@@ -18,9 +18,9 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private ushort _data = 0;
+        private UInt16 _data = 0;
 
-        public ushort Data
+        public UInt16 Data
         {
             get => _data;
             set
@@ -32,7 +32,7 @@ namespace ViewModels.ModbusClient
 
         private string? _viewData;
 
-        public string? ViewData
+        public override string? ViewData
         {
             get => _viewData;
             set
@@ -46,7 +46,7 @@ namespace ViewModels.ModbusClient
 
         private ObservableCollection<string> _formatItems = new ObservableCollection<string>()
         {
-            "dec", "hex", "bin"
+            DataFormatName_dec, DataFormatName_hex, DataFormatName_bin
         };
 
         public ObservableCollection<string> FormatItems
@@ -59,7 +59,7 @@ namespace ViewModels.ModbusClient
         public string? SelectedDataFormat
         {
             get => _selectedDataFormat;
-            set => SetNumberFormat(value);
+            set => SetDataFormat(value);
         }
 
         public readonly Guid Id;
@@ -68,9 +68,9 @@ namespace ViewModels.ModbusClient
         public ReactiveCommand<Unit, Unit>? Command_RemoveItem { get; set; }
 
 
-        public ModbusClient_WriteData_VM(
+        public MultipleRegisters_Item(
             bool canRemove,
-            int startAddressAddition, 
+            int startAddressAddition,
             ushort data, string dataFormat,
             Action<Guid> removeItemHandler)
         {
@@ -85,7 +85,7 @@ namespace ViewModels.ModbusClient
 
             Data = data;
             ViewData = ConvertNumberToString(data, DataFormat);
-                        
+
             if (canRemove)
             {
                 Command_RemoveItem = ReactiveCommand.Create(() =>
@@ -103,19 +103,19 @@ namespace ViewModels.ModbusClient
                 });
         }
 
-        private void SetNumberFormat(string? format)
+        public override void SetDataFormat(string? format)
         {
             switch (format)
             {
-                case "dec":
+                case DataFormatName_dec:
                     DataFormat = NumberStyles.Number;
                     break;
 
-                case "hex":
+                case DataFormatName_hex:
                     DataFormat = NumberStyles.HexNumber;
                     break;
 
-                case "bin":
+                case DataFormatName_bin:
                     DataFormat = NumberStyles.BinaryNumber;
                     break;
 
@@ -126,47 +126,6 @@ namespace ViewModels.ModbusClient
             _selectedDataFormat = format;
 
             ViewData = ConvertNumberToString(Data, DataFormat);
-        }
-
-        public static ushort ConvertStringToNumber(string? value, NumberStyles format)
-        {
-            if (value == null || value == string.Empty)
-            {
-                return ushort.MinValue;
-            }
-
-            return ushort.Parse(value.Replace(" ", "").Replace("_", ""), format);
-        }
-
-        public static string ConvertNumberToString(ushort number, NumberStyles format)
-        {
-            switch (format)
-            {
-                case NumberStyles.BinaryNumber:
-                    return GetFormattedBinaryNumber(number);
-
-                case NumberStyles.Number:
-                    return Convert.ToString(number, 10);
-
-                case NumberStyles.HexNumber:
-                    return Convert.ToString(number, 16).ToUpper();
-
-                default:
-                    throw new ArgumentException("Неподдерживаемый формат числа.");
-            }            
-        }
-
-        private static string GetFormattedBinaryNumber(ushort number)
-        {
-            string binaryRepresentation = Convert.ToString(number, 2).PadLeft(16, '0');
-
-            return string.Join(" ", new[]
-            {
-                binaryRepresentation.Substring(0, 4),
-                binaryRepresentation.Substring(4, 4),
-                binaryRepresentation.Substring(8, 4),
-                binaryRepresentation.Substring(12, 4)
-            });
         }
     }
 }
