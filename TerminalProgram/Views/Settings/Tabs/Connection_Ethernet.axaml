@@ -9,22 +9,20 @@
 	<UserControl.Styles>
 		
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
-		
-		<Style Selector="TextBlock">
-			<Setter Property="Foreground" Value="{DynamicResource Settings_Color_Text}"/>
+
+		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Margin" Value="0,0,235,2"/>
+			<Setter Property="Margin" Value="0,8,235,0"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
 		</Style>
 
 		<Style Selector="TextBox.InputField.Settings">
-			<Setter Property="Height" Value="24"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="Padding" Value="10,0,10,0"/>
 			<Setter Property="Margin" Value="235,0,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
 			<Setter Property="HorizontalContentAlignment" Value="Left"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>			
 		</Style>
@@ -42,10 +40,10 @@
 		
 		<Grid>
 			
-			<TextBlock Text="IP-адрес"/>
+			<TextBlock Text="IP-адрес" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
-					 Width="110"
+					 Width="140"
 					 Text="{Binding IP_Address, Mode=TwoWay}"/>
 					 
 		</Grid>
@@ -54,10 +52,10 @@
 		
 		<Grid>
 
-			<TextBlock Text="Порт"/>
+			<TextBlock Text="Порт" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
-					 Width="50"
+					 Width="70"
 					 Text="{Binding Port, Mode=TwoWay}"/>
 			
 		</Grid>		

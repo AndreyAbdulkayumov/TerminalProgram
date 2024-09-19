@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
+			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="TerminalProgram.Views.ModbusClient.WriteFields.MultipleRegisters">
 
 	<StackPanel Orientation="Vertical"
@@ -26,7 +26,8 @@
 						<Border Width="60" Height="32"
 								CornerRadius="4"
 								Background="{DynamicResource TextInputField_Color_Enabled_Background}"
-								BorderThickness="0">
+								BorderThickness="0"
+								VerticalAlignment="Top">
 
 							<TextBlock Text="{Binding StartAddressAddition, Mode=OneWay}"
 									   FontSize="16"
@@ -35,26 +36,23 @@
 
 						</Border>
 
-
-						<!--<MaskedTextBox Classes="InputField" Mask="9999 9999 9999 9999" ResetOnSpace="True"
-													   Text="{Binding ViewData, Mode=TwoWay}"
-												 Width="230"
-												 HorizontalAlignment="Left" VerticalAlignment="Center"/>-->
-
 						<TextBox Classes="InputField"
 								 Text="{Binding ViewData, Mode=TwoWay}"
 								 Width="230"
-								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								 VerticalAlignment="Top"
+								 TextChanged="UppercaseTextBox_TextChanged"/>
 
 						<ComboBox Classes="Functions"
 								  Width="70"
 								  ItemsSource="{Binding FormatItems}"
-								  SelectedItem="{Binding SelectedDataFormat}"/>
+								  SelectedItem="{Binding SelectedDataFormat}"
+								  VerticalAlignment="Top"/>
 
 						<Button Content="X"
 								ToolTip.Tip="Удалить элемент"
 								FontSize="14"
-								Command="{Binding Command_RemoveItem}">
+								Command="{Binding Command_RemoveItem}"
+								VerticalAlignment="Top">
 
 							<Button.Styles>
 								<Style Selector="TextBlock">

@@ -140,15 +140,18 @@
 									Spacing="10">
 
 							<TextBlock Text="Пауза"
-									   VerticalAlignment="Center"/>
+									   Margin="0,8,0,0"
+									   VerticalAlignment="Top"/>
 
 							<TextBox Classes="InputField"
 									 Text="{Binding PauseBetweenRequests, Mode=TwoWay}"
 									 IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"
-									 Height="32" Width="60"/>
+									 Width="60"
+									 VerticalAlignment="Top"/>
 
 							<TextBlock Text="мс."
-									   VerticalAlignment="Center"/>
+									   Margin="0,8,0,0"
+									   VerticalAlignment="Top"/>
 
 						</StackPanel>
 

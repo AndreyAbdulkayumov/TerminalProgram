@@ -7,10 +7,11 @@ using System.Globalization;
 using System.Reactive.Linq;
 using MessageBox_Core;
 using Core.Clients;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient
 {
-    public class ModbusClient_Mode_Cycle_VM : ReactiveObject
+    public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput
     {
         private bool _ui_IsEnable = false;
 
@@ -18,46 +19,6 @@ namespace ViewModels.ModbusClient
         {
             get => _ui_IsEnable;
             set => this.RaiseAndSetIfChanged(ref _ui_IsEnable, value);
-        }
-
-        private string? _slaveID;
-
-        public string? SlaveID
-        {
-            get => _slaveID;
-            set => this.RaiseAndSetIfChanged(ref _slaveID, value);
-        }
-
-        private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
-
-        public ObservableCollection<string> ReadFunctions
-        {
-            get => _readFunctions;
-            set => this.RaiseAndSetIfChanged(ref _readFunctions, value);
-        }
-
-        private string? _selectedReadFunction;
-
-        public string? SelectedReadFunction
-        {
-            get => _selectedReadFunction;
-            set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
-        }
-
-        private int _period_ms;
-
-        public int Period_ms
-        {
-            get => _period_ms;
-            set => this.RaiseAndSetIfChanged(ref _period_ms, value);
-        }
-
-        private string? _address;
-
-        public string? Address
-        {
-            get => _address;
-            set => this.RaiseAndSetIfChanged(ref _address, value);
         }
 
         private bool _selectedNumberFormat_Hex;
@@ -76,15 +37,77 @@ namespace ViewModels.ModbusClient
             set => this.RaiseAndSetIfChanged(ref _selectedNumberFormat_Dec, value);
         }
 
-        private ushort _numberOfRegisters = 1;
+        private string? _numberFormat;
 
-        public ushort NumberOfRegisters
+        public string? NumberFormat
         {
-            get => _numberOfRegisters;
-            set => this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
+            get => _numberFormat;
+            set => this.RaiseAndSetIfChanged(ref _numberFormat, value);
         }
 
-        #region Button
+        private string? _slaveID;
+
+        public string? SlaveID
+        {
+            get => _slaveID;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _slaveID, value);
+                ValidateInput(nameof(SlaveID), value);
+            }
+        }
+
+        private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
+
+        public ObservableCollection<string> ReadFunctions
+        {
+            get => _readFunctions;
+            set => this.RaiseAndSetIfChanged(ref _readFunctions, value);
+        }
+
+        private string? _selectedReadFunction;
+
+        public string? SelectedReadFunction
+        {
+            get => _selectedReadFunction;
+            set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
+        }
+
+        private string _period_ms = "600";
+
+        public string Period_ms
+        {
+            get => _period_ms;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _period_ms, value);
+                ValidateInput(nameof(Period_ms), value);
+            }
+        }
+
+        private string? _address;
+
+        public string? Address
+        {
+            get => _address;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _address, value);
+                ValidateInput(nameof(Address), value);
+            }
+        }
+
+        private string? _numberOfRegisters;
+
+        public string? NumberOfRegisters
+        {
+            get => _numberOfRegisters;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
+                ValidateInput(nameof(NumberOfRegisters), value);
+            }
+        }
 
         private const string Button_Content_Start = "Начать опрос";
         private const string Button_Content_Stop = "Остановить опрос";
@@ -99,8 +122,6 @@ namespace ViewModels.ModbusClient
 
         public ReactiveCommand<Unit, Unit> Command_Start_Stop_Polling { get; }
 
-        #endregion
-
 
         private bool _isStart = false;
 
@@ -112,6 +133,8 @@ namespace ViewModels.ModbusClient
 
         private byte _selectedSlaveID = 0;
         private ushort _selectedAddress = 0;
+        private ushort _selectedNumberOfRegisters = 1;
+        private uint _selectedPeriod = 600;
 
         private bool _checkSum_IsEnable;
 
@@ -138,8 +161,6 @@ namespace ViewModels.ModbusClient
 
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Period_ms = 600;
-
             Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
                 Start_Stop_Handler(!_isStart);
@@ -154,16 +175,6 @@ namespace ViewModels.ModbusClient
             SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
 
             SelectedNumberFormat_Hex = true;
-
-            this.WhenAnyValue(x => x.SlaveID)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedSlaveID))
-                .Subscribe(x => SlaveID = x);
-
-            this.WhenAnyValue(x => x.Address)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedAddress))
-                .Subscribe(x => Address = x.ToUpper());
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -222,9 +233,15 @@ namespace ViewModels.ModbusClient
 
         public void SelectNumberFormat_Hex()
         {
+            NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             _numberViewStyle = NumberStyles.HexNumber;
 
-            if (Address != null)
+            if (SlaveID != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(SlaveID))))
+            {
+                SlaveID = Convert.ToInt32(SlaveID).ToString("X");
+            }
+
+            if (Address != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(Address))))
             {
                 Address = Convert.ToInt32(Address).ToString("X");
             }
@@ -232,9 +249,15 @@ namespace ViewModels.ModbusClient
 
         private void SelectNumberFormat_Dec()
         {
+            NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             _numberViewStyle = NumberStyles.Number;
 
-            if (Address != null)
+            if (SlaveID != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(SlaveID))))
+            {
+                SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
+            }
+
+            if (Address != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(Address))))
             {
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
             }
@@ -259,19 +282,31 @@ namespace ViewModels.ModbusClient
 
         private void StartAction()
         {
-            if (Address == null || Address == string.Empty)
+            if (string.IsNullOrEmpty(SlaveID))
+            {
+                Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Address))
             {
                 Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                 return;
             }
 
-            if (NumberOfRegisters == 0)
+            if (string.IsNullOrEmpty(NumberOfRegisters))
             {
                 Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
                 return;
             }
 
-            if (Period_ms < Model.Host_ReadTimeout + TimeForReadHandler)
+            if (_selectedNumberOfRegisters < 1)
+            {
+                Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
+                return;
+            }
+
+            if (_selectedPeriod < Model.Host_ReadTimeout + TimeForReadHandler)
             {
                 Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
                     TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
@@ -282,11 +317,92 @@ namespace ViewModels.ModbusClient
 
             ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-            Model.Modbus.CycleMode_Period = Period_ms;
+            Model.Modbus.CycleMode_Period = _selectedPeriod;
             Model.Modbus.CycleMode_Start(async () =>
             {
-                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, NumberOfRegisters, _checkSum_IsEnable);
+                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, _checkSum_IsEnable);
             });
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            switch (fieldName)
+            {
+                case nameof(SlaveID):
+                    Check_SlaveID(value, errors);
+                    break;
+
+                case nameof(Address):
+                    Check_Address(value, errors);
+                    break;
+
+                case nameof(NumberOfRegisters):
+                    Check_NumberOfRegisters(value, errors);
+                    break;
+
+                case nameof(Period_ms):
+                    Check_Period(value, errors);
+                    break;
+            }
+
+            return errors.Select(message => message.Short);
+        }
+
+        private void Check_SlaveID(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
+            {
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        errors.Add(AllErrorMessages[DecError_Byte]);
+                        break;
+
+                    case NumberStyles.HexNumber:
+                        errors.Add(AllErrorMessages[HexError_Byte]);
+                        break;
+                }
+            }
+        }
+
+        private void Check_Address(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress))
+            {
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        errors.Add(AllErrorMessages[DecError_UInt16]);
+                        break;
+
+                    case NumberStyles.HexNumber:
+                        errors.Add(AllErrorMessages[HexError_UInt16]);
+                        break;
+                }
+            }
+        }
+
+        private void Check_NumberOfRegisters(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
+            {
+                errors.Add(AllErrorMessages[DecError_UInt16]);
+            }
+        }
+
+        private void Check_Period(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedPeriod))
+            {
+                errors.Add(AllErrorMessages[DecError_uint]);
+            }
         }
     }
 }

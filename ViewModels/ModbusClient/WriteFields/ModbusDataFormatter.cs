@@ -1,11 +1,10 @@
-﻿using ReactiveUI;
-using System.Collections;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
-    public abstract class ModbusDataFormatter : ReactiveObject
+    public abstract class ModbusDataFormatter : ValidatedDateInput, INotifyDataErrorInfo
     {
         public const string DataFormatName_dec = "dec";
         public const string DataFormatName_hex = "hex";

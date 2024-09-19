@@ -6,10 +6,11 @@ using ReactiveUI;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient
 {
-    public class ModbusScanner_VM : ReactiveObject
+    public class ModbusScanner_VM : ValidatedDateInput
     {
         private bool _searchInProcess = false;
 
@@ -45,7 +46,11 @@ namespace ViewModels.ModbusClient
         public string? PauseBetweenRequests
         {
             get => _pauseBetweenRequests;
-            set => this.RaiseAndSetIfChanged(ref _pauseBetweenRequests, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _pauseBetweenRequests, value);
+                ValidateInput(nameof(PauseBetweenRequests), value);
+            }
         }
 
         private string _deviceReadTimeout = "Таймаут чтения ";
@@ -141,11 +146,6 @@ namespace ViewModels.ModbusClient
             });
             Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => messageBox.Invoke(error.Message, MessageType.Error));
 
-            this.WhenAnyValue(x => x.PauseBetweenRequests)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out _pauseBetweenRequests_ForWork))
-                .Subscribe(x => PauseBetweenRequests = x);
-
             // Значения по умолчанию
             PauseBetweenRequests = "100";
         }
@@ -162,7 +162,7 @@ namespace ViewModels.ModbusClient
 
         private void StartPolling()
         {
-            if (PauseBetweenRequests == null || PauseBetweenRequests == string.Empty)
+            if (string.IsNullOrEmpty(PauseBetweenRequests))
             {
                 MessageBox.Invoke("Не задано значение паузы.", MessageType.Warning);
                 return;
@@ -276,6 +276,23 @@ namespace ViewModels.ModbusClient
             {
                 StopPolling_UI_Actions();
             }
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _pauseBetweenRequests_ForWork))
+            {
+                errors.Add(AllErrorMessages[DecError_uint]);
+            }
+
+            return errors.Select(message => message.Short);
         }
     }
 }

@@ -100,20 +100,21 @@
 						<TextBlock Text="Slave ID"
 								   FontSize="16"
 								   Foreground="{DynamicResource MainWindow_Color_Text}"
-								   Margin="50,0,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   Margin="40,6,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
 								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-								   Margin="120,0,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   Margin="110,6,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBox Classes="InputField"
-								 Width="50"
+								 Width="60"
 								 Text="{Binding SlaveID, Mode=TwoWay}"
-								 Margin="170,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								 Margin="160,0,0,0"
+								 HorizontalAlignment="Left" VerticalAlignment="Top"
+								 TextChanged="UppercaseTextBox_TextChanged"/>
 
 						<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
 								  Content="Контрольная сумма"
@@ -122,7 +123,7 @@
 								  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
 								  Width="170"
 								  Margin="240,0,0,0"
-								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								  HorizontalAlignment="Left" VerticalAlignment="Top"/>
 					</Grid>
 
 					<Separator Background="Silver" />
@@ -132,31 +133,33 @@
 						<TextBlock Text="Адрес"
 								   FontSize="16"
 								   Foreground="{DynamicResource MainWindow_Color_Text}"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   Margin="0,6,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
 								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
-								   Margin="60,0,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   Margin="60,6,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBox Classes="InputField"
 								 Width="70"
 								 Text="{Binding Address, Mode=TwoWay}"
 								 Margin="110,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								 HorizontalAlignment="Left" VerticalAlignment="Top"
+								 TextChanged="UppercaseTextBox_TextChanged"/>
 
 						<TextBlock Text="Кол-во регистров"
 								   FontSize="16"
 								   Foreground="{DynamicResource MainWindow_Color_Text}"
-								   Margin="215,0,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   Margin="200,6,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBox Classes="InputField"
-								 Width="40"
+								 Width="60"
 								 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
-								 Margin="375,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								 Margin="355,0,0,0"
+								 HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 					</Grid>
 
@@ -188,7 +191,7 @@
 
 					</Grid>
 
-					<ContentControl Content="{Binding CurrentWriteFieldViewModel}"/>					
+					<ContentControl Content="{Binding CurrentWriteFieldViewModel}"/>										
 					
 				</StackPanel>
 

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields.DataItems
 {
@@ -12,23 +13,12 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
         public string? StartAddressAddition
         {
             get => _startAddressAddition;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _startAddressAddition, value);
-            }
+            set => this.RaiseAndSetIfChanged(ref _startAddressAddition, value);
         }
 
         private UInt16 _data = 0;
 
-        public UInt16 Data
-        {
-            get => _data;
-            set
-            {
-                _data = value;
-                //ViewData = ConvertNumberToString(value, DataFormat);
-            }
-        }
+        public UInt16 Data => _data;
 
         private string? _viewData;
 
@@ -37,8 +27,8 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             get => _viewData;
             set
             {
-                //Data = ConvertStringToNumber(value, DataFormat);
                 this.RaiseAndSetIfChanged(ref _viewData, value);
+                ValidateInput(nameof(ViewData), value);
             }
         }
 
@@ -81,9 +71,8 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             StartAddressAddition = $"+{startAddressAddition}";
 
             SelectedDataFormat = dataFormat;
-            //SelectedDataFormat = "bin";
 
-            Data = data;
+            _data = data;
             ViewData = ConvertNumberToString(data, DataFormat);
 
             if (canRemove)
@@ -98,7 +87,7 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
                 .WhereNotNull()
                 .Subscribe(x =>
                 {
-                    Data = ConvertStringToNumber(x, DataFormat);
+                    _data = ConvertStringToNumber(x, DataFormat);
                     ViewData = x;
                 });
         }
@@ -125,7 +114,33 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
 
             _selectedDataFormat = format;
 
-            ViewData = ConvertNumberToString(Data, DataFormat);
+            ViewData = ConvertNumberToString(_data, DataFormat);
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            if (!StringValue.IsValidNumber(value, DataFormat, out _data))
+            {
+                switch (DataFormat)
+                {
+                    case NumberStyles.Number:
+                        errors.Add(AllErrorMessages[DecError_UInt16]);
+                        break;
+
+                    case NumberStyles.HexNumber:
+                        errors.Add(AllErrorMessages[HexError_UInt16]);
+                        break;
+                }
+            }
+
+            return errors.Select(message => message.Short);
         }
     }
 }

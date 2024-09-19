@@ -5,10 +5,12 @@ using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Reactive;
 using System.Reactive.Linq;
+using ViewModels.Validation;
+using System.Globalization;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class Connection_SerialPort_VM : ReactiveObject
+    public class Connection_SerialPort_VM : ValidatedDateInput
     {
         /************************************/
         //
@@ -85,7 +87,11 @@ namespace ViewModels.Settings.Tabs
         public string? Custom_BaudRate_Value
         {
             get => _custom_BaudRate_Value;
-            set => this.RaiseAndSetIfChanged(ref _custom_BaudRate_Value, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _custom_BaudRate_Value, value);
+                ValidateInput(nameof(Custom_BaudRate_Value), value);
+            }
         }
 
         /************************************/
@@ -162,7 +168,6 @@ namespace ViewModels.Settings.Tabs
 
         public ReactiveCommand<Unit, Unit> Command_ReScan_COMPorts { get; }
 
-
         private readonly Action<string, MessageType> Message;
 
         private readonly Model_Settings SettingsFile;
@@ -187,12 +192,6 @@ namespace ViewModels.Settings.Tabs
             });
 
             Command_ReScan_COMPorts.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
-
-            this.WhenAnyValue(x => x.Custom_BaudRate_Value)
-                .WhereNotNull()
-                .Where(x => x != string.Empty)
-                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out uint _))
-                .Subscribe(result => Custom_BaudRate_Value = result);
         }
 
         private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
@@ -289,6 +288,23 @@ namespace ViewModels.Settings.Tabs
             {
                 Message_PortNotFound_IsVisible = false;
             }
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+            {
+                errors.Add(AllErrorMessages[DecError_uint]);
+            }
+
+            return errors.Select(message => message.Short);
         }
     }
 }

@@ -12,14 +12,15 @@
 		<TextBox Classes="InputField"
 				 Text="{Binding ViewData, Mode=TwoWay}"
 				 Width="290"
-				 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				 VerticalAlignment="Top"
+				 TextChanged="UppercaseTextBox_TextChanged"/>
 
 		<ComboBox Classes="Functions"
 				  Width="105"
 				  ItemsSource="{Binding FormatItems}"
-				  SelectedItem="{Binding SelectedDataFormat}"/>
+				  SelectedItem="{Binding SelectedDataFormat}"
+				  VerticalAlignment="Top"/>
 
 	</StackPanel>
-	
 	
 </UserControl>

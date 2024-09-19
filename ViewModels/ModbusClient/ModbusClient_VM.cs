@@ -10,6 +10,8 @@ using MessageBox_Core;
 using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
+using ViewModels.Validation;
+using System.Text;
 
 namespace ViewModels.ModbusClient
 {
@@ -317,6 +319,12 @@ namespace ViewModels.ModbusClient
         {
             try
             {
+                if (Model.HostIsConnect == false)
+                {
+                    Message.Invoke("Modbus клиент отключен.", MessageType.Error);
+                    return;
+                }
+
                 if (Model.Modbus == null)
                 {
                     Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
@@ -326,6 +334,21 @@ namespace ViewModels.ModbusClient
                 if (ModbusMessageType == null)
                 {
                     Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
+                    return;
+                }
+
+                ValidatedDateInput? validatedControl = CurrentModeViewModel as ValidatedDateInput;
+
+                if (validatedControl != null && validatedControl.HasErrors)
+                {
+                    StringBuilder message = new StringBuilder();
+
+                    foreach (KeyValuePair<string, List<string>> element in validatedControl.ActualErrors)
+                    {
+                        message.Append($"Key: {element.Key}, Value: {validatedControl.GetErrorsMessage(element.Key)}");
+                    }
+
+                    Message.Invoke(message.ToString(), MessageType.Warning);
                     return;
                 }
 
@@ -392,6 +415,21 @@ namespace ViewModels.ModbusClient
                 if (ModbusMessageType == null)
                 {
                     Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
+                    return;
+                }
+
+                ValidatedDateInput? validatedControl = CurrentModeViewModel as ValidatedDateInput;
+
+                if (validatedControl != null && validatedControl.HasErrors)
+                {
+                    StringBuilder message = new StringBuilder();
+
+                    foreach (KeyValuePair<string, List<string>> element in validatedControl.ActualErrors)
+                    {
+                        message.Append($"Key: {element.Key}, Value: {validatedControl.GetErrorsMessage(element.Key)}");
+                    }
+
+                    Message.Invoke(message.ToString(), MessageType.Warning);
                     return;
                 }
 

@@ -8,10 +8,11 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using ViewModels.ModbusClient.WriteFields;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient
 {
-    public class ModbusClient_Mode_Normal_VM : ReactiveObject
+    public class ModbusClient_Mode_Normal_VM : ValidatedDateInput
     {
         private bool ui_IsEnable = false;
 
@@ -26,7 +27,11 @@ namespace ViewModels.ModbusClient
         public string? SlaveID
         {
             get => _slaveID;
-            set => this.RaiseAndSetIfChanged(ref _slaveID, value);
+            set 
+            {
+                this.RaiseAndSetIfChanged(ref _slaveID, value);
+                ValidateInput(nameof(SlaveID), value);
+            }
         }
 
         private bool _checkSum_Enable;
@@ -74,7 +79,11 @@ namespace ViewModels.ModbusClient
         public string? Address
         {
             get => _address;
-            set => this.RaiseAndSetIfChanged(ref _address, value);
+            set 
+            {
+                this.RaiseAndSetIfChanged(ref _address, value);
+                ValidateInput(nameof(Address), value);
+            } 
         }
 
         private string? _numberOfRegisters;
@@ -82,15 +91,11 @@ namespace ViewModels.ModbusClient
         public string? NumberOfRegisters
         {
             get => _numberOfRegisters;
-            set => this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
-        }
-
-        private string? _writeData;
-
-        public string? WriteData
-        {
-            get => _writeData;
-            set => this.RaiseAndSetIfChanged(ref _writeData, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
+                ValidateInput(nameof(NumberOfRegisters), value);
+            }
         }
 
         private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
@@ -136,7 +141,7 @@ namespace ViewModels.ModbusClient
 
         public ReactiveCommand<Unit, Unit> Command_Read { get; }
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
-        
+
 
         private readonly List<ushort> WriteBuffer = new List<ushort>();
 
@@ -207,19 +212,19 @@ namespace ViewModels.ModbusClient
 
             Command_Read = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (SlaveID == null || SlaveID == string.Empty)
+                if (string.IsNullOrEmpty(SlaveID))
                 {
                     Message.Invoke("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
-                if (Address == null || Address == string.Empty)
+                if (string.IsNullOrEmpty(Address))
                 {
                     Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
-                if (NumberOfRegisters == null || NumberOfRegisters == string.Empty)
+                if (string.IsNullOrEmpty(NumberOfRegisters))
                 {
                     Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
                     return;
@@ -238,13 +243,13 @@ namespace ViewModels.ModbusClient
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (SlaveID == null || SlaveID == string.Empty)
+                if (string.IsNullOrEmpty(SlaveID))
                 {
                     Message.Invoke("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
-                if (Address == null || Address == string.Empty)
+                if (string.IsNullOrEmpty(Address))
                 {
                     Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
@@ -269,11 +274,6 @@ namespace ViewModels.ModbusClient
                 await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_Enable);
             });            
 
-            this.WhenAnyValue(x => x.SlaveID)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedSlaveID))
-                .Subscribe(x => SlaveID = x);
-
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
                 {
@@ -294,16 +294,6 @@ namespace ViewModels.ModbusClient
                         SelectNumberFormat_Dec();
                     }
                 });
-
-            this.WhenAnyValue(x => x.Address)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, _numberViewStyle, out _selectedAddress))
-                .Subscribe(x => Address = x.ToUpper());
-
-            this.WhenAnyValue(x => x.NumberOfRegisters)
-                .WhereNotNull()
-                .Select(x => StringValue.CheckNumber(x, NumberStyles.Number, out _selectedNumberOfRegisters))
-                .Subscribe(x => NumberOfRegisters = x);
 
             this.WhenAnyValue(x => x.SelectedWriteFunction)
                 .WhereNotNull()
@@ -329,10 +319,6 @@ namespace ViewModels.ModbusClient
                         CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
                     }
                 });
-
-            this.WhenAnyValue(x => x.WriteData)
-                .WhereNotNull()
-                .Subscribe(x => WriteData = WriteData_TextChanged(x));
         }              
 
         public void SelectNumberFormat_Hex()
@@ -340,17 +326,15 @@ namespace ViewModels.ModbusClient
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             _numberViewStyle = NumberStyles.HexNumber;
 
-            if (SlaveID != null)
+            if (SlaveID != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(SlaveID))))
             {
                 SlaveID = Convert.ToInt32(SlaveID).ToString("X");
             }
 
-            if (Address != null)
+            if (Address != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(Address))))
             {
                 Address = Convert.ToInt32(Address).ToString("X");
             }
-
-            WriteData = ConvertDataTextIn(_numberViewStyle, WriteData);
         }
 
         private void SelectNumberFormat_Dec()
@@ -358,90 +342,14 @@ namespace ViewModels.ModbusClient
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             _numberViewStyle = NumberStyles.Number;
 
-            if (SlaveID != null)
+            if (SlaveID != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(SlaveID))))
             {
                 SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
             }
 
-            if (Address != null)
+            if (Address != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(Address))))
             {
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
-            }
-
-            WriteData = ConvertDataTextIn(_numberViewStyle, WriteData);
-        }
-
-
-        private string ConvertDataTextIn(NumberStyles style, string? text)
-        {
-            if (text == null)
-            {
-                return string.Empty;
-            }
-
-            string[] SplitString = text.Split(' ');
-
-            string[] Values = SplitString.Where(element => element != "").ToArray();
-
-            string DataString = "";
-
-            if (style == NumberStyles.Number)
-            {
-                foreach (string element in Values)
-                {
-                    DataString += int.Parse(element, NumberStyles.HexNumber).ToString() + " ";
-                }
-            }
-
-            else if (style == NumberStyles.HexNumber)
-            {
-                foreach (string element in Values)
-                {
-                    DataString += Convert.ToInt32(element).ToString("X") + " ";
-                }
-            }
-
-            return DataString;
-        }
-
-        private string WriteData_TextChanged(string enteredText)
-        {
-            try
-            {
-                if (SelectedWriteFunction == Function.PresetMultipleRegisters.DisplayedName ||
-                    SelectedWriteFunction == Function.ForceMultipleCoils.DisplayedName)
-                {
-                    WriteBuffer.Clear();
-
-                    string[] splitString = enteredText.Split(' ');
-
-                    string[] values = splitString.Where(element => element != "").ToArray();
-
-                    ushort buffer = 0;
-
-                    for (int i = 0; i < values.Length; i++)
-                    {
-                        values[i] = StringValue.CheckNumber(values[i], _numberViewStyle, out buffer);
-                        WriteBuffer.Add(buffer);
-                    }
-
-                    // Если при второй итерации последний элемент в SplitString равен "",
-                    // то в конце был пробел.
-                    return string.Join(" ", values).ToUpper() + (splitString.Last() == "" ? " " : "");
-                }
-
-                else
-                {
-                    return StringValue.CheckNumber(WriteData, _numberViewStyle, out ushort _).ToUpper();
-                }
-            }
-
-            catch (Exception error)
-            {
-                Message.Invoke("Возникла ошибка при изменении текста в поле \"Данные\":\n\n" +
-                    error.Message, MessageType.Error);
-
-                return string.Empty;
             }
         }
 
@@ -472,6 +380,75 @@ namespace ViewModels.ModbusClient
             UI_IsEnable = false;
 
             CheckSum_IsVisible = true;
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            switch(fieldName)
+            {
+                case nameof(SlaveID):
+                    Check_SlaveID(value, errors);
+                    break;
+
+                case nameof(Address):
+                    Check_Address(value, errors);
+                    break;
+
+                case nameof(NumberOfRegisters):
+                    Check_NumberOfRegisters(value, errors);
+                    break;
+            }
+
+            return errors.Select(message => message.Short);
+        }
+
+        private void Check_SlaveID(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
+            {
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        errors.Add(AllErrorMessages[DecError_Byte]);
+                        break;
+
+                    case NumberStyles.HexNumber:
+                        errors.Add(AllErrorMessages[HexError_Byte]);
+                        break;
+                }
+            }
+        }
+
+        private void Check_Address(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress))
+            {
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        errors.Add(AllErrorMessages[DecError_UInt16]);
+                        break;
+
+                    case NumberStyles.HexNumber:
+                        errors.Add(AllErrorMessages[HexError_UInt16]);
+                        break;
+                }                
+            }
+        }
+
+        private void Check_NumberOfRegisters(string value, List<ValidateMessage> errors)
+        {
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
+            {
+                errors.Add(AllErrorMessages[DecError_UInt16]);
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
+using ViewModels.Validation;
 
 namespace ViewModels
 {
@@ -184,8 +185,6 @@ namespace ViewModels
             Set_Light_Theme = set_Light_Theme_Handler;
 
             SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
-
-            StringValue.ShowMessageView = Message;
 
             NoProtocol_VM = new NoProtocol_VM(messageBox);
             ModbusClient_VM = new ModbusClient_VM(runInUIThread, open_ModbusScanner, messageBox, copyToClipboard);

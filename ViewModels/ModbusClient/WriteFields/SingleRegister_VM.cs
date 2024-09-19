@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -15,8 +16,8 @@ namespace ViewModels.ModbusClient.WriteFields
             get => _viewData;
             set
             {
-                _data = ConvertStringToNumber(value, DataFormat);
                 this.RaiseAndSetIfChanged(ref _viewData, value);
+                ValidateInput(nameof(ViewData), value);
             }
         }
 
@@ -75,6 +76,32 @@ namespace ViewModels.ModbusClient.WriteFields
             _selectedDataFormat = format;
 
             ViewData = ConvertNumberToString(_data, DataFormat);
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            if (!StringValue.IsValidNumber(value, DataFormat, out _data))
+            {
+                switch (DataFormat)
+                {
+                    case NumberStyles.Number:
+                        errors.Add(AllErrorMessages[DecError_UInt16]);
+                        break;
+
+                    case NumberStyles.HexNumber:
+                        errors.Add(AllErrorMessages[HexError_UInt16]);
+                        break;
+                }
+            }
+
+            return errors.Select(message => message.Short);
         }
     }
 }

@@ -1,16 +1,22 @@
 ﻿using ReactiveUI;
+using System.Globalization;
 using System.Reactive.Linq;
+using ViewModels.Validation;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class Modbus_VM : ReactiveObject
+    public class Modbus_VM : ValidatedDateInput
     {
         private string _writeTimeout = string.Empty;
 
         public string WriteTimeout
         {
             get => _writeTimeout;
-            set => this.RaiseAndSetIfChanged(ref _writeTimeout, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _writeTimeout, value);
+                ValidateInput(nameof(WriteTimeout), value);
+            }
         }
 
         private string _readTimeout = string.Empty;
@@ -18,22 +24,33 @@ namespace ViewModels.Settings.Tabs
         public string ReadTimeout
         {
             get => _readTimeout;
-            set => this.RaiseAndSetIfChanged(ref _readTimeout, value);
+            set 
+            {
+                this.RaiseAndSetIfChanged(ref _readTimeout, value);
+                ValidateInput(nameof(ReadTimeout), value);
+            }
         }
 
         public Modbus_VM()
         {
-            this.WhenAnyValue(x => x.WriteTimeout)
-                .WhereNotNull()
-                .Where(x => x != string.Empty)
-                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out ushort _))
-                .Subscribe(result => WriteTimeout = result);
 
-            this.WhenAnyValue(x => x.ReadTimeout)
-                .WhereNotNull()
-                .Where(x => x != string.Empty)
-                .Select(x => StringValue.CheckNumber(x, System.Globalization.NumberStyles.Number, out ushort _))
-                .Subscribe(result => ReadTimeout = result);
+        }
+
+        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        {
+            List<ValidateMessage> errors = new List<ValidateMessage>();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return errors.Select(message => message.Short);
+            }
+
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+            {
+                errors.Add(AllErrorMessages[DecError_uint]);
+            }
+
+            return errors.Select(message => message.Short);
         }
     }
 }
