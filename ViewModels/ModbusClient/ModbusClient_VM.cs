@@ -12,6 +12,8 @@ using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
 using ViewModels.Validation;
 using System.Text;
+using ViewModels.ModbusClient.WriteFields;
+using System.Net;
 
 namespace ViewModels.ModbusClient
 {
@@ -337,18 +339,11 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                ValidatedDateInput? validatedControl = CurrentModeViewModel as ValidatedDateInput;
+                string? validationMessage = CheckWriteFields();
 
-                if (validatedControl != null && validatedControl.HasErrors)
+                if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    StringBuilder message = new StringBuilder();
-
-                    foreach (KeyValuePair<string, List<string>> element in validatedControl.ActualErrors)
-                    {
-                        message.Append($"Key: {element.Key}, Value: {validatedControl.GetErrorsMessage(element.Key)}");
-                    }
-
-                    Message.Invoke(message.ToString(), MessageType.Warning);
+                    Message.Invoke(validationMessage, MessageType.Warning);
                     return;
                 }
 
@@ -418,18 +413,17 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                ValidatedDateInput? validatedControl = CurrentModeViewModel as ValidatedDateInput;
+                string? validationMessage = CheckReadFields();
 
-                if (validatedControl != null && validatedControl.HasErrors)
+                if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    StringBuilder message = new StringBuilder();
+                    Message.Invoke(validationMessage, MessageType.Warning);
+                    return;
+                }
 
-                    foreach (KeyValuePair<string, List<string>> element in validatedControl.ActualErrors)
-                    {
-                        message.Append($"Key: {element.Key}, Value: {validatedControl.GetErrorsMessage(element.Key)}");
-                    }
-
-                    Message.Invoke(message.ToString(), MessageType.Warning);
+                if (numberOfRegisters < 1)
+                {
+                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
                     return;
                 }
 
@@ -474,6 +468,76 @@ namespace ViewModels.ModbusClient
 
                 Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error);
             }
+        }
+
+        private string? CheckWriteFields()
+        {
+            var modeControl = CurrentModeViewModel as ValidatedDateInput;
+
+            if (modeControl != null)
+            {
+                StringBuilder message = new StringBuilder();
+
+                // Проверка полей в основном контроле
+
+                var modbusMode = CurrentModeViewModel as IValidationFieldInfo;
+
+                if (modbusMode != null && modeControl.HasErrors)
+                {
+                    foreach (KeyValuePair<string, ValidateMessage> element in modeControl.ActualErrors)
+                    {
+                        message.AppendLine($"[{modbusMode.GetFieldViewName(element.Key)}]\n{modeControl.GetFullErrorMessage(element.Key)}\n");
+                    }
+                }
+
+                // Проверка полей в текущем контроле записи
+
+                if (CurrentModeViewModel is ModbusClient_Mode_Normal_VM)
+                {
+                    if (Mode_Normal_VM.CurrentWriteFieldViewModel != null && Mode_Normal_VM.CurrentWriteFieldViewModel.HasValidationErrors)
+                    {
+                        message.AppendLine(Mode_Normal_VM.CurrentWriteFieldViewModel.ValidationMessage);
+                    }
+                }
+
+                if (message.Length > 0)
+                {
+                    message.Insert(0, "Ошибки валидации\n\n");
+                    return message.ToString().TrimEnd('\r', '\n');
+                }
+            }
+
+            return null;
+        }
+
+        private string? CheckReadFields()
+        {
+            var modeControl = CurrentModeViewModel as ValidatedDateInput;
+
+            if (modeControl != null)
+            {
+                StringBuilder message = new StringBuilder();
+
+                // Проверка полей в основном контроле
+
+                var modbusMode = CurrentModeViewModel as IValidationFieldInfo;
+
+                if (modbusMode != null && modeControl.HasErrors)
+                {
+                    foreach (KeyValuePair<string, ValidateMessage> element in modeControl.ActualErrors)
+                    {
+                        message.AppendLine($"[{modbusMode.GetFieldViewName(element.Key)}]\n{modeControl.GetFullErrorMessage(element.Key)}\n");
+                    }
+                }
+
+                if (message.Length > 0)
+                {
+                    message.Insert(0, "Ошибки валидации\n\n");
+                    return message.ToString().TrimEnd('\r', '\n');
+                }
+            }
+
+            return null;
         }
 
         private void ModbusErrorHandler(ushort address, ModbusException error)

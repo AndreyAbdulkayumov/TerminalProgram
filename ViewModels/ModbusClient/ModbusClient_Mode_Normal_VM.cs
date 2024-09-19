@@ -12,7 +12,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient
 {
-    public class ModbusClient_Mode_Normal_VM : ValidatedDateInput
+    public class ModbusClient_Mode_Normal_VM : ValidatedDateInput, IValidationFieldInfo
     {
         private bool ui_IsEnable = false;
 
@@ -230,12 +230,6 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                if (_selectedNumberOfRegisters < 1)
-                {
-                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
-                    return;
-                }
-
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
                 await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_Enable);
@@ -319,22 +313,46 @@ namespace ViewModels.ModbusClient
                         CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
                     }
                 });
-        }              
+        }
 
-        public void SelectNumberFormat_Hex()
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(SlaveID):
+                    return "Slave ID";
+
+                case nameof(Address):
+                    return "Адрес";
+
+                case nameof(NumberOfRegisters):
+                    return "Кол-во регистров";
+
+                default:
+                    return fieldName;
+            }
+        }
+
+        private void SelectNumberFormat_Hex()
         {
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             _numberViewStyle = NumberStyles.HexNumber;
 
-            if (SlaveID != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(SlaveID))))
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
+
+            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
-                SlaveID = Convert.ToInt32(SlaveID).ToString("X");
+                SlaveID = _selectedSlaveID.ToString("X");
             }
 
-            if (Address != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(Address))))
+            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
             {
-                Address = Convert.ToInt32(Address).ToString("X");
+                Address = _selectedAddress.ToString("X");
             }
+
+            ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.HexNumber);
+            ChangeNumberStyleInErrors(nameof(Address), NumberStyles.HexNumber);
         }
 
         private void SelectNumberFormat_Dec()
@@ -342,15 +360,21 @@ namespace ViewModels.ModbusClient
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             _numberViewStyle = NumberStyles.Number;
 
-            if (SlaveID != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(SlaveID))))
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
+
+            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
                 SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
             }
 
-            if (Address != null && string.IsNullOrEmpty(GetErrorsMessage(nameof(Address))))
+            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
             {
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
             }
+
+            ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.Number);
+            ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -382,73 +406,70 @@ namespace ViewModels.ModbusClient
             CheckSum_IsVisible = true;
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
-
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             switch(fieldName)
             {
                 case nameof(SlaveID):
-                    Check_SlaveID(value, errors);
-                    break;
+                    return Check_SlaveID(value);
 
                 case nameof(Address):
-                    Check_Address(value, errors);
-                    break;
+                    return Check_Address(value);
 
                 case nameof(NumberOfRegisters):
-                    Check_NumberOfRegisters(value, errors);
-                    break;
+                    return Check_NumberOfRegisters(value);
             }
 
-            return errors.Select(message => message.Short);
+            return null;
         }
 
-        private void Check_SlaveID(string value, List<ValidateMessage> errors)
+        private ValidateMessage? Check_SlaveID(string value)
         {
             if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
             {
                 switch (_numberViewStyle)
                 {
                     case NumberStyles.Number:
-                        errors.Add(AllErrorMessages[DecError_Byte]);
-                        break;
+                        return AllErrorMessages[DecError_Byte];
 
                     case NumberStyles.HexNumber:
-                        errors.Add(AllErrorMessages[HexError_Byte]);
-                        break;
+                        return AllErrorMessages[HexError_Byte];
                 }
             }
+
+            return null;
         }
 
-        private void Check_Address(string value, List<ValidateMessage> errors)
+        private ValidateMessage? Check_Address(string value)
         {
             if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress))
             {
                 switch (_numberViewStyle)
                 {
                     case NumberStyles.Number:
-                        errors.Add(AllErrorMessages[DecError_UInt16]);
-                        break;
+                        return AllErrorMessages[DecError_UInt16];
 
                     case NumberStyles.HexNumber:
-                        errors.Add(AllErrorMessages[HexError_UInt16]);
-                        break;
+                        return AllErrorMessages[HexError_UInt16];
                 }                
             }
+
+            return null;
         }
 
-        private void Check_NumberOfRegisters(string value, List<ValidateMessage> errors)
+        private ValidateMessage? Check_NumberOfRegisters(string value)
         {
             if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
             {
-                errors.Add(AllErrorMessages[DecError_UInt16]);
+                return AllErrorMessages[DecError_UInt16];
             }
+
+            return null;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace ViewModels.Validation
             get => _hasErrors;
         }
 
-        protected readonly Dictionary<string, List<string>> _errors = new();
+        protected readonly Dictionary<string, ValidateMessage> _errors = new();
 
         protected void OnErrorsChanged(string propertyName)
         {
@@ -27,9 +27,9 @@ namespace ViewModels.Validation
         {
             HasErrors = _errors.Any();
 
-            if (!string.IsNullOrEmpty(propertyName) && _errors.TryGetValue(propertyName, out var errors))
+            if (!string.IsNullOrEmpty(propertyName) && _errors.TryGetValue(propertyName, out var validationMessage))
             {
-                return errors;
+                return new string[] { validationMessage.Short };
             }
 
             return Enumerable.Empty<string>();

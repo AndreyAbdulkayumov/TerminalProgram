@@ -41,6 +41,12 @@ namespace ViewModels.ModbusClient.WriteFields
             set => SetDataFormat(value);
         }
 
+        public bool HasValidationErrors => HasErrors;
+        public string? ValidationMessage
+        {
+            get => string.Join("\n", ActualErrors.Select(element => $"[Поле записи данных]\n{GetFullErrorMessage(element.Key)}\n"));
+        }
+
         public SingleRegister_VM()
         {
             SelectedDataFormat = DataFormatName_hex;
@@ -78,13 +84,11 @@ namespace ViewModels.ModbusClient.WriteFields
             ViewData = ConvertNumberToString(_data, DataFormat);
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
-
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             if (!StringValue.IsValidNumber(value, DataFormat, out _data))
@@ -92,16 +96,14 @@ namespace ViewModels.ModbusClient.WriteFields
                 switch (DataFormat)
                 {
                     case NumberStyles.Number:
-                        errors.Add(AllErrorMessages[DecError_UInt16]);
-                        break;
+                        return AllErrorMessages[DecError_UInt16];
 
                     case NumberStyles.HexNumber:
-                        errors.Add(AllErrorMessages[HexError_UInt16]);
-                        break;
+                        return AllErrorMessages[HexError_UInt16];
                 }
             }
 
-            return errors.Select(message => message.Short);
+            return null;
         }
     }
 }

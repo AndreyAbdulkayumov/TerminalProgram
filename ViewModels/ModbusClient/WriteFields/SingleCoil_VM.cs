@@ -1,4 +1,5 @@
 ﻿using ReactiveUI;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -19,6 +20,10 @@ namespace ViewModels.ModbusClient.WriteFields
             get => _logic_One;
             set => this.RaiseAndSetIfChanged(ref _logic_One, value);
         }
+
+        // У этого элемента нет полей ввода, поэтому он не может иметь ошибок валидации
+        public bool HasValidationErrors => false;   
+        public string? ValidationMessage => null;
 
         // 0xFF00
         private const byte LogicOne_Value_High = 0xFF;

@@ -1,11 +1,10 @@
 ﻿using ReactiveUI;
 using System.Globalization;
-using System.Reactive.Linq;
 using ViewModels.Validation;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class Modbus_VM : ValidatedDateInput
+    public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
     {
         private string _writeTimeout = string.Empty;
 
@@ -36,21 +35,34 @@ namespace ViewModels.Settings.Tabs
 
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        public string GetFieldViewName(string fieldName)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
+            switch (fieldName)
+            {
+                case nameof(WriteTimeout):
+                    return "Таймаут записи";
 
+                case nameof(ReadTimeout):
+                    return "Таймаут чтения";
+
+                default:
+                    return fieldName;
+            }
+        }
+
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
+        {
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
             {
-                errors.Add(AllErrorMessages[DecError_uint]);
+                return AllErrorMessages[DecError_uint];
             }
 
-            return errors.Select(message => message.Short);
+            return null;
         }
     }
 }

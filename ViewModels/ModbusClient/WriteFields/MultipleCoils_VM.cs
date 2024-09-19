@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Xml.XPath;
 using ViewModels.ModbusClient.WriteFields.DataItems;
+using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -16,6 +17,10 @@ namespace ViewModels.ModbusClient.WriteFields
             get => _items;
             set => this.RaiseAndSetIfChanged(ref _items, value);
         }
+
+        // У этого элемента нет полей ввода, поэтому он не может иметь ошибок валидации
+        public bool HasValidationErrors => false;
+        public string? ValidationMessage => null;
 
         public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 

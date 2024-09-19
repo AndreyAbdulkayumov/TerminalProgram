@@ -5,6 +5,8 @@ using ReactiveUI;
 using Core.Models.Settings;
 using MessageBox_Core;
 using ViewModels.Settings.Tabs;
+using ViewModels.Validation;
+using System.Text;
 
 namespace ViewModels.Settings
 {
@@ -56,6 +58,8 @@ namespace ViewModels.Settings
             get => _tab_UI_VM;
         }
 
+        private readonly ReactiveObject[] _allTabs;
+
         public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
 
         public ReactiveCommand<Unit, Unit> Command_File_AddNew { get; }
@@ -92,6 +96,14 @@ namespace ViewModels.Settings
             _tab_NoProtocol_VM = new NoProtocol_VM();
             _tab_Modbus_VM = new Modbus_VM();
             _tab_UI_VM = new UI_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
+
+            _allTabs = [
+                Tab_Connection_VM.Connection_SerialPort_VM,
+                Tab_Connection_VM.Connection_Ethernet_VM,
+                Tab_NoProtocol_VM,
+                Tab_Modbus_VM,
+                Tab_UI_VM
+            ];
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
 
@@ -222,6 +234,14 @@ namespace ViewModels.Settings
             {
                 string connectionType = Tab_Connection_VM.Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
 
+                string? validationMessage = CheckTabFields(connectionType);
+
+                if (!string.IsNullOrEmpty(validationMessage))
+                {
+                    Message.Invoke(validationMessage, MessageType.Warning);
+                    return;
+                }
+
                 var data = new DeviceData()
                 {
                     GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
@@ -265,6 +285,49 @@ namespace ViewModels.Settings
             catch (Exception error)
             {
                 Message.Invoke("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
+            }
+        }
+
+        private string? CheckTabFields(string connectionType)
+        {
+            StringBuilder message = new StringBuilder();
+
+            IEnumerable<ReactiveObject> neededTabs = GetNeededTabs(connectionType);
+
+            foreach (var tab in neededTabs)
+            {
+                var validationTab = tab as ValidatedDateInput;
+
+                if (validationTab != null && validationTab.HasErrors)
+                {
+                    foreach (KeyValuePair<string, ValidateMessage> element in validationTab.ActualErrors)
+                    {
+                        message.AppendLine($"[{(tab as IValidationFieldInfo)?.GetFieldViewName(element.Key)}]\n{validationTab.GetFullErrorMessage(element.Key)}\n");
+                    }
+                }
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
+        }
+
+        private IEnumerable<ReactiveObject> GetNeededTabs(string connectionType)
+        {
+            switch (connectionType)
+            {
+                case DeviceData.ConnectionName_SerialPort:
+                    return _allTabs.Where(tab => tab is not Connection_Ethernet_VM);
+
+                case DeviceData.ConnectionName_Ethernet:
+                    return _allTabs.Where(tab => tab is not Connection_SerialPort_VM);
+
+                default:
+                    return _allTabs;
             }
         }
     }

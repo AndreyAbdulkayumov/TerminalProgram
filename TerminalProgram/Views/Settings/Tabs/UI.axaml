@@ -5,21 +5,48 @@
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
              x:Class="TerminalProgram.Views.Settings.Tabs.UI">
-	
-	<Grid>
-		
-		<TextBlock Text="Need restart to apply theme иконки на Material.Icons"
-				   Margin="0,100,0,0"
-				   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
-		<Button Content="Dark Theme"
-					HorizontalAlignment="Center" VerticalAlignment="Center"
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,6,340,0"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+		</Style>
+
+	</UserControl.Styles>
+	
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="20"
+				Width="450"
+				HorizontalAlignment="Center">
+
+		<Grid>
+
+			<TextBlock Text="Тема" 
+					   Margin="90,6,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<Button Content="Темная"
+					Width="90"
+					Margin="150,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
 					Command="{Binding Select_Dark_Theme}"/>
 
-			<Button Content="Light Theme"
-					Margin="0,100,0,0"
-					HorizontalAlignment="Center" VerticalAlignment="Center"
+			<Button Content="Светлая"
+					Width="90"
+					Margin="260,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
 					Command="{Binding Select_Light_Theme}"/>
-	</Grid>
-	
+
+		</Grid>
+		
+	</StackPanel>
+
 </UserControl>

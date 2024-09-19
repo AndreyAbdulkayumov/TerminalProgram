@@ -33,7 +33,7 @@
 	
 	<StackPanel Orientation="Vertical"
 				Spacing="10"
-				Margin="10"
+				Margin="20"
 				Width="450"
 				HorizontalAlignment="Center">
 

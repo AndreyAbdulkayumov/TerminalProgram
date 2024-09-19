@@ -278,21 +278,19 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
-
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _pauseBetweenRequests_ForWork))
             {
-                errors.Add(AllErrorMessages[DecError_uint]);
+                return AllErrorMessages[DecError_uint];
             }
 
-            return errors.Select(message => message.Short);
+            return null;
         }
     }
 }

@@ -117,13 +117,11 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             ViewData = ConvertNumberToString(_data, DataFormat);
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
-
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             if (!StringValue.IsValidNumber(value, DataFormat, out _data))
@@ -131,16 +129,14 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
                 switch (DataFormat)
                 {
                     case NumberStyles.Number:
-                        errors.Add(AllErrorMessages[DecError_UInt16]);
-                        break;
+                        return AllErrorMessages[DecError_UInt16];
 
                     case NumberStyles.HexNumber:
-                        errors.Add(AllErrorMessages[HexError_UInt16]);
-                        break;
+                        return AllErrorMessages[HexError_UInt16];
                 }
             }
 
-            return errors.Select(message => message.Short);
+            return null;
         }
     }
 }

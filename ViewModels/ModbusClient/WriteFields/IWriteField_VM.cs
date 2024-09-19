@@ -1,4 +1,6 @@
-﻿namespace ViewModels.ModbusClient.WriteFields
+﻿using ViewModels.Validation;
+
+namespace ViewModels.ModbusClient.WriteFields
 {
     public class WriteData
     {
@@ -15,5 +17,7 @@
     public interface IWriteField_VM
     {
         WriteData GetData();
+        bool HasValidationErrors { get; }
+        string? ValidationMessage { get; }
     }
 }

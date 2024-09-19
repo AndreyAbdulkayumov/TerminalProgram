@@ -1,5 +1,4 @@
-﻿using System.Reactive.Linq;
-using Core.Models.Settings;
+﻿using Core.Models.Settings;
 using ReactiveUI;
 using MessageBox_Core;
 using ViewModels.Validation;
@@ -8,7 +7,7 @@ using System.Globalization;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class Connection_Ethernet_VM : ValidatedDateInput
+    public class Connection_Ethernet_VM : ValidatedDateInput, IValidationFieldInfo
     {
         private string? _ip_address = string.Empty;
 
@@ -48,6 +47,21 @@ namespace ViewModels.Settings.Tabs
             SettingsFile = Model_Settings.Model;
         }
 
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(IP_Address):
+                    return "IP-адрес";
+
+                case nameof(Port):
+                    return "Порт";
+
+                default:
+                    return fieldName;
+            }
+        }
+
         private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
         {
             try
@@ -75,46 +89,46 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
-
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             switch (fieldName)
             {
                 case nameof(IP_Address):
-                    Check_IP_Address(value, errors);
-                    break;
+                    return Check_IP_Address(value);
 
                 case nameof(Port):
-                    Check_Port(value, errors);
-                    break;
+                    return Check_Port(value);
             }            
 
-            return errors.Select(message => message.Short);
+            return null;
         }
 
-        private void Check_IP_Address(string value, List<ValidateMessage> errors)
+        private ValidateMessage? Check_IP_Address(string value)
         {
             // Регулярное выражение для проверки корректного IPv4 адреса
             string pattern = @"^(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|[1][0-9]{2}|[1-9]?[0-9])$";
 
             if (!Regex.IsMatch(value, pattern))
             {
-                errors.Add(AllErrorMessages[IP_Address_Invalid]);
+                return AllErrorMessages[IP_Address_Invalid];
             }
+
+            return null;
         }
 
-        private void Check_Port(string value, List<ValidateMessage> errors)
+        private ValidateMessage? Check_Port(string value)
         {
             if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
             {
-                errors.Add(AllErrorMessages[DecError_uint]);
+                return AllErrorMessages[DecError_uint];
             }
+
+            return null;
         }
     }
 }

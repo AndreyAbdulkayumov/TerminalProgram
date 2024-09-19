@@ -10,7 +10,7 @@ using System.Globalization;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class Connection_SerialPort_VM : ValidatedDateInput
+    public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
     {
         /************************************/
         //
@@ -194,6 +194,18 @@ namespace ViewModels.Settings.Tabs
             Command_ReScan_COMPorts.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
         }
 
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(Custom_BaudRate_Value):
+                    return "Custom BaudRate";
+
+                default:
+                    return fieldName;
+            }
+        }
+
         private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
         {
             try
@@ -290,21 +302,19 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        protected override IEnumerable<string> GetShortErrorMessages(string fieldName, string? value)
+        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            List<ValidateMessage> errors = new List<ValidateMessage>();
-
             if (string.IsNullOrEmpty(value))
             {
-                return errors.Select(message => message.Short);
+                return null;
             }
 
             if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
             {
-                errors.Add(AllErrorMessages[DecError_uint]);
+                return AllErrorMessages[DecError_uint];
             }
 
-            return errors.Select(message => message.Short);
+            return null;
         }
     }
 }

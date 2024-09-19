@@ -16,6 +16,16 @@ namespace ViewModels.ModbusClient.WriteFields
             set => this.RaiseAndSetIfChanged(ref _writeDataCollection, value);
         }
 
+        public bool HasValidationErrors => WriteDataCollection.Any(e => e.HasErrors);
+        public string? ValidationMessage => string.Join("\n\n",
+            WriteDataCollection
+                .Select((field, index) => new { Field = field, Index = index + 1 })
+                .Where(item => item.Field.HasErrors)
+                .SelectMany(item =>
+                    item.Field.ActualErrors.Select(element => $"[Поле записи данных №{item.Index}]\n{item.Field.GetFullErrorMessage(element.Key)}")
+                )
+        );
+
         public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
 
