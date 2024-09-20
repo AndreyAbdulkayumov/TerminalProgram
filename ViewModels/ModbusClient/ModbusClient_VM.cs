@@ -10,10 +10,6 @@ using MessageBox_Core;
 using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
-using ViewModels.Validation;
-using System.Text;
-using ViewModels.ModbusClient.WriteFields;
-using System.Net;
 
 namespace ViewModels.ModbusClient
 {
@@ -234,7 +230,7 @@ namespace ViewModels.ModbusClient
                 {
                     if (!IsCycleMode)
                     {
-                        Mode_Cycle_VM.Start_Stop_Handler(false);
+                        Mode_Cycle_VM.StopPolling();
                     }
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
@@ -317,34 +313,90 @@ namespace ViewModels.ModbusClient
             _packageNumber = 0;
         }
 
+        private async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
+        {
+            try
+            {
+                if (Model.HostIsConnect == false)
+                {
+                    throw new Exception("Modbus клиент отключен.");
+                }
+
+                if (Model.Modbus == null)
+                {
+                    throw new Exception("Не инициализирован Modbus клиент.");
+                }
+
+                if (ModbusMessageType == null)
+                {
+                    throw new Exception("Не задан тип протокола Modbus.");
+                }
+
+                if (numberOfRegisters < 1)
+                {
+                    throw new Exception("Сколько, сколько регистров вы хотите прочитать? :)");
+                }
+
+                _currentFunction = readFunction;
+
+                MessageData data = new ReadTypeMessage(
+                    slaveID,
+                    address,
+                    numberOfRegisters,
+                    ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
+
+                ModbusOperationResult? result = await Model.Modbus.ReadRegister(
+                                readFunction,
+                                data,
+                                ModbusMessageType);
+
+                AddDataOnView(new ModbusDataDisplayed()
+                {
+                    OperationID = _packageNumber,
+                    FuncNumber = readFunction.DisplayedNumber,
+                    Address = address,
+                    ViewAddress = CreateViewAddress(address, result.ReadedData == null ? 0 : numberOfRegisters),
+                    Data = result.ReadedData,
+                    ViewData = CreateViewData(result.ReadedData, readFunction, numberOfRegisters)
+                },
+                result.Details);
+            }
+
+            catch (ModbusException error)
+            {
+                ModbusErrorHandler(address, error);
+            }
+
+            catch (Exception error)
+            {
+                var info = error.InnerException as ModbusExceptionInfo;
+
+                if (info != null)
+                {
+                    AddDataOnView(null, info.Details);
+                }
+
+                throw new Exception(error.Message);
+            }
+        }
+
         private async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[] modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
         {
             try
             {
                 if (Model.HostIsConnect == false)
                 {
-                    Message.Invoke("Modbus клиент отключен.", MessageType.Error);
-                    return;
+                    throw new Exception("Modbus клиент отключен.");
                 }
 
                 if (Model.Modbus == null)
                 {
-                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
-                    return;
+                    throw new Exception("Не инициализирован Modbus клиент.");
                 }
 
                 if (ModbusMessageType == null)
                 {
-                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
-                    return;
-                }
-
-                string? validationMessage = CheckWriteFields();
-
-                if (!string.IsNullOrEmpty(validationMessage))
-                {
-                    Message.Invoke(validationMessage, MessageType.Warning);
-                    return;
+                    throw new Exception("Не задан тип протокола Modbus.");
                 }
 
                 _currentFunction = writeFunction;
@@ -387,157 +439,8 @@ namespace ViewModels.ModbusClient
                     AddDataOnView(null, Info.Details);
                 }
 
-                Message.Invoke("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error);
+                throw new Exception(error.Message);
             }
-        }
-
-        private async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
-        {
-            try
-            {
-                if (Model.HostIsConnect == false)
-                {
-                    Message.Invoke("Modbus клиент отключен.", MessageType.Error);
-                    return;
-                }
-
-                if (Model.Modbus == null)
-                {
-                    Message.Invoke("Не инициализирован Modbus клиент.", MessageType.Warning);
-                    return;
-                }
-
-                if (ModbusMessageType == null)
-                {
-                    Message.Invoke("Не задан тип протокола Modbus.", MessageType.Warning);
-                    return;
-                }
-
-                string? validationMessage = CheckReadFields();
-
-                if (!string.IsNullOrEmpty(validationMessage))
-                {
-                    Message.Invoke(validationMessage, MessageType.Warning);
-                    return;
-                }
-
-                if (numberOfRegisters < 1)
-                {
-                    Message.Invoke("Сколько, сколько регистров вы хотите прочитать? :)", MessageType.Warning);
-                    return;
-                }
-
-                _currentFunction = readFunction;
-
-                MessageData data = new ReadTypeMessage(
-                    slaveID,
-                    address,
-                    numberOfRegisters,
-                    ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
-
-                ModbusOperationResult? result = await Model.Modbus.ReadRegister(
-                                readFunction,
-                                data,
-                                ModbusMessageType);
-
-                AddDataOnView(new ModbusDataDisplayed()
-                {
-                    OperationID = _packageNumber,
-                    FuncNumber = readFunction.DisplayedNumber,
-                    Address = address,
-                    ViewAddress = CreateViewAddress(address, result.ReadedData == null ? 0 : result.ReadedData.Length),
-                    Data = result.ReadedData,
-                    ViewData = CreateViewData(result.ReadedData, readFunction, numberOfRegisters)
-                },
-                result.Details);
-            }
-
-            catch (ModbusException error)
-            {
-                ModbusErrorHandler(address, error);
-            }
-
-            catch (Exception error)
-            {
-                var info = error.InnerException as ModbusExceptionInfo;
-
-                if (info != null)
-                {
-                    AddDataOnView(null, info.Details);
-                }
-
-                Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error);
-            }
-        }
-
-        private string? CheckWriteFields()
-        {
-            var modeControl = CurrentModeViewModel as ValidatedDateInput;
-
-            if (modeControl != null)
-            {
-                StringBuilder message = new StringBuilder();
-
-                // Проверка полей в основном контроле
-
-                var modbusMode = CurrentModeViewModel as IValidationFieldInfo;
-
-                if (modbusMode != null && modeControl.HasErrors)
-                {
-                    foreach (KeyValuePair<string, ValidateMessage> element in modeControl.ActualErrors)
-                    {
-                        message.AppendLine($"[{modbusMode.GetFieldViewName(element.Key)}]\n{modeControl.GetFullErrorMessage(element.Key)}\n");
-                    }
-                }
-
-                // Проверка полей в текущем контроле записи
-
-                if (CurrentModeViewModel is ModbusClient_Mode_Normal_VM)
-                {
-                    if (Mode_Normal_VM.CurrentWriteFieldViewModel != null && Mode_Normal_VM.CurrentWriteFieldViewModel.HasValidationErrors)
-                    {
-                        message.AppendLine(Mode_Normal_VM.CurrentWriteFieldViewModel.ValidationMessage);
-                    }
-                }
-
-                if (message.Length > 0)
-                {
-                    message.Insert(0, "Ошибки валидации\n\n");
-                    return message.ToString().TrimEnd('\r', '\n');
-                }
-            }
-
-            return null;
-        }
-
-        private string? CheckReadFields()
-        {
-            var modeControl = CurrentModeViewModel as ValidatedDateInput;
-
-            if (modeControl != null)
-            {
-                StringBuilder message = new StringBuilder();
-
-                // Проверка полей в основном контроле
-
-                var modbusMode = CurrentModeViewModel as IValidationFieldInfo;
-
-                if (modbusMode != null && modeControl.HasErrors)
-                {
-                    foreach (KeyValuePair<string, ValidateMessage> element in modeControl.ActualErrors)
-                    {
-                        message.AppendLine($"[{modbusMode.GetFieldViewName(element.Key)}]\n{modeControl.GetFullErrorMessage(element.Key)}\n");
-                    }
-                }
-
-                if (message.Length > 0)
-                {
-                    message.Insert(0, "Ошибки валидации\n\n");
-                    return message.ToString().TrimEnd('\r', '\n');
-                }
-            }
-
-            return null;
         }
 
         private void ModbusErrorHandler(ushort address, ModbusException error)
@@ -562,13 +465,12 @@ namespace ViewModels.ModbusClient
                     "\nFalse - это 0x0000";
             }
 
-            Message.Invoke(
+            throw new Exception(
                 "Ошибка Modbus.\n\n" +
                 "Код функции: " + error.FunctionCode.ToString() + "\n" +
                 "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
                 error.Message +
-                addition,
-                MessageType.Error);
+                addition);
         }
 
         private (string[], string) ParseData(byte[]? data)
@@ -605,7 +507,13 @@ namespace ViewModels.ModbusClient
                 RunInUIThread.Invoke(() =>
                 {
                     BinaryRepresentationItems.Clear();
-                    BinaryRepresentationItems.AddRange(BinaryRepresentation.GetData(data, Message, _copyToClipboard));
+
+                    var binaryItems = BinaryRepresentation.GetData(data, Message, _copyToClipboard);
+
+                    if (binaryItems != null)
+                    {
+                        BinaryRepresentationItems.AddRange(binaryItems);
+                    }                    
                 });                
             }
 

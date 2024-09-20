@@ -8,16 +8,26 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
         public static List<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data, Action<string,
             MessageType> messageBox, Func<string, Task> copyToClipboard)
         {
-            var words = data.Data?.Select(e => Convert.ToString(e, 2).PadLeft(16, '0'));
-
-            if (words == null)
+            if (data.Data == null)
                 return null;
 
-            var items = new List<BinaryRepresentation_ItemData>();
+            UInt16[] words = new UInt16[data.Data.Length / 2];
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                words[i] = BitConverter.ToUInt16(data.Data, i * 2);
+            }
+
+            var binaryWords = words.Select(e => Convert.ToString(e, 2).PadLeft(16, '0'));
+
+            if (binaryWords == null)
+                return null;
 
             ushort currentAddress = data.Address;
 
-            foreach (string element in words)
+            var items = new List<BinaryRepresentation_ItemData>();
+
+            foreach (string element in binaryWords)
             {
                 items.Add(GetBinaryRepresentation(currentAddress, element, messageBox, copyToClipboard));
                 currentAddress += 1;

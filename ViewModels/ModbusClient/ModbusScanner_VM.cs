@@ -4,13 +4,15 @@ using Core.Models.Modbus.Message;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Globalization;
+using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient
 {
-    public class ModbusScanner_VM : ValidatedDateInput
+    public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {
         private bool _searchInProcess = false;
 
@@ -168,6 +170,14 @@ namespace ViewModels.ModbusClient
                 return;
             }
 
+            string? validationMessage = CheckFields();
+
+            if (!string.IsNullOrEmpty(validationMessage))
+            {
+                MessageBox.Invoke(validationMessage, MessageType.Warning);
+                return;
+            }
+
             ActionButtonContent = ButtonContent_Stop;
             SearchInProcess = true;
 
@@ -178,6 +188,29 @@ namespace ViewModels.ModbusClient
             _searchCancel = new CancellationTokenSource();
 
             _searchTask = Task.Run(() => SearchDevices(_searchCancel.Token));
+        }
+
+        private string? CheckFields()
+        {
+            if (!HasErrors)
+            {
+                return null;
+            }
+
+            StringBuilder message = new StringBuilder();
+
+            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            {
+                message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
         }
 
         private async Task StopPolling()
@@ -291,6 +324,18 @@ namespace ViewModels.ModbusClient
             }
 
             return null;
+        }
+
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(PauseBetweenRequests):
+                    return "Пауза";
+
+                default:
+                    return fieldName;
+            }
         }
     }
 }

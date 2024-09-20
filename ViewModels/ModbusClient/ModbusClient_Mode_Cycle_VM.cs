@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using MessageBox_Core;
 using Core.Clients;
 using ViewModels.Validation;
+using System.Text;
 
 namespace ViewModels.ModbusClient
 {
@@ -163,7 +164,13 @@ namespace ViewModels.ModbusClient
 
             Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
-                Start_Stop_Handler(!_isStart);
+                if (_isStart)
+                {
+                    StopPolling();
+                    return;
+                }
+
+                StartPolling();
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
@@ -236,18 +243,12 @@ namespace ViewModels.ModbusClient
         {
             UI_IsEnable = false;
 
-            Start_Stop_Handler(false);
+            StopPolling();
         }
 
         private void Modbus_Model_ErrorInCycleMode(object? sender, string e)
         {
-            Model.Modbus.CycleMode_Stop();
-
-            if (_isStart)
-            {
-                Button_Content = Button_Content_Start;
-                _isStart = false;
-            }
+            StopPolling();
 
             Message.Invoke(e, MessageType.Error);
         }
@@ -296,24 +297,7 @@ namespace ViewModels.ModbusClient
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
-        public void Start_Stop_Handler(bool startPolling)
-        {
-            if (startPolling)
-            {
-                StartAction();
-                Button_Content = Button_Content_Stop;
-            }
-
-            else
-            {
-                Model.Modbus.CycleMode_Stop();
-                Button_Content = Button_Content_Start;
-            }
-
-            _isStart = startPolling;
-        }
-
-        private void StartAction()
+        private void StartPolling()
         {
             if (string.IsNullOrEmpty(SlaveID))
             {
@@ -333,6 +317,14 @@ namespace ViewModels.ModbusClient
                 return;
             }
 
+            string? validationMessage = CheckReadFields();
+
+            if (!string.IsNullOrEmpty(validationMessage))
+            {
+                Message.Invoke(validationMessage, MessageType.Warning);
+                return;
+            }
+
             if (_selectedPeriod < Model.Host_ReadTimeout + TimeForReadHandler)
             {
                 Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
@@ -349,6 +341,42 @@ namespace ViewModels.ModbusClient
             {
                 await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, _checkSum_IsEnable);
             });
+
+            Button_Content = Button_Content_Stop;
+            _isStart = true;
+        }
+
+        public void StopPolling()
+        {
+            Model.Modbus.CycleMode_Stop();
+
+            Button_Content = Button_Content_Start;
+            _isStart = false;
+        }
+
+        private string? CheckReadFields()
+        {
+            if (!HasErrors)
+            {
+                return null;
+            }
+
+            StringBuilder message = new StringBuilder();
+
+            // Проверка полей в основном контроле
+
+            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            {
+                message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
         }
 
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)

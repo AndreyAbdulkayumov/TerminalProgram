@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.Validation;
 
@@ -230,10 +231,19 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
+                string? validationMessage = CheckReadFields();
+
+                if (!string.IsNullOrEmpty(validationMessage))
+                {
+                    Message.Invoke(validationMessage, MessageType.Warning);
+                    return;
+                }
+
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
                 await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_Enable);
             });
+            Command_Read.ThrownExceptions.Subscribe(error => Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -255,6 +265,14 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
+                string? validationMessage = CheckWriteFields();
+
+                if (!string.IsNullOrEmpty(validationMessage))
+                {
+                    Message.Invoke(validationMessage, MessageType.Warning);
+                    return;
+                }
+
                 ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
                 WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
@@ -266,7 +284,8 @@ namespace ViewModels.ModbusClient
                 }
 
                 await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_Enable);
-            });            
+            });
+            Command_Write.ThrownExceptions.Subscribe(error => Message.Invoke("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -331,6 +350,61 @@ namespace ViewModels.ModbusClient
                 default:
                     return fieldName;
             }
+        }
+
+        private string? CheckWriteFields()
+        {
+            StringBuilder message = new StringBuilder();
+
+            // Проверка полей в основном контроле
+
+            if (HasErrors)
+            {
+                foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+                {
+                    message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+                }
+            }
+
+            // Проверка полей в текущем контроле записи
+
+            if (CurrentWriteFieldViewModel != null && CurrentWriteFieldViewModel.HasValidationErrors)
+            {
+                message.AppendLine(CurrentWriteFieldViewModel.ValidationMessage);
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
+        }
+
+        private string? CheckReadFields()
+        {
+            if (!HasErrors)
+            {
+                return null;
+            }
+            
+            StringBuilder message = new StringBuilder();
+
+            // Проверка полей в основном контроле
+
+            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            {
+                message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
         }
 
         private void SelectNumberFormat_Hex()

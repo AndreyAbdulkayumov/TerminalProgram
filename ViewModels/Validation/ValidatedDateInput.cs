@@ -95,9 +95,9 @@ namespace ViewModels.Validation
                 {
                     _errors[fieldName] = AllErrorMessages[DecError_UInt16];
                 }
-            }
 
-            OnErrorsChanged(fieldName);
+                OnErrorsChanged(fieldName);
+            }            
         }
 
         private void ChangeErrorsToHex(string fieldName)
@@ -113,9 +113,9 @@ namespace ViewModels.Validation
                 {
                     _errors[fieldName] = AllErrorMessages[HexError_UInt16];
                 }
-            }
 
-            OnErrorsChanged(fieldName);
+                OnErrorsChanged(fieldName);
+            }            
         }
 
         public string? GetFullErrorMessage(string propertyName)
