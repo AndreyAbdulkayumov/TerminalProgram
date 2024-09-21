@@ -16,6 +16,8 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             set => this.RaiseAndSetIfChanged(ref _startAddressAddition, value);
         }
 
+        public float FloatData = 0f;
+
         private UInt16 _data = 0;
 
         public UInt16 Data => _data;
@@ -36,7 +38,7 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
 
         private ObservableCollection<string> _formatItems = new ObservableCollection<string>()
         {
-            DataFormatName_dec, DataFormatName_hex, DataFormatName_bin
+            DataFormatName_dec, DataFormatName_hex, DataFormatName_bin, DataFromatName_float
         };
 
         public ObservableCollection<string> FormatItems
@@ -82,14 +84,6 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
                     removeItemHandler?.Invoke(Id);
                 });
             }
-
-            this.WhenAnyValue(x => x.ViewData)
-                .WhereNotNull()
-                .Subscribe(x =>
-                {
-                    _data = ConvertStringToNumber(x, DataFormat);
-                    ViewData = x;
-                });
         }
 
         public override void SetDataFormat(string? format)
@@ -98,14 +92,22 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             {
                 case DataFormatName_dec:
                     DataFormat = NumberStyles.Number;
+                    ViewData = ConvertNumberToString(_data, DataFormat);
                     break;
 
                 case DataFormatName_hex:
                     DataFormat = NumberStyles.HexNumber;
+                    ViewData = ConvertNumberToString(_data, DataFormat);
                     break;
 
                 case DataFormatName_bin:
                     DataFormat = NumberStyles.BinaryNumber;
+                    ViewData = ConvertNumberToString(_data, DataFormat);
+                    break;
+
+                case DataFromatName_float:
+                    DataFormat = NumberStyles.Float;
+                    ViewData = FloatData.ToString("F", CultureInfo.InvariantCulture);
                     break;
 
                 default:
@@ -113,8 +115,6 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             }
 
             _selectedDataFormat = format;
-
-            ViewData = ConvertNumberToString(_data, DataFormat);
         }
 
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
@@ -124,7 +124,12 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
                 return null;
             }
 
-            if (!StringValue.IsValidNumber(value, DataFormat, out _data))
+            if (DataFormat == NumberStyles.Float && !StringValue.IsValidNumber(value, DataFormat, out FloatData))
+            {
+                return AllErrorMessages[DecError_float];
+            }
+
+            if (DataFormat != NumberStyles.Float && !StringValue.IsValidNumber(value, DataFormat, out _data))
             {
                 switch (DataFormat)
                 {

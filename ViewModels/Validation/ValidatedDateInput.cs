@@ -11,6 +11,7 @@ namespace ViewModels.Validation
         protected const string DecError_Byte = "DecError_Byte";
         protected const string DecError_UInt16 = "DecError_UInt16";
         protected const string DecError_uint = "DecError_uint";
+        protected const string DecError_float = "DecError_float";
         protected const string IP_Address_Invalid = "IP-Address Invalid";
 
         protected Dictionary<string, ValidateMessage> AllErrorMessages = new Dictionary<string, ValidateMessage>()
@@ -18,7 +19,7 @@ namespace ViewModels.Validation
             { HexError_Byte,
                 new ValidateMessage(
                     shortMessage: "0x00 - 0xFF",
-                    fullMessage:"Допустим ввод только чисел в шестнадцатеричной системе счисления. Диапазон чисел от 0x00 до 0xFF."
+                    fullMessage: "Допустим ввод только чисел в шестнадцатеричной системе счисления. Диапазон чисел от 0x00 до 0xFF."
                     )},
 
             { HexError_UInt16,
@@ -43,6 +44,12 @@ namespace ViewModels.Validation
                 new ValidateMessage(
                     shortMessage: "0 - 2^32",
                     fullMessage: "Допустим ввод только чисел в десятичной системе счисления. Диапазон чисел от 0 до 2^32."
+                    )},
+
+            { DecError_float,
+                new ValidateMessage(
+                    shortMessage: "±1.5×10^(−45) - ±3.4×10^38",
+                    fullMessage: "Допустим ввод только чисел в десятичной системе счисления. Диапазон чисел от ±1.5 × 10^−45 до ±3.4 × 10^38."
                     )},
 
             { IP_Address_Invalid, 

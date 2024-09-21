@@ -18,5 +18,10 @@ namespace ViewModels.Validation
         {
             return uint.TryParse(stringNumber.Replace(" ", ""), style, CultureInfo.InvariantCulture, out number);
         }
+
+        public static bool IsValidNumber(string stringNumber, NumberStyles style, out float number)
+        {
+            return float.TryParse(stringNumber.Replace(" ", ""), style, CultureInfo.InvariantCulture, out number);
+        }
     }
 }

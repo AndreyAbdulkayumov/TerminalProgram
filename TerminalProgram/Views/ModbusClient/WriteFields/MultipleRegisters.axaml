@@ -51,6 +51,7 @@
 						<Button Content="X"
 								ToolTip.Tip="Удалить элемент"
 								FontSize="14"
+								Height="32"
 								Command="{Binding Command_RemoveItem}"
 								VerticalAlignment="Top">
 

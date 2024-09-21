@@ -9,6 +9,7 @@ namespace ViewModels.ModbusClient.WriteFields
         public const string DataFormatName_dec = "dec";
         public const string DataFormatName_hex = "hex";
         public const string DataFormatName_bin = "bin";
+        public const string DataFromatName_float = "float";
 
         public abstract string? ViewData { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Reactive;
 using ViewModels.ModbusClient.WriteFields.DataItems;
 
@@ -45,14 +46,42 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
-            byte[] data = WriteDataCollection.SelectMany(x => new byte[]
+            int registerCounter = 0;
+
+            byte[] data = WriteDataCollection.SelectMany(x => 
             {
-                (byte)(x.Data & 0xFF),       // младший байт
-                (byte)((x.Data >> 8) & 0xFF) // старший байт
+                if (x.DataFormat == NumberStyles.Float)
+                {
+                    registerCounter += 2;
+
+                    byte[] floatBytes = BitConverter.GetBytes(x.FloatData);
+
+                    for(int i = 0; i < floatBytes.Length - 1; i += 2)
+                    {
+                        SwapBytes(ref floatBytes[i], ref floatBytes[i + 1]);
+                    }
+
+                    return floatBytes;
+                }
+
+                registerCounter++;
+
+                return new byte[]
+                {
+                    (byte)(x.Data & 0xFF),       // младший байт
+                    (byte)((x.Data >> 8) & 0xFF) // старший байт
+                };
             })
             .ToArray();
 
-            return new WriteData(data, data.Length);
+            return new WriteData(data, registerCounter);
+        }
+
+        private void SwapBytes(ref byte a, ref byte b)
+        {
+            byte temp = a;
+            a = b;
+            b = temp;
         }
 
         private void RemoveWriteDataItem(Guid selectedId)
