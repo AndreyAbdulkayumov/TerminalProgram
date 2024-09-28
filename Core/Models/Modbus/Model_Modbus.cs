@@ -156,9 +156,9 @@ namespace Core.Models.Modbus
                     Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
                     Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
                 };
-            }
 
-            IsBusy = false;
+                IsBusy = false;
+            }
 
             return Result;
         }

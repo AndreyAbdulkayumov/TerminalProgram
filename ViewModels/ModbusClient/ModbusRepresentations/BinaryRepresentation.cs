@@ -5,7 +5,7 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 {
     internal static class BinaryRepresentation
     {
-        public static List<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data, Action<string,
+        public static IEnumerable<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data, Action<string,
             MessageType> messageBox, Func<string, Task> copyToClipboard)
         {
             if (data.Data == null)

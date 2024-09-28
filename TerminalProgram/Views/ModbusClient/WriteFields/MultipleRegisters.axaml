@@ -29,7 +29,7 @@
 								BorderThickness="0"
 								VerticalAlignment="Top">
 
-							<TextBlock Text="{Binding StartAddressAddition, Mode=OneWay}"
+							<TextBlock Text="{Binding StartAddressAdditionView, Mode=OneWay}"
 									   FontSize="16"
 									   Foreground="Black"
 									   HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -38,12 +38,12 @@
 
 						<TextBox Classes="InputField"
 								 Text="{Binding ViewData, Mode=TwoWay}"
-								 Width="230"
+								 Width="225"
 								 VerticalAlignment="Top"
 								 TextChanged="UppercaseTextBox_TextChanged"/>
 
 						<ComboBox Classes="Functions"
-								  Width="70"
+								  Width="75"
 								  ItemsSource="{Binding FormatItems}"
 								  SelectedItem="{Binding SelectedDataFormat}"
 								  VerticalAlignment="Top"/>

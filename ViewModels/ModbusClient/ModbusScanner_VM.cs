@@ -4,7 +4,6 @@ using Core.Models.Modbus.Message;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Globalization;
-using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;

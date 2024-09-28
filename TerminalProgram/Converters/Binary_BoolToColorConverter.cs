@@ -3,7 +3,7 @@ using Avalonia.Media;
 using System;
 using System.Globalization;
 
-namespace TerminalProgram.Views.ModbusClient.ModbusRepresentations
+namespace TerminalProgram.Converters
 {
     public class Binary_BoolToColorConverter : IValueConverter
     {

@@ -9,7 +9,6 @@ using System.Reactive.Linq;
 using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
-using ViewModels.Validation;
 
 namespace ViewModels
 {
@@ -153,8 +152,8 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _led_RX_IsActive, value);
         }
 
-        private object TX_View_Locker = new object();
-        private object RX_View_Locker = new object();
+        private readonly object TX_View_Locker = new object();
+        private readonly object RX_View_Locker = new object();
 
         private readonly ConnectedHost Model;
         private readonly Model_Settings SettingsFile;
@@ -197,7 +196,7 @@ namespace ViewModels
 
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
-                .Where(x => x != string.Empty)
+                .Where(x => !string.IsNullOrEmpty(x))
                 .Subscribe(PresetName =>
                 {
                     try
@@ -317,12 +316,12 @@ namespace ViewModels
                     if (settings.Connection_SerialPort != null)
                     {
                         if (settings.Connection_SerialPort.BaudRate_IsCustom == false &&
-                             (settings.Connection_SerialPort.BaudRate == null || settings.Connection_SerialPort.BaudRate == string.Empty) ||
+                             string.IsNullOrEmpty(settings.Connection_SerialPort.BaudRate) ||
                             settings.Connection_SerialPort.BaudRate_IsCustom == true &&
-                             (settings.Connection_SerialPort.BaudRate_Custom == null || settings.Connection_SerialPort.BaudRate_Custom == string.Empty) ||
-                            settings.Connection_SerialPort.Parity == null || settings.Connection_SerialPort.Parity == string.Empty ||
-                            settings.Connection_SerialPort.DataBits == null || settings.Connection_SerialPort.DataBits == string.Empty ||
-                            settings.Connection_SerialPort.StopBits == null || settings.Connection_SerialPort.StopBits == string.Empty)
+                             string.IsNullOrEmpty(settings.Connection_SerialPort.BaudRate_Custom) ||
+                            string.IsNullOrEmpty(settings.Connection_SerialPort.Parity) ||
+                            string.IsNullOrEmpty(settings.Connection_SerialPort.DataBits) ||
+                            string.IsNullOrEmpty(settings.Connection_SerialPort.StopBits))
                         {
                             connectionString = "Не заданы настройки для последовательного порта";
                         }
@@ -330,8 +329,7 @@ namespace ViewModels
                         else
                         {
                             connectionString =
-                                (settings.Connection_SerialPort.COMPort == null || settings.Connection_SerialPort.COMPort == string.Empty ?
-                                    "Порт не задан" : settings.Connection_SerialPort.COMPort) +
+                                (string.IsNullOrEmpty(settings.Connection_SerialPort.COMPort) ? "Порт не задан" : settings.Connection_SerialPort.COMPort) +
                                 separator +
                                 (settings.Connection_SerialPort.BaudRate_IsCustom == true ?
                                     settings.Connection_SerialPort.BaudRate_Custom : settings.Connection_SerialPort.BaudRate) +
@@ -356,11 +354,9 @@ namespace ViewModels
                     if (settings.Connection_IP != null)
                     {
                         connectionString =
-                            (settings.Connection_IP.IP_Address == null || settings.Connection_IP.IP_Address == string.Empty ?
-                                "IP адрес не задан" : settings.Connection_IP.IP_Address) +
+                            (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? "IP адрес не задан" : settings.Connection_IP.IP_Address) +
                             separator +
-                            (settings.Connection_IP.Port == null || settings.Connection_IP.Port == string.Empty ?
-                                "Порт не задан" : settings.Connection_IP.Port);
+                            (string.IsNullOrEmpty(settings.Connection_IP.Port) ? "Порт не задан" : settings.Connection_IP.Port);
                     }
 
                     else

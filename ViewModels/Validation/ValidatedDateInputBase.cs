@@ -25,7 +25,7 @@ namespace ViewModels.Validation
 
         public IEnumerable GetErrors(string? propertyName)
         {
-            HasErrors = _errors.Any();
+            HasErrors = _errors.Count != 0;
 
             if (!string.IsNullOrEmpty(propertyName) && _errors.TryGetValue(propertyName, out var validationMessage))
             {

@@ -4,7 +4,7 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 {
     internal static class LastRequestRepresentation
     {
-        public static RequestResponseField_ItemData[] GetData(string[] requestBytes, string[] responseBytes)
+        public static IEnumerable<RequestResponseField_ItemData> GetData(string[] requestBytes, string[] responseBytes)
         {
             int maxLength = requestBytes.Length > responseBytes.Length ? requestBytes.Length : responseBytes.Length;
 
@@ -12,8 +12,10 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 
             for (int i = 0; i < items.Length; i++)
             {
-                items[i] = new RequestResponseField_ItemData();
-                items[i].ItemNumber = (i + 1).ToString();
+                items[i] = new RequestResponseField_ItemData
+                {
+                    ItemNumber = (i + 1).ToString()
+                };
             }
 
             for (int i = 0; i < requestBytes.Length; i++)

@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using System.Globalization;
+using ViewModels.FloatNumber;
 using ViewModels.Validation;
 
 namespace ViewModels.Settings.Tabs
@@ -30,9 +31,17 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
+        private FloatNumberFormat _floatFormat;
+
+        public FloatNumberFormat FloatFormat
+        {
+            get => _floatFormat;
+            set => this.RaiseAndSetIfChanged(ref _floatFormat, value);
+        }
+
         public Modbus_VM()
         {
-
+            
         }
 
         public string GetFieldViewName(string fieldName)

@@ -2,14 +2,21 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:FloatNumber="clr-namespace:ViewModels.FloatNumber;assembly=ViewModels"
+			 xmlns:Converters="clr-namespace:TerminalProgram.Converters;assembly=TerminalProgram"
              mc:Ignorable="d" 
-			 d:DesignWidth="500" d:DesignHeight="400"
+			 d:DesignWidth="500" d:DesignHeight="400"			 
              x:Class="TerminalProgram.Views.Settings.Tabs.Modbus">
 
+	<UserControl.Resources>
+		<Converters:Modbus_FloatFormatConverter x:Key="FloatFormatConverter"/>
+	</UserControl.Resources>
+	
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
 		
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
@@ -34,7 +41,14 @@
 			<Setter Property="Margin" Value="315,8,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Top"/>
-		</Style>	
+		</Style>
+
+		<Style Selector="RadioButton.NumberFormat">
+			<Setter Property="Foreground" Value="{DynamicResource Settings_Color_Text}"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+		</Style>
 				
 	</UserControl.Styles>
 	
@@ -67,6 +81,42 @@
 			<TextBlock Text="мс." Classes="Units"/>
 
 		</Grid>
+
+		<Border Background="{DynamicResource TX_RX_Field_Background}"
+				Width="260"
+				CornerRadius="10">
+
+			<StackPanel Orientation="Vertical" Spacing="10"
+						Margin="20">
+
+				<TextBlock Text="Формат записи числа типа float"
+						   Margin="0,0,0,10"
+						   HorizontalAlignment="Center"/>
+
+				<RadioButton Content="AB CD (12 34 56 78)" Classes="RadioButton NumberFormat"
+							 IsChecked="{Binding FloatFormat, 
+							 Converter={StaticResource FloatFormatConverter}, 
+							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.AB_CD}}"/>
+				
+				<RadioButton Content="BA DC (34 12 78 56)" Classes="RadioButton NumberFormat"
+							 IsChecked="{Binding FloatFormat, 
+							 Converter={StaticResource FloatFormatConverter}, 
+							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.BA_DC}}"/>
+				
+				<RadioButton Content="CD AB (56 78 12 34)" Classes="RadioButton NumberFormat"
+							 IsChecked="{Binding FloatFormat, 
+							 Converter={StaticResource FloatFormatConverter}, 
+							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.CD_AB}}"/>
+				
+				<RadioButton Content="DC BA (78 56 34 12)" Classes="RadioButton NumberFormat"
+							 IsChecked="{Binding FloatFormat, 
+							 Converter={StaticResource FloatFormatConverter}, 
+							 ConverterParameter={x:Static FloatNumber:FloatNumberFormat.DC_BA}}"/>
+
+			</StackPanel>
+			
+		</Border>
+		
 		
 	</StackPanel>
 	

@@ -6,14 +6,40 @@ using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields.DataItems
 {
+    public class RequestToUpdateAddressesArgs : EventArgs
+    {
+        public readonly Guid ItemId;
+        public readonly string NewFormat;
+
+        public RequestToUpdateAddressesArgs(Guid itemId, string newFormat)
+        {
+            ItemId = itemId;
+            NewFormat = newFormat;
+        }
+    }
+
     public class MultipleRegisters_Item : ModbusDataFormatter
     {
-        private string? _startAddressAddition;
+        public event EventHandler<RequestToUpdateAddressesArgs>? RequestToUpdateAddresses;
 
-        public string? StartAddressAddition
+        private int _startAddressAddition;
+
+        public int StartAddressAddition
         {
             get => _startAddressAddition;
-            set => this.RaiseAndSetIfChanged(ref _startAddressAddition, value);
+            set
+            {
+                _startAddressAddition = value;
+                StartAddressAdditionView = $"+{value}";
+            }
+        }
+
+        private string? _startAddressAdditionView;
+
+        public string? StartAddressAdditionView
+        {
+            get => _startAddressAdditionView;
+            set => this.RaiseAndSetIfChanged(ref _startAddressAdditionView, value);
         }
 
         public float FloatData = 0f;
@@ -36,9 +62,9 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
 
         public NumberStyles DataFormat { get; private set; }
 
-        private ObservableCollection<string> _formatItems = new ObservableCollection<string>()
+        private readonly ObservableCollection<string> _formatItems = new ObservableCollection<string>()
         {
-            DataFormatName_dec, DataFormatName_hex, DataFormatName_bin, DataFromatName_float
+            DataFormatName_dec, DataFormatName_hex, DataFormatName_bin, DataFormatName_float
         };
 
         public ObservableCollection<string> FormatItems
@@ -55,40 +81,32 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
         }
 
         public readonly Guid Id;
-        public readonly bool CanRemove;
 
         public ReactiveCommand<Unit, Unit>? Command_RemoveItem { get; set; }
 
 
         public MultipleRegisters_Item(
-            bool canRemove,
             int startAddressAddition,
-            ushort data, string dataFormat,
             Action<Guid> removeItemHandler)
         {
             Id = Guid.NewGuid();
 
-            CanRemove = canRemove;
+            StartAddressAddition = startAddressAddition;
 
-            StartAddressAddition = $"+{startAddressAddition}";
+            SelectedDataFormat = DataFormatName_hex;
 
-            SelectedDataFormat = dataFormat;
+            _data = 0;
+            ViewData = ConvertNumberToString(_data, DataFormat);
 
-            _data = data;
-            ViewData = ConvertNumberToString(data, DataFormat);
-
-            if (canRemove)
+            Command_RemoveItem = ReactiveCommand.Create(() =>
             {
-                Command_RemoveItem = ReactiveCommand.Create(() =>
-                {
-                    removeItemHandler?.Invoke(Id);
-                });
-            }
+                removeItemHandler?.Invoke(Id);
+            });
         }
 
-        public override void SetDataFormat(string? format)
+        public override void SetDataFormat(string? newFormat)
         {
-            switch (format)
+            switch (newFormat)
             {
                 case DataFormatName_dec:
                     DataFormat = NumberStyles.Number;
@@ -105,16 +123,23 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
                     ViewData = ConvertNumberToString(_data, DataFormat);
                     break;
 
-                case DataFromatName_float:
+                case DataFormatName_float:
                     DataFormat = NumberStyles.Float;
                     ViewData = FloatData.ToString("F", CultureInfo.InvariantCulture);
                     break;
 
                 default:
-                    throw new Exception("Неподдерживаемый формат числа: " + format);
+                    throw new Exception("Неподдерживаемый формат числа: " + newFormat);
             }
 
-            _selectedDataFormat = format;
+            bool needUpdate = newFormat == DataFormatName_float || _selectedDataFormat == DataFormatName_float;
+
+            _selectedDataFormat = newFormat;
+
+            if (needUpdate)
+            {
+                RequestToUpdateAddresses?.Invoke(this, new RequestToUpdateAddressesArgs(Id, newFormat));
+            }
         }
 
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
@@ -138,6 +163,9 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
 
                     case NumberStyles.HexNumber:
                         return AllErrorMessages[HexError_UInt16];
+
+                    case NumberStyles.BinaryNumber:
+                        return AllErrorMessages[BinError_UInt16];
                 }
             }
 

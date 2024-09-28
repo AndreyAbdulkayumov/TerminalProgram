@@ -56,7 +56,7 @@ namespace ViewModels.Settings.Tabs
         //
         /************************************/
 
-        private ObservableCollection<string> _baudRate = new ObservableCollection<string>()
+        private readonly ObservableCollection<string> _baudRate = new ObservableCollection<string>()
         {
             "4800", "9600", "19200", "38400", "57600", "115200"
         };
@@ -100,7 +100,7 @@ namespace ViewModels.Settings.Tabs
         //
         /************************************/
 
-        private ObservableCollection<string> _parity = new ObservableCollection<string>()
+        private readonly ObservableCollection<string> _parity = new ObservableCollection<string>()
         {
             "None", "Even", "Odd", "Space", "Mark"
         };
@@ -124,7 +124,7 @@ namespace ViewModels.Settings.Tabs
         //
         /************************************/
 
-        private ObservableCollection<string> _dataBits = new ObservableCollection<string>()
+        private readonly ObservableCollection<string> _dataBits = new ObservableCollection<string>()
         {
             "5", "6", "7", "8"
         };
@@ -148,7 +148,7 @@ namespace ViewModels.Settings.Tabs
         //
         /************************************/
 
-        private ObservableCollection<string> _stopBits = new ObservableCollection<string>()
+        private readonly ObservableCollection<string> _stopBits = new ObservableCollection<string>()
         {
             "1", "1.5", "2"
         };
@@ -266,8 +266,7 @@ namespace ViewModels.Settings.Tabs
                 COM_Ports.Add(port);
             }
 
-            if (info == null ||
-                info.COMPort == null || info.COMPort == string.Empty)
+            if (info == null || string.IsNullOrEmpty(info.COMPort))
             {
                 Selected_COM_Port = null;
                 Message_PortNotFound = "Порт не задан";
@@ -290,7 +289,7 @@ namespace ViewModels.Settings.Tabs
 
             Selected_COM_Port = foundPort;
 
-            if (Selected_COM_Port == null)
+            if (string.IsNullOrEmpty(Selected_COM_Port))
             {
                 Message_PortNotFound = selectedPort + " не найден";
                 Message_PortNotFound_IsVisible = true;

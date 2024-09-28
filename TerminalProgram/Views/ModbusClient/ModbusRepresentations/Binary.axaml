@@ -3,13 +3,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-			 xmlns:Local="clr-namespace:TerminalProgram.Views.ModbusClient.ModbusRepresentations;assembly=TerminalProgram"
+			 xmlns:Converters="clr-namespace:TerminalProgram.Converters;assembly=TerminalProgram"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.Binary">
 
 	<UserControl.Resources>
-		<Local:Binary_BoolToColorConverter x:Key="BoolToColorConverter"/>
+		<Converters:Binary_BoolToColorConverter x:Key="BoolToColorConverter"/>
 	</UserControl.Resources>
 
 	<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
@@ -19,7 +19,7 @@
 		
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
 					  VerticalScrollBarVisibility="Auto"
-					  Margin="3">		
+					  Margin="3">
 
 			<ItemsControl Margin="0,0,0,5" ItemsSource="{Binding BinaryRepresentationItems, Mode=OneWay}">
 

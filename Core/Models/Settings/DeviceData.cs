@@ -22,11 +22,16 @@
         public const string ConnectionName_SerialPort = "SerialPort";
         public const string ConnectionName_Ethernet = "Ethernet";
 
+        public const string FloatWriteFormat_AB_CD = "AB_CD";
+        public const string FloatWriteFormat_BA_DC = "BA_DC";
+        public const string FloatWriteFormat_CD_AB = "CD_AB";
+        public const string FloatWriteFormat_DC_BA = "DC_BA";
+
         public string? GlobalEncoding { get; set; }
 
         public string? TimeoutWrite { get; set; }
         public string? TimeoutRead { get; set; }
-
+        public string? FloatNumberFormat { get; set; }
         public string? TypeOfConnection { get; set; }
 
         public SerialPort_Info? Connection_SerialPort { get; set; }
@@ -40,6 +45,8 @@
 
                 TimeoutWrite = "300",
                 TimeoutRead = "300",
+
+                FloatNumberFormat = DeviceData.FloatWriteFormat_BA_DC,
 
                 TypeOfConnection = DeviceData.ConnectionName_SerialPort,
 
@@ -93,6 +100,8 @@
 
                 TimeoutWrite = TimeoutWrite,
                 TimeoutRead = TimeoutRead,
+
+                FloatNumberFormat = FloatNumberFormat,
 
                 TypeOfConnection = TypeOfConnection,
 

@@ -7,6 +7,7 @@ using MessageBox_Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
 using System.Text;
+using ViewModels.FloatNumber;
 
 namespace ViewModels.Settings
 {
@@ -114,7 +115,7 @@ namespace ViewModels.Settings
 
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
-                .Where(x => x != string.Empty)
+                .Where(x => !string.IsNullOrEmpty(x))
                 .Subscribe(UpdateUI);
         }
 
@@ -122,10 +123,12 @@ namespace ViewModels.Settings
         {
             DeviceData settings = SettingsFile.ReadPreset(fileName);
 
-            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? string.Empty;
+            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? "UTF-8";
 
-            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? string.Empty;
-            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? string.Empty;
+            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? "300";
+            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? "300";
+
+            Tab_Modbus_VM.FloatFormat = FloatHelper.GetFloatNumberFormatOrDefault(settings.FloatNumberFormat);
 
             switch (settings.TypeOfConnection)
             {
@@ -164,7 +167,7 @@ namespace ViewModels.Settings
         {
             string? fileName = await Get_NewFileName();
 
-            if (fileName != null && fileName != String.Empty)
+            if (!string.IsNullOrEmpty(fileName))
             {
                 SettingsFile.SavePreset(fileName, DeviceData.GetDefault());
 
@@ -180,7 +183,7 @@ namespace ViewModels.Settings
             {
                 string? filePath = await Get_FilePath.Invoke("Добавление уже существующего файла настроек");
 
-                if (filePath == null)
+                if (string.IsNullOrEmpty(filePath))
                 {
                     return;
                 }
@@ -242,12 +245,35 @@ namespace ViewModels.Settings
                     return;
                 }
 
+                string floatFormat = string.Empty;
+
+                switch (Tab_Modbus_VM.FloatFormat)
+                {
+                    case FloatNumberFormat.AB_CD:
+                        floatFormat = DeviceData.FloatWriteFormat_AB_CD;
+                        break;
+
+                    case FloatNumberFormat.BA_DC:
+                        floatFormat = DeviceData.FloatWriteFormat_BA_DC;
+                        break;
+
+                    case FloatNumberFormat.CD_AB:
+                        floatFormat = DeviceData.FloatWriteFormat_CD_AB;
+                        break;
+
+                    case FloatNumberFormat.DC_BA:
+                        floatFormat = DeviceData.FloatWriteFormat_DC_BA;
+                        break;
+                }
+
                 var data = new DeviceData()
                 {
                     GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
 
                     TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
                     TimeoutRead = Tab_Modbus_VM.ReadTimeout,
+
+                    FloatNumberFormat = floatFormat,
 
                     TypeOfConnection = connectionType,
                                         

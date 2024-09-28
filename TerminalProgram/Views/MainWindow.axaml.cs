@@ -58,9 +58,10 @@ public partial class MainWindow : Window
     {
         await OpenWindowWithDimmer(async () =>
         {
-            var window = new ModbusScannerWindow();
-
-            window.DataContext = new ModbusScanner_VM(Message.Show);
+            var window = new ModbusScannerWindow
+            {
+                DataContext = new ModbusScanner_VM(Message.Show)
+            };
 
             await window.ShowDialog(this);
         });

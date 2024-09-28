@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d"
 		xmlns:effects="using=Avalonia.Media.Effects"
 		d:DesignWidth="800" d:DesignHeight="450"
@@ -49,7 +50,8 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
 
-				<Button Width="25" Height="25"
+				<Button ToolTip.Tip="Закрыть"
+						Width="25" Height="25"						
 						CornerRadius="0,4,0,0"
 						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Close_Click">
@@ -64,7 +66,14 @@
 								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
 							</Style>
 						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
 					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowClose"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
 
 				</Button>
 

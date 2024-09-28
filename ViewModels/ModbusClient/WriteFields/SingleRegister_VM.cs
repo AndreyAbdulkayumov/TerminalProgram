@@ -23,7 +23,7 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public NumberStyles DataFormat { get; private set; }
 
-        private ObservableCollection<string> _formatItems = new ObservableCollection<string>()
+        private readonly ObservableCollection<string> _formatItems = new ObservableCollection<string>()
         {
             DataFormatName_dec, DataFormatName_hex, DataFormatName_bin
         };
@@ -100,6 +100,9 @@ namespace ViewModels.ModbusClient.WriteFields
 
                     case NumberStyles.HexNumber:
                         return AllErrorMessages[HexError_UInt16];
+
+                    case NumberStyles.BinaryNumber:
+                        return AllErrorMessages[BinError_UInt16];
                 }
             }
 

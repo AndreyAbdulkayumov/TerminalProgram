@@ -9,7 +9,7 @@ namespace ViewModels.ModbusClient.WriteFields
         public const string DataFormatName_dec = "dec";
         public const string DataFormatName_hex = "hex";
         public const string DataFormatName_bin = "bin";
-        public const string DataFromatName_float = "float";
+        public const string DataFormatName_float = "float";
 
         public abstract string? ViewData { get; set; }
 
@@ -30,7 +30,7 @@ namespace ViewModels.ModbusClient.WriteFields
             switch (format)
             {
                 case NumberStyles.BinaryNumber:
-                    return GetFormattedBinaryNumber(number);
+                    return Convert.ToString(number, 2);
 
                 case NumberStyles.Number:
                     return Convert.ToString(number, 10);
@@ -41,19 +41,6 @@ namespace ViewModels.ModbusClient.WriteFields
                 default:
                     throw new ArgumentException("Неподдерживаемый формат числа.");
             }
-        }
-
-        private string GetFormattedBinaryNumber(ushort number)
-        {
-            string binaryRepresentation = Convert.ToString(number, 2).PadLeft(16, '0');
-
-            return string.Join(" ", new[]
-            {
-                binaryRepresentation.Substring(0, 4),
-                binaryRepresentation.Substring(4, 4),
-                binaryRepresentation.Substring(8, 4),
-                binaryRepresentation.Substring(12, 4)
-            });
         }
     }
 }

@@ -49,5 +49,15 @@ namespace TerminalProgram.Views
                 Close();
             }
         }
+
+        private void Button_CheckUpdate_Click(object? sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Donate_Click(object? sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

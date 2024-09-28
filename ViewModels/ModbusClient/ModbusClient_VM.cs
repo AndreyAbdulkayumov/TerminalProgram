@@ -15,7 +15,7 @@ namespace ViewModels.ModbusClient
 {
     public class ModbusClient_VM : ReactiveObject
     {
-        public static string ViewContent_NumberStyle_dec = "(dec)";
+        public const string ViewContent_NumberStyle_dec = "(dec)";
         public const string ViewContent_NumberStyle_hex = "(hex)";
 
         // Добавлять данные в DataGrid можно только из UI потока.
@@ -114,6 +114,14 @@ namespace ViewModels.ModbusClient
         {
             get => _binaryRepresentationItems;
             set => this.RaiseAndSetIfChanged(ref _binaryRepresentationItems, value);
+        }
+
+        private ObservableCollection<FloatRepresentation_ItemData> _floatRepresentationItems = new ObservableCollection<FloatRepresentation_ItemData>();
+
+        public ObservableCollection<FloatRepresentation_ItemData> FloatRepresentationItems
+        {
+            get => _floatRepresentationItems;
+            set => this.RaiseAndSetIfChanged(ref _floatRepresentationItems, value);
         }
 
         #endregion
@@ -452,7 +460,7 @@ namespace ViewModels.ModbusClient
                 Address = address,
                 ViewAddress = CreateViewAddress(address, 1),
                 Data = Array.Empty<byte>(),
-                ViewData = "Ошибка Modbus.\nКод: " + error.ErrorCode.ToString()
+                ViewData = $"Ошибка Modbus.\nКод: {error.ErrorCode.ToString()}"
             },
             error.Details);
 
@@ -467,8 +475,8 @@ namespace ViewModels.ModbusClient
 
             throw new Exception(
                 "Ошибка Modbus.\n\n" +
-                "Код функции: " + error.FunctionCode.ToString() + "\n" +
-                "Код ошибки: " + error.ErrorCode.ToString() + "\n\n" +
+                $"Код функции: {error.FunctionCode.ToString()}\n" +
+                $"Код ошибки: {error.ErrorCode.ToString()}\n\n" +
                 error.Message +
                 addition);
         }
@@ -514,7 +522,19 @@ namespace ViewModels.ModbusClient
                     {
                         BinaryRepresentationItems.AddRange(binaryItems);
                     }                    
-                });                
+                });
+
+                RunInUIThread.Invoke(() =>
+                {
+                    FloatRepresentationItems.Clear();
+
+                    var floatItems = FloatRepresentation.GetData(data);
+
+                    if (floatItems != null)
+                    {
+                        FloatRepresentationItems.AddRange(floatItems);
+                    }
+                });
             }
 
             if (details != null)
@@ -549,8 +569,7 @@ namespace ViewModels.ModbusClient
 
             for (int i = 0; i < numberOfRegisters; i++)
             {
-                displayedString += "0x" + currentAddress.ToString("X") +
-                    " (" + currentAddress.ToString() + ")";
+                displayedString += $"0x{currentAddress.ToString("X")} ({currentAddress.ToString()})";
 
                 if (i != numberOfRegisters - 1)
                 {
@@ -588,8 +607,7 @@ namespace ViewModels.ModbusClient
             {
                 temp = (UInt16)((modbusData[i + 1] << 8) | modbusData[i]);
 
-                displayedString += "0x" + temp.ToString("X") +
-                    " (" + temp.ToString() + ")\n";
+                displayedString += $"0x{temp.ToString("X")} ({temp.ToString()})\n";
             }
 
             // Обработка последнего байта, если длина массива нечетная
@@ -597,8 +615,7 @@ namespace ViewModels.ModbusClient
             {
                 temp = modbusData.Last();
 
-                displayedString += "0x" + temp.ToString("X") +
-                    " (" + temp.ToString() + ")\n";
+                displayedString += $"0x{temp.ToString("X")} ({temp.ToString()})\n";
             }
 
             displayedString = displayedString.TrimEnd('\n');

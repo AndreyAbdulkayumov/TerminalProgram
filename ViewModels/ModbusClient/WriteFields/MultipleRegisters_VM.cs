@@ -1,8 +1,9 @@
-﻿using DynamicData;
+﻿using Core.Models.Settings;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
+using ViewModels.FloatNumber;
 using ViewModels.ModbusClient.WriteFields.DataItems;
 
 namespace ViewModels.ModbusClient.WriteFields
@@ -29,39 +30,49 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public ReactiveCommand<Unit, Unit> Command_AddRegister { get; }
 
+        private readonly Model_Settings SettingsFile;
 
         public MultipleRegisters_VM()
         {
+            SettingsFile = Model_Settings.Model;
+
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
+                int addressAddition;
+
+                if (WriteDataCollection.Count == 0)
+                {
+                    addressAddition = 0;
+                }
+
+                else
+                {
+                    int formatAddition = WriteDataCollection.Last().SelectedDataFormat == ModbusDataFormatter.DataFormatName_float ? 2 : 1;
+                    addressAddition = WriteDataCollection.Last().StartAddressAddition + formatAddition;
+                }
+
                 WriteDataCollection.Add(new MultipleRegisters_Item(
-                    canRemove: true,
-                    startAddressAddition: WriteDataCollection.Count,
-                    data: 0,
-                    dataFormat: "hex",
+                    startAddressAddition: addressAddition,
                     removeItemHandler: RemoveWriteDataItem
                     ));
+
+                WriteDataCollection.Last().RequestToUpdateAddresses += Item_RequestToUpdateAddresses;
             });
         }
 
         public WriteData GetData()
         {
+            FloatNumberFormat floatFormat = FloatHelper.GetFloatNumberFormatOrDefault(SettingsFile.Settings?.FloatNumberFormat);
+
             int registerCounter = 0;
 
-            byte[] data = WriteDataCollection.SelectMany(x => 
+            byte[] data = WriteDataCollection.SelectMany(x =>
             {
                 if (x.DataFormat == NumberStyles.Float)
                 {
                     registerCounter += 2;
 
-                    byte[] floatBytes = BitConverter.GetBytes(x.FloatData);
-
-                    for(int i = 0; i < floatBytes.Length - 1; i += 2)
-                    {
-                        SwapBytes(ref floatBytes[i], ref floatBytes[i + 1]);
-                    }
-
-                    return floatBytes;
+                    return FloatHelper.GetBytesFromFloatNumber(x.FloatData, floatFormat);
                 }
 
                 registerCounter++;
@@ -77,30 +88,41 @@ namespace ViewModels.ModbusClient.WriteFields
             return new WriteData(data, registerCounter);
         }
 
-        private void SwapBytes(ref byte a, ref byte b)
+        private void Item_RequestToUpdateAddresses(object? sender, RequestToUpdateAddressesArgs e)
         {
-            byte temp = a;
-            a = b;
-            b = temp;
+            int itemIndex = WriteDataCollection.ToList().FindIndex(item => item.Id == e.ItemId);
+
+            if (itemIndex < WriteDataCollection.Count - 1)
+            {
+                UpdateAddresses();
+            }
         }
 
         private void RemoveWriteDataItem(Guid selectedId)
         {
+            int itemIndex = WriteDataCollection.ToList().FindIndex(item => item.Id == selectedId);
+
+            WriteDataCollection.RemoveAt(itemIndex);
+
+            UpdateAddresses();
+        }        
+
+        private void UpdateAddresses()
+        {
             int AddressCounter = 0;
 
-            var newCollection = WriteDataCollection
-                .Where(e => e.Id != selectedId)
-                .ToList();
-
-            newCollection.ForEach(e =>
+            foreach (var item in WriteDataCollection)
             {
-                e.StartAddressAddition = "+" + AddressCounter.ToString();
+                item.StartAddressAddition = AddressCounter;
 
-                AddressCounter++;
-            });
+                if (item.SelectedDataFormat == ModbusDataFormatter.DataFormatName_float)
+                {
+                    AddressCounter += 2;
+                    continue;
+                }
 
-            WriteDataCollection.Clear();
-            WriteDataCollection.AddRange(newCollection);
-        }
+                AddressCounter += 1;
+            }
+        }        
     }
 }

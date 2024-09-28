@@ -35,7 +35,7 @@
 			<RowDefinition Height="50"/>
 			<RowDefinition Height="2*"/>
 			<RowDefinition Height="3"/>
-			<RowDefinition Height="210"/>
+			<RowDefinition Height="220"/>
 		</Grid.RowDefinitions>
 		
 		<Grid Grid.Row="0">
@@ -192,14 +192,18 @@
 					</ScrollViewer>
 				</TabItem>
 
-				<TabItem Header="Лог">
-					<ModbusRepresentations:Log Margin="0,5,0,5"/>					
+				<TabItem Header="История обмена">
+					<ModbusRepresentations:Log Margin="0,5,0,5"/>
 				</TabItem>
-
+				
 				<TabItem Header="Бинарное представление">
 					<ModbusRepresentations:Binary Margin="0,5,0,5"/>
 				</TabItem>
 
+				<TabItem Header="Число типа float">
+					<ModbusRepresentations:Float Margin="0,5,0,5"/>
+				</TabItem>				
+				
 			</TabControl>
 
 		</Grid>

@@ -74,22 +74,22 @@
 						<TextBlock Text="Формат числа"
 								   FontSize="16"
 							       Foreground="{DynamicResource MainWindow_Color_Text}"
-								   Margin="50,0,0,0"
-							       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								   Margin="0,0,180,0"
+							       HorizontalAlignment="Center" VerticalAlignment="Center"/>
 						
 						<RadioButton Content="hex"
 									 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource MainWindow_Color_Text}"
-									 Margin="190,0,0,0"
-									 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+									 Margin="40,0,0,0"
+									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 						<RadioButton Content="dec"
 									 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
 									 FontSize="16"
 									 Foreground="{DynamicResource MainWindow_Color_Text}"
-									 Margin="265,0,0,0"
-									 HorizontalAlignment="Left" VerticalAlignment="Center"/>
+									 Margin="200,0,0,0"
+									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 					</Grid>
 
