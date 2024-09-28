@@ -11,11 +11,23 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
             if (data.Data == null)
                 return null;
 
-            UInt16[] words = new UInt16[data.Data.Length / 2];
+            byte[] bytes;
+
+            if (data.Data.Length % 2 != 0)
+            {
+                bytes = data.Data.Concat(new byte[] { 0 }).ToArray();
+            }
+
+            else
+            {
+                bytes = data.Data;
+            }
+
+            UInt16[] words = new UInt16[bytes.Length / 2];
 
             for (int i = 0; i < words.Length; i++)
             {
-                words[i] = BitConverter.ToUInt16(data.Data, i * 2);
+                words[i] = BitConverter.ToUInt16(bytes, i * 2);
             }
 
             var binaryWords = words.Select(e => Convert.ToString(e, 2).PadLeft(16, '0'));

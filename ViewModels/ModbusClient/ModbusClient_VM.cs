@@ -589,15 +589,17 @@ namespace ViewModels.ModbusClient
                 return string.Empty;
             }
 
-            if (function.Number == Function.ForceMultipleCoils.Number)
+            if (function.Number == Function.ForceMultipleCoils.Number || 
+                function.Number == Function.ReadCoilStatus.Number ||
+                function.Number == Function.ReadDiscreteInputs.Number)
             {
-                return GetViewData_ForceMultipleCoils(modbusData, numberOfRegisters);
+                return GetViewData_FromBytes(modbusData, numberOfRegisters);
             }
 
-            return GetViewData_Standart(modbusData);           
+            return GetViewData_FromWords(modbusData);           
         }
 
-        private static string GetViewData_Standart(byte[] modbusData)
+        private static string GetViewData_FromWords(byte[] modbusData)
         {
             string displayedString = string.Empty;
 
@@ -623,7 +625,7 @@ namespace ViewModels.ModbusClient
             return displayedString;
         }
 
-        private static string GetViewData_ForceMultipleCoils(byte[] modbusData, int numberOfRegisters)
+        private static string GetViewData_FromBytes(byte[] modbusData, int numberOfRegisters)
         {
             string displayedString = string.Empty;
 
