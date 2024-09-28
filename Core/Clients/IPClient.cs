@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using Core.Models;
 
 namespace Core.Clients
@@ -20,9 +14,9 @@ namespace Core.Clients
         {
             get
             {
-                if (Stream != null)
+                if (_stream != null)
                 {
-                    return Stream.WriteTimeout;
+                    return _stream.WriteTimeout;
                 }
 
                 return 0;
@@ -30,9 +24,9 @@ namespace Core.Clients
 
             set
             {
-                if (Stream != null)
+                if (_stream != null)
                 {
-                    Stream.WriteTimeout = value;
+                    _stream.WriteTimeout = value;
                 }
             }
         }
@@ -41,9 +35,9 @@ namespace Core.Clients
         {
             get
             {
-                if (Stream != null)
+                if (_stream != null)
                 {
-                    return Stream.ReadTimeout;
+                    return _stream.ReadTimeout;
                 }
 
                 return 0;
@@ -51,20 +45,20 @@ namespace Core.Clients
 
             set
             {
-                if (Stream != null)
+                if (_stream != null)
                 {
-                    Stream.ReadTimeout = value;
+                    _stream.ReadTimeout = value;
                 }
             }
         }
 
-        private NetworkStream? Stream = null;
-        private TcpClient? Client = null;
-
-        private Task? ReadThread = null;
-        private CancellationTokenSource? ReadCancelSource = null;
-
         public NotificationSource Notifications { get; private set; }
+
+        private NetworkStream? _stream;
+        private TcpClient? _client;
+
+        private Task? _readThread;
+        private CancellationTokenSource? _readCancelSource;     
 
 
         public IPClient()
@@ -76,89 +70,87 @@ namespace Core.Clients
                 );
         }
 
-        public void SetReadMode(ReadMode Mode)
+        public void SetReadMode(ReadMode mode)
         {
-            switch (Mode)
+            switch (mode)
             {
                 case ReadMode.Async:
 
-                    if (Stream != null && IsConnected)
+                    if (_stream != null && IsConnected)
                     {
-                        ReadCancelSource = new CancellationTokenSource();
+                        _readCancelSource = new CancellationTokenSource();
 
-                        ReadThread = Task.Run(() => AsyncThread_Read(Stream, ReadCancelSource.Token));
+                        _readThread = Task.Run(() => AsyncThread_Read(_stream, _readCancelSource.Token));
                     }
 
                     break;
 
                 case ReadMode.Sync:
 
-                    if (Stream != null && IsConnected)
+                    if (_stream != null && IsConnected)
                     {
-                        ReadCancelSource?.Cancel();
+                        _readCancelSource?.Cancel();
 
-                        if (ReadThread != null)
+                        if (_readThread != null)
                         {
-                            Task WaitCancel = Task.WhenAll(ReadThread);
+                            Task waitCancel = Task.WhenAll(_readThread);
 
-                            Task FlushTask = Stream.FlushAsync();
+                            Task flushTask = _stream.FlushAsync();
 
-                            Task.WaitAll(WaitCancel, FlushTask);
+                            Task.WaitAll(waitCancel, flushTask);
                         }
                     }
 
                     break;
 
                 default:
-                    throw new Exception("У клиента задан неизвестный режим чтения: " + Mode.ToString());
+                    throw new Exception("У клиента задан неизвестный режим чтения: " + mode.ToString());
             }
         }
 
-        public void Connect(ConnectionInfo Information)
+        public void Connect(ConnectionInfo information)
         {
-            SocketInfo? SocketInfo = Information.Info as SocketInfo;
+            var socketInfo = information.Info as SocketInfo;
 
-            if (SocketInfo == null)
+            if (socketInfo == null)
             {
                 throw new Exception("Нет информации о настройках подключения по Ethernet.");
             }
 
-            if (SocketInfo.IP == null || SocketInfo.IP == String.Empty || 
-                SocketInfo.Port == null || SocketInfo.Port == String.Empty)
+            if (socketInfo.IP == null || socketInfo.IP == String.Empty || 
+                socketInfo.Port == null || socketInfo.Port == String.Empty)
             {
                 throw new Exception(
-                    (SocketInfo.IP == null || SocketInfo.IP == String.Empty ? "IP адрес не задан.\n" : "") +
-                    (SocketInfo.Port == null || SocketInfo.Port == String.Empty ? "Порт не задан." : "")
+                    (socketInfo.IP == null || socketInfo.IP == String.Empty ? "IP адрес не задан.\n" : "") +
+                    (socketInfo.Port == null || socketInfo.Port == String.Empty ? "Порт не задан." : "")
                     );
             }
 
-            if (int.TryParse(SocketInfo.Port, out int Port) == false)
+            if (int.TryParse(socketInfo.Port, out int Port) == false)
             {
                 throw new Exception("Не удалось преобразовать номер порта в целочисленное значение.\n" +
-                    "Полученный номер порта: " + SocketInfo.Port);
+                    "Полученный номер порта: " + socketInfo.Port);
             }
 
-            Client = new TcpClient();
+            _client = new TcpClient();
 
-            IAsyncResult result = Client.BeginConnect(SocketInfo.IP, Port, null, null);
+            IAsyncResult result = _client.BeginConnect(socketInfo.IP, Port, null, null);
 
-            bool SuccessConnect = result.AsyncWaitHandle.WaitOne(500, true);
-
-            if (SuccessConnect == true)
+            if (result.AsyncWaitHandle.WaitOne(500, true) == true)
             {
-                Client.EndConnect(result);
+                _client.EndConnect(result);
             }
 
             else
             {
-                Client.Close();
+                _client.Close();
 
                 throw new Exception("Не удалось подключиться к серверу.\n\n" +
-                    "IP адрес: " + SocketInfo.IP + "\n" +
-                    "Порт: " + SocketInfo.Port);
+                    "IP адрес: " + socketInfo.IP + "\n" +
+                    "Порт: " + socketInfo.Port);
             }
 
-            Stream = Client.GetStream();
+            _stream = _client.GetStream();
 
             Notifications.StartMonitor();
 
@@ -167,125 +159,143 @@ namespace Core.Clients
 
         public async Task Disconnect()
         {
-            ProtocolMode? SelectedProtocol = ConnectedHost.SelectedProtocol;
+            ProtocolMode? selectedProtocol = ConnectedHost.SelectedProtocol;
 
-            if (SelectedProtocol != null && SelectedProtocol.CurrentReadMode == ReadMode.Async)
+            if (selectedProtocol != null && selectedProtocol.CurrentReadMode == ReadMode.Async)
             {
-                ReadCancelSource?.Cancel();
+                _readCancelSource?.Cancel();
 
-                if (ReadThread != null)
+                if (_readThread != null)
                 {
-                    await Task.WhenAll(ReadThread).ConfigureAwait(false);
+                    await Task.WhenAll(_readThread).ConfigureAwait(false);
                 }
             }
 
-            Stream?.Close();
+            _stream?.Close();
 
-            Client?.Close();
+            _client?.Close();
 
             await Notifications.StopMonitor();
 
             IsConnected = false;
         }
 
-        public async Task Send(byte[] Message, int NumberOfBytes)
+        public async Task<ModbusOperationInfo> Send(byte[] message, int numberOfBytes)
         {
-            if (Stream == null)
+            if (_stream == null)
             {
-                return;
+                return new ModbusOperationInfo(DateTime.Now, null);
             }
+
+            var executionTime = new DateTime();
 
             try
             {
                 if (IsConnected)
                 {
-                    await Stream.WriteAsync(Message, 0, NumberOfBytes);
+                    await _stream.WriteAsync(message, 0, numberOfBytes);
+
+                    executionTime = DateTime.Now;
 
                     Notifications.TransmitEvent();
                 }
+
+                return new ModbusOperationInfo(executionTime, null);
             }
 
             catch (Exception error)
             {
                 throw new Exception("Ошибка отправки данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут передачи: " +
-                    (Stream.WriteTimeout == Timeout.Infinite ?
-                    "бесконечно" : Stream.WriteTimeout.ToString() + " мс."));
+                    (_stream.WriteTimeout == Timeout.Infinite ?
+                    "бесконечно" : _stream.WriteTimeout.ToString() + " мс."));
             }
         }
 
-        public async Task<byte[]> Receive()
+        public async Task<ModbusOperationInfo> Receive()
         {
-            if (Stream == null)
+            if (_stream == null)
             {
-                return Array.Empty<byte>();
+                return new ModbusOperationInfo(DateTime.Now, Array.Empty<byte>());
             }
 
-            List<byte> ReceivedBytes = new List<byte>();
+            var receivedBytes = new List<byte>();
+
+            DateTime executionTime = new DateTime();
 
             try
             {
                 if (IsConnected)
                 {
-                    byte[] Buffer;
+                    byte[] buffer;
 
-                    int NumberOfReceivedBytes;
+                    int numberOfReceivedBytes;
+
+                    bool isFirstPackage = true;
 
                     do
                     {
-                        Buffer = new byte[100];
+                        buffer = new byte[100];
 
-                        NumberOfReceivedBytes = await Stream.ReadAsync(Buffer, 0, Buffer.Length);
+                        numberOfReceivedBytes = await _stream.ReadAsync(buffer, 0, buffer.Length);
 
-                        Array.Resize(ref Buffer, NumberOfReceivedBytes);
+                        if (isFirstPackage)
+                        {
+                            executionTime = DateTime.Now;
+                            isFirstPackage = false;
+                        }                        
 
-                        ReceivedBytes.AddRange(Buffer);
+                        Array.Resize(ref buffer, numberOfReceivedBytes);
 
-                    } while (Stream.DataAvailable);
+                        receivedBytes.AddRange(buffer);
 
-                    if (ReceivedBytes.Count > 0)
+                    } while (_stream.DataAvailable);
+
+                    executionTime = DateTime.Now;
+
+                    if (receivedBytes.Count > 0)
                     {
                         Notifications.ReceiveEvent();
                     }
                 }
 
-                return ReceivedBytes.ToArray();
+                return new ModbusOperationInfo(executionTime, receivedBytes.ToArray());
             }
 
             catch (Exception error)
             {
                 throw new Exception("Ошибка приема данных:\n\n" + error.Message + "\n\n" +
                     "Таймаут приема: " +
-                    (Stream.ReadTimeout == Timeout.Infinite ?
-                    "бесконечно" : Stream.ReadTimeout.ToString() + " мс."));
+                    (_stream.ReadTimeout == Timeout.Infinite ?
+                    "бесконечно" : _stream.ReadTimeout.ToString() + " мс."));
             }
         }
 
-        private async Task AsyncThread_Read(NetworkStream CurrentStream, CancellationToken ReadCancel)
+        private async Task AsyncThread_Read(NetworkStream currentStream, CancellationToken readCancel)
         {
             try
             {
-                byte[] BufferRX = new byte[50];
+                byte[] bufferRX = new byte[50];
 
-                int NumberOfReceiveBytes;
+                int numberOfReceiveBytes;
 
-                Task<int> ReadResult;
+                Task<int> readResult;
 
-                Task WaitCancel = Task.Run(async () =>
+                Task waitCancel = Task.Run(async () =>
                 {
-                    while (ReadCancel.IsCancellationRequested == false)
+                    while (readCancel.IsCancellationRequested == false)
                     {
                         await Task.Delay(50);
                     }
                 });
 
-                Task CompletedTask;
+                Task completedTask;
 
                 while (true)
                 {
-                    ReadCancel.ThrowIfCancellationRequested();
+                    readCancel.ThrowIfCancellationRequested();
 
-                    if (CurrentStream != null)
+                    if (currentStream != null)
                     {
                         /// Метод асинхронного чтения у объекта класса NetworkStream
                         /// почему то не обрабатывает событие отмены у токена отмены.
@@ -293,31 +303,31 @@ namespace Core.Clients
                         /// неуправляемые вызовы никоуровневого API (в MSDN об этом не сказано).
                         /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
 
-                        ReadResult = CurrentStream.ReadAsync(BufferRX, 0, BufferRX.Length, ReadCancel);
+                        readResult = currentStream.ReadAsync(bufferRX, 0, bufferRX.Length, readCancel);
                         
-                        CompletedTask = await Task.WhenAny(ReadResult, WaitCancel).ConfigureAwait(false);
+                        completedTask = await Task.WhenAny(readResult, waitCancel).ConfigureAwait(false);
                         
-                        if (CompletedTask == WaitCancel)
+                        if (completedTask == waitCancel)
                         {
                             throw new OperationCanceledException();
                         }
 
-                        ReadCancel.ThrowIfCancellationRequested();
+                        readCancel.ThrowIfCancellationRequested();
 
-                        NumberOfReceiveBytes = ReadResult.Result;
+                        numberOfReceiveBytes = readResult.Result;
 
-                        DataFromDevice Data = new DataFromDevice(NumberOfReceiveBytes);
+                        var Data = new DataFromDevice(numberOfReceiveBytes);
 
-                        for (int i = 0; i < NumberOfReceiveBytes; i++)
+                        for (int i = 0; i < numberOfReceiveBytes; i++)
                         {
-                            Data.RX[i] = BufferRX[i];
+                            Data.RX[i] = bufferRX[i];
                         }
 
                         DataReceived?.Invoke(this, Data);
 
                         Notifications.ReceiveEvent();
 
-                        Array.Clear(BufferRX, 0, NumberOfReceiveBytes);
+                        Array.Clear(bufferRX, 0, numberOfReceiveBytes);
                     }
                 }
             }

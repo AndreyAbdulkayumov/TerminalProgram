@@ -1,0 +1,114 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d"
+        x:Class="TerminalProgram.Views.ServiceWindow"
+		Height="190" Width="300"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		SystemDecorations="BorderOnly">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+
+	</Window.Styles>
+	
+
+	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
+			BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						CornerRadius="4,4,0,0"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="Сервис"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Закрыть"
+						Width="25" Height="25"						
+						CornerRadius="0,4,0,0"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Close_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowClose"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
+
+				</Button>
+
+			</Grid>
+
+			<Border Grid.Row="1">
+
+				<Grid>
+					
+					<TextBlock x:Name="TextBlock_Description" Text="Default Text"
+							   Margin="0,25,0,0"
+							   FontSize="14"
+		   					   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+							   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+					<TextBox x:Name="TextBox_SelectFileName" Classes="InputField"
+							 Margin="0,60,0,0"
+							 Width="180"
+							 HorizontalAlignment="Center" VerticalAlignment="Top"/>
+					
+					<ComboBox x:Name="ComboBox_SelectFileName"
+							  Margin="0,60,0,0"
+							  Width="180"
+							  HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+					<Button x:Name="Button_Select" Content="Выбрать"
+							Margin="0,110,0,0"
+							Width="80"
+							FontSize="14"
+							HorizontalAlignment="Center" VerticalAlignment="Top"
+							Click="Button_Select_Click"/>
+					
+				</Grid>
+				
+			</Border>
+
+		</Grid>
+	
+	</Border>
+	
+</Window>

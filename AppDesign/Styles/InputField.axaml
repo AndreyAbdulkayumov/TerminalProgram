@@ -1,0 +1,49 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="TextBox.InputField">
+
+		<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
+		<Setter Property="BorderBrush" Value="Green"/>
+		<Setter Property="Foreground" Value="Black"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="CornerRadius" Value="4"/>
+		<Setter Property="MinWidth" Value="{Binding ElementName=^,Path=Width}"/>
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+		<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>	
+		
+		<Style Selector="^:pointerover /template/ Border">
+			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_MouseOver}"/>
+			<Setter Property="CornerRadius" Value="4"/>
+		</Style>
+
+		<Style Selector="^:focus /template/ Border" >
+			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_Focused}"/>
+			<Setter Property="CornerRadius" Value="4"/>
+		</Style>
+
+		<Style Selector="^:disabled /template/ Border">
+			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Disabled_Background}"/>
+			<Setter Property="CornerRadius" Value="4"/>
+		</Style>
+
+		<Style Selector="^:error /template/ Border">
+			<Setter Property="BorderThickness" Value="2"/>
+			<Setter Property="BorderBrush" Value="OrangeRed"/>
+			<Setter Property="CornerRadius" Value="4"/>
+		</Style>
+
+		<Style Selector="^ DataValidationErrors TextBlock">
+			<Setter Property="Foreground" Value="OrangeRed"/>			
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+		</Style>
+		
+	</Style>
+	
+</Styles>

@@ -1,6 +1,4 @@
-﻿using Core.Models.Modbus;
-using Core.Models.Modbus.Message;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using Core.Models.Modbus.Message;
 
 namespace Core.Tests.Modbus
 {

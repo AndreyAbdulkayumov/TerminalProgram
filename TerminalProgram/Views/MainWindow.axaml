@@ -1,0 +1,359 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:ModbusClientView="clr-namespace:TerminalProgram.Views.ModbusClient;assembly=TerminalProgram"
+		xmlns:NoProtocolView="clr-namespace:TerminalProgram.Views.NoProtocol;assembly=TerminalProgram"
+		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
+		mc:Ignorable="d"
+		Width="1300" Height="830"
+        x:Class="TerminalProgram.Views.MainWindow"
+		x:DataType="ViewModels:CommonUI_VM"
+        Icon="/Resources/MainLogo.ico"
+        Title="Терминальная программа"
+		Background="Transparent"
+		WindowStartupLocation="CenterScreen"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		SystemDecorations="BorderOnly"
+		Loaded="Window_Loaded"
+		Closing="Window_Closing">
+
+	
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuButton.axaml"/>
+
+	</Window.Styles>
+	
+	
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol.NoProtocol_VM}">
+			<NoProtocolView:NoProtocol_View/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ModbusClient.ModbusClient_VM}">
+			<ModbusClientView:ModbusClient_View/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
+	
+
+	<Border x:Name="Border_Window"
+			Background="{DynamicResource MainWindow_Back_Color_Background}"
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
+			BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+				
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						CornerRadius="4,4,0,0"
+						PointerPressed="Chrome_PointerPressed"/>
+				
+				<TextBlock Text="Терминальная программа"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Свернуть"
+						Width="25" Height="25"
+						CornerRadius="0"
+						BorderThickness="1"
+						Margin="0,0,50,0"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Minimize_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowMinimize"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
+
+				</Button>
+
+				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
+						Width="25" Height="25"
+						CornerRadius="0"
+						BorderThickness="1"
+						Margin="0,0,25,0"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Maximize_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowMaximize"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
+
+				</Button>
+				
+				<Button x:Name="Button_Close"
+						ToolTip.Tip="Закрыть"
+						Width="25" Height="25"
+						BorderThickness="1"
+						CornerRadius="0,4,0,0"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Close_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowClose"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
+					
+				</Button>
+				
+			</Grid>
+
+			<Grid x:Name="Grid_Workspace" Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="80"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="80"/>
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="200"/>
+					<ColumnDefinition Width="4*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Row="0" Grid.Column="0"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<StackPanel Orientation="Horizontal"
+								Spacing="10"
+								Margin="10,0,0,0">
+
+						<Button Classes="MenuButton" 
+								ToolTip.Tip="Настройки"				
+								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								Click="Button_OpenSettings_Click">
+							
+							<Icons:MaterialIcon Kind="Cog"
+												Foreground="Gray"/>
+						
+						</Button>
+
+						<Button Classes="MenuButton" 
+								ToolTip.Tip="О программе"
+								Click="Button_About_Click">
+							
+							<Icons:MaterialIcon Kind="Info"
+												Foreground="#2B67A8"/>
+							
+						</Button>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<StackPanel Orientation="Vertical" Spacing="10"
+								Margin="10">
+
+						<Button Content="Без протокола"
+								Height="40"
+								HorizontalAlignment="Stretch"
+								Command="{Binding Command_ProtocolMode_NoProtocol}"/>
+
+						<Button Content="Modbus"
+								Height="40"
+								HorizontalAlignment="Stretch"
+								Command="{Binding Command_ProtocolMode_Modbus}"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="0" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<Grid>
+
+						<TextBlock Text="Выбранный пресет:"
+								   Margin="10,0,0,0"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<ComboBox Height="30" Width="160"
+								  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								  ItemsSource="{Binding Presets, Mode=OneWay}"
+								  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+								  Margin="180,0,0,0"
+								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<Button Margin="380,0,0,0"
+								Content="Подключить"
+								FontSize="14"
+								Width="105" Height="32"
+								CornerRadius="6"
+								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_Connect}"/>
+
+						<Button Margin="500,0,0,0"
+								Content="Отключить"
+								FontSize="14"
+								Width="105" Height="32"
+								CornerRadius="6"
+								IsEnabled="{Binding UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_Disconnect}"/>
+
+					</Grid>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<ContentControl Content="{Binding CurrentViewModel}"/>
+
+				</Border>
+
+				<Border Grid.Row="2" Grid.Column="1"
+						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						BorderThickness="0"
+						CornerRadius="6"
+						Margin="10">
+
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="1*"/>
+							<RowDefinition Height="1*"/>
+						</Grid.RowDefinitions>
+
+						<TextBlock Grid.Row="0"
+								   Text="{Binding ConnectionString, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="20,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="1"
+								   Text="{Binding ConnectionStatus, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="20,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="1"
+								   IsVisible="{Binding ConnectionTimer_IsVisible, Mode=OneWay}"
+								   Text="{Binding ConnectionTimer_View, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="130,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
+								 Margin="0,0,190,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+								 IsVisible="{Binding Led_RX_IsActive, Mode=OneWay}"
+								 Margin="0,0,190,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" Grid.RowSpan="2"
+								   Text="Прием"
+								   FontSize="16"
+								   Margin="0,0,130,0"
+								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
+								 Margin="0,0,95,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+								 IsVisible="{Binding Led_TX_IsActive, Mode=OneWay}"
+								 Margin="0,0,95,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" Grid.RowSpan="2"
+								   Text="Передача"
+								   FontSize="16"
+								   Margin="0,0,10,0"
+								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					</Grid>
+
+				</Border>
+
+			</Grid>
+			
+		</Grid>		
+		
+	</Border>        
+	
+</Window>

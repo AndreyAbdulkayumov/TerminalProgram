@@ -1,0 +1,185 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d"
+        x:Class="TerminalProgram.Views.AboutWindow"
+        Title="AboutWindow"
+		Width="400" Height="350"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		SystemDecorations="None"
+		KeyDown="Window_KeyDown">
+
+	<Window.Styles>
+		
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+
+	</Window.Styles>
+
+	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
+			BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						CornerRadius="4,4,0,0"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="О программе"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Закрыть"
+						Width="25" Height="25"						
+						CornerRadius="0,4,0,0"
+						BorderThickness="1"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Close_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowClose"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
+					
+				</Button>
+
+			</Grid>
+
+			<Grid Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="1.5*"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="7*"/>
+					<RowDefinition Height="2*"/>
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1*"/>
+					<ColumnDefinition Width="2*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+						   Text="Терминальная программа"
+                           Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+                           FontSize="18"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+						   x:Name="TextBlock_App_Version" Text="0.0.0"
+						   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+						   FontSize="16"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+				<Image Grid.Row="2" Grid.Column="0"
+					   Source="avares://TerminalProgram/Resources/MainLogo.ico"
+					   Margin="10,15,0,0"
+					   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+				<StackPanel Grid.Row="2" Grid.Column="1"
+							Orientation="Vertical" Spacing="10"
+							Margin="0,10,0,0">
+
+					<TextBlock Text="Разработал:"
+							   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+                               FontSize="16"
+							   TextAlignment="Center"/>
+
+					<TextBlock Text="Абдулкаюмов Андрей Ренатович"
+							   Width="140"
+							   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+							   FontSize="16"
+							   TextWrapping="Wrap"
+							   TextAlignment="Center"
+							   Margin="10"/>
+					
+					<Grid>
+						
+						<TextBlock Text="Версия .NET:"
+								   Margin="20,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock x:Name="TextBlock_Runtime_Version" Text="0.0.0"
+								   Margin="200,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+					</Grid>
+
+					<Grid>
+
+						<TextBlock Text="Версия Avalonia UI:"
+								   Margin="20,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Back}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<TextBlock x:Name="TextBlock_GUI_Version" Text="0.0.0"
+								   Margin="200,0,0,0"
+								   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+					</Grid>
+					
+				</StackPanel>
+
+				<Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+					
+					<Button Content="Проверить обновления"
+							CornerRadius="6"
+							TextBlock.TextWrapping="Wrap"
+							TextBlock.TextAlignment="Center"
+							Margin="10,0,0,0"
+							HorizontalAlignment="Left" VerticalAlignment="Center"
+							Click="Button_CheckUpdate_Click"/>
+					
+					<Button Content="Сказать спасибо"
+							CornerRadius="6"
+							Margin="0,0,10,0"
+							HorizontalAlignment="Right" VerticalAlignment="Center"
+							Click="Button_Donate_Click"/>
+					
+				</Grid>
+				
+			</Grid>
+
+		</Grid>
+
+	</Border>
+	
+</Window>

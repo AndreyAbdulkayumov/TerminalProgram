@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.Models.Modbus
+﻿namespace Core.Models.Modbus
 {
     public abstract class ModbusFunction
     {
-        public string DisplayedName;
-        public string DisplayedNumber;
-        public byte Number;
+        public readonly string DisplayedName;
+        public readonly string DisplayedNumber;
+        public readonly byte Number;
 
-        public ModbusFunction(string DisplayedName, string DisplayedNumber, byte Number)
+        public ModbusFunction(string displayedName, string displayedNumber, byte number)
         {
-            this.DisplayedName = DisplayedName;
-            this.DisplayedNumber = DisplayedNumber;
-            this.Number = Number;
+            DisplayedName = displayedName;
+            DisplayedNumber = displayedNumber;
+            Number = number;
         }
     }
 
     public class ModbusReadFunction : ModbusFunction
     {
-        public ModbusReadFunction(string DisplayedName, string DisplayedNumber, byte Number) : 
-            base (DisplayedName, DisplayedNumber, Number)
+        public ModbusReadFunction(string displayedName, string displayedNumber, byte number) : 
+            base (displayedName, displayedNumber, number)
         {
 
         }
@@ -31,8 +25,8 @@ namespace Core.Models.Modbus
 
     public class ModbusWriteFunction : ModbusFunction
     {
-        public ModbusWriteFunction(string DisplayedName, string DisplayedNumber, byte Number) :
-            base(DisplayedName, DisplayedNumber, Number)
+        public ModbusWriteFunction(string displayedName, string displayedNumber, byte number) :
+            base(displayedName, displayedNumber, number)
         {
 
         }

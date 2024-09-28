@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "2.7.0"
+#define MyAppVersion "3.0.0"
 
 ; Директория установки приложения по умолчанию (папка Program Files на диске с системой)
 #define InstallDirectory "{commonpf64}\TerminalProgram"
@@ -17,13 +17,13 @@
 #define FileDescription "TerminalProgram"
 
 #define MyAppPublisher "Абдулкаюмов Андрей"
-#define MyAppExeName "TerminalProgram.exe"
+#define MyAppExeName "TerminalProgram.Desktop.exe"
 #define MyAppAssocName "TerminalProgram File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 ; Относительный путь
-#define PublishDirectory 'TerminalProgram\bin\Release\net8.0-windows\publish\win-x64'
+#define PublishDirectory 'TerminalProgram.Desktop\bin\Release\net8.0\publish\win-x64'
 
 #define OutputDirectory 'D:\0_Compiled_Installers\TerminalProgram'
 

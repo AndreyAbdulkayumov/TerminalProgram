@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MessageBox_Core
+﻿namespace MessageBox_Core
 {
     public enum MessageType
     {
@@ -13,9 +7,16 @@ namespace MessageBox_Core
         Information
     }
 
+    public enum MessageBoxResult
+    {
+        Default,
+        Yes,
+        No
+    }
+
     public interface IMessageBox
     {
-        void Show(string Message, MessageType Type);
-        bool ShowDialog(string Message, MessageType Type);
+        void Show(string message, MessageType type);
+        Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type);
     }
 }

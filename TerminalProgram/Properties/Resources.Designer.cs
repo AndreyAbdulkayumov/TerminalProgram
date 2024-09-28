@@ -63,46 +63,6 @@ namespace TerminalProgram.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Byte[].
         /// </summary>
-        internal static byte[] File_AddExisting {
-            get {
-                object obj = ResourceManager.GetObject("File_AddExisting", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Byte[].
-        /// </summary>
-        internal static byte[] File_AddNew {
-            get {
-                object obj = ResourceManager.GetObject("File_AddNew", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Byte[].
-        /// </summary>
-        internal static byte[] File_Delete {
-            get {
-                object obj = ResourceManager.GetObject("File_Delete", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Byte[].
-        /// </summary>
-        internal static byte[] File_Save {
-            get {
-                object obj = ResourceManager.GetObject("File_Save", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Byte[].
-        /// </summary>
         internal static byte[] MainLogo {
             get {
                 object obj = ResourceManager.GetObject("MainLogo", resourceCulture);

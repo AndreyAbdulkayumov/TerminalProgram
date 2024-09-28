@@ -1,0 +1,33 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	
+	<Style Selector="TextBox.TX_RX_Field">
+
+		<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+		<Setter Property="Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+		<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush}"/>
+		<Setter Property="BorderThickness" Value="2"/>
+		<Setter Property="Padding" Value="6"/>
+		<Setter Property="FontSize" Value="16"/>
+		<Setter Property="FontWeight" Value="Regular"/>
+		<Setter Property="TextWrapping" Value="Wrap"/>
+
+		<!-- Для корректного маштабирования выставляем минимальные значения высоты и ширины -->
+		<Setter Property="MinHeight" Value="0"/>
+		<Setter Property="MinWidth" Value="0"/>
+
+		<Style Selector="^:pointerover /template/ Border">
+			<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+			<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_MouseOver}"/>
+		</Style>
+
+		<Style Selector="^:focus /template/ Border" >
+			<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
+			<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_Focused}"/>
+		</Style>
+		
+	</Style>
+	
+</Styles>

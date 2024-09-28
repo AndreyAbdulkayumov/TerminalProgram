@@ -118,18 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="File_AddExisting" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\File_AddExisting.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="File_AddNew" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\File_AddNew.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="File_Delete" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\File_Delete.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="File_Save" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\File_Save.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="MainLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MainLogo.ico;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

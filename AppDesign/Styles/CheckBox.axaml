@@ -1,0 +1,21 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="CheckBox">
+
+		<Style Selector="^:pointerover /template/ Border#NormalRectangle">
+			<Setter Property="Background" Value="#0A85D9"/>
+			<Setter Property="BorderBrush" Value="#587C8D"/>
+		</Style>
+		
+		<Style Selector="^:pointerover /template/ ContentPresenter">
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+		</Style>
+
+		<Style Selector="^:disabled /template/ ContentPresenter">
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+		</Style>
+
+	</Style>
+	
+</Styles>

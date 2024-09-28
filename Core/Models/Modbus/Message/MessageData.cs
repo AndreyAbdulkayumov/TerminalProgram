@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Core.Models.Modbus.Message
+﻿namespace Core.Models.Modbus.Message
 {
     public abstract class MessageData
     {
@@ -12,33 +6,33 @@ namespace Core.Models.Modbus.Message
         public UInt16 Address;
         public bool CheckSum_IsEnable;
         public UInt16 Polynom;
+        public int NumberOfRegisters;
     }
 
     public class ReadTypeMessage : MessageData
     {
-        public int NumberOfRegisters;
-
-        public ReadTypeMessage(byte SlaveID, UInt16 Address, int NumberOfRegisters, bool CheckSum_IsEnable, UInt16 Polynom)
+        public ReadTypeMessage(byte slaveID, UInt16 address, int numberOfRegisters, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
         {
-            this.SlaveID = SlaveID;
-            this.Address = Address;
-            this.NumberOfRegisters = NumberOfRegisters;
-            this.CheckSum_IsEnable = CheckSum_IsEnable;
-            this.Polynom = Polynom;
+            SlaveID = slaveID;
+            Address = address;
+            NumberOfRegisters = numberOfRegisters;
+            CheckSum_IsEnable = checkSum_IsEnable;
+            Polynom = polynom;
         }
     }
 
     public class WriteTypeMessage : MessageData
     {
-        public UInt16[] WriteData;
+        public byte[] WriteData;
 
-        public WriteTypeMessage(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable, UInt16 Polynom)
+        public WriteTypeMessage(byte slaveID, UInt16 address, byte[] writeData, int numberOfRegisters, bool checkSum_IsEnable, UInt16 polynom = 0xA001)
         {
-            this.SlaveID = SlaveID;
-            this.Address = Address;
-            this.WriteData = WriteData;
-            this.CheckSum_IsEnable = CheckSum_IsEnable;
-            this.Polynom = Polynom;
+            SlaveID = slaveID;
+            Address = address;
+            WriteData = writeData;
+            NumberOfRegisters = numberOfRegisters;
+            CheckSum_IsEnable = checkSum_IsEnable;
+            Polynom = polynom;
         }
     }
 }

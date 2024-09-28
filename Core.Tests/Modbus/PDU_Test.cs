@@ -5,8 +5,6 @@ namespace Core.Tests.Modbus
 {
     public class PDU_Test
     {
-        private const UInt16 Polynom = 0xA001;
-
         [Fact]
         public void Test_Func_01()
         {
@@ -86,8 +84,7 @@ namespace Core.Tests.Modbus
                     16,
                     Address,
                     NumberOfRegisters,
-                    true,
-                    Polynom
+                    true
                     );
 
             byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data);
@@ -115,8 +112,7 @@ namespace Core.Tests.Modbus
                 16,
                 Address,
                 WriteDataArray,
-                true,
-                Polynom
+                true
                 );
 
             byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data);
@@ -147,8 +143,7 @@ namespace Core.Tests.Modbus
                 16,
                 Address,
                 WriteData,
-                true,
-                Polynom
+                true
                 );
 
             byte[] BytesArray_Actual = Modbus_PDU.Create(SelectedFunction, Data);

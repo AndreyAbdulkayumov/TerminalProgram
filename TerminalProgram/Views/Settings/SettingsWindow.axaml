@@ -1,0 +1,210 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
+		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
+        mc:Ignorable="d"
+        x:Class="TerminalProgram.Views.Settings.SettingsWindow"
+		x:DataType="ViewModels:Settings_VM"
+        Title="SettingsWindow"
+		Width="540" Height="530"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaChromeHints="NoChrome"
+		ExtendClientAreaToDecorationsHint="True"
+		SystemDecorations="None"
+		Loaded="Window_Loaded"
+		KeyDown="Window_KeyDown">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuButton.axaml"/>
+		
+	</Window.Styles>
+	
+	
+	<Border Background="{DynamicResource MainWindow_Field_Color_Background}"
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
+			BorderThickness="3"
+			CornerRadius="6">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						CornerRadius="4,4,0,0"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="Настройки"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+				
+				<Button ToolTip.Tip="Закрыть"
+						Width="25" Height="25"						
+						CornerRadius="0,4,0,0"
+						BorderThickness="1"
+						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Click="Button_Close_Click">
+
+					<Button.Styles>
+						<Style Selector="Button">
+							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+							<Style Selector="^:pointerover /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+							</Style>
+							<Style Selector="^:pressed /template/ ContentPresenter">
+								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+							</Style>
+						</Style>
+						<Style Selector="TextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+						</Style>
+					</Button.Styles>
+
+					<Icons:MaterialIcon Kind="WindowClose"
+										Foreground="#3A3A3A"
+										Width="20" Height="20"/>
+					
+				</Button>
+
+			</Grid>
+
+			<Border Grid.Row="1"
+					Background="{DynamicResource MainWindow_Back_Color_Background}"
+					CornerRadius="0,0,4,4">
+
+				<Grid>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="80"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="200"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
+
+					<Border Grid.Row="0" Grid.Column="0"
+							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							BorderThickness="0"
+							CornerRadius="6"
+							Margin="10">
+
+						<StackPanel Orientation="Horizontal"
+									Spacing="10"
+									Margin="10">
+
+							<Button Classes="MenuButton" 
+									ToolTip.Tip="Создать новый файл"
+									Command="{Binding Command_File_AddNew}">
+								
+								<Icons:MaterialIcon Kind="FilePlusOutline"/>
+								
+							</Button>
+
+
+							<Button Classes="MenuButton" 
+									ToolTip.Tip="Добавить существующий файл"
+									Command="{Binding Command_File_AddExisting}">
+
+								<Icons:MaterialIcon Kind="FolderOpenOutline"/>
+								
+							</Button>
+
+							<Button Classes="MenuButton" 
+									ToolTip.Tip="Удалить выбранный файл"
+									Command="{Binding Command_File_Delete}">
+
+								<Icons:MaterialIcon Kind="FileRemoveOutline"/>
+								
+							</Button>
+
+							<Button Classes="MenuButton" 
+									ToolTip.Tip="Сохранить выбранный файл"
+									Command="{Binding Command_File_Save}">
+
+								<Icons:MaterialIcon Kind="ContentSave"/>
+								
+							</Button>
+
+						</StackPanel>
+
+					</Border>
+
+					<Border Grid.Row="0" Grid.Column="1"
+							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							BorderThickness="0"
+							CornerRadius="6"
+							Margin="10">
+
+						<StackPanel Orientation="Horizontal"
+									Spacing="15"
+									Margin="10">
+
+							<TextBlock Text="Пресет:"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<ComboBox Height="30" Width="160"
+									  ItemsSource="{Binding Presets}"
+									  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+									  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						</StackPanel>
+
+					</Border>
+
+					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							BorderThickness="0"
+							CornerRadius="6"
+							Margin="10">
+
+						<TabControl >
+
+							<TabItem Header="Подключение">
+								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
+							</TabItem>
+
+							<TabItem Header="Без протокола">
+								<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
+							</TabItem>
+
+							<TabItem Header="Modbus">
+								<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
+							</TabItem>
+
+							<TabItem Header="Внешний вид">
+								<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
+							</TabItem>
+
+						</TabControl>
+
+					</Border>
+
+				</Grid>
+
+			</Border>			
+			
+		</Grid>		
+		
+	</Border>
+	
+</Window>

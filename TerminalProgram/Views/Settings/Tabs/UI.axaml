@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="TerminalProgram.Views.Settings.Tabs.UI">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,6,340,0"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+		</Style>
+
+	</UserControl.Styles>
+	
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="20"
+				Width="450"
+				HorizontalAlignment="Center">
+
+		<Grid>
+
+			<TextBlock Text="Тема" 
+					   Margin="90,6,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<Button Content="Темная"
+					Width="90"
+					Margin="150,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
+					Command="{Binding Select_Dark_Theme}"/>
+
+			<Button Content="Светлая"
+					Width="90"
+					Margin="260,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
+					Command="{Binding Select_Light_Theme}"/>
+
+		</Grid>
+		
+	</StackPanel>
+
+</UserControl>
