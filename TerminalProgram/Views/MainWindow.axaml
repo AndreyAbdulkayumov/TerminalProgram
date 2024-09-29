@@ -11,7 +11,7 @@
         x:Class="TerminalProgram.Views.MainWindow"
 		x:DataType="ViewModels:CommonUI_VM"
         Icon="/Resources/MainLogo.ico"
-        Title="Терминальная программа"
+        Title="Терминальная программа beta 1"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaChromeHints="NoChrome"
@@ -63,7 +63,7 @@
 						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 				
-				<TextBlock Text="Терминальная программа"
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
 						   Foreground="{DynamicResource WindowChrome_Color_Title}"
 						   FontSize="12"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"

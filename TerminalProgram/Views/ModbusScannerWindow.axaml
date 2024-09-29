@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.ModbusScannerWindow"
 		x:DataType="ViewModels:ModbusScanner_VM"
+		Title="Modbus сканер"
 		Width="430" Height="420"
 		Background="Transparent"
 		CanResize="False"
@@ -46,7 +47,7 @@
 						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 
-				<TextBlock Text="Modbus сканнер"
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
 						   Foreground="{DynamicResource WindowChrome_Color_Title}"
 						   FontSize="12"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"

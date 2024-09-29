@@ -5,6 +5,7 @@
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.ServiceWindow"
+		Title="Сервис"
 		Height="190" Width="300"
 		Background="Transparent"
 		CanResize="False"
@@ -41,7 +42,7 @@
 						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 
-				<TextBlock Text="Сервис"
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
 						   Foreground="{DynamicResource WindowChrome_Color_Title}"
 						   FontSize="12"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
