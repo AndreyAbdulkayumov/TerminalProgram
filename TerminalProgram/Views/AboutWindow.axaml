@@ -166,13 +166,13 @@
 							TextBlock.TextAlignment="Center"
 							Margin="10,0,0,0"
 							HorizontalAlignment="Left" VerticalAlignment="Center"
-							Click="Button_CheckUpdate_Click"/>
+							Command="{Binding Command_CheckUpdate}"/>
 					
 					<Button Content="Сказать спасибо"
 							CornerRadius="6"
 							Margin="0,0,10,0"
 							HorizontalAlignment="Right" VerticalAlignment="Center"
-							Click="Button_Donate_Click"/>
+							Command="{Binding Command_MakeDonate}"/>
 					
 				</Grid>
 				

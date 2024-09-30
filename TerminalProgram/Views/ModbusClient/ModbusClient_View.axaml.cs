@@ -19,9 +19,9 @@ namespace TerminalProgram.Views.ModbusClient
             ModbusClient_VM.AddDataOnTable += ViewModel_ModbusClient_AddDataOnTable;
         }
 
-        private void ViewModel_ModbusClient_AddDataOnTable(object? sender, ModbusDataDisplayed? e)
+        private async void ViewModel_ModbusClient_AddDataOnTable(object? sender, ModbusDataDisplayed? e)
         {
-            Dispatcher.UIThread.Invoke(() =>
+            await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (e != null)
                 {
