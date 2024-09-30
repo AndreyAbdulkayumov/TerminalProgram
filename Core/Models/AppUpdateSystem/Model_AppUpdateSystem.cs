@@ -62,7 +62,7 @@ namespace Core.Models.AppUpdateSystem
         /// Переход на страницу по заданному URL.
         /// </summary>
         /// <param name="url"></param>
-        public void GoToWebPage(string url)
+        public void GoToWebPage(string? url)
         {
             Process.Start(new ProcessStartInfo
             {

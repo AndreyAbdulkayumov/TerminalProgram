@@ -10,6 +10,18 @@ namespace ViewModels.Settings.Tabs
         public ReactiveCommand<Unit, Unit> Select_Dark_Theme { get; }
         public ReactiveCommand<Unit, Unit> Select_Light_Theme { get; }
 
+        private bool _checkAppUpdateAfterStart;
+
+        public bool CheckAppUpdateAfterStart
+        {
+            get => SettingsFile.AppData.CheckUpdateAfterStart;
+            set
+            {
+                SettingsFile.AppData.CheckUpdateAfterStart = value;
+                this.RaiseAndSetIfChanged(ref _checkAppUpdateAfterStart, value);                
+            }
+        }
+
         private readonly Model_Settings SettingsFile;
 
 

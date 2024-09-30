@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
+using Core.Models.AppUpdateSystem;
 
 namespace ViewModels
 {
@@ -89,6 +90,24 @@ namespace ViewModels
         public ReactiveCommand<Unit, Unit> Command_Connect { get; }
         public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
 
+        private bool _updateMessageIsVisible = false;
+
+        public bool UpdateMessageIsVisible
+        {
+            get => _updateMessageIsVisible;
+            set => this.RaiseAndSetIfChanged(ref _updateMessageIsVisible, value);
+        }
+
+        private string _newAppVersion = string.Empty;
+
+        public string NewAppVersion
+        {
+            get => _newAppVersion;
+            set => this.RaiseAndSetIfChanged(ref _newAppVersion, value);
+        }
+
+        public ReactiveCommand<Unit, Unit> Command_UpdateApp { get; }
+        public ReactiveCommand<Unit, Unit> Command_SkipNewAppVersion { get; }
 
         private string? _connectionString;
 
@@ -157,6 +176,7 @@ namespace ViewModels
 
         private readonly ConnectedHost Model;
         private readonly Model_Settings SettingsFile;
+        private readonly Model_AppUpdateSystem AppUpdateSystem;
 
         private readonly Action<string, MessageType> Message;
 
@@ -165,8 +185,13 @@ namespace ViewModels
         private readonly NoProtocol_VM NoProtocol_VM;
         private readonly ModbusClient_VM ModbusClient_VM;
 
+        private readonly Version? _appVersion;
+
+        private string? _newAppDownloadLink;
+
 
         public CommonUI_VM(
+            Version? appVersion,
             Func<Action, Task> runInUIThread,
             Func<Task> open_ModbusScanner,
             Action<string, MessageType> messageBox,
@@ -177,6 +202,9 @@ namespace ViewModels
         {
             Model = ConnectedHost.Model;
             SettingsFile = Model_Settings.Model;
+            AppUpdateSystem = Model_AppUpdateSystem.Model;
+
+            _appVersion = appVersion;
 
             Message = messageBox;
 
@@ -247,6 +275,15 @@ namespace ViewModels
             Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
             Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
 
+            Command_UpdateApp = ReactiveCommand.Create(() => AppUpdateSystem.GoToWebPage(_newAppDownloadLink));
+            Command_UpdateApp.ThrownExceptions.Subscribe(error => Message.Invoke($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
+
+            Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
+            {
+                SettingsFile.AppData.SkippedAppVersion = NewAppVersion;
+                UpdateMessageIsVisible = false;
+            });
+            Command_SkipNewAppVersion.ThrownExceptions.Subscribe();
 
             // Действия после запуска приложения
 
@@ -295,6 +332,47 @@ namespace ViewModels
                     break;
             }
         }
+
+        public async Task MainWindowLoadedHandler()
+        {
+            await Command_UpdatePresets.Execute();
+
+            if (SettingsFile.AppData.CheckUpdateAfterStart)
+            {
+                await CheckAppUpdate();
+            }
+        }
+
+        private async Task CheckAppUpdate()
+        {
+            try
+            {
+                char[] appVersion_Chars = new char[20];
+
+                if (_appVersion != null)
+                {
+                    LastestVersionInfo? info = await AppUpdateSystem.IsUpdateAvailable(_appVersion);
+
+                    if (info != null)
+                    {
+                        if (!string.IsNullOrEmpty(info.Version) && !string.IsNullOrEmpty(info.DownloadLink) && SettingsFile.AppData.SkippedAppVersion != info.Version)
+                        {
+                            NewAppVersion = info.Version;
+                            _newAppDownloadLink = info.DownloadLink;
+                            UpdateMessageIsVisible = true;
+                            return;
+                        }
+                    }
+                }                
+
+                UpdateMessageIsVisible = false;
+            }
+            
+            catch (Exception)
+            {
+                UpdateMessageIsVisible = false;
+            }
+        } 
 
         private string GetConnectionString()
         {

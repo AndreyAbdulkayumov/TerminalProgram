@@ -9,6 +9,7 @@
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
@@ -20,7 +21,7 @@
 	</UserControl.Styles>
 	
 	<StackPanel Orientation="Vertical"
-				Spacing="10"
+				Spacing="30"
 				Margin="20"
 				Width="450"
 				HorizontalAlignment="Center">
@@ -46,6 +47,14 @@
 					Command="{Binding Select_Light_Theme}"/>
 
 		</Grid>
+
+		<CheckBox Content="Проверять обновления при запуске программы"
+				  Foreground="{DynamicResource Settings_Color_Text}"
+				  FontSize="14"
+				  Width="220"
+				  Margin="90,0,0,0"
+				  HorizontalAlignment="Left" VerticalAlignment="Top"
+				  IsChecked="{Binding CheckAppUpdateAfterStart, Mode=TwoWay}"/>
 		
 	</StackPanel>
 

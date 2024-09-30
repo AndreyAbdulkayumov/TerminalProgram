@@ -18,6 +18,8 @@
         public string? SelectedPresetFileName { get; set; }
         public AppTheme ThemeName { get; set; }
         public AppMode SelectedMode { get; set; }
+        public bool CheckUpdateAfterStart { get; set; }
+        public string? SkippedAppVersion { get; set; }
 
 
         public static AppInfo GetDefault(string defaultPresetName)
@@ -26,7 +28,9 @@
             {
                 SelectedPresetFileName = defaultPresetName,
                 ThemeName = AppTheme.Dark,
-                SelectedMode = AppMode.ModbusClient
+                SelectedMode = AppMode.ModbusClient,
+                CheckUpdateAfterStart = true,
+                SkippedAppVersion = null,
             };
         }
     }

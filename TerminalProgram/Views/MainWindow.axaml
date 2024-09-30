@@ -210,20 +210,83 @@
 						CornerRadius="6"
 						Margin="10">
 
-					<StackPanel Orientation="Vertical" Spacing="10"
-								Margin="10">
+					<Grid>
+						
+						<StackPanel Orientation="Vertical" Spacing="10"
+									Margin="10"
+									VerticalAlignment="Top">
 
-						<Button Content="Без протокола"
-								Height="40"
-								HorizontalAlignment="Stretch"
-								Command="{Binding Command_ProtocolMode_NoProtocol}"/>
+							<Button Content="Без протокола"
+									Height="40"
+									HorizontalAlignment="Stretch"
+									Command="{Binding Command_ProtocolMode_NoProtocol}"/>
 
-						<Button Content="Modbus"
-								Height="40"
-								HorizontalAlignment="Stretch"
-								Command="{Binding Command_ProtocolMode_Modbus}"/>
+							<Button Content="Modbus"
+									Height="40"
+									HorizontalAlignment="Stretch"
+									Command="{Binding Command_ProtocolMode_Modbus}"/>
 
-					</StackPanel>
+						</StackPanel>
+
+						<Border Margin="0,0,0,10"
+								Background="{DynamicResource TX_RX_Field_Background}"
+								BorderBrush="{DynamicResource TX_RX_Field_BorderBrush}"
+								BorderThickness="1"
+								CornerRadius="10"
+								IsVisible="{Binding UpdateMessageIsVisible, Mode=OneWay}"
+								HorizontalAlignment="Center" VerticalAlignment="Bottom">
+
+							<Grid>
+
+								<Button ToolTip.Tip="Игнорировать версию"
+										Height="20" Width="20"
+										CornerRadius="0,9,0,0"
+										Margin="0,0,0,0"
+										HorizontalAlignment="Right" VerticalAlignment="Top"
+										Command="{Binding Command_SkipNewAppVersion}">
+
+									<Button.Styles>
+										<Style Selector="Button">
+											<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
+											<Style Selector="^:pointerover /template/ ContentPresenter">
+												<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
+											</Style>
+											<Style Selector="^:pressed /template/ ContentPresenter">
+												<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
+											</Style>
+										</Style>
+										<Style Selector="TextBlock">
+											<Setter Property="Foreground" Value="Black"/>
+										</Style>
+									</Button.Styles>
+
+									<Icons:MaterialIcon Kind="WindowClose"
+														Foreground="#3A3A3A"/>
+								</Button>
+								
+								<StackPanel Spacing="15" Margin="10">
+
+									<TextBlock Text="Доступна новая версия приложения!"
+											   TextWrapping="Wrap"
+											   TextAlignment="Center"
+											   Margin="0,14,0,0"/>
+
+									<TextBlock Text="{Binding NewAppVersion, Mode=OneWay}"
+											   TextWrapping="Wrap"
+											   TextAlignment="Center"/>
+
+									<Button Content="Обновить"
+											HorizontalAlignment="Center"
+											Command="{Binding Command_UpdateApp}"/>
+
+								</StackPanel>
+								
+							</Grid>							
+							
+						</Border>
+						
+					</Grid>
+					
 
 				</Border>
 

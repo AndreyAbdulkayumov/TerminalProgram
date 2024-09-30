@@ -38,6 +38,7 @@ public partial class MainWindow : Window
         Message = new MessageBox(this, "Терминальная программа");
 
         ViewModel = new CommonUI_VM(
+                AboutWindow.GetAppVersion(),
                 RunInUIThread,
                 OpenWindow_ModbusScanner,
                 Message.Show,
@@ -122,7 +123,7 @@ public partial class MainWindow : Window
 
     private async void Window_Loaded(object? sender, RoutedEventArgs e)
     {
-        await ViewModel.Command_UpdatePresets.Execute();
+        await ViewModel.MainWindowLoadedHandler();
     }
 
     private async void Window_Closing(object? sender, WindowClosingEventArgs e)
