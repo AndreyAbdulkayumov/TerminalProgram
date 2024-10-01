@@ -191,8 +191,8 @@
 								<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
 							</TabItem>
 
-							<TabItem Header="Внешний вид">
-								<Tabs:UI DataContext="{Binding Tab_UI_VM}"/>
+							<TabItem Header="Приложение">
+								<Tabs:AppSettings DataContext="{Binding Tab_AppSettings_VM}"/>
 							</TabItem>
 
 						</TabControl>

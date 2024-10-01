@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace TerminalProgram.Views.Settings.Tabs
 {
-    public partial class UI : UserControl
+    public partial class AppSettings : UserControl
     {
-        public UI()
+        public AppSettings()
         {
             InitializeComponent();
         }

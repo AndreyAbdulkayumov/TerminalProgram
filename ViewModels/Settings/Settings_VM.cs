@@ -52,11 +52,11 @@ namespace ViewModels.Settings
             get => _tab_Modbus_VM;
         }
 
-        private readonly UI_VM _tab_UI_VM;
+        private readonly AppSettings_VM _tab_AppSettings_VM;
 
-        public UI_VM Tab_UI_VM
+        public AppSettings_VM Tab_AppSettings_VM
         {
-            get => _tab_UI_VM;
+            get => _tab_AppSettings_VM;
         }
 
         private readonly ReactiveObject[] _allTabs;
@@ -96,14 +96,14 @@ namespace ViewModels.Settings
             _tab_Connection_VM = new Connection_VM(this);
             _tab_NoProtocol_VM = new NoProtocol_VM();
             _tab_Modbus_VM = new Modbus_VM();
-            _tab_UI_VM = new UI_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
+            _tab_AppSettings_VM = new AppSettings_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
 
             _allTabs = [
                 Tab_Connection_VM.Connection_SerialPort_VM,
                 Tab_Connection_VM.Connection_Ethernet_VM,
                 Tab_NoProtocol_VM,
                 Tab_Modbus_VM,
-                Tab_UI_VM
+                Tab_AppSettings_VM
             ];
 
             Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);

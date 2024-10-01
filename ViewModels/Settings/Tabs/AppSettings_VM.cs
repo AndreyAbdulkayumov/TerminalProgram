@@ -5,7 +5,7 @@ using System.Reactive;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class UI_VM : ReactiveObject
+    public class AppSettings_VM : ReactiveObject
     {
         public ReactiveCommand<Unit, Unit> Select_Dark_Theme { get; }
         public ReactiveCommand<Unit, Unit> Select_Light_Theme { get; }
@@ -25,7 +25,7 @@ namespace ViewModels.Settings.Tabs
         private readonly Model_Settings SettingsFile;
 
 
-        public UI_VM(Action set_Dark_Theme_Handler, Action set_Light_Theme_Handler, Action<string, MessageType> message)
+        public AppSettings_VM(Action set_Dark_Theme_Handler, Action set_Light_Theme_Handler, Action<string, MessageType> message)
         {
             SettingsFile = Model_Settings.Model;
 

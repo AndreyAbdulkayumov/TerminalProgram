@@ -22,7 +22,9 @@ namespace TerminalProgram.Views
 
             Message = new MessageBox(this, "Терминальная программа");
 
-            TextBlock_App_Version.Text = GetAppVersion()?.ToString();
+            _appVersion = GetAppVersion();
+
+            TextBlock_App_Version.Text = _appVersion?.ToString();
 
             char[] GUIVersion_Chars = new char[20];
 

@@ -11,7 +11,7 @@
         x:Class="TerminalProgram.Views.MainWindow"
 		x:DataType="ViewModels:CommonUI_VM"
         Icon="/Resources/MainLogo.ico"
-        Title="Терминальная программа beta 1"
+        Title="Терминальная программа"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaChromeHints="NoChrome"
@@ -238,7 +238,7 @@
 
 							<Grid>
 
-								<Button ToolTip.Tip="Игнорировать версию"
+								<Button ToolTip.Tip="Пропустить эту версию"
 										Height="20" Width="20"
 										CornerRadius="0,9,0,0"
 										Margin="0,0,0,0"
