@@ -165,9 +165,9 @@ public partial class MainWindow : Window
             _buttonCloseRadius = Button_Close.CornerRadius;
 
             WindowState = WindowState.Maximized;
-
-            Border_Window.CornerRadius = new CornerRadius(0, 0, 0, 0);
-            Button_Close.CornerRadius = new CornerRadius(0, 0, 0, 0);
+            
+            Border_Window.CornerRadius = new CornerRadius(0);
+            Button_Close.CornerRadius = new CornerRadius(0);
         }
     }
 

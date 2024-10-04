@@ -19,6 +19,7 @@
 		<Border Background="{DynamicResource DataGrid_Color_Background}"
 				BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
 				BorderThickness="1"
+				CornerRadius="6"
 				Margin="10">
 
 			<ScrollViewer HorizontalScrollBarVisibility="Auto"

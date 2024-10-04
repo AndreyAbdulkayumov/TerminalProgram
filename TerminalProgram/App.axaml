@@ -8,7 +8,6 @@
 
     <Application.Styles>
         <FluentTheme />
-		<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
 		<MaterialIcons:MaterialIconStyles />
 	</Application.Styles>
 	

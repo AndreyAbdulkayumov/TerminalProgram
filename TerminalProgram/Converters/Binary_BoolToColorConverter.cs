@@ -12,6 +12,12 @@ namespace TerminalProgram.Converters
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool IsChange)
+
+                // TODO: для получения динамесчких ресурсов
+                //if (Application.Current != null && Application.Current.TryFindResource(resourceKey, out var background))
+                //{
+                //    return background;
+                //}
                 return IsChange ? Brushes.LightPink : Brush.Parse("#FFDFDFDF");
             else
                 throw new ArgumentException("Значение не является булевым.");

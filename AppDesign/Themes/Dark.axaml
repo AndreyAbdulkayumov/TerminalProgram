@@ -86,10 +86,11 @@
 
 	<SolidColorBrush x:Key="DataGrid_Color_Background" Color="#FF3A3A3A"/>
 	<SolidColorBrush x:Key="DataGrid_Color_BorderBrush" Color="#FFABABAB"/>
+	<SolidColorBrush x:Key="DataGrid_Color_HeaderBackground" Color="WhiteSmoke"/>
 	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#FFDFDFDF"/>
 	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#FFBBBBBB"/>
-	<SolidColorBrush x:Key="DataGrid_Color_GridLinesBrush" Color="#FFABABAB"/>
-
+	<SolidColorBrush x:Key="DataGrid_Color_RowBackground_Selected" Color="LightBlue"/>
+	
 	<!-- Modbus Data Field -->
 
 	<SolidColorBrush x:Key="ModbusDataField_Color_BorderBackground" Color="#FF404040"/>

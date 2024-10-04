@@ -9,7 +9,7 @@
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="TerminalProgram.Views.ModbusClient.ModbusClient_View"
 			 Background="{DynamicResource MainWindow_Color_Background}">
-
+	
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
@@ -96,76 +96,114 @@
 
 			<Grid Grid.Column="0">
 
-				<DataGrid x:Name="DataGrid_ModbusData"
-						  AutoGenerateColumns="False"
-						  CanUserResizeColumns="False"
-						  CanUserSortColumns="False"
-						  IsReadOnly="True"
-						  BorderThickness="1"
-						  Background="{DynamicResource DataGrid_Color_Background}"
-						  BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
-						  RowBackground="{DynamicResource DataGrid_Color_RowBackground}"
-						  HorizontalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
-						  VerticalGridLinesBrush="{DynamicResource DataGrid_Color_GridLinesBrush}"
-						  VerticalScrollBarVisibility="Visible"
-						  HorizontalScrollBarVisibility="Hidden"
-						  Margin="10"
-						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+				<!-- Table View start definition -->
+				
+				<Border Background="{DynamicResource DataGrid_Color_Background}"
+						BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
+						BorderThickness="1"
+						Margin="10"
+						CornerRadius="6"
+						ClipToBounds="True">
 
-					<DataGrid.Styles>
-						
+					<Grid RowDefinitions="40,1*">
+
+						<Border Grid.Row="0" 
+								Background="{DynamicResource DataGrid_Color_HeaderBackground}"
+								BorderThickness="2"
+								BorderBrush="{DynamicResource DataGrid_Color_HeaderBackground}"
+								CornerRadius="6,6,0,0">
+
+							<Grid ColumnDefinitions="2*,4*,4*,6*"
+								  Margin="10">
+
+								<TextBlock Grid.Column="0"
+										   Text="ID"/>
+
+								<TextBlock Grid.Column="1"
+										   Text="Функция"/>
+
+								<TextBlock Grid.Column="2"
+										   Text="Адрес"/>
+
+								<TextBlock Grid.Column="3"
+										   Text="Данные"/>
+
+							</Grid>
+
+						</Border>
+
+
+						<ScrollViewer x:Name="ScrollViewer_ModbusData" Grid.Row="1">
+
+							<ItemsControl x:Name="ItemsControl_ModbusData">
+
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Vertical" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+
+								<ItemsControl.ItemTemplate>
+
+									<DataTemplate>
+
+										<Border Background="{Binding RowBackground, Mode=OneWay}"
+												BorderThickness="2"
+												BorderBrush="{Binding RowBackground, Mode=OneWay}"
+												PointerPressed="Border_PointerPressed">
+
+											<Grid ColumnDefinitions="2*,4*,4*,6*"
+												  Margin="10">
+
+												<SelectableTextBlock Grid.Column="0"
+																     Text="{Binding OperationID, Mode=OneWay}"/>
+
+												<SelectableTextBlock Grid.Column="1"
+																     Text="{Binding FuncNumber, Mode=OneWay}"/>
+
+												<SelectableTextBlock Grid.Column="2"
+																	 Text="{Binding ViewAddress, Mode=OneWay}"/>
+
+												<SelectableTextBlock Grid.Column="3"
+																	 Text="{Binding ViewData, Mode=OneWay}"/>
+
+											</Grid>
+
+										</Border>
+
+									</DataTemplate>
+
+								</ItemsControl.ItemTemplate>
+
+							</ItemsControl>
+
+						</ScrollViewer>
+
+					</Grid>
+
+					<Border.Styles>
+
 						<Style Selector="TextBlock">
-							<Setter Property="FontSize" Value="16"/>
 							<Setter Property="Foreground" Value="Black"/>
+							<Setter Property="FontSize" Value="16"/>
 							<Setter Property="TextAlignment" Value="Center"/>
-							<Setter Property="Padding" Value="0,5,0,5"/>
 							<Setter Property="HorizontalAlignment" Value="Center"/>
 							<Setter Property="VerticalAlignment" Value="Center"/>
 						</Style>
 
-						<Style Selector="DataGridColumnHeader">
-							<Setter Property="Template">
-								<ControlTemplate>
-									<Border Background="WhiteSmoke">
-										<TextBlock Text="{TemplateBinding Content}"/>
-									</Border>
-								</ControlTemplate>
-							</Setter>
+						<Style Selector="SelectableTextBlock">
+							<Setter Property="Foreground" Value="Black"/>
+							<Setter Property="FontSize" Value="16"/>
+							<Setter Property="TextAlignment" Value="Center"/>
+							<Setter Property="HorizontalAlignment" Value="Center"/>
+							<Setter Property="VerticalAlignment" Value="Center"/>
 						</Style>
+						
+					</Border.Styles>
 
-						<!-- Полосатая таблица -->
+				</Border>
 
-						<Style Selector="DataGridRow:nth-child(odd)">
-							<Setter Property="Background" Value="{DynamicResource DataGrid_Color_RowBackground}"/>
-						</Style>
-
-						<Style Selector="DataGridRow:nth-child(even)">
-							<Setter Property="Background" Value="{DynamicResource DataGrid_Color_AlternatingRowBackground}"/>
-						</Style>
-
-					</DataGrid.Styles>
-
-					<DataGrid.Columns>
-
-						<DataGridTextColumn Header="ID"
-											Binding="{Binding Path=OperationID}"
-											Width="2*"/>
-
-						<DataGridTextColumn Header="Функция"
-											Binding="{Binding Path=FuncNumber}"
-											Width="4*"/>
-
-						<DataGridTextColumn Header="Адрес"
-											Binding="{Binding Path=ViewAddress}"
-											Width="4*"/>
-
-						<DataGridTextColumn Header="Данные"
-											Binding="{Binding Path=ViewData}"
-											Width="6*"/>
-
-					</DataGrid.Columns>
-
-				</DataGrid>
+				<!-- Table View end definition -->
 				
 			</Grid>			
 
