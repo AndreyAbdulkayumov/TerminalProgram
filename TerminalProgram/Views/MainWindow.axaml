@@ -26,8 +26,10 @@
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/MenuButton.axaml"/>
-
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		
 	</Window.Styles>
 	
 	
@@ -70,89 +72,29 @@
 						   PointerPressed="Chrome_PointerPressed"/>
 
 				<Button ToolTip.Tip="Свернуть"
-						Width="25" Height="25"
-						CornerRadius="0"
-						BorderThickness="1"
+						Classes="WindowChromeButton_All"
 						Margin="0,0,50,0"
-						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Minimize_Click">
 
-					<Button.Styles>
-						<Style Selector="Button">
-							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Background}"/>
-							<Style Selector="^:pointerover /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_MouseOver_Background}"/>
-							</Style>
-							<Style Selector="^:pressed /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Pressed_Background}"/>
-							</Style>
-						</Style>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
-
-					<Icons:MaterialIcon Kind="WindowMinimize"
-										Foreground="#3A3A3A"
-										Width="20" Height="20"/>
+					<Icons:MaterialIcon Kind="WindowMinimize"/>
 
 				</Button>
 
 				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
-						Width="25" Height="25"
-						CornerRadius="0"
-						BorderThickness="1"
+						Classes="WindowChromeButton_All"
 						Margin="0,0,25,0"
-						HorizontalAlignment="Right" VerticalAlignment="Stretch"
 						Click="Button_Maximize_Click">
-
-					<Button.Styles>
-						<Style Selector="Button">
-							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Background}"/>
-							<Style Selector="^:pointerover /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_MouseOver_Background}"/>
-							</Style>
-							<Style Selector="^:pressed /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Pressed_Background}"/>
-							</Style>
-						</Style>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
-
-					<Icons:MaterialIcon Kind="WindowMaximize"
-										Foreground="#3A3A3A"
-										Width="20" Height="20"/>
+					
+					<Icons:MaterialIcon Kind="WindowMaximize"/>
 
 				</Button>
 				
 				<Button x:Name="Button_Close"
 						ToolTip.Tip="Закрыть"
-						Width="25" Height="25"
-						BorderThickness="1"
-						CornerRadius="0,4,0,0"
-						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Classes="WindowChromeButton_CloseApp"						
 						Click="Button_Close_Click">
 
-					<Button.Styles>
-						<Style Selector="Button">
-							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
-							<Style Selector="^:pointerover /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
-							</Style>
-							<Style Selector="^:pressed /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
-							</Style>
-						</Style>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
-
-					<Icons:MaterialIcon Kind="WindowClose"
-										Foreground="#3A3A3A"
-										Width="20" Height="20"/>
+					<Icons:MaterialIcon Kind="WindowClose"/>
 					
 				</Button>
 				

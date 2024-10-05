@@ -17,13 +17,11 @@
 		
 		<Style Selector="^:pointerover /template/ Border">
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
-			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_MouseOver}"/>
 			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
 
 		<Style Selector="^:focus /template/ Border" >
 			<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
-			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_Focused}"/>
 			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
 
@@ -34,12 +32,12 @@
 
 		<Style Selector="^:error /template/ Border">
 			<Setter Property="BorderThickness" Value="2"/>
-			<Setter Property="BorderBrush" Value="OrangeRed"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_Error}"/>
 			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
 
 		<Style Selector="^ DataValidationErrors TextBlock">
-			<Setter Property="Foreground" Value="OrangeRed"/>			
+			<Setter Property="Foreground" Value="{DynamicResource TextInputField_Color_ValidationMessage}"/>			
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="HorizontalAlignment" Value="Center"/>
 		</Style>

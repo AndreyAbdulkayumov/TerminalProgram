@@ -3,122 +3,127 @@
 
 	<!-- All Buttons -->
 
-	<SolidColorBrush x:Key="Button_Color_Enabled_Background" Color="#FF708090"/>
+	<SolidColorBrush x:Key="Button_Color_Enabled_Background" Color="#708090"/>
 	<SolidColorBrush x:Key="Button_Color_Enabled_Foreground" Color="WhiteSmoke"/>
 
-	<SolidColorBrush x:Key="Button_Color_MouseOver_Background" Color="#FF5E8AC6"/>
+	<SolidColorBrush x:Key="Button_Color_MouseOver_Background" Color="#5E8AC6"/>
 
-	<SolidColorBrush x:Key="Button_Color_Pressed_Background" Color="#FF649BE6"/>
+	<SolidColorBrush x:Key="Button_Color_Pressed_Background" Color="#649BE6"/>
 
-	<SolidColorBrush x:Key="Button_Color_Disabled_Background" Color="#FFBDBDBD"/>
-	<SolidColorBrush x:Key="Button_Color_Disabled_Foreground" Color="#FF505050"/>
+	<SolidColorBrush x:Key="Button_Color_Disabled_Background" Color="#BDBDBD"/>
+	<SolidColorBrush x:Key="Button_Color_Disabled_Foreground" Color="#505050"/>
 
+	<!-- MenuButtons -->
+
+	<SolidColorBrush x:Key="MenuButton_Color_Foreground" Color="#707070"/>
+	
 	<!-- All ComboBoxes -->
 
 	<SolidColorBrush x:Key="ComboBox_Color_Enabled_Background" Color="WhiteSmoke"/>
-	<SolidColorBrush x:Key="ComboBox_Color_MouseOver_Background" Color="#FFD1EAF3"/>
-	<SolidColorBrush x:Key="ComboBox_Color_Pressed_Background" Color="#FFC5E7F3"/>
-	<SolidColorBrush x:Key="ComboBox_Color_Disabled_Background" Color="#FFBDBDBD"/>
+	<SolidColorBrush x:Key="ComboBox_Color_MouseOver_Background" Color="#D1EAF3"/>
+	<SolidColorBrush x:Key="ComboBox_Color_Pressed_Background" Color="#C5E7F3"/>
+	<SolidColorBrush x:Key="ComboBox_Color_Disabled_Background" Color="#BDBDBD"/>
+
+	<SolidColorBrush x:Key="ComboBox_Color_Foreground" Color="Black"/>
 
 	<!-- All TextInputField (TextBox) -->
 
 	<SolidColorBrush x:Key="TextInputField_Color_Enabled_Background" Color="WhiteSmoke"/>
-	<SolidColorBrush x:Key="TextInputField_Color_MouseOver_Background" Color="#FFD1EAF3"/>
-	<SolidColorBrush x:Key="TextInputField_Color_Pressed_Background" Color="#FFC5E7F3"/>
-	<SolidColorBrush x:Key="TextInputField_Color_Disabled_Background" Color="#FFBDBDBD"/>
+	<SolidColorBrush x:Key="TextInputField_Color_Disabled_Background" Color="#BDBDBD"/>
 
-	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush" Color="#FFABABAB"/>
-	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush_MouseOver" Color="#FFA4DBE8"/>
-	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush_Focused" Color="#FFA2BAF5"/>
+	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush_Error" Color="OrangeRed"/>
 
+	<SolidColorBrush x:Key="TextInputField_Color_ValidationMessage" Color="OrangeRed"/>
 	
 	<!-- All ScrollBars -->
 
 	<SolidColorBrush x:Key="ScrollBar_Color_Background" Color="WhiteSmoke"/>
 
+	<!-- GridSplitters -->
+
+	<SolidColorBrush x:Key="GridSplitter_Color_Background" Color="#6B6B6B"/>
+	
 	<!-- WindowChrome -->
 
-	<SolidColorBrush x:Key="WindowChrome_Color" Color="#FFDEDEDE"/>
+	<SolidColorBrush x:Key="WindowChrome_Color" Color="#DEDEDE"/>
 	<SolidColorBrush x:Key="WindowChrome_Color_Title" Color="Black"/>
 
 	<SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_Background" Color="Silver"/>
-	<SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_MouseOver_Background" Color="#FFD4D4D4"/>
-	<SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_Pressed_Background" Color="#FFE9E9E9"/>
+	<SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_MouseOver_Background" Color="#D4D4D4"/>
+	<SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_Pressed_Background" Color="#E9E9E9"/>
 
-	<SolidColorBrush x:Key="WindowChrome_Color_MinimizeApp_Foreground" Color="#FF3A3232"/>
+	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Background" Color="#BB7E8C"/>
+	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_MouseOver_Background" Color="#EB90A3"/>
+	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Pressed_Background" Color="#F27D93"/>
 
-	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Background" Color="IndianRed"/>
-	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_MouseOver_Background" Color="#FFF15E5E"/>
-	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Pressed_Background" Color="#FFFF4F4F"/>
-
-	<SolidColorBrush x:Key="WindowChrome_Color_CloseApp_Foreground" Color="#FF3A3232"/>
+	<SolidColorBrush x:Key="WindowChrome_Color_Button_Foreground" Color="#3A3A3A"/>
 
 	<!-- MainWindow -->
 
 	<SolidColorBrush x:Key="MainWindow_Color_Text" Color="Black"/>
-	<SolidColorBrush x:Key="MainWindow_Color_Text_Bright" Color="#FF0066CC"/>
+	<SolidColorBrush x:Key="MainWindow_Color_Text_Bright" Color="#0066CC"/>
 
-	<SolidColorBrush x:Key="MainWindow_Back_Color_Background" Color="#FFA9A9A9"/>
+	<SolidColorBrush x:Key="MainWindow_Back_Color_Background" Color="#A9A9A9"/>
 	
-	<SolidColorBrush x:Key="MainWindow_Field_Color_Background" Color="#FFD5D5D5"/>
+	<SolidColorBrush x:Key="MainWindow_Field_Color_Background" Color="#D5D5D5"/>
 
-	<SolidColorBrush x:Key="MainWindow_Color_BorderBrush" Color="#FFCDCDCD"/>
+	<SolidColorBrush x:Key="MainWindow_Color_BorderBrush" Color="#CDCDCD"/>
 
 	<SolidColorBrush x:Key="MenuItem_Color_Foreground" Color="Black"/>
 
 	<!-- Connection String -->
 
-	<SolidColorBrush x:Key="ConnectionString_Background" Color="#FFBFD3E9"/>
-	<SolidColorBrush x:Key="ConnectionString_BorderBrush" Color="#FFABABAB"/>
+	<SolidColorBrush x:Key="ConnectionString_Background" Color="#BFD3E9"/>
+	<SolidColorBrush x:Key="ConnectionString_BorderBrush" Color="#ABABAB"/>
 
-	<SolidColorBrush x:Key="ConnectionString_LedBrush_Active" Color="#FFFFA500"/>
+	<SolidColorBrush x:Key="ConnectionString_LedBrush_Active" Color="#FFA500"/>
 	<SolidColorBrush x:Key="ConnectionString_LedBrush_Deactive" Color="FloralWhite"/>
 
 	<!-- TX RX Field in MainWindow -->
 
-	<SolidColorBrush x:Key="TX_RX_Field_Background" Color="#FFF3F0E9"/>
+	<SolidColorBrush x:Key="TX_RX_Field_Background" Color="#F3F0E9"/>
 	<SolidColorBrush x:Key="TX_RX_Field_Foreground" Color="Black"/>
 	
-	<SolidColorBrush x:Key="TX_RX_Field_BorderBrush" Color="#FFCBCBCB"/>
-	<SolidColorBrush x:Key="TX_RX_Field_BorderBrush_MouseOver" Color="#FFA4DBE8"/>
-	<SolidColorBrush x:Key="TX_RX_Field_BorderBrush_Focused" Color="#FFA2BAF5"/>
+	<SolidColorBrush x:Key="TX_RX_Field_BorderBrush" Color="#CBCBCB"/>
+	<SolidColorBrush x:Key="TX_RX_Field_BorderBrush_MouseOver" Color="#A4DBE8"/>
+	<SolidColorBrush x:Key="TX_RX_Field_BorderBrush_Focused" Color="#A2BAF5"/>
 
 	<!-- DataGrid in MainWindow -->
 
 	<SolidColorBrush x:Key="DataGrid_Color_Background" Color="Silver"/>
-	<SolidColorBrush x:Key="DataGrid_Color_BorderBrush" Color="#FFABABAB"/>
+	<SolidColorBrush x:Key="DataGrid_Color_BorderBrush" Color="#ABABAB"/>
 	<SolidColorBrush x:Key="DataGrid_Color_HeaderBackground" Color="WhiteSmoke"/>
-	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#FFEFEFEF"/>
-	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#FFDADADA"/>
+	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#EFEFEF"/>
+	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#DADADA"/>
 	<SolidColorBrush x:Key="DataGrid_Color_RowBackground_Selected" Color="LightBlue"/>
 	
 	<!-- Modbus Data Field -->
 
-	<SolidColorBrush x:Key="ModbusDataField_Color_BorderBackground" Color="#FFDFDFDF"/>
-	<SolidColorBrush x:Key="ModbusDataField_Color_BorderBrush" Color="#FFABABAB"/>
-	<SolidColorBrush x:Key="ModbusDataField_Color_DataBackground" Color="#FFEFEFEF"/>
+	<SolidColorBrush x:Key="ModbusDataField_Color_BorderBackground" Color="#DFDFDF"/>
+	<SolidColorBrush x:Key="ModbusDataField_Color_BorderBrush" Color="#ABABAB"/>
+	<SolidColorBrush x:Key="ModbusDataField_Color_DataBackground" Color="#EFEFEF"/>
 
-	<SolidColorBrush x:Key="ModbusDataField_Color_ByteNumberBackground" Color="#FFBFD7E3"/>
+	<SolidColorBrush x:Key="ModbusDataField_Color_ByteNumberBackground" Color="#BFD7E3"/>
 
 	<!-- Settings Window -->
 
 	<SolidColorBrush x:Key="Settings_Color_Text" Color="Black"/>
-	<SolidColorBrush x:Key="Settings_Color_ToolBar" Color="#FFF0F0F0"/>
-	<SolidColorBrush x:Key="Settings_Color_Background" Color="#FFE6E6E6"/>
+	<SolidColorBrush x:Key="Settings_Color_ToolBar" Color="#F0F0F0"/>
+	<SolidColorBrush x:Key="Settings_Color_Background" Color="#E6E6E6"/>
 
-	<SolidColorBrush x:Key="Settings_Color_PortNotFound_Background" Color="#FFD68A96"/>
-	<SolidColorBrush x:Key="Settings_Color_PortNotFound_BorderBrush" Color="#FF565656"/>
+	<SolidColorBrush x:Key="Settings_Color_PortNotFound_Background" Color="#D68A96"/>
+	<SolidColorBrush x:Key="Settings_Color_PortNotFound_BorderBrush" Color="#565656"/>
 
 	<!-- Service Windows -->
 
-	<SolidColorBrush x:Key="ServiceWindow_Color_Background" Color="#FFEDEDED"/>
+	<SolidColorBrush x:Key="ServiceWindow_Color_Background" Color="#EDEDED"/>
 	<SolidColorBrush x:Key="ServiceWindow_Color_Text_Top" Color="Black"/>
-	<SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#FF5A5A5A"/>
+	<SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#5A5A5A"/>
 
 	<!-- Cycle Mode Window -->
 
-	<SolidColorBrush x:Key="CycleModeWindow_Color_Background" Color="#FFD5D5D5"/>
-	<SolidColorBrush x:Key="CycleModeWindow_Color_Message" Color="#FFDDDDDD"/>
-	<SolidColorBrush x:Key="CycleModeWindow_Color_Response" Color="#FFDADADA"/>
+	<SolidColorBrush x:Key="CycleModeWindow_Color_Background" Color="#D5D5D5"/>
+	<SolidColorBrush x:Key="CycleModeWindow_Color_Message" Color="#DDDDDD"/>
+	<SolidColorBrush x:Key="CycleModeWindow_Color_Response" Color="#DADADA"/>
 	
 </ResourceDictionary>

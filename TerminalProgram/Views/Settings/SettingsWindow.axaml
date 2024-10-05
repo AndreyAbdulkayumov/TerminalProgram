@@ -26,7 +26,8 @@
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/MenuButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		
 	</Window.Styles>
 	
@@ -56,30 +57,10 @@
 						   PointerPressed="Chrome_PointerPressed"/>
 				
 				<Button ToolTip.Tip="Закрыть"
-						Width="25" Height="25"						
-						CornerRadius="0,4,0,0"
-						BorderThickness="1"
-						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
-
-					<Button.Styles>
-						<Style Selector="Button">
-							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
-							<Style Selector="^:pointerover /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
-							</Style>
-							<Style Selector="^:pressed /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
-							</Style>
-						</Style>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
-
-					<Icons:MaterialIcon Kind="WindowClose"
-										Foreground="#3A3A3A"
-										Width="20" Height="20"/>
+					
+					<Icons:MaterialIcon Kind="WindowClose"/>
 					
 				</Button>
 

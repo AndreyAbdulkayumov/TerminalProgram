@@ -111,10 +111,10 @@
 								Background="{DynamicResource DataGrid_Color_HeaderBackground}"
 								BorderThickness="2"
 								BorderBrush="{DynamicResource DataGrid_Color_HeaderBackground}"
-								CornerRadius="6,6,0,0">
+								CornerRadius="4,4,0,0">
 
 							<Grid ColumnDefinitions="2*,4*,4*,6*"
-								  Margin="10">
+								  Margin="10,0,10,0">
 
 								<TextBlock Grid.Column="0"
 										   Text="ID"/>
