@@ -150,10 +150,13 @@ namespace Core.Tests.Modbus
         {
             UInt16[] WriteDataArray = new UInt16[] { WriteData };
 
+            byte[] bytes = BitConverter.GetBytes(WriteData);
+
             MessageData Data = new WriteTypeMessage(
                 SlaveID,
                 Address,
-                WriteDataArray,
+                bytes,
+                1,
                 false
                 );
 
@@ -191,10 +194,13 @@ namespace Core.Tests.Modbus
         private void CheckMultiplyWriteFunction(ModbusWriteFunction SelectedFunction, UInt16 PackageNumber,
             byte SlaveID, UInt16 Address, UInt16[] WriteData)
         {
+            byte[] bytes = ModbusField.Get_WriteData(WriteData);
+
             MessageData Data = new WriteTypeMessage(
                 SlaveID,
                 Address,
-                WriteData,
+                bytes,
+                WriteData.Length,
                 false
                 );
 
