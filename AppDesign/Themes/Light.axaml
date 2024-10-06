@@ -28,7 +28,7 @@
 
 	<!-- All TextInputField (TextBox) -->
 
-	<SolidColorBrush x:Key="TextInputField_Color_Enabled_Background" Color="WhiteSmoke"/>
+	<SolidColorBrush x:Key="TextInputField_Color_Enabled_Background" Color="White"/>
 	<SolidColorBrush x:Key="TextInputField_Color_Disabled_Background" Color="#BDBDBD"/>
 
 	<SolidColorBrush x:Key="TextInputField_Color_BorderBrush_Error" Color="OrangeRed"/>
@@ -58,8 +58,8 @@
 	<SolidColorBrush x:Key="MainWindow_Color_Text" Color="#414141"/>
 	<SolidColorBrush x:Key="MainWindow_Color_Text_Bright" Color="#0066CC"/>
 
-	<SolidColorBrush x:Key="MainWindow_Back_Color_Background" Color="#C0C0C0"/>	
-	<SolidColorBrush x:Key="MainWindow_Field_Color_Background" Color="#E0E0E0"/>
+	<SolidColorBrush x:Key="MainWindow_Back_Color_Background" Color="#BDBDBD"/>	
+	<SolidColorBrush x:Key="MainWindow_Field_Color_Background" Color="#DBDBDB"/>
 
 	<SolidColorBrush x:Key="MainWindow_Color_BorderBrush" Color="#CDCDCD"/>
 
