@@ -21,15 +21,15 @@ namespace Core.Clients
 
     public class SerialPortInfo : ITypeOfInfo
     {
-        public string? COM_Port;
+        public string? Port;
         public string? BaudRate;
         public string? Parity;
         public string? DataBits;
         public string? StopBits;
 
-        public SerialPortInfo(string? COM_Port, string? BaudRate, string? Parity, string? DataBits, string? StopBits)
+        public SerialPortInfo(string? Port, string? BaudRate, string? Parity, string? DataBits, string? StopBits)
         {
-            this.COM_Port = COM_Port;
+            this.Port = Port;
             this.BaudRate = BaudRate;
             this.Parity = Parity;
             this.DataBits = DataBits;

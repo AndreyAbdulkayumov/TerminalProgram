@@ -82,7 +82,8 @@
 
 		</Grid>
 
-		<Border Background="{DynamicResource TX_RX_Field_Background}"
+		<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+				BorderThickness="1"
 				Width="260"
 				CornerRadius="10">
 

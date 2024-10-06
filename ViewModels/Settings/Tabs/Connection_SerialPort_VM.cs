@@ -34,20 +34,20 @@ namespace ViewModels.Settings.Tabs
             set => this.RaiseAndSetIfChanged(ref _message_PortNotFound_IsVisible, value);
         }
 
-        private ObservableCollection<string> _com_Ports = new ObservableCollection<string>();
+        private ObservableCollection<string> _serialPorts = new ObservableCollection<string>();
 
-        public ObservableCollection<string> COM_Ports
+        public ObservableCollection<string> SerialPorts
         {
-            get => _com_Ports;
-            set => this.RaiseAndSetIfChanged(ref _com_Ports, value);
+            get => _serialPorts;
+            set => this.RaiseAndSetIfChanged(ref _serialPorts, value);
         }
 
-        private string? _selected_COM_Port;
+        private string? _selected_SerialPort;
 
-        public string? Selected_COM_Port
+        public string? Selected_SerialPort
         {
-            get => _selected_COM_Port;
-            set => this.RaiseAndSetIfChanged(ref _selected_COM_Port, value);
+            get => _selected_SerialPort;
+            set => this.RaiseAndSetIfChanged(ref _selected_SerialPort, value);
         }
 
         /************************************/
@@ -166,7 +166,7 @@ namespace ViewModels.Settings.Tabs
             set => this.RaiseAndSetIfChanged(ref _selected_StopBits, value);
         }
 
-        public ReactiveCommand<Unit, Unit> Command_ReScan_COMPorts { get; }
+        public ReactiveCommand<Unit, Unit> Command_ReScan_SerialPorts { get; }
 
         private readonly Action<string, MessageType> Message;
 
@@ -181,17 +181,17 @@ namespace ViewModels.Settings.Tabs
 
             SettingsFile = Model_Settings.Model;
 
-            Command_ReScan_COMPorts = ReactiveCommand.Create(() =>
+            Command_ReScan_SerialPorts = ReactiveCommand.Create(() =>
             {
                 if (SettingsFile.Settings == null)
                 {
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
+                ReScan_SerialPorts(SettingsFile.Settings.Connection_SerialPort);
             });
 
-            Command_ReScan_COMPorts.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
         }
 
         public string GetFieldViewName(string fieldName)
@@ -215,15 +215,15 @@ namespace ViewModels.Settings.Tabs
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                ReScan_COMPorts(SettingsFile.Settings.Connection_SerialPort);
+                ReScan_SerialPorts(SettingsFile.Settings.Connection_SerialPort);
 
                 if (SettingsFile.Settings.Connection_SerialPort == null)
                 {
-                    Selected_COM_Port = null;
+                    Selected_SerialPort = null;
                     Message_PortNotFound = "Порт не задан";
                     Message_PortNotFound_IsVisible = true;
 
-                    Selected_COM_Port = null;
+                    Selected_SerialPort = null;
 
                     Selected_BaudRate = null;
                     BaudRate_IsCustom = false;
@@ -255,30 +255,30 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private void ReScan_COMPorts(SerialPort_Info? info)
+        private void ReScan_SerialPorts(SerialPort_Info? info)
         {
             string[] portsList = SerialPort.GetPortNames();
 
-            COM_Ports.Clear();
+            SerialPorts.Clear();
 
             foreach (string port in portsList)
             {
-                COM_Ports.Add(port);
+                SerialPorts.Add(port);
             }
 
-            if (info == null || string.IsNullOrEmpty(info.COMPort))
+            if (info == null || string.IsNullOrEmpty(info.Port))
             {
-                Selected_COM_Port = null;
+                Selected_SerialPort = null;
                 Message_PortNotFound = "Порт не задан";
                 Message_PortNotFound_IsVisible = true;
 
                 return;
             }
 
-            string selectedPort = info.COMPort;
+            string selectedPort = info.Port;
             string? foundPort = null;
 
-            foreach (string port in COM_Ports)
+            foreach (string port in SerialPorts)
             {
                 if (port == selectedPort)
                 {
@@ -287,9 +287,9 @@ namespace ViewModels.Settings.Tabs
                 }
             }
 
-            Selected_COM_Port = foundPort;
+            Selected_SerialPort = foundPort;
 
-            if (string.IsNullOrEmpty(Selected_COM_Port))
+            if (string.IsNullOrEmpty(Selected_SerialPort))
             {
                 Message_PortNotFound = selectedPort + " не найден";
                 Message_PortNotFound_IsVisible = true;

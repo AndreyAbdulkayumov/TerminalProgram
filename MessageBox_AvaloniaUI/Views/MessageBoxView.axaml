@@ -13,8 +13,8 @@
 		CanResize="False"
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
-		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None"
 		Background="Transparent"
 		KeyDown="Window_KeyDown">
@@ -25,10 +25,7 @@
 		
 	</Window.Styles>
 
-	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
-			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
-			BorderThickness="2"
-			CornerRadius="6">
+	<Border Background="{DynamicResource MainWindow_Field_Color_Background}">
 
 		<Grid>
 
@@ -94,7 +91,7 @@
 			
 			<Border Grid.Row="2"
 					CornerRadius="0,0,4,4"
-				    Background="{DynamicResource MainWindow_Field_Color_Background}">
+				    Background="{DynamicResource WindowChrome_Color}">
 				
 				<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
 

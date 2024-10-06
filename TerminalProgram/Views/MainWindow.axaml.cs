@@ -18,15 +18,12 @@ namespace TerminalProgram.Views;
 
 public partial class MainWindow : Window
 {
-    private CornerRadius _windowCornerRadius;
-    private CornerRadius _buttonCloseRadius;
-
     private readonly CommonUI_VM ViewModel;
 
     private readonly IMessageBox Message;
 
     private readonly double WorkspaceOpacity_Default;
-    private const double WorkspaceOpacity_OpenChildWindow = 0.3;
+    private const double WorkspaceOpacity_OpenChildWindow = 0.15;
 
 
     public MainWindow()
@@ -154,20 +151,11 @@ public partial class MainWindow : Window
         if (WindowState == WindowState.Maximized)
         {
             WindowState = WindowState.Normal;
-
-            Border_Window.CornerRadius = _windowCornerRadius;
-            Button_Close.CornerRadius = _buttonCloseRadius;
         }
 
         else
         {
-            _windowCornerRadius = Border_Window.CornerRadius;
-            _buttonCloseRadius = Button_Close.CornerRadius;
-
             WindowState = WindowState.Maximized;
-            
-            Border_Window.CornerRadius = new CornerRadius(0);
-            Button_Close.CornerRadius = new CornerRadius(0);
         }
     }
 

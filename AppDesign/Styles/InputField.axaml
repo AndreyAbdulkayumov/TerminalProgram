@@ -4,7 +4,6 @@
 	<Style Selector="TextBox.InputField">
 
 		<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
-		<Setter Property="BorderBrush" Value="Green"/>
 		<Setter Property="Foreground" Value="Black"/>
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="CornerRadius" Value="4"/>

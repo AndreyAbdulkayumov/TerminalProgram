@@ -30,7 +30,7 @@
 	</UserControl.Styles>
 	
 	
-	<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
+	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 			BorderThickness="1"
 			CornerRadius="10"
 			HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -51,8 +51,8 @@
 
 					<DataTemplate>
 
-						<Border Background="{DynamicResource TX_RX_Field_Background}"
-								BorderBrush="{DynamicResource TX_RX_Field_BorderBrush}"
+						<Border Background="{DynamicResource Float_Field_Background}"
+								BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 								BorderThickness="1"
 								CornerRadius="10"
 								Padding="5"

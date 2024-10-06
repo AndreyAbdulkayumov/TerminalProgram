@@ -98,8 +98,7 @@
 
 				<!-- Table View start definition -->
 				
-				<Border Background="{DynamicResource DataGrid_Color_Background}"
-						BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
+				<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 						BorderThickness="1"
 						Margin="10"
 						CornerRadius="6"

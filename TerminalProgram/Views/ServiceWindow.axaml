@@ -11,9 +11,9 @@
 		CanResize="False"
 		ShowInTaskbar="False"
 		WindowStartupLocation="CenterOwner"
-		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="BorderOnly">
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None">
 
 	<Window.Styles>
 
@@ -25,10 +25,7 @@
 	</Window.Styles>
 	
 
-	<Border Background="{DynamicResource MainWindow_Back_Color_Background}"
-			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
-			BorderThickness="3"
-			CornerRadius="6">
+	<Border Background="{DynamicResource MainWindow_Back_Color_Background}">
 
 		<Grid>
 

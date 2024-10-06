@@ -16,8 +16,7 @@
 
 	<Grid>
 		
-		<Border Background="{DynamicResource DataGrid_Color_Background}"
-				BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
+		<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 				BorderThickness="1"
 				CornerRadius="6"
 				Margin="10">
@@ -54,7 +53,7 @@
 
 					</Grid>
 
-					<Separator Background="Silver" />
+					<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
 					
 					<Grid>
 

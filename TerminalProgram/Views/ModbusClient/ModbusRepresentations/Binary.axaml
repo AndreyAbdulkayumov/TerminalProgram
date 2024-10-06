@@ -12,7 +12,7 @@
 		<Converters:Binary_BoolToColorConverter x:Key="BoolToColorConverter"/>
 	</UserControl.Resources>
 
-	<Border BorderBrush="{DynamicResource ModbusDataField_Color_BorderBrush}"
+	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 				BorderThickness="1"
 				CornerRadius="10"
 				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

@@ -47,8 +47,7 @@
 	
 
 	<Border x:Name="Border_Window"
-			Background="{DynamicResource MainWindow_Back_Color_Background}"
-			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}">
+			Background="{DynamicResource MainWindow_Back_Color_Background}">
 
 		<Grid>
 
@@ -87,8 +86,7 @@
 
 				</Button>
 				
-				<Button x:Name="Button_Close"
-						ToolTip.Tip="Закрыть"
+				<Button ToolTip.Tip="Закрыть"
 						Classes="WindowChromeButton_CloseApp"						
 						Click="Button_Close_Click">
 
@@ -170,7 +168,7 @@
 
 						<Border Margin="0,0,0,10"
 								Background="{DynamicResource TX_RX_Field_Background}"
-								BorderBrush="{DynamicResource TX_RX_Field_BorderBrush}"
+								BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 								BorderThickness="1"
 								CornerRadius="10"
 								IsVisible="{Binding UpdateMessageIsVisible, Mode=OneWay}"

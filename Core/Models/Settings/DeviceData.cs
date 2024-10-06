@@ -2,7 +2,7 @@
 {
     public class SerialPort_Info
     {
-        public string? COMPort { get; set; }
+        public string? Port { get; set; }
         public string? BaudRate { get; set; }
         public bool BaudRate_IsCustom { get; set; }
         public string? BaudRate_Custom { get; set; }
@@ -63,7 +63,7 @@
             {
                 SerialPort = new SerialPort_Info()
                 {
-                    COMPort = Connection_SerialPort.COMPort,
+                    Port = Connection_SerialPort.Port,
                     BaudRate = Connection_SerialPort.BaudRate,
                     BaudRate_IsCustom = Connection_SerialPort.BaudRate_IsCustom,
                     BaudRate_Custom = Connection_SerialPort.BaudRate_Custom,

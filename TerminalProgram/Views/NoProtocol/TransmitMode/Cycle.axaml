@@ -13,7 +13,7 @@
 	</UserControl.Styles>
 
 	<Border Background="{DynamicResource DataGrid_Color_Background}"
-			BorderBrush="{DynamicResource DataGrid_Color_BorderBrush}"
+			BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 			BorderThickness="2"
 			CornerRadius="4"
 			Margin="10">

@@ -51,7 +51,7 @@
 				Width="450"
 				HorizontalAlignment="Center">
 
-		<!--COM Port-->
+		<!--Port-->
 
 		<Grid>
 
@@ -71,19 +71,19 @@
 
 			</Border>
 
-			<TextBlock Text="COM - Port" Classes="Parameters"/>
+			<TextBlock Text="Port" Classes="Parameters"/>
 
-			<ComboBox ItemsSource="{Binding COM_Ports}"
-					  SelectedItem="{Binding Selected_COM_Port, Mode=TwoWay}"/>
+			<ComboBox ItemsSource="{Binding SerialPorts}"
+					  SelectedItem="{Binding Selected_SerialPort, Mode=TwoWay}"/>
 
-			<!--Re-scan COM Ports-->
+			<!--Re-scan Serial Ports-->
 
 			<Button FontSize="14"
-					ToolTip.Tip="Обновить COM порты"
+					ToolTip.Tip="Искать порты заново"
 					Width="30" Height="30"
 					Margin="350,0,0,0"
 					HorizontalAlignment="Left" VerticalAlignment="Center"
-					Command="{Binding Command_ReScan_COMPorts}">
+					Command="{Binding Command_ReScan_SerialPorts}">
 
 				<Button.Styles>
 					<Style Selector="TextBlock">

@@ -49,8 +49,7 @@ namespace MessageBox_AvaloniaUI
 
             else
             {
-                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                window.Topmost = true;
+                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;                
                 window.Show();
             }            
         }

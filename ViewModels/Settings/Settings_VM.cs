@@ -279,7 +279,7 @@ namespace ViewModels.Settings
                                         
                     Connection_SerialPort = new SerialPort_Info()
                     {
-                        COMPort = Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port,
+                        Port = Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort,
                         BaudRate = Tab_Connection_VM.Connection_SerialPort_VM.Selected_BaudRate,
                         BaudRate_IsCustom = Tab_Connection_VM.Connection_SerialPort_VM.BaudRate_IsCustom,
                         BaudRate_Custom = Tab_Connection_VM.Connection_SerialPort_VM.Custom_BaudRate_Value,
@@ -299,8 +299,8 @@ namespace ViewModels.Settings
 
                 CommonUI_VM.SettingsDocument = SelectedPreset;
 
-                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port == null ||
-                    Tab_Connection_VM.Connection_SerialPort_VM.Selected_COM_Port == String.Empty)
+                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort == null ||
+                    Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort == String.Empty)
                 {
                     Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = true;
                 }

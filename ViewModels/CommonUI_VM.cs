@@ -407,7 +407,7 @@ namespace ViewModels
                         else
                         {
                             connectionString =
-                                (string.IsNullOrEmpty(settings.Connection_SerialPort.COMPort) ? "Порт не задан" : settings.Connection_SerialPort.COMPort) +
+                                (string.IsNullOrEmpty(settings.Connection_SerialPort.Port) ? "Порт не задан" : settings.Connection_SerialPort.Port) +
                                 separator +
                                 (settings.Connection_SerialPort.BaudRate_IsCustom == true ?
                                     settings.Connection_SerialPort.BaudRate_Custom : settings.Connection_SerialPort.BaudRate) +
@@ -571,7 +571,7 @@ namespace ViewModels
                 case DeviceData.ConnectionName_SerialPort:
 
                     info = new ConnectionInfo(new SerialPortInfo(
-                        settings.Connection_SerialPort?.COMPort,
+                        settings.Connection_SerialPort?.Port,
                         settings.Connection_SerialPort?.BaudRate_IsCustom == true ?
                             settings.Connection_SerialPort?.BaudRate_Custom : settings.Connection_SerialPort?.BaudRate,
                         settings.Connection_SerialPort?.Parity,

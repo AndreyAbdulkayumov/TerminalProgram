@@ -131,14 +131,14 @@ namespace Core.Clients
                     throw new Exception("Нет информации о настройках подключения по последовательному порту.");
                 }
 
-                if (portInfo.COM_Port == null || portInfo.COM_Port == String.Empty ||
+                if (portInfo.Port == null || portInfo.Port == String.Empty ||
                     portInfo.BaudRate == null || portInfo.BaudRate == String.Empty ||
                     portInfo.Parity == null || portInfo.Parity == String.Empty ||
                     portInfo.DataBits == null || portInfo.DataBits == String.Empty ||
                     portInfo.StopBits == null || portInfo.StopBits == String.Empty)
                 {
                     throw new Exception(
-                        (portInfo.COM_Port == null || portInfo.COM_Port == String.Empty ? "Не задан СОМ порт.\n" : "") +
+                        (portInfo.Port == null || portInfo.Port == String.Empty ? "Не задан СОМ порт.\n" : "") +
                         (portInfo.BaudRate == null || portInfo.BaudRate == String.Empty ? "Не задан BaudRate.\n" : "") +
                         (portInfo.Parity == null || portInfo.Parity == String.Empty ? "Не задан Parity.\n" : "") +
                         (portInfo.DataBits == null || portInfo.DataBits == String.Empty ? "Не задан DataBits\n" : "") +
@@ -208,7 +208,7 @@ namespace Core.Clients
                         throw new Exception("Неправильно задано значение StopBits");
                 }
 
-                _deviceSerialPort.PortName = portInfo.COM_Port;
+                _deviceSerialPort.PortName = portInfo.Port;
                 _deviceSerialPort.BaudRate = BaudRate;
                 _deviceSerialPort.Parity = selectedParity;
                 _deviceSerialPort.DataBits = DataBits;
@@ -229,7 +229,7 @@ namespace Core.Clients
                 {
                     throw new Exception(CommonMessage +
                         "Данные подключения:" + "\n" +
-                        "COM - Port: " + portInfo.COM_Port + "\n" +
+                        "COM - Port: " + portInfo.Port + "\n" +
                         "BaudRate: " + portInfo.BaudRate + "\n" +
                         "Parity: " + portInfo.Parity + "\n" +
                         "DataBits: " + portInfo.DataBits + "\n" +
