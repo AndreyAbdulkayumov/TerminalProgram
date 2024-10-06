@@ -14,9 +14,9 @@
         Title="Терминальная программа"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
-		ExtendClientAreaChromeHints="NoChrome"
 		ExtendClientAreaToDecorationsHint="True"
-		SystemDecorations="Full"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="BorderOnly"	
 		Loaded="Window_Loaded"
 		Closing="Window_Closing">
 
@@ -48,9 +48,7 @@
 
 	<Border x:Name="Border_Window"
 			Background="{DynamicResource MainWindow_Back_Color_Background}"
-			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}"
-			BorderThickness="3"
-			CornerRadius="6">
+			BorderBrush="{DynamicResource MainWindow_Color_BorderBrush}">
 
 		<Grid>
 
