@@ -37,7 +37,6 @@
 			<Grid Grid.Row="0">
 
 				<Border Background="{DynamicResource WindowChrome_Color}"
-						CornerRadius="4,4,0,0"
 						PointerPressed="Chrome_PointerPressed"/>
 
 				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
