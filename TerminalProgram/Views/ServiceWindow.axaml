@@ -25,7 +25,7 @@
 	</Window.Styles>
 	
 
-	<Border Background="{DynamicResource App_Back_Color_Background}">
+	<Border>
 
 		<Grid>
 
@@ -55,14 +55,15 @@
 
 			</Grid>
 
-			<Border Grid.Row="1">
+			<Border Grid.Row="1"
+					Background="{DynamicResource App_Field_Color_Background}">
 
 				<Grid>
 					
 					<TextBlock x:Name="TextBlock_Description" Text="Default Text"
 							   Margin="0,25,0,0"
 							   FontSize="14"
-		   					   Foreground="{DynamicResource ServiceWindow_Color_Text_Top}"
+		   					   Foreground="{DynamicResource App_Color_Text}"
 							   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 
 					<TextBox x:Name="TextBox_SelectFileName" Classes="InputField"

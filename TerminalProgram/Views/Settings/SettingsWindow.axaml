@@ -32,7 +32,7 @@
 	</Window.Styles>
 	
 	
-	<Border>
+	<Border Background="{DynamicResource App_Back_Color_Background}">
 
 		<Grid>
 
@@ -62,8 +62,7 @@
 
 			</Grid>
 
-			<Border Grid.Row="1"
-					Background="{DynamicResource App_Back_Color_Background}">
+			<Border x:Name="Border_Workspace" Grid.Row="1">
 
 				<Grid>
 

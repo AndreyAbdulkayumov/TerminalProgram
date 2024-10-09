@@ -9,6 +9,8 @@
 	<SolidColorBrush x:Key="App_Back_Color_Background" Color="#BDBDBD"/>
 	<SolidColorBrush x:Key="App_Field_Color_Background" Color="#DBDBDB"/>
 
+	<SolidColorBrush x:Key="Window_Color_BorderBrush" Color="#CDCDCD"/>
+	
 	<SolidColorBrush x:Key="Group_Color_BorderBrush" Color="#ABABAB"/>
 	
 	<!-- WindowChrome -->
@@ -41,10 +43,10 @@
 	<SolidColorBrush x:Key="Settings_Color_PortNotFound_Background" Color="#D68A96"/>
 	<SolidColorBrush x:Key="Settings_Color_PortNotFound_BorderBrush" Color="#565656"/>
 
-	<!-- Service Windows -->
+	<!-- About Window -->
 
-	<SolidColorBrush x:Key="ServiceWindow_Color_Text_Top" Color="Black"/>
-	<SolidColorBrush x:Key="ServiceWindow_Color_Text_Back" Color="#5A5A5A"/>
+	<SolidColorBrush x:Key="AboutWindow_Color_Text_Top" Color="Black"/>
+	<SolidColorBrush x:Key="AboutWindow_Color_Text_Back" Color="#5A5A5A"/>
 	
 	<!-- All Buttons -->
 

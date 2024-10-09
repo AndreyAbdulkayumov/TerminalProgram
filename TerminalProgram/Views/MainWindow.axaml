@@ -46,8 +46,7 @@
 	</Window.DataTemplates>
 	
 
-	<Border x:Name="Border_Window"
-			Background="{DynamicResource App_Back_Color_Background}">
+	<Border Background="{DynamicResource App_Back_Color_Background}">
 
 		<Grid>
 
@@ -86,7 +85,7 @@
 				</Button>
 				
 				<Button ToolTip.Tip="Закрыть"
-						Classes="WindowChromeButton_CloseApp"						
+						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
 					<Icons:MaterialIcon Kind="WindowClose"/>

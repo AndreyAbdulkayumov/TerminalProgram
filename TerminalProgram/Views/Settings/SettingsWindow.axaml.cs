@@ -8,6 +8,7 @@ using MessageBox_Core;
 using ViewModels.Settings;
 using Avalonia.Platform.Storage;
 using System.Linq;
+using Avalonia.Threading;
 
 
 namespace TerminalProgram.Views.Settings
@@ -16,9 +17,14 @@ namespace TerminalProgram.Views.Settings
     {
         private readonly Settings_VM ViewModel;
 
+        private readonly double WorkspaceOpacity_Default;
+        private const double WorkspaceOpacity_OpenChildWindow = 0.15;
+
         public SettingsWindow(IMessageBox message, Action set_Dark_Theme, Action set_Light_Theme)
         {
             InitializeComponent();
+
+            WorkspaceOpacity_Default = Border_Workspace.Opacity;
 
             ViewModel = new Settings_VM(
                 message.Show,
@@ -89,9 +95,30 @@ namespace TerminalProgram.Views.Settings
         {
             var window = new ServiceWindow();
 
-            await window.ShowDialog(this);
+            await OpenWindowWithDimmer(async () =>
+            {
+                await window.ShowDialog(this);
+            });            
 
             return window.SelectedFilePath;
+        }
+
+        /********************************************************/
+        //
+        //  Служебный функционал
+        //
+        /********************************************************/
+
+        private async Task OpenWindowWithDimmer(Func<Task> OpenAction)
+        {
+            await Dispatcher.UIThread.Invoke(async () =>
+            {
+                Border_Workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
+
+                await OpenAction();
+
+                Border_Workspace.Opacity = WorkspaceOpacity_Default;
+            });
         }
     }
 }

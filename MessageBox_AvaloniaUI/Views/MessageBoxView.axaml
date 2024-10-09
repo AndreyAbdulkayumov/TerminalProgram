@@ -22,10 +22,13 @@
 	<Window.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
 		
 	</Window.Styles>
 
-	<Border Background="{DynamicResource App_Field_Color_Background}">
+	<Border Background="{DynamicResource App_Field_Color_Background}"
+			BorderBrush="{DynamicResource Window_Color_BorderBrush}"
+			BorderThickness="2">
 
 		<Grid>
 
@@ -35,47 +38,28 @@
 				<RowDefinition Height="40"/>
 			</Grid.RowDefinitions>
 
-			<Grid Grid.Row="0">
+			<Grid Grid.Row="0" 
+				  ClipToBounds="True">
 
 				<Border Background="{DynamicResource WindowChrome_Color}"
-						CornerRadius="4,4,0,0"
-						PointerPressed="Chrome_PointerPressed"/>
-
+			    		PointerPressed="Chrome_PointerPressed"/>
+				
 				<TextBlock x:Name="TextBlock_Title"
 						   Foreground="{DynamicResource WindowChrome_Color_Title}"
 						   FontSize="12"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"
 						   PointerPressed="Chrome_PointerPressed"/>
+				
 
 				<Button ToolTip.Tip="Закрыть"
-						Width="25" Height="25"						
-						CornerRadius="0,4,0,0"
-						HorizontalAlignment="Right" VerticalAlignment="Stretch"
+						Classes="WindowChromeButton_CloseApp"
 						Click="Button_Close_Click">
 
-					<Button.Styles>
-						<Style Selector="Button">
-							<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Background}"/>
-							<Style Selector="^:pointerover /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_MouseOver_Background}"/>
-							</Style>
-							<Style Selector="^:pressed /template/ ContentPresenter">
-								<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_CloseApp_Pressed_Background}"/>
-							</Style>
-						</Style>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
-
-					<Icons:MaterialIcon Kind="WindowClose"
-										Foreground="#3A3A3A"
-										Width="20" Height="20"/>
+					<Icons:MaterialIcon Kind="WindowClose"/>
 
 				</Button>
 
 			</Grid>
-
 
 			<ScrollViewer Grid.Row="1">
 
@@ -85,12 +69,9 @@
 					   Margin="20"
 					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-			</ScrollViewer>
-			
-			
+			</ScrollViewer>		
 			
 			<Border Grid.Row="2"
-					CornerRadius="0,0,4,4"
 				    Background="{DynamicResource WindowChrome_Color}">
 				
 				<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
