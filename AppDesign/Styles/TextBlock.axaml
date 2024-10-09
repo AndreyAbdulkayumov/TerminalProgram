@@ -3,7 +3,7 @@
 
 	<Style Selector="TextBlock">
 		
-		<Setter Property="Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+		<Setter Property="Foreground" Value="{DynamicResource App_Color_Text}"/>
 	
 	</Style>
 	

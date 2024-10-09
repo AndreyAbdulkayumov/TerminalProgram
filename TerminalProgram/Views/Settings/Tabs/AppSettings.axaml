@@ -49,7 +49,7 @@
 		</Grid>
 
 		<CheckBox Content="Проверять обновления при запуске программы"
-				  Foreground="{DynamicResource Settings_Color_Text}"
+				  Foreground="{DynamicResource App_Color_Text}"
 				  FontSize="14"
 				  Width="220"
 				  Margin="90,0,0,0"

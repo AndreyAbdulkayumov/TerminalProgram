@@ -44,7 +44,7 @@
 		</Style>
 
 		<Style Selector="RadioButton.NumberFormat">
-			<Setter Property="Foreground" Value="{DynamicResource Settings_Color_Text}"/>
+			<Setter Property="Foreground" Value="{DynamicResource App_Color_Text}"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="HorizontalAlignment" Value="Center"/>
 			<Setter Property="VerticalAlignment" Value="Top"/>

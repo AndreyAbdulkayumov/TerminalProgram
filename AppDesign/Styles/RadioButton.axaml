@@ -4,11 +4,11 @@
 	<Style Selector="RadioButton">
 
 		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="TextElement.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource App_Color_Text}"/>
 		</Style>
 
 		<Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-			<Setter Property="TextElement.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource App_Color_Text}"/>
 		</Style>
 
 	</Style>

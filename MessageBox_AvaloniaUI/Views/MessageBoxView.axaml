@@ -25,7 +25,7 @@
 		
 	</Window.Styles>
 
-	<Border Background="{DynamicResource MainWindow_Field_Color_Background}">
+	<Border Background="{DynamicResource App_Field_Color_Background}">
 
 		<Grid>
 

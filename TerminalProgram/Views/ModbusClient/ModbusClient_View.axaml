@@ -7,8 +7,7 @@
              xmlns:ModbusRepresentations="clr-namespace:TerminalProgram.Views.ModbusClient.ModbusRepresentations;assembly=TerminalProgram"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
-             x:Class="TerminalProgram.Views.ModbusClient.ModbusClient_View"
-			 Background="{DynamicResource MainWindow_Color_Background}">
+             x:Class="TerminalProgram.Views.ModbusClient.ModbusClient_View">
 	
 	<UserControl.Styles>
 
@@ -42,13 +41,13 @@
 
 			<TextBlock Text="Режим обмена данными:"
                        FontSize="16"
-                       Foreground="{DynamicResource MainWindow_Color_Text}"
+                       Foreground="{DynamicResource App_Color_Text}"
                        Margin="10,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 			<TextBlock Text="{Binding ModbusMode_Name, Mode=OneWay}"
                        FontSize="16"
-                       Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+                       Foreground="{DynamicResource App_Color_Text_Bright}"
 					   IsVisible="{Binding !Connection_IsSerialPort, Mode=OneWay}"
                        Margin="220,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -218,8 +217,7 @@
 		<GridSplitter Grid.Row="2"
 					  ResizeDirection="Rows"/>
 
-		<Grid Grid.Row="3"
-			  Background="{DynamicResource MainWindow_Field_Color_Background}">
+		<Grid Grid.Row="3">
 
 			<TabControl>
 

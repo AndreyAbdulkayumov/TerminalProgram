@@ -73,21 +73,21 @@
 
 						<TextBlock Text="Формат числа"
 								   FontSize="16"
-							       Foreground="{DynamicResource MainWindow_Color_Text}"
+							       Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,0,180,0"
 							       HorizontalAlignment="Center" VerticalAlignment="Center"/>
 						
 						<RadioButton Content="hex"
 									 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
 									 FontSize="16"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Foreground="{DynamicResource App_Color_Text}"
 									 Margin="40,0,0,0"
 									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 						<RadioButton Content="dec"
 									 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
 									 FontSize="16"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Foreground="{DynamicResource App_Color_Text}"
 									 Margin="200,0,0,0"
 									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
@@ -99,13 +99,13 @@
 
 						<TextBlock Text="Slave ID"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text}"
+								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="40,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Foreground="{DynamicResource App_Color_Text_Bright}"
 								   Margin="110,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
@@ -119,7 +119,7 @@
 						<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
 								  Content="Контрольная сумма"
 								  FontSize="14"
-								  Foreground="{DynamicResource MainWindow_Color_Text}"
+								  Foreground="{DynamicResource App_Color_Text}"
 								  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
 								  Width="170"
 								  Margin="240,0,0,0"
@@ -132,13 +132,13 @@
 
 						<TextBlock Text="Адрес"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text}"
+								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Foreground="{DynamicResource App_Color_Text_Bright}"
 								   Margin="60,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
@@ -151,7 +151,7 @@
 
 						<TextBlock Text="Кол-во регистров"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text}"
+								   Foreground="{DynamicResource App_Color_Text}"
 								   Margin="200,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 

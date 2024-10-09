@@ -33,21 +33,21 @@
 
 						<TextBlock Text="Формат числа"
 								   FontSize="16"
-							       Foreground="{DynamicResource MainWindow_Color_Text}"
+							       Foreground="{DynamicResource App_Color_Text}"
 								   Margin="0,0,180,0"
 							       HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 						<RadioButton Content="hex"
 									 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
 									 FontSize="16"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Foreground="{DynamicResource App_Color_Text}"
 									 Margin="40,0,0,0"
 									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 						<RadioButton Content="dec"
 									 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
 									 FontSize="16"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Foreground="{DynamicResource App_Color_Text}"
 									 Margin="200,0,0,0"
 									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
@@ -71,7 +71,7 @@
 
 						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Foreground="{DynamicResource App_Color_Text_Bright}"
 								   Margin="170,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
@@ -127,7 +127,7 @@
 
 						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 								   FontSize="16"
-								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Foreground="{DynamicResource App_Color_Text_Bright}"
 								   Margin="240,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 

@@ -41,11 +41,6 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
         }
 
-        public bool IsConnected
-        {
-            get => Model.HostIsConnect;
-        }
-
         public static event EventHandler<DocArgs>? SettingsDocument_Changed;
 
         private static string? _settingsDocument;

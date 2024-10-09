@@ -42,13 +42,13 @@
 
 			<TextBlock Text="Тип интерфейса:"
                        FontSize="16"
-                       Foreground="{DynamicResource MainWindow_Color_Text}"
+                       Foreground="{DynamicResource App_Color_Text}"
                        Margin="10,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 			<TextBlock Text="{Binding InterfaceType, Mode=OneWay}"
                        FontSize="16"
-                       Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+                       Foreground="{DynamicResource App_Color_Text_Bright}"
                        Margin="155,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 			 
@@ -66,8 +66,7 @@
 		<GridSplitter Grid.Row="2"
 				      ResizeDirection="Rows"/>
 
-		<Grid Grid.Row="3"
-			  Background="{DynamicResource MainWindow_Field_Color_Background}">
+		<Grid Grid.Row="3">
 
 			<Grid.RowDefinitions>
 				<RowDefinition Height="1*"/>
@@ -96,7 +95,7 @@
 							Content="Сохранить как..."/>
 
 					<CheckBox x:Name="CheckBox_NextLine"
-							  Foreground="{DynamicResource MainWindow_Color_Text}"
+							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
 							  Content="LF ( &#8216;\n	&#8216;, 0x0A)"/>

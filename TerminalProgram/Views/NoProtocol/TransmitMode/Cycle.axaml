@@ -12,8 +12,7 @@
 
 	</UserControl.Styles>
 
-	<Border Background="{DynamicResource DataGrid_Color_Background}"
-			BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 			BorderThickness="2"
 			CornerRadius="4"
 			Margin="10">
@@ -35,13 +34,13 @@
 							 Text="{Binding Message_Content, Mode=TwoWay}"
 							 VerticalAlignment="Center"/>
 
-					<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  Content="CR ( &#8216;\r &#8217;)"
 							  VerticalAlignment="Center"
 							  IsChecked="{Binding Message_CR, Mode=TwoWay}"/>
 
-					<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  Content="LF ( &#8216;\n	&#8216;)"
 							  VerticalAlignment="Center"
@@ -55,13 +54,13 @@
 							   Width="55"
 							   VerticalAlignment="Center"/>
 
-					<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  Content="Дата"
 							  VerticalAlignment="Center"
 							  IsChecked="{Binding Response_Date, Mode=TwoWay}"/>
 
-					<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  Content="Время"
 							  VerticalAlignment="Center"
@@ -102,13 +101,13 @@
 						
 					</Grid>					
 
-					<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  Content="CR ( &#8216;\r &#8217;)"
 							  VerticalAlignment="Center"
 							  IsChecked="{Binding Response_CR, Mode=TwoWay}"/>
 
-					<CheckBox Foreground="{DynamicResource MainWindow_Color_Text}"
+					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  Content="LF ( &#8216;\n	&#8216;)"
 							  VerticalAlignment="Center"

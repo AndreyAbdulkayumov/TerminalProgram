@@ -19,9 +19,11 @@ namespace TerminalProgram.Views.ModbusClient
 
     public partial class ModbusClient_View : UserControl
     {
-        private const string ResourceKey_DataGrid_Color_RowBackground_Selected = "DataGrid_Color_RowBackground_Selected";
         private const string ResourceKey_DataGrid_Color_RowBackground = "DataGrid_Color_RowBackground";
         private const string ResourceKey_DataGrid_Color_AlternatingRowBackground = "DataGrid_Color_AlternatingRowBackground";
+
+        private const string ResourceKey_DataGrid_Color_RowBackground_Selected = "DataGrid_Color_RowBackground_Selected";
+        private const string ResourceKey_DataGrid_Color_RowBorderBrush_Selected = "DataGrid_Color_RowBorderBrush_Selected";
 
         private ObservableCollection<ModbusDataDisplayedForTable> _dataInDataGrid = new ObservableCollection<ModbusDataDisplayedForTable>();
 
@@ -48,21 +50,37 @@ namespace TerminalProgram.Views.ModbusClient
 
             if (border != null)
             {
+                // Снять выделение с текущей строки
+                if (border == _selectedBorder)
+                {
+                    border.Background = _selectedBorder_InitColor;
+                    border.BorderBrush = _selectedBorder_InitColor;
+
+                    _selectedBorder = null;
+
+                    return;
+                }
+
+                // Снять выделение с прошлой выбранной строки
                 if (_selectedBorder != null)
                 {
                     _selectedBorder.Background = _selectedBorder_InitColor;
                     _selectedBorder.BorderBrush = _selectedBorder_InitColor;
                 }
 
+                // Запомнить и выделить выбранную строку
                 _selectedBorder = border;
                 _selectedBorder_InitColor = (SolidColorBrush?)border.Background;
 
-                if (this.TryFindResource(ResourceKey_DataGrid_Color_RowBackground_Selected, out object? rowSelectedBackground))
+                if (this.TryFindResource(ResourceKey_DataGrid_Color_RowBackground_Selected, out object? rowBackground))
                 {
-                    border.Background = (IBrush?)rowSelectedBackground;
+                    border.Background = (IBrush?)rowBackground;
                 }
 
-                border.BorderBrush = Brushes.Black;
+                if (this.TryFindResource(ResourceKey_DataGrid_Color_RowBorderBrush_Selected, out object? rowBorderBrush))
+                {
+                    border.BorderBrush = (IBrush?)rowBorderBrush;
+                }                
             }
         }
 

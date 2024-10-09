@@ -39,14 +39,14 @@
 						<RadioButton Content="&quot;0&quot;"
 									 IsChecked="{Binding Logic_Zero, Mode=TwoWay}"
 									 FontSize="16"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Foreground="{DynamicResource App_Color_Text}"
 									 Margin="0,0,125,0"
 									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 						
 						<RadioButton Content="&quot;1&quot;"
 									 IsChecked="{Binding Logic_One, Mode=TwoWay}"
 								     FontSize="16"
-									 Foreground="{DynamicResource MainWindow_Color_Text}"
+									 Foreground="{DynamicResource App_Color_Text}"
 									 Margin="125,0,0,0"
 									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 

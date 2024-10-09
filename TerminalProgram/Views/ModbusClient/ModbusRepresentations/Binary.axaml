@@ -13,9 +13,9 @@
 	</UserControl.Resources>
 
 	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
-				BorderThickness="1"
-				CornerRadius="10"
-				HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			BorderThickness="1"
+			CornerRadius="10"
+			HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 		
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
 					  VerticalScrollBarVisibility="Auto"

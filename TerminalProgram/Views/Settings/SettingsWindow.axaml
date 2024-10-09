@@ -32,7 +32,7 @@
 	</Window.Styles>
 	
 	
-	<Border Background="{DynamicResource MainWindow_Field_Color_Background}">
+	<Border>
 
 		<Grid>
 
@@ -64,7 +64,7 @@
 			</Grid>
 
 			<Border Grid.Row="1"
-					Background="{DynamicResource MainWindow_Back_Color_Background}"
+					Background="{DynamicResource App_Back_Color_Background}"
 					CornerRadius="0,0,4,4">
 
 				<Grid>
@@ -80,7 +80,7 @@
 					</Grid.ColumnDefinitions>
 
 					<Border Grid.Row="0" Grid.Column="0"
-							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							Background="{DynamicResource App_Field_Color_Background}"
 							BorderThickness="0"
 							CornerRadius="6"
 							Margin="10">
@@ -89,7 +89,7 @@
 									Spacing="10"
 									Margin="10">
 
-							<Button Classes="MenuButton" 
+							<Button Classes="MenuToolButton" 
 									ToolTip.Tip="Создать новый файл"
 									Command="{Binding Command_File_AddNew}">
 								
@@ -98,7 +98,7 @@
 							</Button>
 
 
-							<Button Classes="MenuButton" 
+							<Button Classes="MenuToolButton" 
 									ToolTip.Tip="Добавить существующий файл"
 									Command="{Binding Command_File_AddExisting}">
 
@@ -106,7 +106,7 @@
 								
 							</Button>
 
-							<Button Classes="MenuButton" 
+							<Button Classes="MenuToolButton" 
 									ToolTip.Tip="Удалить выбранный файл"
 									Command="{Binding Command_File_Delete}">
 
@@ -114,7 +114,7 @@
 								
 							</Button>
 
-							<Button Classes="MenuButton" 
+							<Button Classes="MenuToolButton" 
 									ToolTip.Tip="Сохранить выбранный файл"
 									Command="{Binding Command_File_Save}">
 
@@ -127,7 +127,7 @@
 					</Border>
 
 					<Border Grid.Row="0" Grid.Column="1"
-							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							Background="{DynamicResource App_Field_Color_Background}"
 							BorderThickness="0"
 							CornerRadius="6"
 							Margin="10">
@@ -150,7 +150,7 @@
 					</Border>
 
 					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-							Background="{DynamicResource MainWindow_Field_Color_Background}"
+							Background="{DynamicResource App_Field_Color_Background}"
 							BorderThickness="0"
 							CornerRadius="6"
 							Margin="10">

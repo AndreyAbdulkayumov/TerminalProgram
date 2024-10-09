@@ -30,7 +30,7 @@
 	</Window.Styles>
 	
 	
-	<Border Background="{DynamicResource MainWindow_Back_Color_Background}">
+	<Border Background="{DynamicResource App_Back_Color_Background}">
 
 		<Grid>
 
@@ -75,7 +75,7 @@
 				</Grid.RowDefinitions>
 
 				<Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
@@ -97,7 +97,7 @@
 				</Border>
 
 				<Border Grid.Row="0" Grid.Column="1"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
@@ -145,7 +145,7 @@
 						</StackPanel>
 
 						<TextBlock Text="{Binding DeviceReadTimeout, Mode=OneWay}"
-								   Foreground="{DynamicResource MainWindow_Color_Text_Bright}"
+								   Foreground="{DynamicResource App_Color_Text_Bright}"
 								   VerticalAlignment="Center"/>
 						
 						<Button Width="150"
@@ -158,7 +158,7 @@
 				</Border>
 
 				<Border Grid.Row="1" Grid.Column="1"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">

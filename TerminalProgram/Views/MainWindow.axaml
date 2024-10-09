@@ -47,7 +47,7 @@
 	
 
 	<Border x:Name="Border_Window"
-			Background="{DynamicResource MainWindow_Back_Color_Background}">
+			Background="{DynamicResource App_Back_Color_Background}">
 
 		<Grid>
 
@@ -110,7 +110,7 @@
 				</Grid.ColumnDefinitions>
 
 				<Border Grid.Row="0" Grid.Column="0"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
@@ -119,22 +119,22 @@
 								Spacing="10"
 								Margin="10,0,0,0">
 
-						<Button Classes="MenuButton" 
+						<Button Classes="MenuToolButton" 
 								ToolTip.Tip="Настройки"				
 								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
 								Click="Button_OpenSettings_Click">
 							
 							<Icons:MaterialIcon Kind="Cog"
-												Foreground="Gray"/>
+												Foreground="{DynamicResource ToolBar_Icon_Settings}"/>
 						
 						</Button>
 
-						<Button Classes="MenuButton" 
+						<Button Classes="MenuToolButton" 
 								ToolTip.Tip="О программе"
 								Click="Button_About_Click">
 							
 							<Icons:MaterialIcon Kind="Info"
-												Foreground="#2B67A8"/>
+												Foreground="{DynamicResource ToolBar_Icon_About}"/>
 							
 						</Button>
 
@@ -143,7 +143,7 @@
 				</Border>
 
 				<Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
@@ -229,7 +229,7 @@
 				</Border>
 
 				<Border Grid.Row="0" Grid.Column="1"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
@@ -269,7 +269,7 @@
 				</Border>
 
 				<Border Grid.Row="1" Grid.Column="1"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
@@ -279,36 +279,39 @@
 				</Border>
 
 				<Border Grid.Row="2" Grid.Column="1"
-						Background="{DynamicResource MainWindow_Field_Color_Background}"
+						Background="{DynamicResource App_Field_Color_Background}"
 						BorderThickness="0"
 						CornerRadius="6"
 						Margin="10">
 
 					<Grid>
+						
 						<Grid.RowDefinitions>
 							<RowDefinition Height="1*"/>
 							<RowDefinition Height="1*"/>
 						</Grid.RowDefinitions>
-
+						
 						<TextBlock Grid.Row="0"
 								   Text="{Binding ConnectionString, Mode=OneWay}"
 								   FontSize="16"
 								   Margin="20,0,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+						<StackPanel Grid.Row="1" 
+									Orientation="Horizontal"
+									Spacing="10"
+									Margin="20,0,0,0" 
+									VerticalAlignment="Center">							
 
-						<TextBlock Grid.Row="1"
-								   Text="{Binding ConnectionStatus, Mode=OneWay}"
-								   FontSize="16"
-								   Margin="20,0,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
-						<TextBlock Grid.Row="1"
-								   IsVisible="{Binding ConnectionTimer_IsVisible, Mode=OneWay}"
-								   Text="{Binding ConnectionTimer_View, Mode=OneWay}"
-								   FontSize="16"
-								   Margin="130,0,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
+							<TextBlock Text="{Binding ConnectionStatus, Mode=OneWay}"
+								       FontSize="16"/>
+							
+							<TextBlock IsVisible="{Binding ConnectionTimer_IsVisible, Mode=OneWay}"
+									   Text="{Binding ConnectionTimer_View, Mode=OneWay}"
+									   FontSize="16"/>
+														
+						</StackPanel>
+											
 						<Ellipse Grid.Row="0" Grid.RowSpan="2"
 								 Width="20" Height="20"
 								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"

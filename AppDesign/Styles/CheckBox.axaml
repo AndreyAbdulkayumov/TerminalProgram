@@ -9,11 +9,11 @@
 		</Style>-->
 		
 		<Style Selector="^:pointerover /template/ ContentPresenter">
-			<Setter Property="TextElement.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource App_Color_Text}"/>
 		</Style>
 
 		<Style Selector="^:disabled /template/ ContentPresenter">
-			<Setter Property="TextElement.Foreground" Value="{DynamicResource MainWindow_Color_Text}"/>
+			<Setter Property="TextElement.Foreground" Value="{DynamicResource App_Color_Text}"/>
 		</Style>
 
 	</Style>
