@@ -62,6 +62,11 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
+            if (WriteDataCollection.Count == 0)
+            {
+                return new WriteData(Array.Empty<byte>(), 0);
+            }
+
             FloatNumberFormat floatFormat = FloatHelper.GetFloatNumberFormatOrDefault(SettingsFile.Settings?.FloatNumberFormat);
 
             int registerCounter = 0;
@@ -77,11 +82,7 @@ namespace ViewModels.ModbusClient.WriteFields
 
                 registerCounter++;
 
-                return new byte[]
-                {
-                    (byte)(x.Data & 0xFF),       // младший байт
-                    (byte)((x.Data >> 8) & 0xFF) // старший байт
-                };
+                return BitConverter.GetBytes(x.Data);
             })
             .ToArray();
 

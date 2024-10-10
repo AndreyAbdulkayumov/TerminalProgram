@@ -17,9 +17,14 @@
                 return Create_Write(function, dataForWrite);
             }
 
-            else if (dataForWrite != null && (function.Number == 15 || function.Number == 16))
+            else if (dataForWrite != null && function.Number == 15)
             {
-                return Create_WriteMultiple(function, dataForWrite);
+                return Create_WriteMultipleCoils(function, dataForWrite);
+            }
+
+            else if (dataForWrite != null && function.Number == 16)
+            {
+                return Create_WriteMultipleRegisters(function, dataForWrite);
             }
 
             else
@@ -66,9 +71,37 @@
             return PDU;
         }
 
-        private static byte[] Create_WriteMultiple(ModbusFunction writeFunction, WriteTypeMessage data)
+        private static byte[] Create_WriteMultipleCoils(ModbusFunction writeFunction, WriteTypeMessage data)
         {
-            byte[] PDU = new byte[6 + data.WriteData.Length];
+            int offsetPDU = 6;
+            byte[] PDU = new byte[offsetPDU + data.WriteData.Length];
+
+            byte[] addressArray = BitConverter.GetBytes(data.Address);
+            byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
+
+            // Function number
+            PDU[0] = writeFunction.Number;
+            // Address 
+            PDU[1] = addressArray[1];
+            PDU[2] = addressArray[0];
+            // Amount of write registers
+            PDU[3] = numberOfRegistersArray[1];
+            PDU[4] = numberOfRegistersArray[0];
+            // Amount of byte next
+            PDU[5] = (byte)data.WriteData.Length;
+            // Data
+            for (int i = 0; i < data.WriteData.Length; i++)
+            {
+                PDU[i + offsetPDU] = data.WriteData[i];
+            }
+
+            return PDU;
+        }
+
+        private static byte[] Create_WriteMultipleRegisters(ModbusFunction writeFunction, WriteTypeMessage data)
+        {
+            int offsetPDU = 6;
+            byte[] PDU = new byte[offsetPDU + data.WriteData.Length];
 
             byte[] addressArray = BitConverter.GetBytes(data.Address);
             byte[] numberOfRegistersArray = BitConverter.GetBytes(data.NumberOfRegisters);
@@ -84,12 +117,14 @@
             // Amount of byte next
             PDU[5] = (byte)data.WriteData.Length;
 
-            int elementCounter = 6;
+            byte temp;
 
-            foreach (byte element in data.WriteData)
+            // Data
+            for (int i = 0; i < data.WriteData.Length; i += 2)
             {
-                PDU[elementCounter] = element;
-                elementCounter++;
+                temp = data.WriteData[i];
+                PDU[i + offsetPDU] = data.WriteData[i + 1];
+                PDU[i + offsetPDU + 1] = temp;
             }
 
             return PDU;

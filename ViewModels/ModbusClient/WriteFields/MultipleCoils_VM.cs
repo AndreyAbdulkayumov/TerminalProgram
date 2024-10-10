@@ -2,9 +2,7 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using System.Xml.XPath;
 using ViewModels.ModbusClient.WriteFields.DataItems;
-using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -38,6 +36,11 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
+            if (Items.Count == 0)
+            {
+                return new WriteData(Array.Empty<byte>(), 0);
+            }
+
             int[] bitArray = Items.Select(e => e.Logic_One ? 1 : 0).ToArray();
 
             List<byte> result = new List<byte>();
