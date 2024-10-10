@@ -10,60 +10,12 @@ namespace ViewModels.FloatNumber
 
             Array.Reverse(bytes); // т.к. в протоколе Modbus используется передача данных старшим байтом вперед.
 
-            byte[] floatBytes;
-
-            switch (floatFormat)
-            {
-                case FloatNumberFormat.AB_CD:
-                    floatBytes = [bytes[0], bytes[1], bytes[2], bytes[3]];
-                    break;
-
-                case FloatNumberFormat.BA_DC:
-                    floatBytes = [bytes[1], bytes[0], bytes[3], bytes[2]];
-                    break;
-
-                case FloatNumberFormat.CD_AB:
-                    floatBytes = [bytes[2], bytes[3], bytes[0], bytes[1]];
-                    break;
-
-                case FloatNumberFormat.DC_BA:
-                    floatBytes = [bytes[3], bytes[2], bytes[1], bytes[0]];
-                    break;
-
-                default:
-                    throw new Exception("Неизвестный тип формата записи числа типа float.");
-            }
-
-            return floatBytes;
+            return GetFormattedBytes(bytes, floatFormat);
         }
 
         public static float GetFloatNumberFromBytes(byte[] bytes, FloatNumberFormat floatFormat)
         {
-            byte[] formattedBytes;
-
-            switch (floatFormat)
-            {
-                case FloatNumberFormat.AB_CD:
-                    formattedBytes = [bytes[0], bytes[1], bytes[2], bytes[3]];
-                    break;
-
-                case FloatNumberFormat.BA_DC:
-                    formattedBytes = [bytes[1], bytes[0], bytes[3], bytes[2]];
-                    break;
-
-                case FloatNumberFormat.CD_AB:
-                    formattedBytes = [bytes[2], bytes[3], bytes[0], bytes[1]];
-                    break;
-
-                case FloatNumberFormat.DC_BA:
-                    formattedBytes = [bytes[3], bytes[2], bytes[1], bytes[0]];
-                    break;
-
-                default:
-                    throw new Exception("Неизвестный тип формата записи числа типа float.");
-            }
-
-            return BitConverter.ToSingle(formattedBytes, 0);
+            return BitConverter.ToSingle(GetFormattedBytes(bytes, floatFormat), 0);
         }
 
         public static FloatNumberFormat GetFloatNumberFormatOrDefault(string? formatName)
@@ -84,6 +36,27 @@ namespace ViewModels.FloatNumber
 
                 default:
                     return FloatNumberFormat.BA_DC;
+            }
+        }
+
+        private static byte[] GetFormattedBytes(byte[] bytes, FloatNumberFormat floatFormat)
+        {
+            switch (floatFormat)
+            {
+                case FloatNumberFormat.AB_CD:
+                    return [bytes[1], bytes[0], bytes[3], bytes[2]];
+
+                case FloatNumberFormat.BA_DC:
+                    return [bytes[0], bytes[1], bytes[2], bytes[3]];
+
+                case FloatNumberFormat.CD_AB:
+                    return [bytes[3], bytes[2], bytes[1], bytes[0]];
+
+                case FloatNumberFormat.DC_BA:
+                    return [bytes[2], bytes[3], bytes[0], bytes[1]];
+
+                default:
+                    throw new Exception("Неизвестный тип формата записи числа типа float.");
             }
         }
     }
