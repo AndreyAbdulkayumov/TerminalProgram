@@ -35,7 +35,7 @@ namespace Core.Models.AppUpdateSystem
 
             var info = JsonSerializer.Deserialize<LastestVersionInfo>(response);
 
-            if (info != null && !string.IsNullOrEmpty(info.Version) && !string.IsNullOrEmpty(info.DownloadLink))
+            if (info != null && !string.IsNullOrEmpty(info.Version))
             {
                 var lastestVersion = new Version(info.Version);
 
@@ -69,6 +69,34 @@ namespace Core.Models.AppUpdateSystem
                 FileName = url,
                 UseShellExecute = true // Позволяет открыть URL в стандартном браузере
             });
+        }
+
+        public string GetDownloadLink(LastestVersionInfo info)
+        {
+            string? downloadLink = null;
+
+            if (OperatingSystem.IsWindows())
+            {
+                if (!string.IsNullOrEmpty(info.DownloadLink_Windows))
+                {
+                    downloadLink = info.DownloadLink_Windows;
+                }
+            }
+
+            else if (OperatingSystem.IsLinux())
+            {
+                if (!string.IsNullOrEmpty(info.DownloadLink_Linux))
+                {
+                    downloadLink = info.DownloadLink_Linux;
+                }
+            }
+
+            if (string.IsNullOrEmpty(downloadLink))
+            {
+                throw new Exception("Не удалось получить ссылку на скачивание новой версии приложения.");
+            }
+
+            return downloadLink;
         }
     }
 }

@@ -36,11 +36,13 @@ namespace ViewModels
 
             if (info != null)
             {
-                if (!string.IsNullOrEmpty(info.Version) && !string.IsNullOrEmpty(info.DownloadLink))
+                if (!string.IsNullOrEmpty(info.Version))
                 {
+                    string downloadLink = _model.GetDownloadLink(info);
+
                     if (await _messageBox.ShowYesNoDialog($"Доступна новая версия приложения - {info.Version}\nПерейти на страницу скачивания?", MessageType.Information) == MessageBoxResult.Yes)
                     {
-                        _model.GoToWebPage(info.DownloadLink);
+                        _model.GoToWebPage(downloadLink);
                     }
                     return;
                 }

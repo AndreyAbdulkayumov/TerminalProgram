@@ -10,6 +10,7 @@ using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using Core.Models.AppUpdateSystem;
+using Splat.ModeDetection;
 
 namespace ViewModels
 {
@@ -350,10 +351,12 @@ namespace ViewModels
 
                     if (info != null)
                     {
-                        if (!string.IsNullOrEmpty(info.Version) && !string.IsNullOrEmpty(info.DownloadLink) && SettingsFile.AppData.SkippedAppVersion != info.Version)
+                        string downloadLink = AppUpdateSystem.GetDownloadLink(info);
+
+                        if (!string.IsNullOrEmpty(info.Version) && SettingsFile.AppData.SkippedAppVersion != info.Version)
                         {
                             NewAppVersion = info.Version;
-                            _newAppDownloadLink = info.DownloadLink;
+                            _newAppDownloadLink = downloadLink;
                             UpdateMessageIsVisible = true;
                             return;
                         }
