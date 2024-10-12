@@ -5,13 +5,17 @@
 
 	<SolidColorBrush x:Key="App_Color_Text" Color="#414141"/>
 	<SolidColorBrush x:Key="App_Color_Text_Bright" Color="#0066CC"/>
+	<SolidColorBrush x:Key="App_Color_Text_Back" Color="#5A5A5A"/>
 
 	<SolidColorBrush x:Key="App_Back_Color_Background" Color="#BDBDBD"/>
 	<SolidColorBrush x:Key="App_Field_Color_Background" Color="#DBDBDB"/>
-
+	
 	<SolidColorBrush x:Key="Window_Color_BorderBrush" Color="#CDCDCD"/>
 	
 	<SolidColorBrush x:Key="Group_Color_BorderBrush" Color="#ABABAB"/>
+
+	<SolidColorBrush x:Key="Swicher_Color_Checked" Color="#2D7D9A"/>
+	<SolidColorBrush x:Key="Swicher_Color_Checked_PointerOver" Color="#4BA8CA"/>
 	
 	<!-- WindowChrome -->
 
@@ -42,11 +46,6 @@
 
 	<SolidColorBrush x:Key="Settings_Color_PortNotFound_Background" Color="#D68A96"/>
 	<SolidColorBrush x:Key="Settings_Color_PortNotFound_BorderBrush" Color="#565656"/>
-
-	<!-- About Window -->
-
-	<SolidColorBrush x:Key="AboutWindow_Color_Text_Top" Color="Black"/>
-	<SolidColorBrush x:Key="AboutWindow_Color_Text_Back" Color="#5A5A5A"/>
 	
 	<!-- All Buttons -->
 
@@ -98,8 +97,8 @@
 	
 	<SolidColorBrush x:Key="DataGrid_Color_HeaderBackground" Color="White"/>
 	
-	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#EFEFEF"/>
-	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#DADADA"/>
+	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#F0F0F0"/>
+	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#CCCCCC"/>
 	
 	<SolidColorBrush x:Key="DataGrid_Color_RowBackground_Selected" Color="LightBlue"/>
 	<SolidColorBrush x:Key="DataGrid_Color_RowBorderBrush_Selected" Color="Black"/>

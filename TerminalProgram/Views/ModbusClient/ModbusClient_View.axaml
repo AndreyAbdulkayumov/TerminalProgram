@@ -13,6 +13,8 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToggleSwitch.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
 
 	</UserControl.Styles>
 

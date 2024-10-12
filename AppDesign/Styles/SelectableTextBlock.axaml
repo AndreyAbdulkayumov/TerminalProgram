@@ -1,0 +1,11 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="SelectableTextBlock">
+
+		<Setter Property="Foreground" Value="{DynamicResource App_Color_Text}"/>
+		<Setter Property="SelectionBrush" Value="#91C1E6"/> <!-- Для всех тем -->
+		
+	</Style>
+	
+</Styles>

@@ -1,0 +1,18 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	
+	<Style Selector="ToggleSwitch">
+
+		<Style Selector="^:checked /template/ Border#SwitchKnobBounds">
+			<Setter Property="Background" Value="{DynamicResource Swicher_Color_Checked}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource Swicher_Color_Checked}"/>
+		</Style>
+
+		<Style Selector="^:pointerover:checked /template/ Border#SwitchKnobBounds">
+			<Setter Property="Background" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
+		</Style>
+		
+	</Style>
+	
+</Styles>

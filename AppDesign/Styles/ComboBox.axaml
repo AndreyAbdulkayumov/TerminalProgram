@@ -14,7 +14,7 @@
 		<Style Selector="^ TextBlock">
 			<Setter Property="Foreground" Value="{DynamicResource ComboBox_Color_Foreground}"/>
 		</Style>
-
+		
 		<Style Selector="^:pointerover /template/ Border#Background">
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_MouseOver_Background}"/>
 		</Style>
@@ -26,11 +26,29 @@
 		<Style Selector="^:disabled /template/ Border#Background">
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_Disabled_Background}"/>
 		</Style>
+
+		<Style Selector="^:dropdownopen /template/ Border#PopupBorder">
+			<Setter Property="Background" Value="WhiteSmoke"/>	<!-- Для всех тем -->
+		</Style>
 		
 	</Style>
-
+	
 	<Style Selector="ComboBoxItem">
+		<Setter Property="Background" Value="WhiteSmoke"/>	<!-- Для всех тем -->
 		<Setter Property="Foreground" Value="{DynamicResource ComboBox_Color_Foreground}"/>
+
+		<Style Selector="^:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="#DADADA"/>	<!-- Для всех тем -->
+		</Style>
+
+		<Style Selector="^:selected /template/ ContentPresenter">
+			<Setter Property="Background" Value="#91C1E6"/>	<!-- Для всех тем -->
+		</Style>
+
+		<Style Selector="^:pointerover:selected /template/ ContentPresenter">
+			<Setter Property="Background" Value="#62AAE1"/>	<!-- Для всех тем -->
+		</Style>
+		
 	</Style>
 	
 </Styles>

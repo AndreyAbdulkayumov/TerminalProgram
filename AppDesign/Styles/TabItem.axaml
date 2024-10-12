@@ -14,6 +14,10 @@
 			<Setter Property="TextElement.Foreground" Value="{DynamicResource App_Color_Text}"/>
 		</Style>
 
+		<Style Selector="^:selected /template/ Border#PART_SelectedPipe">
+			<Setter Property="Background" Value="{DynamicResource Swicher_Color_Checked}"/>
+		</Style>
+		
 	</Style>
 	
 </Styles>

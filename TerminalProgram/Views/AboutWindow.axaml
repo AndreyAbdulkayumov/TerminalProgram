@@ -69,13 +69,13 @@
 
 				<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
 						   Text="Терминальная программа"
-                           Foreground="{DynamicResource AboutWindow_Color_Text_Top}"
+                           Foreground="{DynamicResource App_Color_Text}"
                            FontSize="18"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
 						   x:Name="TextBlock_App_Version" Text="0.0.0"
-						   Foreground="{DynamicResource AboutWindow_Color_Text_Top}"
+						   Foreground="{DynamicResource App_Color_Text}"
 						   FontSize="16"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
@@ -89,13 +89,13 @@
 							Margin="0,10,0,0">
 
 					<TextBlock Text="Разработал:"
-							   Foreground="{DynamicResource AboutWindow_Color_Text_Back}"
+							   Foreground="{DynamicResource App_Color_Text_Back}"
                                FontSize="16"
 							   TextAlignment="Center"/>
 
 					<TextBlock Text="Абдулкаюмов Андрей Ренатович"
 							   Width="140"
-							   Foreground="{DynamicResource AboutWindow_Color_Text_Top}"
+							   Foreground="{DynamicResource App_Color_Text}"
 							   FontSize="16"
 							   TextWrapping="Wrap"
 							   TextAlignment="Center"
@@ -105,13 +105,13 @@
 						
 						<TextBlock Text="Версия .NET:"
 								   Margin="20,0,0,0"
-								   Foreground="{DynamicResource AboutWindow_Color_Text_Back}"
+								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBlock x:Name="TextBlock_Runtime_Version" Text="0.0.0"
 								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource AboutWindow_Color_Text_Top}"
+								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 						
@@ -121,13 +121,13 @@
 
 						<TextBlock Text="Версия Avalonia UI:"
 								   Margin="20,0,0,0"
-								   Foreground="{DynamicResource AboutWindow_Color_Text_Back}"
+								   Foreground="{DynamicResource App_Color_Text_Back}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
 						<TextBlock x:Name="TextBlock_GUI_Version" Text="0.0.0"
 								   Margin="200,0,0,0"
-								   Foreground="{DynamicResource AboutWindow_Color_Text_Top}"
+								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 						

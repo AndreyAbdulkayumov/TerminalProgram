@@ -2,7 +2,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Style Selector="RadioButton">
+		
+		<!-- CheckOuterEllipse -->
 
+		<Style Selector="^:checked /template/ Ellipse#CheckOuterEllipse">
+			<Setter Property="Fill" Value="{DynamicResource Swicher_Color_Checked}"/>
+			<Setter Property="Stroke" Value="{DynamicResource Swicher_Color_Checked}"/>
+		</Style>
+
+		<Style Selector="^:pointerover:checked /template/ Ellipse#CheckOuterEllipse">
+			<Setter Property="Fill" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
+			<Setter Property="Stroke" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
+		</Style>	
+
+		<!-- TextElement -->
+		
 		<Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
 			<Setter Property="TextElement.Foreground" Value="{DynamicResource App_Color_Text}"/>
 		</Style>
