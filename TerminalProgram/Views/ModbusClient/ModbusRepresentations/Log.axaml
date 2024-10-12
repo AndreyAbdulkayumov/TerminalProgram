@@ -6,43 +6,13 @@
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.Log">
 
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/LogField.axaml"/>
+
+	</UserControl.Styles>
+	
 	<TextBox Text="{Binding LogData, Mode=OneWay}"
-			 AcceptsReturn="True"
-			 IsReadOnly="True"
-			 CornerRadius="10"
-			 FontSize="15"
-			 TextWrapping="Wrap"
-			 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-			 TextChanged="TextBox_TextChanged">
-
-		<TextBox.Styles>
-
-			<Style Selector="TextBox">
-
-				<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
-				<Setter Property="Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
-				<Setter Property="SelectionBrush" Value="#91C1E6"/> <!-- Для всех тем -->
-				<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush}"/>
-				<Setter Property="BorderThickness" Value="1"/>
-
-				<Style Selector="^:pointerover /template/ Border">
-					<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
-					<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
-					<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_MouseOver}"/>
-					<Setter Property="CornerRadius" Value="10"/>
-				</Style>
-
-				<Style Selector="^:focus /template/ Border" >
-					<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
-					<Setter Property="TextBox.Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
-					<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush_Focused}"/>
-					<Setter Property="CornerRadius" Value="10"/>
-				</Style>
-
-			</Style>
-
-		</TextBox.Styles>
-
-	</TextBox>
+			 TextChanged="TextBox_TextChanged"/>
 	
 </UserControl>

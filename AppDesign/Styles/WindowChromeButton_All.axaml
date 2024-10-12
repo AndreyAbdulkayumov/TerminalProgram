@@ -20,10 +20,6 @@
 			<Setter Property="Background" Value="{DynamicResource WindowChrome_Color_MinimizeApp_Pressed_Background}"/>
 		</Style>
 		
-		<Style Selector="^ TextBlock">
-			<Setter Property="Foreground" Value="Black"/>
-		</Style>
-
 		<Style Selector="^ Icons|MaterialIcon">
 			<Setter Property="Foreground" Value="{DynamicResource WindowChrome_Color_Button_Foreground}"/>
 			<Setter Property="Height" Value="20"/>

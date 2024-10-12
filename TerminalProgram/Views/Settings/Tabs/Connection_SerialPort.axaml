@@ -85,12 +85,6 @@
 					HorizontalAlignment="Left" VerticalAlignment="Center"
 					Command="{Binding Command_ReScan_SerialPorts}">
 
-				<Button.Styles>
-					<Style Selector="TextBlock">
-						<Setter Property="Foreground" Value="Black"/>
-					</Style>
-				</Button.Styles>
-
 				<Icons:MaterialIcon Kind="Sync"
 									Height="25" Width="25"/>
 

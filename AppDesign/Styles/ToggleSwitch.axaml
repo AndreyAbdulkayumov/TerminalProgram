@@ -3,14 +3,22 @@
 	
 	<Style Selector="ToggleSwitch">
 
+		<Style Selector="^:unchecked /template/ Border#OuterBorder">
+			<Setter Property="BorderBrush" Value="{DynamicResource Switcher_Color_Unchecked_Stroke}"/>
+		</Style>
+
+		<Style Selector="^:unchecked /template/ Ellipse#SwitchKnobOff">
+			<Setter Property="Fill" Value="{DynamicResource Switcher_Color_Unchecked_Stroke}"/>
+		</Style>
+		
 		<Style Selector="^:checked /template/ Border#SwitchKnobBounds">
-			<Setter Property="Background" Value="{DynamicResource Swicher_Color_Checked}"/>
-			<Setter Property="BorderBrush" Value="{DynamicResource Swicher_Color_Checked}"/>
+			<Setter Property="Background" Value="{DynamicResource Switcher_Color_Checked}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource Switcher_Color_Checked}"/>
 		</Style>
 
 		<Style Selector="^:pointerover:checked /template/ Border#SwitchKnobBounds">
-			<Setter Property="Background" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
-			<Setter Property="BorderBrush" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
+			<Setter Property="Background" Value="{DynamicResource Switcher_Color_Checked_PointerOver}"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource Switcher_Color_Checked_PointerOver}"/>
 		</Style>
 		
 	</Style>

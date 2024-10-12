@@ -148,12 +148,6 @@
 						HorizontalAlignment="Right" VerticalAlignment="Center"
 						Command="{Binding Command_Copy_Request}">
 
-					<Button.Styles>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
-
 					<Icons:MaterialIcon Kind="ContentCopy"
 										Height="25" Width="25">
 						
@@ -174,12 +168,6 @@
 						Margin="0,0,30,0"
 						HorizontalAlignment="Right" VerticalAlignment="Center"
 						Command="{Binding Command_Copy_Response}">
-
-					<Button.Styles>
-						<Style Selector="TextBlock">
-							<Setter Property="Foreground" Value="Black"/>
-						</Style>
-					</Button.Styles>
 
 					<Icons:MaterialIcon Kind="ContentCopy"
 										Height="25" Width="25">

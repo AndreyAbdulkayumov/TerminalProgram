@@ -15,6 +15,13 @@
 			<Setter Property="Foreground" Value="{DynamicResource ComboBox_Color_Foreground}"/>
 		</Style>
 		
+		<!-- Это должно работать, но не работает -->
+		<Style Selector="^ /template/ Path#DropDownGlyph">
+			<Setter Property="Fill" Value="Red" />
+			<Setter Property="Data" Value="M1939 486L2029 576L1024 1581L19 576L109 486L1024 1401L1939 486Z" />
+			<Setter Property="Stretch" Value="Uniform" />
+		</Style>		
+		
 		<Style Selector="^:pointerover /template/ Border#Background">
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_MouseOver_Background}"/>
 		</Style>
@@ -28,13 +35,14 @@
 		</Style>
 
 		<Style Selector="^:dropdownopen /template/ Border#PopupBorder">
-			<Setter Property="Background" Value="WhiteSmoke"/>	<!-- Для всех тем -->
+			<Setter Property="Background" Value="WhiteSmoke"/> <!-- Для всех тем -->
+			<Setter Property="BorderBrush" Value="#A1A1A1"/> <!-- Для всех тем -->
 		</Style>
 		
 	</Style>
 	
 	<Style Selector="ComboBoxItem">
-		<Setter Property="Background" Value="WhiteSmoke"/>	<!-- Для всех тем -->
+		<Setter Property="Background" Value="WhiteSmoke"/> <!-- Для всех тем -->
 		<Setter Property="Foreground" Value="{DynamicResource ComboBox_Color_Foreground}"/>
 
 		<Style Selector="^:pointerover /template/ ContentPresenter">

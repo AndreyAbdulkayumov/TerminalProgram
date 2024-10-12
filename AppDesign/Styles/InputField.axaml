@@ -6,6 +6,7 @@
 		<Setter Property="Background" Value="{DynamicResource TextInputField_Color_Enabled_Background}"/>
 		<Setter Property="Foreground" Value="Black"/>
 		<Setter Property="SelectionBrush" Value="#91C1E6"/> <!-- Для всех тем -->
+		<Setter Property="CaretBrush" Value="Black"/> <!-- Для всех тем -->
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="CornerRadius" Value="4"/>
 		<Setter Property="MinWidth" Value="{Binding ElementName=^,Path=Width}"/>

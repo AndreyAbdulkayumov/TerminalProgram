@@ -56,12 +56,6 @@
 								Command="{Binding Command_RemoveItem}"
 								HorizontalAlignment="Right" VerticalAlignment="Center">
 
-							<Button.Styles>
-								<Style Selector="TextBlock">
-									<Setter Property="Foreground" Value="Black"/>
-								</Style>
-							</Button.Styles>
-
 						</Button>
 
 					</Grid>

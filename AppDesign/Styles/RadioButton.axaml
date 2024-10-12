@@ -2,17 +2,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Style Selector="RadioButton">
+
+		<!-- OuterEllipse -->
+		
+		<Style Selector="^:unchecked /template/ Ellipse#OuterEllipse">
+			<Setter Property="Stroke" Value="{DynamicResource Switcher_Color_Unchecked_Stroke}"/>
+		</Style>
 		
 		<!-- CheckOuterEllipse -->
 
 		<Style Selector="^:checked /template/ Ellipse#CheckOuterEllipse">
-			<Setter Property="Fill" Value="{DynamicResource Swicher_Color_Checked}"/>
-			<Setter Property="Stroke" Value="{DynamicResource Swicher_Color_Checked}"/>
+			<Setter Property="Fill" Value="{DynamicResource Switcher_Color_Checked}"/>
+			<Setter Property="Stroke" Value="{DynamicResource Switcher_Color_Checked}"/>
 		</Style>
 
 		<Style Selector="^:pointerover:checked /template/ Ellipse#CheckOuterEllipse">
-			<Setter Property="Fill" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
-			<Setter Property="Stroke" Value="{DynamicResource Swicher_Color_Checked_PointerOver}"/>
+			<Setter Property="Fill" Value="{DynamicResource Switcher_Color_Checked_PointerOver}"/>
+			<Setter Property="Stroke" Value="{DynamicResource Switcher_Color_Checked_PointerOver}"/>
 		</Style>	
 
 		<!-- TextElement -->

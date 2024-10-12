@@ -114,12 +114,6 @@
 									HorizontalAlignment="Left" VerticalAlignment="Center"
 									Command="{Binding Command_Copy_BinaryWord}">
 
-								<Button.Styles>
-									<Style Selector="TextBlock">
-										<Setter Property="Foreground" Value="Black"/>
-									</Style>
-								</Button.Styles>
-
 								<Icons:MaterialIcon Kind="ContentCopy"
 													Foreground="Black"
 													Height="22" Width="22">

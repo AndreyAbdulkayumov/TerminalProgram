@@ -54,12 +54,6 @@
 								Height="32"
 								Command="{Binding Command_RemoveItem}"
 								VerticalAlignment="Top">
-
-							<Button.Styles>
-								<Style Selector="TextBlock">
-									<Setter Property="Foreground" Value="Black"/>
-								</Style>
-							</Button.Styles>
 							
 						</Button>
 

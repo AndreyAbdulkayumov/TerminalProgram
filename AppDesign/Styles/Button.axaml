@@ -13,6 +13,16 @@
 		<Setter Property="HorizontalContentAlignment" Value="Center"/>
 		<Setter Property="VerticalContentAlignment" Value="Center"/>
 
+		<Style Selector="^ ToolTip">
+			
+			<Setter Property="Background" Value="WhiteSmoke"/> <!-- Для всех тем -->
+			
+			<Style Selector="^ TextBlock">
+				<Setter Property="Foreground" Value="Black"/> <!-- Для всех тем -->
+			</Style>
+			
+		</Style>
+		
 		<Style Selector="^:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="{DynamicResource Button_Color_MouseOver_Background}"/>
 			<Setter Property="Foreground" Value="{DynamicResource Button_Color_Enabled_Foreground}"/>

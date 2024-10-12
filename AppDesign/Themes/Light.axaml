@@ -14,9 +14,6 @@
 	
 	<SolidColorBrush x:Key="Group_Color_BorderBrush" Color="#ABABAB"/>
 
-	<SolidColorBrush x:Key="Swicher_Color_Checked" Color="#2D7D9A"/>
-	<SolidColorBrush x:Key="Swicher_Color_Checked_PointerOver" Color="#4BA8CA"/>
-	
 	<!-- WindowChrome -->
 
 	<SolidColorBrush x:Key="WindowChrome_Color" Color="WhiteSmoke"/>
@@ -59,6 +56,12 @@
 	<SolidColorBrush x:Key="Button_Color_Disabled_Background" Color="#BDBDBD"/>
 	<SolidColorBrush x:Key="Button_Color_Disabled_Foreground" Color="#505050"/>
 
+	<!-- Switchers -->
+
+	<SolidColorBrush x:Key="Switcher_Color_Unchecked_Stroke" Color="#424242"/>
+	<SolidColorBrush x:Key="Switcher_Color_Checked" Color="#2D7D9A"/>
+	<SolidColorBrush x:Key="Switcher_Color_Checked_PointerOver" Color="#4BA8CA"/>
+	
 	<!-- MenuButtons -->
 
 	<SolidColorBrush x:Key="MenuButton_Color_Foreground" Color="#707070"/>
