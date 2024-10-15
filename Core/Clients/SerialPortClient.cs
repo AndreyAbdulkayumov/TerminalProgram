@@ -223,13 +223,13 @@ namespace Core.Clients
             {
                 _deviceSerialPort?.Close();
 
-                string CommonMessage = "Не удалось подключиться к СОМ порту.\n\n";
+                string CommonMessage = "Не удалось подключиться к последовательному порту.\n\n";
 
                 if (portInfo != null)
                 {
                     throw new Exception(CommonMessage +
                         "Данные подключения:" + "\n" +
-                        "COM - Port: " + portInfo.Port + "\n" +
+                        "Port: " + portInfo.Port + "\n" +
                         "BaudRate: " + portInfo.BaudRate + "\n" +
                         "Parity: " + portInfo.Parity + "\n" +
                         "DataBits: " + portInfo.DataBits + "\n" +

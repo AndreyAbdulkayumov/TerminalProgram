@@ -14,7 +14,7 @@ namespace ViewModels.Settings.Tabs
     {
         /************************************/
         //
-        //  COM - Ports
+        //  Serial Ports
         //
         /************************************/
 
@@ -255,7 +255,7 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private void ReScan_SerialPorts(SerialPort_Info? info)
+        public void ReScan_SerialPorts(SerialPort_Info? info)
         {
             string[] portsList = SerialPort.GetPortNames();
 

@@ -305,6 +305,8 @@ namespace ViewModels.Settings
                     Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = true;
                 }
 
+                _tab_Connection_VM.Connection_SerialPort_VM.ReScan_SerialPorts(data.Connection_SerialPort);
+
                 Message.Invoke("Настройки успешно сохранены!", MessageType.Information);
             }
 
