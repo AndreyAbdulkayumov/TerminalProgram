@@ -131,18 +131,18 @@ namespace Core.Clients
                     throw new Exception("Нет информации о настройках подключения по последовательному порту.");
                 }
 
-                if (portInfo.Port == null || portInfo.Port == String.Empty ||
-                    portInfo.BaudRate == null || portInfo.BaudRate == String.Empty ||
-                    portInfo.Parity == null || portInfo.Parity == String.Empty ||
-                    portInfo.DataBits == null || portInfo.DataBits == String.Empty ||
-                    portInfo.StopBits == null || portInfo.StopBits == String.Empty)
+                if (string.IsNullOrEmpty(portInfo.Port) ||
+                    string.IsNullOrEmpty(portInfo.BaudRate) ||
+                    string.IsNullOrEmpty(portInfo.Parity) ||
+                    string.IsNullOrEmpty(portInfo.DataBits) ||
+                    string.IsNullOrEmpty(portInfo.StopBits))
                 {
                     throw new Exception(
-                        (portInfo.Port == null || portInfo.Port == String.Empty ? "Не задан СОМ порт.\n" : "") +
-                        (portInfo.BaudRate == null || portInfo.BaudRate == String.Empty ? "Не задан BaudRate.\n" : "") +
-                        (portInfo.Parity == null || portInfo.Parity == String.Empty ? "Не задан Parity.\n" : "") +
-                        (portInfo.DataBits == null || portInfo.DataBits == String.Empty ? "Не задан DataBits\n" : "") +
-                        (portInfo.StopBits == null || portInfo.StopBits == String.Empty ? "Не задан StopBits\n" : "")
+                        (string.IsNullOrEmpty(portInfo.Port) ? "Не задан порт.\n" : "") +
+                        (string.IsNullOrEmpty(portInfo.BaudRate) ? "Не задан BaudRate.\n" : "") +
+                        (string.IsNullOrEmpty(portInfo.Parity) ? "Не задан Parity.\n" : "") +
+                        (string.IsNullOrEmpty(portInfo.DataBits) ? "Не задан DataBits\n" : "") +
+                        (string.IsNullOrEmpty(portInfo.StopBits) ? "Не задан StopBits\n" : "")
                         );
                 }
 

@@ -117,12 +117,12 @@ namespace Core.Clients
                 throw new Exception("Нет информации о настройках подключения по Ethernet.");
             }
 
-            if (socketInfo.IP == null || socketInfo.IP == String.Empty || 
-                socketInfo.Port == null || socketInfo.Port == String.Empty)
+            if (string.IsNullOrEmpty(socketInfo.IP) || 
+                string.IsNullOrEmpty(socketInfo.Port))
             {
                 throw new Exception(
-                    (socketInfo.IP == null || socketInfo.IP == String.Empty ? "IP адрес не задан.\n" : "") +
-                    (socketInfo.Port == null || socketInfo.Port == String.Empty ? "Порт не задан." : "")
+                    (string.IsNullOrEmpty(socketInfo.IP) ? "IP адрес не задан.\n" : "") +
+                    (string.IsNullOrEmpty(socketInfo.Port) ? "Порт не задан." : "")
                     );
             }
 

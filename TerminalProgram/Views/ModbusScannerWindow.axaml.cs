@@ -1,15 +1,23 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using MessageBox_AvaloniaUI;
+using MessageBox_Core;
 using ViewModels.ModbusClient;
 
 namespace TerminalProgram.Views
 {
     public partial class ModbusScannerWindow : Window
     {
+        private readonly IMessageBox Message;
+
         public ModbusScannerWindow()
         {
             InitializeComponent();
+
+            Message = new MessageBox(this, "Терминальная программа");
+
+            DataContext = new ModbusScanner_VM(Message.Show);
         }
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

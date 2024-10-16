@@ -9,6 +9,7 @@ using ViewModels.Settings;
 using Avalonia.Platform.Storage;
 using System.Linq;
 using Avalonia.Threading;
+using MessageBox_AvaloniaUI;
 
 
 namespace TerminalProgram.Views.Settings
@@ -20,15 +21,19 @@ namespace TerminalProgram.Views.Settings
         private readonly double WorkspaceOpacity_Default;
         private const double WorkspaceOpacity_OpenChildWindow = 0.15;
 
-        public SettingsWindow(IMessageBox message, Action set_Dark_Theme, Action set_Light_Theme)
+        private readonly IMessageBox Message;
+
+        public SettingsWindow(Action set_Dark_Theme, Action set_Light_Theme)
         {
             InitializeComponent();
 
             WorkspaceOpacity_Default = Border_Workspace.Opacity;
 
+            Message = new MessageBox(this, "Терминальная программа");
+
             ViewModel = new Settings_VM(
-                message.Show,
-                message.ShowYesNoDialog,
+                Message.Show,
+                Message.ShowYesNoDialog,
                 Get_FilePath,
                 Get_NewFileName,
                 set_Dark_Theme,
