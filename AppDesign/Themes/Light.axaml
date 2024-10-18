@@ -73,8 +73,6 @@
 	<SolidColorBrush x:Key="ComboBox_Color_Pressed_Background" Color="#C5E7F3"/>
 	<SolidColorBrush x:Key="ComboBox_Color_Disabled_Background" Color="#BDBDBD"/>
 
-	<SolidColorBrush x:Key="ComboBox_Color_Foreground" Color="Black"/>
-
 	<!-- All TextInputField (TextBox) -->
 
 	<SolidColorBrush x:Key="TextInputField_Color_Enabled_Background" Color="White"/>

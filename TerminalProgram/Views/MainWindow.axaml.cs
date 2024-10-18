@@ -87,8 +87,8 @@ public partial class MainWindow : Window
                 Source = new Uri("avares://AppDesign/Themes/Dark.axaml")
             });
 
-            //Application.Current.RequestedThemeVariant =
-            //    new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
+            Application.Current.RequestedThemeVariant =
+                new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
         }
     }
 
@@ -104,8 +104,8 @@ public partial class MainWindow : Window
                 Source = new Uri("avares://AppDesign/Themes/Light.axaml")
             });
 
-            //Application.Current.RequestedThemeVariant =
-            //    new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
+            Application.Current.RequestedThemeVariant =
+                new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
         }
     }
 
