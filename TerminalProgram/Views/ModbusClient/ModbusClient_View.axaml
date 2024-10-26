@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
-			 xmlns:ModeViews="clr-namespace:TerminalProgram.Views.ModbusClient.TransmitMode;assembly=TerminalProgram"
-             xmlns:ModbusRepresentations="clr-namespace:TerminalProgram.Views.ModbusClient.ModbusRepresentations;assembly=TerminalProgram"
+			 xmlns:ModeViews="clr-namespace:TerminalProgram.Views.ModbusClient.TransmitMode;assembly=TerminalProgramBase"
+             xmlns:ModbusRepresentations="clr-namespace:TerminalProgram.Views.ModbusClient.ModbusRepresentations;assembly=TerminalProgramBase"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
              x:Class="TerminalProgram.Views.ModbusClient.ModbusClient_View">
@@ -64,6 +64,7 @@
 
 			<Button Content="Сканнер"
 					IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
+					IsVisible="{Binding ButtonModbusScanner_IsVisible, Mode=OneWay}"
 					Width="80" Height="32"
 					Margin="0,0,385,0"
 					HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -116,17 +117,17 @@
 							<Grid ColumnDefinitions="2*,4*,4*,6*"
 								  Margin="10,0,10,0">
 
-								<TextBlock Grid.Column="0"
-										   Text="ID"/>
+								<Label Grid.Column="0"
+									   Content="ID"/>
 
-								<TextBlock Grid.Column="1"
-										   Text="Функция"/>
+								<Label Grid.Column="1"
+									   Content="Функция"/>
 
-								<TextBlock Grid.Column="2"
-										   Text="Адрес"/>
+								<Label Grid.Column="2"
+									   Content="Адрес"/>
 
-								<TextBlock Grid.Column="3"
-										   Text="Данные"/>
+								<Label Grid.Column="3"
+								       Content="Данные"/>
 
 							</Grid>
 
@@ -155,17 +156,34 @@
 											<Grid ColumnDefinitions="2*,4*,4*,6*"
 												  Margin="10">
 
-												<SelectableTextBlock Grid.Column="0"
-																     Text="{Binding OperationID, Mode=OneWay}"/>
+												<Border Grid.Column="0"
+														ClipToBounds="True">
+													
+													<SelectableTextBlock Width="200"
+																		 Text="{Binding OperationID, Mode=OneWay}"/>
+												</Border>
 
-												<SelectableTextBlock Grid.Column="1"
-																     Text="{Binding FuncNumber, Mode=OneWay}"/>
+												<Border Grid.Column="1" 
+														ClipToBounds="True">
+													
+													<SelectableTextBlock Width="200"
+																		 Text="{Binding FuncNumber, Mode=OneWay}"/>
+												</Border>
+												
+												<Border Grid.Column="2" 
+														ClipToBounds="True">
+													
+													<SelectableTextBlock  Width="200"
+																		  Text="{Binding ViewAddress, Mode=OneWay}"/>
+												</Border>
 
-												<SelectableTextBlock Grid.Column="2"
-																	 Text="{Binding ViewAddress, Mode=OneWay}"/>
-
-												<SelectableTextBlock Grid.Column="3"
-																	 Text="{Binding ViewData, Mode=OneWay}"/>
+												<Border Grid.Column="3"
+														ClipToBounds="True">
+													
+													<SelectableTextBlock Width="200"
+																		 Text="{Binding ViewData, Mode=OneWay}"/>
+												</Border>
+												
 
 											</Grid>
 
@@ -183,12 +201,13 @@
 
 					<Border.Styles>
 
-						<Style Selector="TextBlock">
+						<Style Selector="Label">
 							<Setter Property="Foreground" Value="Black"/>
 							<Setter Property="FontSize" Value="16"/>
-							<Setter Property="TextAlignment" Value="Center"/>
 							<Setter Property="HorizontalAlignment" Value="Center"/>
 							<Setter Property="VerticalAlignment" Value="Center"/>
+							<Setter Property="HorizontalContentAlignment" Value="Center"/>
+							<Setter Property="VerticalContentAlignment" Value="Center"/>
 						</Style>
 
 						<Style Selector="SelectableTextBlock">

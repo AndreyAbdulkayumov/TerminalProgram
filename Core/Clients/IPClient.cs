@@ -237,7 +237,19 @@ namespace Core.Clients
                     {
                         buffer = new byte[100];
 
-                        numberOfReceivedBytes = await _stream.ReadAsync(buffer, 0, buffer.Length);
+                        // Асинхронная операция не среагирует на срабатывание таймаута чтения.
+                        // Поэтому чтобы предотвратить зависание программы на этом моменте, заведен токен отмены.
+                        var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_stream.ReadTimeout));
+
+                        try
+                        {
+                            numberOfReceivedBytes = await _stream.ReadAsync(buffer, 0, buffer.Length, cts.Token);
+                        }
+
+                        catch (OperationCanceledException)
+                        {
+                            throw new Exception("Хост не ответил за указанный таймаут.");
+                        }                        
 
                         if (isFirstPackage)
                         {

@@ -11,13 +11,13 @@
 #define InstallDirectory "{commonpf64}\TerminalProgram"
 
 ; Имя файла установщика
-#define OutputFileName "TerminalProgram_" + MyAppVersion + "_installer"
+#define OutputFileName "TerminalProgram_" + MyAppVersion + "_win_x64_installer"
 
 ; Описание файла установщика
 #define FileDescription "TerminalProgram"
 
 #define MyAppPublisher "Абдулкаюмов Андрей"
-#define MyAppExeName "TerminalProgram.Desktop.exe"
+#define MyAppExeName "TerminalProgram.exe"
 #define MyAppAssocName "TerminalProgram File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -132,7 +132,17 @@ end;
 
 // Обновление версии приложения в реестре (срабатывает при обновлении)
 procedure CurStepChanged(CurStep: TSetupStep);
+var
+  ResultCode: Integer;
+  Uninstall: String;
 begin
+  //  Удаление уже установленной версии приложения
+  if (CurStep = ssInstall) then begin
+    if RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + ExpandConstant('{#SetupSetting("AppId")}') + '_is1', 'UninstallString', Uninstall) then 
+    begin
+      Exec(RemoveQuotes(Uninstall), ' /SILENT', '', SW_SHOWNORMAL, ewWaitUntilTerminated, ResultCode);
+    end;
+  end;
   if CurStep = ssPostInstall then
   begin
     // Обновляем версию в реестре
@@ -144,4 +154,10 @@ end;
 procedure DeinitializeUninstall();
 begin              
   RegDeleteKeyIncludingSubkeys(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{#SetupSetting("AppId")}_is1');
+  
+  if DirExists(ExpandConstant('{app}')) then
+  begin
+    RemoveDir(ExpandConstant('{app}'));
+  end;
+  
 end;

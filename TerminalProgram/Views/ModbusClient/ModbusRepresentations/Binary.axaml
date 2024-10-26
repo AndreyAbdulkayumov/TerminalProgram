@@ -3,14 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-			 xmlns:Converters="clr-namespace:TerminalProgram.Converters;assembly=TerminalProgram"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.Binary">
-
-	<UserControl.Resources>
-		<Converters:Binary_BoolToColorConverter x:Key="BoolToColorConverter"/>
-	</UserControl.Resources>
 
 	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 			BorderThickness="1"
@@ -85,18 +80,27 @@
 
 											<ItemsControl.ItemTemplate>
 												<DataTemplate>
-													<Border Background="{Binding IsChange, Converter={StaticResource BoolToColorConverter}}"
-															BorderBrush="Black"
-															BorderThickness="1"
-															CornerRadius="4"
-															Width="32">
+													<Grid>
+														<Border Background="{DynamicResource BinaryRepresentationd_Color_BitBackground_Zero}"
+																IsVisible="{Binding IsZeroBit, Mode=OneWay}"
+																BorderBrush="Black"
+																BorderThickness="1"
+																CornerRadius="4"
+																Width="32"/>
+
+														<Border Background="{DynamicResource BinaryRepresentationd_Color_BitBackground_One}"
+																IsVisible="{Binding !IsZeroBit, Mode=OneWay}"
+																BorderBrush="Black"
+																BorderThickness="1"
+																CornerRadius="4"
+																Width="32"/>
 
 														<TextBlock Text="{Binding Bit, Mode=OneWay}"
 																   Foreground="Black"
 																   FontSize="16"
 																   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+													</Grid>
 
-													</Border>
 												</DataTemplate>
 											</ItemsControl.ItemTemplate>
 											
@@ -115,7 +119,6 @@
 									Command="{Binding Command_Copy_BinaryWord}">
 
 								<Icons:MaterialIcon Kind="ContentCopy"
-													Foreground="Black"
 													Height="22" Width="22">
 
 									<Icons:MaterialIcon.RenderTransform>

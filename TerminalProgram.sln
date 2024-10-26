@@ -11,13 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModels", "ViewModels\Vi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox_Core", "MessageBox_Core\MessageBox_Core.csproj", "{AD0CB827-EEEB-4F21-A30E-A36A0E43B8F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgram", "TerminalProgram\TerminalProgram.csproj", "{2FB92928-C364-4E38-A83D-51D6A9E2FE8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgramBase", "TerminalProgram\TerminalProgramBase.csproj", "{2FB92928-C364-4E38-A83D-51D6A9E2FE8D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TerminalProgram.Desktop", "TerminalProgram.Desktop\TerminalProgram.Desktop.csproj", "{0E6F2A26-CB2A-40EF-80DA-C1CAE44899CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox_AvaloniaUI", "MessageBox_AvaloniaUI\MessageBox_AvaloniaUI.csproj", "{B7EF3178-3901-4C0D-B430-F394E65DD3F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppDesign", "AppDesign\AppDesign.csproj", "{734A305C-6E39-4DCF-A814-8F3BD77F22A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppDesign", "AppDesign\AppDesign.csproj", "{734A305C-6E39-4DCF-A814-8F3BD77F22A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

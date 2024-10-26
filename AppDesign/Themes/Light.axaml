@@ -98,21 +98,27 @@
 	
 	<SolidColorBrush x:Key="DataGrid_Color_HeaderBackground" Color="White"/>
 	
-	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#F0F0F0"/>
-	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#CCCCCC"/>
+	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#F1F1F1"/>
+	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#CFCFCF"/>
 	
 	<SolidColorBrush x:Key="DataGrid_Color_RowBackground_Selected" Color="LightBlue"/>
 	<SolidColorBrush x:Key="DataGrid_Color_RowBorderBrush_Selected" Color="Black"/>
 	
-	<!-- Modbus Data Field -->
+	<!-- Last Request Representation -->
 
-	<SolidColorBrush x:Key="ModbusDataField_Color_BorderBackground" Color="#DFDFDF"/>
-	<SolidColorBrush x:Key="ModbusDataField_Color_DataBackground" Color="#EFEFEF"/>
+	<SolidColorBrush x:Key="LastRequestRepresentation_Color_BorderBackground" Color="#DFDFDF"/>
+	<SolidColorBrush x:Key="LastRequestRepresentation_Color_DataBackground" Color="#EFEFEF"/>
 
-	<SolidColorBrush x:Key="ModbusDataField_Color_ByteNumberBackground" Color="#BFD7E3"/>
+	<SolidColorBrush x:Key="LastRequestRepresentation_Color_ByteNumberBackground" Color="#BFD7E3"/>
 
-	<!-- Float Field -->
+	<!-- Binary Representation -->
 
-	<SolidColorBrush x:Key="Float_Field_Background" Color="#D3D3D3"/>
+	<SolidColorBrush x:Key="BinaryRepresentationd_Color_BitBackground_Zero" Color="#D1E5F7"/>
+	<SolidColorBrush x:Key="BinaryRepresentationd_Color_BitBackground_One" Color="WhiteSmoke"/>
+	
+	<!-- Float Representation -->
+
+	<SolidColorBrush x:Key="FloatRepresentation_Address_Background" Color="#9A98EB"/>
+	<SolidColorBrush x:Key="FloatRepresentation_Field_Background" Color="#D3D3D3"/>
 	
 </ResourceDictionary>

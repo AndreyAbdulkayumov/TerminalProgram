@@ -11,7 +11,6 @@ using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using TerminalProgram.Views.Settings;
 using ViewModels;
-using ViewModels.ModbusClient;
 
 
 namespace TerminalProgram.Views;
@@ -24,7 +23,6 @@ public partial class MainWindow : Window
 
     private readonly double WorkspaceOpacity_Default;
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
-
 
     public MainWindow()
     {

@@ -10,7 +10,6 @@ using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using Core.Models.AppUpdateSystem;
-using Splat.ModeDetection;
 
 namespace ViewModels
 {

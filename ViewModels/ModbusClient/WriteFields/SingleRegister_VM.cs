@@ -88,6 +88,7 @@ namespace ViewModels.ModbusClient.WriteFields
         {
             if (string.IsNullOrEmpty(value))
             {
+                _data = 0;
                 return null;
             }
 

@@ -51,7 +51,7 @@
                     CornerRadius="5"
                     BorderBrush="{DynamicResource Group_Color_BorderBrush}"
                     BorderThickness="1"
-                    Background="{DynamicResource ModbusDataField_Color_BorderBackground}"
+                    Background="{DynamicResource LastRequestRepresentation_Color_BorderBackground}"
                     Margin="0,5,0,5">
 
 				<ScrollViewer HorizontalScrollBarVisibility="Visible"
@@ -82,7 +82,7 @@
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="{DynamicResource ModbusDataField_Color_ByteNumberBackground}">
+                                            Background="{DynamicResource LastRequestRepresentation_Color_ByteNumberBackground}">
 
 										<TextBlock Text="{Binding ItemNumber, Mode=OneWay}"
                                                    FontSize="12"
@@ -95,7 +95,7 @@
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="{DynamicResource ModbusDataField_Color_DataBackground}">
+                                            Background="{DynamicResource LastRequestRepresentation_Color_DataBackground}">
 
 										<TextBlock Text="{Binding RequestData, Mode=OneWay}"
                                                    FontSize="16"
@@ -109,7 +109,7 @@
                                             BorderBrush="Black"
                                             BorderThickness="1"
                                             CornerRadius="5"
-                                            Background="{DynamicResource ModbusDataField_Color_DataBackground}">
+                                            Background="{DynamicResource LastRequestRepresentation_Color_DataBackground}">
 
 										<TextBlock Text="{Binding ResponseData, Mode=OneWay}"
                                                    FontSize="16"

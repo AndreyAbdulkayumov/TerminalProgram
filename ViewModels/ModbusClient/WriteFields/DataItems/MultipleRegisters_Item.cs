@@ -146,6 +146,16 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
         {
             if (string.IsNullOrEmpty(value))
             {
+                if (DataFormat == NumberStyles.Float)
+                {
+                    FloatData = 0;
+                }
+
+                else
+                {
+                    _data = 0;
+                }
+                
                 return null;
             }
 

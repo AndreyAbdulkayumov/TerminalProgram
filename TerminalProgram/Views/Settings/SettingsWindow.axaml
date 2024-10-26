@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgram"
+		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgramBase"
 		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
         mc:Ignorable="d"
         x:Class="TerminalProgram.Views.Settings.SettingsWindow"

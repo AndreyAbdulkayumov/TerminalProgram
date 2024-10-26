@@ -80,7 +80,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 				<Image Grid.Row="2" Grid.Column="0"
-					   Source="avares://TerminalProgram/Resources/MainLogo.ico"
+					   Source="avares://TerminalProgramBase/Resources/MainLogo.ico"
 					   Margin="10,15,0,0"
 					   HorizontalAlignment="Center" VerticalAlignment="Top"/>
 

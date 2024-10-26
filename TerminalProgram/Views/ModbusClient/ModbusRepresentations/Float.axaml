@@ -51,7 +51,7 @@
 
 					<DataTemplate>
 
-						<Border Background="{DynamicResource Float_Field_Background}"
+						<Border Background="{DynamicResource FloatRepresentation_Field_Background}"
 								BorderBrush="{DynamicResource Group_Color_BorderBrush}"
 								BorderThickness="1"
 								CornerRadius="10"
@@ -64,7 +64,7 @@
 
 								<TextBlock Text="{Binding Address}"
 										   FontSize="13"
-										   Background="Plum"
+										   Background="{DynamicResource FloatRepresentation_Address_Background}"
 										   Foreground="Black"
 										   Padding="2"
 										   HorizontalAlignment="Center"/>

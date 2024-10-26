@@ -62,7 +62,7 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
                 var item = new BinaryDataItem()
                 {
                     Bit = bitsValue[i].ToString(),
-                    IsChange = false
+                    IsZeroBit = bitsValue[i] == '0'
                 };
 
                 items.Add(item);

@@ -88,6 +88,14 @@ namespace ViewModels.ModbusClient
             set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
         }
 
+        private bool _buttonModbusScanner_IsVisible = true;
+
+        public bool ButtonModbusScanner_IsVisible
+        {
+            get => _buttonModbusScanner_IsVisible;
+            set => this.RaiseAndSetIfChanged(ref _buttonModbusScanner_IsVisible, value);
+        }
+
         #endregion
 
         #region Representations Data
@@ -276,6 +284,7 @@ namespace ViewModels.ModbusClient
                 ModbusMessageType = new ModbusTCP_Message();
 
                 Connection_IsSerialPort = false;
+                ButtonModbusScanner_IsVisible = false;
             }
 
             else if (e.ConnectedDevice is SerialPortClient)
@@ -297,6 +306,7 @@ namespace ViewModels.ModbusClient
                 }
 
                 Connection_IsSerialPort = true;
+                ButtonModbusScanner_IsVisible = true;
             }
 
             else
@@ -313,6 +323,8 @@ namespace ViewModels.ModbusClient
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             UI_IsEnable = false;
+
+            ButtonModbusScanner_IsVisible = true;
 
             Connection_IsSerialPort = false;
 

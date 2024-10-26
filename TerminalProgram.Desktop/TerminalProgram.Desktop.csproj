@@ -7,7 +7,12 @@
     <Nullable>enable</Nullable>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+	<AssemblyName>TerminalProgram</AssemblyName>
+	<ApplicationIcon>MainLogo.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="MainLogo.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.2.0-rc1" />
@@ -15,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TerminalProgram\TerminalProgram.csproj" />
+    <ProjectReference Include="..\TerminalProgram\TerminalProgramBase.csproj" />
   </ItemGroup>
 </Project>

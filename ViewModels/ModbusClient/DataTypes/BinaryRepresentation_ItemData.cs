@@ -45,6 +45,6 @@ namespace ViewModels.ModbusClient.DataTypes
     public class BinaryDataItem
     {
         public string Bit { get; set; } = "0";
-        public bool IsChange { get; set; } = true;
+        public bool IsZeroBit { get; set; } = true;
     }
 }
