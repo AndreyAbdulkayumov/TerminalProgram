@@ -139,8 +139,6 @@
 					
 					<Button Content="Проверить обновления"
 							CornerRadius="6"
-							TextBlock.TextWrapping="Wrap"
-							TextBlock.TextAlignment="Center"
 							Margin="10,0,0,0"
 							HorizontalAlignment="Left" VerticalAlignment="Center"
 							Command="{Binding Command_CheckUpdate}"/>
