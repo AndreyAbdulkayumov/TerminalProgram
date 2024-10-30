@@ -1,6 +1,8 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using DynamicData;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ViewModels.ModbusClient;
@@ -27,6 +29,8 @@ namespace TerminalProgram.Views.ModbusClient
 
         private ObservableCollection<ModbusDataDisplayedForTable> _dataInDataGrid = new ObservableCollection<ModbusDataDisplayedForTable>();
 
+        private readonly ItemsControl? _itemsControl = new ItemsControl();
+
         private Border? _selectedBorder;
         private SolidColorBrush? _selectedBorder_InitColor;
 
@@ -34,14 +38,47 @@ namespace TerminalProgram.Views.ModbusClient
         {
             InitializeComponent();
 
-            var itemsControl = this.FindControl<ItemsControl>("ItemsControl_ModbusData");
+            _itemsControl = this.FindControl<ItemsControl>("ItemsControl_ModbusData");
 
-            if (itemsControl != null)
+            if (_itemsControl != null)
             {
-                itemsControl.ItemsSource = _dataInDataGrid;
+                _itemsControl.ItemsSource = _dataInDataGrid;
             }
 
             ModbusClient_VM.AddDataOnTable += ViewModel_ModbusClient_AddDataOnTable;
+
+            if (Application.Current != null)
+            {
+                Application.Current.ActualThemeVariantChanged += Current_ActualThemeVariantChanged;
+            }            
+        }
+
+        private void Current_ActualThemeVariantChanged(object? sender, System.EventArgs e)
+        {
+            if (_itemsControl == null || _dataInDataGrid.Count == 0)
+            {
+                return;
+            }
+
+            var items = new ObservableCollection<ModbusDataDisplayedForTable>();
+            items.AddRange(_dataInDataGrid);
+
+            string resourceKey;
+
+            for (int i = 0;  i < items.Count; i++)
+            {
+                resourceKey = i % 2 != 0 ? ResourceKey_DataGrid_Color_AlternatingRowBackground : ResourceKey_DataGrid_Color_RowBackground;
+
+                if (this.TryFindResource(resourceKey, out object? rowBackground) == false)
+                {
+                    rowBackground = Brushes.Transparent;
+                }
+
+                items[i].RowBackground = rowBackground as SolidColorBrush;
+            }
+
+            _dataInDataGrid.Clear();
+            _dataInDataGrid.AddRange(items);
         }
 
         private void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)

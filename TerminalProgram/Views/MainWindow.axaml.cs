@@ -159,6 +159,13 @@ public partial class MainWindow : Window
         Close();
     }
 
+    private void ResizeIcon_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        Cursor = new(StandardCursorType.BottomRightCorner);
+        BeginResizeDrag(WindowEdge.SouthEast, e);
+        Cursor = new(StandardCursorType.Arrow);
+    }
+
     /********************************************************/
     //
     //  Обработчики кнопок

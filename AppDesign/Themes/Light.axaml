@@ -98,7 +98,7 @@
 	
 	<SolidColorBrush x:Key="DataGrid_Color_HeaderBackground" Color="White"/>
 	
-	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#F1F1F1"/>
+	<SolidColorBrush x:Key="DataGrid_Color_RowBackground" Color="#EDEDED"/>
 	<SolidColorBrush x:Key="DataGrid_Color_AlternatingRowBackground" Color="#CFCFCF"/>
 	
 	<SolidColorBrush x:Key="DataGrid_Color_RowBackground_Selected" Color="LightBlue"/>

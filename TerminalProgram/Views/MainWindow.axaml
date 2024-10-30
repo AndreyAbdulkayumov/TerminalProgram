@@ -16,7 +16,7 @@
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly"
+		SystemDecorations="None"
 		Loaded="Window_Loaded"
 		Closing="Window_Closing">
 
@@ -341,6 +341,26 @@
 				</Border>
 
 			</Grid>
+
+			<Border Grid.Row="1" 
+					Background="Transparent"
+					Width="20" Height="20"
+					HorizontalAlignment="Right" VerticalAlignment="Bottom"
+					PointerPressed="ResizeIcon_PointerPressed">
+
+				<Border.Styles>
+					<Style Selector="Border">
+						<Style Selector="^:pointerover">
+							<Setter Property="Cursor" Value="BottomRightCorner"/>
+						</Style>
+					</Style>
+				</Border.Styles>
+
+				<Icons:MaterialIcon Kind="ResizeBottomRight"
+									Margin="0,0,10,10"
+									Width="30" Height="30"/>
+
+			</Border>
 			
 		</Grid>		
 		
