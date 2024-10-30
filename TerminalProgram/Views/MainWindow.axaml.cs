@@ -24,11 +24,15 @@ public partial class MainWindow : Window
     private readonly double WorkspaceOpacity_Default;
     private const double WorkspaceOpacity_OpenChildWindow = 0.15;
 
+    private readonly Border? _resizeIcon;
+
     public MainWindow()
     {
         InitializeComponent();
 
         WorkspaceOpacity_Default = Grid_Workspace.Opacity;
+
+        _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
 
         Message = new MessageBox(this, "Терминальная программа");
 
@@ -143,14 +147,11 @@ public partial class MainWindow : Window
 
     private void Button_Maximize_Click(object? sender, RoutedEventArgs e)
     {
-        if (WindowState == WindowState.Maximized)
-        {
-            WindowState = WindowState.Normal;
-        }
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
-        else
+        if (_resizeIcon != null)
         {
-            WindowState = WindowState.Maximized;
+            _resizeIcon.IsVisible = WindowState == WindowState.Normal ? true : false;
         }
     }
 

@@ -16,7 +16,8 @@
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="None"
+		SystemDecorations="BorderOnly"
+		
 		Loaded="Window_Loaded"
 		Closing="Window_Closing">
 
@@ -340,27 +341,28 @@
 
 				</Border>
 
-			</Grid>
+				<Border x:Name="Border_ResizeIcon" Grid.Row="2" Grid.Column="1"
+						Background="Transparent"
+						Width="20" Height="20"
+						HorizontalAlignment="Right" VerticalAlignment="Bottom"
+						PointerPressed="ResizeIcon_PointerPressed">
 
-			<Border Grid.Row="1" 
-					Background="Transparent"
-					Width="20" Height="20"
-					HorizontalAlignment="Right" VerticalAlignment="Bottom"
-					PointerPressed="ResizeIcon_PointerPressed">
-
-				<Border.Styles>
-					<Style Selector="Border">
-						<Style Selector="^:pointerover">
-							<Setter Property="Cursor" Value="BottomRightCorner"/>
+					<Border.Styles>
+						<Style Selector="Border">
+							<Style Selector="^:pointerover">
+								<Setter Property="Cursor" Value="BottomRightCorner"/>
+							</Style>
 						</Style>
-					</Style>
-				</Border.Styles>
+					</Border.Styles>
 
-				<Icons:MaterialIcon Kind="ResizeBottomRight"
-									Margin="0,0,10,10"
-									Width="30" Height="30"/>
+					<Icons:MaterialIcon Kind="ResizeBottomRight"
+										Foreground="{DynamicResource ResizeGrip_Color_Foreground}"
+										Margin="0,0,10,10"
+										Width="30" Height="30"/>
 
-			</Border>
+				</Border>
+				
+			</Grid>
 			
 		</Grid>		
 		

@@ -12,7 +12,9 @@
 
 	<SolidColorBrush x:Key="Window_Color_BorderBrush" Color="#6B6B6B"/>
 	
-	<SolidColorBrush x:Key="Group_Color_BorderBrush" Color="#808080"/>	
+	<SolidColorBrush x:Key="Group_Color_BorderBrush" Color="#808080"/>
+
+	<SolidColorBrush x:Key="ResizeGrip_Color_Foreground" Color="WhiteSmoke"/>
 	
 	<!-- WindowChrome -->
 
