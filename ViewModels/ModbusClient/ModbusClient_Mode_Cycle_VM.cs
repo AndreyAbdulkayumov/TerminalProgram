@@ -258,9 +258,6 @@ namespace ViewModels.ModbusClient
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             _numberViewStyle = NumberStyles.HexNumber;
 
-            ValidateInput(nameof(SlaveID), SlaveID);
-            ValidateInput(nameof(Address), Address);
-
             if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
                 SlaveID = _selectedSlaveID.ToString("X");
@@ -271,6 +268,9 @@ namespace ViewModels.ModbusClient
                 Address = _selectedAddress.ToString("X");
             }
 
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
+
             ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.HexNumber);
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.HexNumber);
         }
@@ -279,9 +279,6 @@ namespace ViewModels.ModbusClient
         {
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             _numberViewStyle = NumberStyles.Number;
-
-            ValidateInput(nameof(SlaveID), SlaveID);
-            ValidateInput(nameof(Address), Address);
 
             if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
@@ -292,6 +289,9 @@ namespace ViewModels.ModbusClient
             {
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
             }
+
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
 
             ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.Number);
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
