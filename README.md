@@ -33,7 +33,13 @@ https://habr.com/ru/articles/795387/
 	- SerialPort (UART)
 	- TCP
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/abafe38b-fe23-45d4-87bf-ad9c16c2453a"/>
+</p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/730c45ef-106a-4a69-85fe-75880ec3d3f3"/>
+</p>
 
 ## *"Modbus"*
 Пользователь может взаимодействовать с выбранными регистрами Modbus в соответствующих полях. История действий отображается в таблице. 
@@ -44,7 +50,13 @@ https://habr.com/ru/articles/795387/
 	- Modbus RTU
  	- Modbus ASCII
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/00f85b38-ac78-453d-b3d6-b36a68c26afd"/>
+</p>
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/20cb7161-e1dc-43aa-b1c9-6eabea093ccb"/>
+</p>
 
 # Индикация
 
