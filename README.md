@@ -2,13 +2,9 @@
 
 ## *Статьи на Хабр*
 
-Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 2
+[Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 2](https://habr.com/ru/articles/854824/)
 
-https://habr.com/ru/articles/854824/
-
-Терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 1
-
-https://habr.com/ru/articles/795387/
+[Терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 1](https://habr.com/ru/articles/795387/)
 
 ## *Терминальная программа*
 Начиная с версии 3.0.0 в проекте используется Avalonia UI, в более ранних версиях WPF.
@@ -25,7 +21,7 @@ https://habr.com/ru/articles/795387/
 1. Обмен данными по *стандартным* протоколам, которые поддерживает .NET.
 2. Обмен данными по *специальным* протоколам.
 
-Приложение поддерживает *Темную* и *Светлую* тему оформления.
+Приложение поддерживает ***Темную*** и ***Светлую*** тему оформления.
 
 # Режимы работы
 
@@ -63,21 +59,13 @@ https://habr.com/ru/articles/795387/
 </p>
 
 # *Вспомогательный софт*
-GUI Framework - Avalonia UI
+GUI Framework - [Avalonia UI](https://avaloniaui.net/)
 
-https://avaloniaui.net/
+Для упрощения работы с паттерном MVVM использован [ReactiveUI](https://www.reactiveui.net/)
 
-Для упрощения работы с паттерном MVVM использован ReactiveUI
+Для тестирования используется [xUnit](https://xunit.net/)
 
-https://www.reactiveui.net/
-
-Для тестирования используется xUnit
-
-https://xunit.net/
-
-Скрипт установщика написан с помощью Inno Setup Compiler 6.2.2
-
-https://jrsoftware.org/isdl.php
+Скрипт установщика написан с помощью [Inno Setup Compiler](https://jrsoftware.org/isdl.php)
 
 # *Система версирования* Global.Major.Minor
 
