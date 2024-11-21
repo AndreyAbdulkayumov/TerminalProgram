@@ -54,12 +54,11 @@ namespace ViewModels.NoProtocol
             get => _rx_String;
             set => this.RaiseAndSetIfChanged(ref _rx_String, value);
         }
+        
+        private const int RX_MaxCapacity = 2000;
 
-        // Делаем эти значения одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
-        private const int RX_Capacity = 300;
-        private const int RX_MaxCapacity = 300;
-
-        private readonly StringBuilder RX = new StringBuilder(RX_Capacity, RX_MaxCapacity);
+        // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
+        private readonly StringBuilder RX = new StringBuilder(RX_MaxCapacity, RX_MaxCapacity);
 
         private bool _rx_NextLine;
 

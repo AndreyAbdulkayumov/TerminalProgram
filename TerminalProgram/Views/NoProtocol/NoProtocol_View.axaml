@@ -79,34 +79,31 @@
 					 Text="{Binding RX_String, Mode=OneWay}"
 					 IsReadOnly="True"
                      IsUndoEnabled="False"
-                     MaxLines="50"
-                     MaxLength="300"
 					 TextAlignment="Left"
 					 Margin="10,10,10,0"
 					 TextChanged="TextBox_TextChanged"/>
 
 			<Grid Grid.Row="1">
 
-				<StackPanel Orientation="Horizontal" Spacing="30"
+				<StackPanel Orientation="Horizontal" Spacing="15"
 							HorizontalAlignment="Left"
 							Margin="20,0,0,0">
 
-					<Button x:Name="Button_SaveAs"
-							Width="130"
-							Content="Сохранить как..."/>
-
-					<CheckBox x:Name="CheckBox_NextLine"
+					<TextBlock Text="Добавить в конце сообщения:"
+							   Foreground="{DynamicResource App_Color_Text}"
+					           FontSize="14"
+						       VerticalAlignment="Center"/>
+					
+					<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
 							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
-							  Content="LF ( &#8216;\n	&#8216;, 0x0A)"/>
+							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"/>
 					
-				</StackPanel>				
+				</StackPanel>
 
-				<Button x:Name="Button_ClearFieldRX"
-                        Margin="0,0,20,0"
-                        Width="120"
-                        Content="Очистить поле"
+				<Button Content="Очистить поле"
+						Margin="0,0,20,0"
+                        Width="120"                        
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Command="{Binding Command_ClearRX}"/>
 

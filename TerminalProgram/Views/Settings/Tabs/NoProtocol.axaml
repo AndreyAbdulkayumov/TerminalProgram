@@ -10,6 +10,7 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
@@ -26,6 +27,17 @@
 			<Setter Property="Margin" Value="235,0,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBox.InputField.Settings">
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Padding" Value="10,0,10,0"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
 		</Style>
 		
 	</UserControl.Styles>
@@ -45,6 +57,15 @@
 					  SelectedItem="{Binding SelectedEncoding}"/>
 			
 		</Grid>
+
+		<Grid>
+
+			<TextBlock Text="Макс. знаков в поле приема" Classes="Parameters"/>
+
+			<TextBox Classes="InputField Settings"
+					 Text="многа"/>
+
+		</Grid>		
 
 	</StackPanel>
 	
