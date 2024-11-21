@@ -13,6 +13,16 @@ using ViewModels.ModbusClient.ModbusRepresentations;
 
 namespace ViewModels.ModbusClient
 {
+    public class BoolEventArgs : EventArgs
+    {
+        public readonly bool Value;
+
+        public BoolEventArgs(bool value)
+        {
+            Value = value;
+        }
+    }
+
     public class ModbusClient_VM : ReactiveObject
     {
         public const string ViewContent_NumberStyle_dec = "(dec)";
@@ -21,6 +31,8 @@ namespace ViewModels.ModbusClient
         // Добавлять данные в DataGrid можно только из UI потока.
         // Поэтому используется событие, обработчик которого вызывается в behind code у файла с разметкой DataGrid.
         public static event EventHandler<ModbusDataDisplayed?>? AddDataOnTable;
+
+        public event EventHandler<BoolEventArgs>? CheckSum_VisibilityChanged;
 
         private object? _currentModeViewModel;
 
@@ -48,44 +60,39 @@ namespace ViewModels.ModbusClient
             set => this.RaiseAndSetIfChanged(ref _isCycleMode, value);
         }
 
-        private const string ModbusMode_Name_Default = "не определен";
-
-        private string? _modbusMode_Name;
-
-        public string? ModbusMode_Name
-        {
-            get => _modbusMode_Name;
-            set => this.RaiseAndSetIfChanged(ref _modbusMode_Name, value);
-        }
-
+        private const string Modbus_TCP_Name = "Modbus TCP";
         private const string Modbus_RTU_Name = "Modbus RTU";
         private const string Modbus_ASCII_Name = "Modbus ASCII";
+        private const string Modbus_RTU_over_TCP_Name = "Modbus RTU over TCP";
+        private const string Modbus_ASCII_over_TCP_Name = "Modbus ASCII over TCP";
 
-        private readonly ObservableCollection<string> _modbus_RTU_ASCII =
+
+        private readonly ObservableCollection<string> _modbusTypes_SerialPortClient =
             new ObservableCollection<string>()
             {
                 Modbus_RTU_Name, Modbus_ASCII_Name
             };
 
-        public ObservableCollection<string> Modbus_RTU_ASCII
+        private readonly ObservableCollection<string> _modbusTypes_IPClient =
+            new ObservableCollection<string>()
+            {
+                Modbus_TCP_Name, Modbus_RTU_over_TCP_Name, Modbus_ASCII_over_TCP_Name
+            };
+
+        private ObservableCollection<string> _availableModbusTypes;
+
+        public ObservableCollection<string> AvailableModbusTypes
         {
-            get => _modbus_RTU_ASCII;
+            get => _availableModbusTypes;
+            set => this.RaiseAndSetIfChanged(ref _availableModbusTypes, value);
         }
 
-        private string? _selected_Modbus_RTU_ASCII;
+        private string _selectedModbusType = string.Empty;
 
-        public string? Selected_Modbus_RTU_ASCII
+        public string SelectedModbusType
         {
-            get => _selected_Modbus_RTU_ASCII;
-            set => this.RaiseAndSetIfChanged(ref _selected_Modbus_RTU_ASCII, value);
-        }
-
-        private bool _connection_IsSerialPort = false;
-
-        public bool Connection_IsSerialPort
-        {
-            get => _connection_IsSerialPort;
-            set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
+            get => _selectedModbusType;
+            set => this.RaiseAndSetIfChanged(ref _selectedModbusType, value);
         }
 
         private bool _buttonModbusScanner_IsVisible = true;
@@ -180,17 +187,9 @@ namespace ViewModels.ModbusClient
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             Mode_Normal_VM = new ModbusClient_Mode_Normal_VM(messageBox, Modbus_Write, Modbus_Read);
-            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);
+            Mode_Normal_VM.Subscribe(this);
 
-            /****************************************************/
-            //
-            // Первоначальная настройка UI
-            //
-            /****************************************************/
-
-            Selected_Modbus_RTU_ASCII = Modbus_RTU_ASCII.First();
-
-            ModbusMode_Name = ModbusMode_Name_Default;
+            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);                  
 
             /****************************************************/
             //
@@ -252,60 +251,59 @@ namespace ViewModels.ModbusClient
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
 
-            this.WhenAnyValue(x => x.Selected_Modbus_RTU_ASCII)
+            this.WhenAnyValue(x => x.SelectedModbusType)
                 .WhereNotNull()
                 .Subscribe(x =>
                 {
                     if (Model.HostIsConnect)
                     {
-                        if (Selected_Modbus_RTU_ASCII == Modbus_RTU_Name)
-                        {
-                            ModbusMessageType = new ModbusRTU_Message();
-                        }
+                        SetCheckSumVisiblity();
 
-                        else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
+                        if (SelectedModbusType == Modbus_TCP_Name)
                         {
-                            ModbusMessageType = new ModbusASCII_Message();
-                        }
-
-                        else
-                        {
-                            Message.Invoke("Задан неизвестный тип Modbus протокола: " + Selected_Modbus_RTU_ASCII, MessageType.Error);
+                            ModbusMessageType = new ModbusTCP_Message();
                             return;
                         }
+
+                        if (SelectedModbusType == Modbus_RTU_Name || 
+                            SelectedModbusType == Modbus_RTU_over_TCP_Name)
+                        {
+                            ModbusMessageType = new ModbusRTU_Message();
+                            return;
+                        }
+
+                        if (SelectedModbusType == Modbus_ASCII_Name ||
+                            SelectedModbusType == Modbus_ASCII_over_TCP_Name)
+                        {
+                            ModbusMessageType = new ModbusASCII_Message();
+                            return;
+                        }
+
+                        Message.Invoke("Задан неизвестный тип Modbus протокола: " + SelectedModbusType, MessageType.Error);
                     }
                 });
+        }
+
+        private void SetCheckSumVisiblity()
+        {
+            bool isVisible = !Model.HostIsConnect || SelectedModbusType != Modbus_TCP_Name;
+
+            CheckSum_VisibilityChanged?.Invoke(this, new BoolEventArgs(isVisible));
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             if (e.ConnectedDevice is IPClient)
             {
-                ModbusMessageType = new ModbusTCP_Message();
+                AvailableModbusTypes = _modbusTypes_IPClient;
 
-                Connection_IsSerialPort = false;
                 ButtonModbusScanner_IsVisible = false;
             }
 
             else if (e.ConnectedDevice is SerialPortClient)
             {
-                if (Selected_Modbus_RTU_ASCII == Modbus_RTU_Name)
-                {
-                    ModbusMessageType = new ModbusRTU_Message();
-                }
+                AvailableModbusTypes = _modbusTypes_SerialPortClient;
 
-                else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
-                {
-                    ModbusMessageType = new ModbusASCII_Message();
-                }
-
-                else
-                {
-                    Message.Invoke("Задан неизвестный тип Modbus протокола: " + Selected_Modbus_RTU_ASCII, MessageType.Error);
-                    return;
-                }
-
-                Connection_IsSerialPort = true;
                 ButtonModbusScanner_IsVisible = true;
             }
 
@@ -315,7 +313,9 @@ namespace ViewModels.ModbusClient
                 return;
             }
 
-            ModbusMode_Name = ModbusMessageType.ProtocolName;
+            SelectedModbusType = AvailableModbusTypes.Contains(SelectedModbusType) ? SelectedModbusType : AvailableModbusTypes.First();
+
+            SetCheckSumVisiblity();
 
             UI_IsEnable = true;
         }
@@ -326,9 +326,7 @@ namespace ViewModels.ModbusClient
 
             ButtonModbusScanner_IsVisible = true;
 
-            Connection_IsSerialPort = false;
-
-            ModbusMode_Name = ModbusMode_Name_Default;
+            SetCheckSumVisiblity();
 
             _packageNumber = 0;
         }

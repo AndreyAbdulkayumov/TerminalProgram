@@ -334,6 +334,16 @@ namespace ViewModels.ModbusClient
                 });
         }
 
+        public void Subscribe(ModbusClient_VM parent)
+        {
+            parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
+        }
+
+        private void Parent_CheckSum_VisibilityChanged(object? sender, BoolEventArgs e)
+        {
+            CheckSum_IsVisible = e.Value;
+        }
+
         public string GetFieldViewName(string fieldName)
         {
             switch (fieldName)
@@ -453,21 +463,6 @@ namespace ViewModels.ModbusClient
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
-            if (e.ConnectedDevice is IPClient)
-            {
-                CheckSum_IsVisible = false;
-            }
-
-            else if (e.ConnectedDevice is SerialPortClient)
-            {
-                CheckSum_IsVisible = true;
-            }
-
-            else
-            {
-                return;
-            }
-
             WriteBuffer.Clear();
 
             UI_IsEnable = true;
@@ -476,8 +471,6 @@ namespace ViewModels.ModbusClient
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
             UI_IsEnable = false;
-
-            CheckSum_IsVisible = true;
         }
 
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
