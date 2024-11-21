@@ -123,10 +123,11 @@ namespace ViewModels.Settings
         {
             DeviceData settings = SettingsFile.ReadPreset(fileName);
 
-            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? "UTF-8";
+            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? DeviceData.GlobalEncoding_Default;
+            Tab_NoProtocol_VM.SelectedReceiveBufferSize = settings.ReceiveBufferSize ?? DeviceData.ReceiveBufferSize_Default;
 
-            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? "300";
-            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? "300";
+            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? DeviceData.TimeoutWrite_Default;
+            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? DeviceData.TimeoutRead_Default;
 
             Tab_Modbus_VM.FloatFormat = FloatHelper.GetFloatNumberFormatOrDefault(settings.FloatNumberFormat);
 
@@ -268,15 +269,8 @@ namespace ViewModels.Settings
 
                 var data = new DeviceData()
                 {
-                    GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
-
-                    TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
-                    TimeoutRead = Tab_Modbus_VM.ReadTimeout,
-
-                    FloatNumberFormat = floatFormat,
-
                     TypeOfConnection = connectionType,
-                                        
+
                     Connection_SerialPort = new SerialPort_Info()
                     {
                         Port = Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort,
@@ -292,15 +286,21 @@ namespace ViewModels.Settings
                     {
                         IP_Address = Tab_Connection_VM.Connection_Ethernet_VM.IP_Address,
                         Port = Tab_Connection_VM.Connection_Ethernet_VM.Port
-                    }
+                    },
+
+                    GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
+                    ReceiveBufferSize = Tab_NoProtocol_VM.SelectedReceiveBufferSize,
+
+                    TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
+                    TimeoutRead = Tab_Modbus_VM.ReadTimeout,
+                    FloatNumberFormat = floatFormat,                    
                 };
 
                 SettingsFile.SavePreset(SelectedPreset, data);
 
                 CommonUI_VM.SettingsDocument = SelectedPreset;
 
-                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort == null ||
-                    Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort == String.Empty)
+                if (string.IsNullOrEmpty(Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort))
                 {
                     Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = true;
                 }

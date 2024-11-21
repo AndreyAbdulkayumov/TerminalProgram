@@ -14,9 +14,9 @@
 
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Margin" Value="0,0,235,0"/>
+			<Setter Property="Margin" Value="0,8,235,0"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
 		</Style>
 
 		<Style Selector="ComboBox">
@@ -39,6 +39,13 @@
 			<Setter Property="HorizontalContentAlignment" Value="Left"/>
 			<Setter Property="VerticalContentAlignment" Value="Center"/>
 		</Style>
+
+		<Style Selector="TextBlock.Units">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="350,8,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+		</Style>
 		
 	</UserControl.Styles>
 	
@@ -60,10 +67,12 @@
 
 		<Grid>
 
-			<TextBlock Text="Макс. знаков в поле приема" Classes="Parameters"/>
+			<TextBlock Text="Размер буфера приема" Classes="Parameters"/>
 
 			<TextBox Classes="InputField Settings"
-					 Text="многа"/>
+					 Text="{Binding SelectedReceiveBufferSize, Mode=TwoWay}"/>
+
+			<TextBlock Text="байт" Classes="Units"/>
 
 		</Grid>		
 

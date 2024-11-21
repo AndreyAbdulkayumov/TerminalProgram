@@ -4,6 +4,8 @@ using Core.Clients;
 using Core.Models;
 using ReactiveUI;
 using MessageBox_Core;
+using Core.Models.Settings;
+using System.Globalization;
 
 namespace ViewModels.NoProtocol
 {
@@ -55,10 +57,7 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _rx_String, value);
         }
         
-        private const int RX_MaxCapacity = 2000;
-
-        // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
-        private readonly StringBuilder RX = new StringBuilder(RX_MaxCapacity, RX_MaxCapacity);
+        private StringBuilder RX;
 
         private bool _rx_NextLine;
 
@@ -75,6 +74,7 @@ namespace ViewModels.NoProtocol
 
 
         private readonly ConnectedHost Model;
+        private readonly Model_Settings SettingsFile;
 
         private readonly Action<string, MessageType> Message;
 
@@ -87,6 +87,7 @@ namespace ViewModels.NoProtocol
             Message = messageBox;
 
             Model = ConnectedHost.Model;
+            SettingsFile = Model_Settings.Model;
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -94,7 +95,7 @@ namespace ViewModels.NoProtocol
             Model.NoProtocol.Model_DataReceived += NoProtocol_Model_DataReceived;
             Model.NoProtocol.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
 
-            Command_ClearRX = ReactiveCommand.Create(() => { RX.Clear(); RX_String = RX.ToString(); });
+            Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
             Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox);
             Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox);
@@ -109,6 +110,28 @@ namespace ViewModels.NoProtocol
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
+        }
+
+        private void SetRXFieldCapacity()
+        {
+            //int capacity;
+
+            //if (int.TryParse(SettingsFile.Settings?.ReceiveBufferSize, NumberStyles.Integer, CultureInfo.InvariantCulture, out capacity) == false)
+            //{
+            //    capacity = Convert.ToInt32(DeviceData.ReceiveBufferSize_Default);
+            //}
+
+            //string oldData = RX != null ? RX.ToString() : string.Empty;
+
+            //if (oldData.Length > capacity)
+            //{
+            //    oldData = oldData.Substring(0, capacity);
+            //}
+
+            // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
+            RX = new StringBuilder(3000, 3000);
+
+            //RX.Append(oldData);
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -129,8 +152,10 @@ namespace ViewModels.NoProtocol
                 return;
             }
 
+            SetRXFieldCapacity();
+
             UI_IsEnable = true;
-        }
+        }        
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
         {
