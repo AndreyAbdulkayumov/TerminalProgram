@@ -379,7 +379,7 @@ namespace Core.Clients
         {
             try
             {
-                byte[] bufferRX = new byte[50];
+                byte[] bufferRX = new byte[65536];
 
                 int numberOfReceiveBytes;
 
