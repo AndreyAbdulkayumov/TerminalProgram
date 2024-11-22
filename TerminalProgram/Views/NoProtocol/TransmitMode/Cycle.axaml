@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="1000" d:DesignHeight="150"
+			 d:DesignWidth="1000" d:DesignHeight="180"
              x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Cycle">
 
 	<UserControl.Styles>
@@ -29,21 +29,22 @@
 							   Width="55"
 							   VerticalAlignment="Center"/>
 
+					<ToggleSwitch OffContent="Строка"
+							      OnContent="Байты"/>
+
 					<TextBox Classes="InputField"
 							 Width="200"
 							 Text="{Binding Message_Content, Mode=TwoWay}"
 							 VerticalAlignment="Center"/>
 
-					<CheckBox Foreground="{DynamicResource App_Color_Text}"
+					<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
+							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="CR ( &#8216;\r &#8217;)"
-							  VerticalAlignment="Center"
 							  IsChecked="{Binding Message_CR, Mode=TwoWay}"/>
 
-					<CheckBox Foreground="{DynamicResource App_Color_Text}"
+					<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="LF ( &#8216;\n	&#8216;)"
-							  VerticalAlignment="Center"
 							  IsChecked="{Binding Message_LF, Mode=TwoWay}"/>
 
 				</StackPanel>
@@ -103,15 +104,9 @@
 
 					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="CR ( &#8216;\r &#8217;)"
+							  Content="CR+LF ( &#8216;\r\n &#8217;)"
 							  VerticalAlignment="Center"
-							  IsChecked="{Binding Response_CR, Mode=TwoWay}"/>
-
-					<CheckBox Foreground="{DynamicResource App_Color_Text}"
-							  FontSize="14"
-							  Content="LF ( &#8216;\n	&#8216;)"
-							  VerticalAlignment="Center"
-							  IsChecked="{Binding Response_LF, Mode=TwoWay}"/>
+							  IsChecked="{Binding Response_NextLine, Mode=TwoWay}"/>
 
 				</StackPanel>
 
@@ -135,7 +130,7 @@
 							IsEnabled="{Binding UI_IsEnable}"
 							HorizontalAlignment="Center" VerticalAlignment="Center"
 							Command="{Binding Command_Start_Stop_Polling}"/>
-
+					
 				</StackPanel>
 
 			</StackPanel>

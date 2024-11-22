@@ -339,9 +339,9 @@ namespace ViewModels.ModbusClient
             parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
         }
 
-        private void Parent_CheckSum_VisibilityChanged(object? sender, BoolEventArgs e)
+        private void Parent_CheckSum_VisibilityChanged(object? sender, bool e)
         {
-            CheckSum_IsVisible = e.Value;
+            CheckSum_IsVisible = e;
         }
 
         public string GetFieldViewName(string fieldName)

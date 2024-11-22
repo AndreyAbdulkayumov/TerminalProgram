@@ -103,20 +103,12 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _response_String_End, value);
         }
 
-        private bool _response_CR = false;
+        private bool _response_NextLine = false;
 
-        public bool Response_CR
+        public bool Response_NextLine
         {
-            get => _response_CR;
-            set => this.RaiseAndSetIfChanged(ref _response_CR, value);
-        }
-
-        private bool _response_LF = false;
-
-        public bool Response_LF
-        {
-            get => _response_LF;
-            set => this.RaiseAndSetIfChanged(ref _response_LF, value);
+            get => _response_NextLine;
+            set => this.RaiseAndSetIfChanged(ref _response_NextLine, value);
         }
 
         #endregion
@@ -208,8 +200,7 @@ namespace ViewModels.NoProtocol
                     Response_String_End_Enable = Response_String_End_Enable,
                     Response_String_End = Response_String_End,
 
-                    Response_CR_Enable = Response_CR,
-                    Response_LF_Enable = Response_LF,
+                    Response_NextLine_Enable = Response_NextLine,
                 };
 
                 Model.NoProtocol.CycleMode_Start(info);

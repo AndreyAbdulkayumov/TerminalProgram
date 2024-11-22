@@ -4,8 +4,7 @@ using Core.Clients;
 using Core.Models;
 using ReactiveUI;
 using MessageBox_Core;
-using Core.Models.Settings;
-using System.Globalization;
+using Core.Models.NoProtocol;
 
 namespace ViewModels.NoProtocol
 {
@@ -56,8 +55,6 @@ namespace ViewModels.NoProtocol
             get => _rx_String;
             set => this.RaiseAndSetIfChanged(ref _rx_String, value);
         }
-        
-        private StringBuilder RX;
 
         private bool _rx_NextLine;
 
@@ -67,14 +64,27 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _rx_NextLine, value);
         }
 
-        #endregion
+        private bool _rx_IsByteView = false;
 
+        public bool RX_IsByteView
+        {
+            get => _rx_IsByteView;
+            set => this.RaiseAndSetIfChanged(ref _rx_IsByteView, value);
+        }
+
+        #endregion
 
         public ReactiveCommand<Unit, Unit> Command_ClearRX { get; }
 
+        private const int MaxCapacity = 3000;
+
+        // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
+        private readonly StringBuilder RX = new StringBuilder(MaxCapacity, MaxCapacity);
+
+        private const string BytesSeparator = " ";
+        private const string ElementSeparatorInCycleMode = "  ";
 
         private readonly ConnectedHost Model;
-        private readonly Model_Settings SettingsFile;
 
         private readonly Action<string, MessageType> Message;
 
@@ -87,7 +97,6 @@ namespace ViewModels.NoProtocol
             Message = messageBox;
 
             Model = ConnectedHost.Model;
-            SettingsFile = Model_Settings.Model;
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -112,28 +121,6 @@ namespace ViewModels.NoProtocol
                 });
         }
 
-        private void SetRXFieldCapacity()
-        {
-            //int capacity;
-
-            //if (int.TryParse(SettingsFile.Settings?.ReceiveBufferSize, NumberStyles.Integer, CultureInfo.InvariantCulture, out capacity) == false)
-            //{
-            //    capacity = Convert.ToInt32(DeviceData.ReceiveBufferSize_Default);
-            //}
-
-            //string oldData = RX != null ? RX.ToString() : string.Empty;
-
-            //if (oldData.Length > capacity)
-            //{
-            //    oldData = oldData.Substring(0, capacity);
-            //}
-
-            // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
-            RX = new StringBuilder(3000, 3000);
-
-            //RX.Append(oldData);
-        }
-
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             if (e.ConnectedDevice is IPClient)
@@ -152,8 +139,6 @@ namespace ViewModels.NoProtocol
                 return;
             }
 
-            SetRXFieldCapacity();
-
             UI_IsEnable = true;
         }        
 
@@ -164,19 +149,37 @@ namespace ViewModels.NoProtocol
             UI_IsEnable = false;
         }
 
-        private void NoProtocol_Model_DataReceived(object? sender, string e)
+        private void NoProtocol_Model_DataReceived(object? sender, NoProtocolDataReceivedEventArgs e)
         {
+            string stringData;
+
+            if (RX_IsByteView)
+            {
+                stringData = BitConverter.ToString(e.RawData).Replace("-", BytesSeparator) + BytesSeparator;
+            }
+
+            else
+            {
+                stringData = ConnectedHost.GlobalEncoding.GetString(e.RawData);
+            }
+
+            if (e.DataWithDebugInfo != null)
+            {
+                e.DataWithDebugInfo[e.DataIndex] = stringData;
+                stringData = string.Join(ElementSeparatorInCycleMode, e.DataWithDebugInfo);
+            }
+
             if (RX_NextLine)
             {
-                e += "\n";
+                stringData += RX_IsByteView ? "0A " : "\n";
             }
 
-            if (RX.Length + e.Length > RX.MaxCapacity)
+            if (RX.Length + stringData.Length > RX.MaxCapacity)
             {
-                RX.Remove(0, RX.Length + e.Length - RX.MaxCapacity);
+                RX.Remove(0, RX.Length + stringData.Length - RX.MaxCapacity);
             }
 
-            RX.Append(e);
+            RX.Append(stringData);
 
             RX_String = RX.ToString();
         }

@@ -23,46 +23,35 @@
 			<StackPanel Orientation="Horizontal" Spacing="15"
 						Margin="20,0,0,0"
 						HorizontalAlignment="Left">
-
-				<TextBlock Text="Добавить в конце строки:"
+				
+				<TextBlock Text="Добавить в конце сообщения:"
 						   Foreground="{DynamicResource App_Color_Text}"
 					       FontSize="14"
 						   VerticalAlignment="Center"/>
 
-				<CheckBox x:Name="CheckBox_CR"
+				<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
 						  Foreground="{DynamicResource App_Color_Text}"
 						  FontSize="14"
-						  IsChecked="{Binding CR_Enable, Mode=TwoWay}"
-						  Content="CR ( &#8216;\r &#8217;, 0x0D)"/>
+						  IsChecked="{Binding CR_Enable, Mode=TwoWay}"/>
 
-				<CheckBox x:Name="CheckBox_LF"
+				<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
 						  Foreground="{DynamicResource App_Color_Text}"
 						  FontSize="14"
-						  IsChecked="{Binding LF_Enable, Mode=TwoWay}"
-						  Content="LF ( &#8216;\n	&#8216;, 0x0A)"/>
+						  IsChecked="{Binding LF_Enable, Mode=TwoWay}"/>
 				
 			</StackPanel>
 
 			<StackPanel Orientation="Horizontal" Spacing="15"
 						Margin="0,0,20,0"
 						HorizontalAlignment="Right">
-
-				<RadioButton x:Name="RadioButton_Char"
-						     Content="Символ"
-							 Foreground="{DynamicResource App_Color_Text}"
-							 Command="{Binding Command_Select_Char}"/>
-
-				<RadioButton x:Name="RadioButton_String"
-							 Content="Строка"
-							 IsChecked="True"
-							 Foreground="{DynamicResource App_Color_Text}"
-							 Command="{Binding Command_Select_String}"/>
-
-				<Button x:Name="Button_Send"
+				
+				<ToggleSwitch OffContent="Строка"
+							  OnContent="Байты"/>
+				
+				<Button Content="Отправить"
 						Width="95"
-						Content="Отправить"
 						IsEnabled="{Binding UI_IsEnable, Mode=OneWay}"
-						Command="{Binding Command_Send}"/>
+						Command="{Binding Command_Send}"/>				
 				
 			</StackPanel>			
 

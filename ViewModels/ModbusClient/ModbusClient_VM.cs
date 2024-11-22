@@ -13,16 +13,6 @@ using ViewModels.ModbusClient.ModbusRepresentations;
 
 namespace ViewModels.ModbusClient
 {
-    public class BoolEventArgs : EventArgs
-    {
-        public readonly bool Value;
-
-        public BoolEventArgs(bool value)
-        {
-            Value = value;
-        }
-    }
-
     public class ModbusClient_VM : ReactiveObject
     {
         public const string ViewContent_NumberStyle_dec = "(dec)";
@@ -32,7 +22,7 @@ namespace ViewModels.ModbusClient
         // Поэтому используется событие, обработчик которого вызывается в behind code у файла с разметкой DataGrid.
         public static event EventHandler<ModbusDataDisplayed?>? AddDataOnTable;
 
-        public event EventHandler<BoolEventArgs>? CheckSum_VisibilityChanged;
+        public event EventHandler<bool>? CheckSum_VisibilityChanged;
 
         private object? _currentModeViewModel;
 
@@ -288,7 +278,7 @@ namespace ViewModels.ModbusClient
         {
             bool isVisible = !Model.HostIsConnect || SelectedModbusType != Modbus_TCP_Name;
 
-            CheckSum_VisibilityChanged?.Invoke(this, new BoolEventArgs(isVisible));
+            CheckSum_VisibilityChanged?.Invoke(this, isVisible);
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)

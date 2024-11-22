@@ -86,8 +86,8 @@
 			<Grid Grid.Row="1">
 
 				<StackPanel Orientation="Horizontal" Spacing="15"
-							HorizontalAlignment="Left"
-							Margin="20,0,0,0">
+							Margin="20,0,0,0"
+							HorizontalAlignment="Left">
 
 					<TextBlock Text="Добавить в конце сообщения:"
 							   Foreground="{DynamicResource App_Color_Text}"
@@ -101,12 +101,20 @@
 					
 				</StackPanel>
 
-				<Button Content="Очистить поле"
-						Margin="0,0,20,0"
-                        Width="120"                        
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Command="{Binding Command_ClearRX}"/>
+				<StackPanel Orientation="Horizontal" Spacing="15"
+							Margin="0,0,20,0"
+							HorizontalAlignment="Right">
 
+					<ToggleSwitch OffContent="Строка"
+								  OnContent="Байты"
+								  IsChecked="{Binding RX_IsByteView, Mode=TwoWay}"/>
+
+					<Button Content="Очистить поле"
+							Width="120"
+							Command="{Binding Command_ClearRX}"/>
+					
+				</StackPanel>
+				
 			</Grid>
 
 		</Grid>

@@ -18,8 +18,26 @@ namespace Core.Models.NoProtocol
         public bool Response_String_End_Enable = false;
         public string? Response_String_End;
 
-        public bool Response_CR_Enable = false;
-        public bool Response_LF_Enable = false;
+        public bool Response_NextLine_Enable = false;
+    }
+
+    public class NoProtocolDataReceivedEventArgs : EventArgs
+    {
+        public readonly byte[] RawData;
+        public readonly string[]? DataWithDebugInfo;
+        public int DataIndex = 0;
+
+        public NoProtocolDataReceivedEventArgs(byte[] rawData)
+        {
+            RawData = rawData;
+        }
+
+        public NoProtocolDataReceivedEventArgs(byte[] rawData, string[]? dataWithDebugInfo, int dataIndex)
+        {
+            RawData = rawData;
+            DataWithDebugInfo = dataWithDebugInfo;
+            DataIndex = dataIndex;
+        }
     }
 
     public class Model_NoProtocol
@@ -30,7 +48,7 @@ namespace Core.Models.NoProtocol
             set => CycleModeTimer.Interval = value;
         }
 
-        public event EventHandler<string>? Model_DataReceived;
+        public event EventHandler<NoProtocolDataReceivedEventArgs>? Model_DataReceived;
         public event EventHandler<string>? Model_ErrorInReadThread;
         public event EventHandler<string>? Model_ErrorInCycleMode;
 
@@ -40,8 +58,6 @@ namespace Core.Models.NoProtocol
         private const double IntervalDefault = 100;
 
         private CycleModeParameters? _cycleModeInfo;
-
-        private const string SpaceString = "  ";
 
         private string[]? _outputArray;
         private int _resultIndex;
@@ -99,15 +115,12 @@ namespace Core.Models.NoProtocol
                     }
                 }
 
-                _outputArray[_resultIndex] = ConnectedHost.GlobalEncoding.GetString(e.RX);
+                Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e.RX, _outputArray, _resultIndex));
 
-                Model_DataReceived?.Invoke(this, string.Concat(_outputArray));
+                return;
             }
 
-            else
-            {
-                Model_DataReceived?.Invoke(this, ConnectedHost.GlobalEncoding.GetString(e.RX));
-            }
+            Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e.RX));
         }
 
         private void Client_ErrorInReadThread(object? sender, string e)
@@ -171,23 +184,21 @@ namespace Core.Models.NoProtocol
             if (info.Response_Date_Enable)
             {
                 RX.Add(String.Empty);   // Элемент для даты
-                RX.Add(SpaceString);
 
-                _resultIndex += 2;
+                _resultIndex++;
 
                 _dateTime_IsUsed = true;
 
                 _date_IsUsed = true;
 
-                _timeIndex += 2;
+                _timeIndex++;
             }
 
             if (info.Response_Time_Enable)
             {
                 RX.Add(String.Empty);   // Элемент для времени
-                RX.Add(SpaceString);
 
-                _resultIndex += 2;
+                _resultIndex++;
 
                 _dateTime_IsUsed = true;
 
@@ -197,7 +208,7 @@ namespace Core.Models.NoProtocol
             if (info.Response_String_Start_Enable)
             {
                 // Элемент для пользовательской строки в начале
-                RX.Add((info.Response_String_Start == null ? String.Empty : info.Response_String_Start) + SpaceString);
+                RX.Add(info.Response_String_Start == null ? String.Empty : info.Response_String_Start);
                 _resultIndex++;
             }
 
@@ -207,19 +218,14 @@ namespace Core.Models.NoProtocol
             if (info.Response_String_End_Enable)
             {
                 // Элемент для пользовательской строки в конце
-                RX.Add(SpaceString + (info.Response_String_End == null ? String.Empty : info.Response_String_End));
+                RX.Add(info.Response_String_End == null ? String.Empty : info.Response_String_End);
             }
 
             // Два элемента для специальных символов
 
-            if (info.Response_CR_Enable)
+            if (info.Response_NextLine_Enable)
             {
-                RX.Add("\r");
-            }
-
-            if (info.Response_LF_Enable)
-            {
-                RX.Add("\n");
+                RX.Add("\r\n");
             }
 
             return RX.ToArray();
