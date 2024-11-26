@@ -35,14 +35,14 @@ namespace ViewModels.Settings.Tabs
 
         private readonly Model_Settings SettingsFile;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
 
-        public Connection_Ethernet_VM(Settings_VM main_VM)
+        public Connection_Ethernet_VM(Settings_VM main_VM, IMessageBox messageBox)
         {
             main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
 
-            Message = main_VM.Message;
+            _messageBox = messageBox;
 
             SettingsFile = Model_Settings.Model;
         }
@@ -85,7 +85,7 @@ namespace ViewModels.Settings.Tabs
 
             catch (Exception error)
             {
-                Message.Invoke("Ошибка обновления значений на странице Ethernet.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка обновления значений на странице Ethernet.\n\n" + error.Message, MessageType.Error);
             }
         }
 

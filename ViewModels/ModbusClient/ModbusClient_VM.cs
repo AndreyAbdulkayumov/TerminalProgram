@@ -69,9 +69,9 @@ namespace ViewModels.ModbusClient
                 Modbus_TCP_Name, Modbus_RTU_over_TCP_Name, Modbus_ASCII_over_TCP_Name
             };
 
-        private ObservableCollection<string> _availableModbusTypes;
+        private ObservableCollection<string>? _availableModbusTypes;
 
-        public ObservableCollection<string> AvailableModbusTypes
+        public ObservableCollection<string>? AvailableModbusTypes
         {
             get => _availableModbusTypes;
             set => this.RaiseAndSetIfChanged(ref _availableModbusTypes, value);
@@ -145,9 +145,9 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Func<Action, Task> RunInUIThread;
+        private readonly Func<Action, Task> _runInUIThread;
 
-        private readonly Action<string, MessageType> Message;     
+        private readonly IMessageBox _messageBox;     
 
         private ushort _packageNumber = 0;
 
@@ -161,13 +161,13 @@ namespace ViewModels.ModbusClient
         public ModbusClient_VM(
             Func<Action, Task> runInUIThread,
             Func<Task> open_ModbusScanner,
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Func<string, Task> copyToClipboard
             )
         {
-            RunInUIThread = runInUIThread;
+            _runInUIThread = runInUIThread;
 
-            Message = messageBox;
+            _messageBox = messageBox;
 
             _copyToClipboard = copyToClipboard;
 
@@ -201,7 +201,7 @@ namespace ViewModels.ModbusClient
 
                 await copyToClipboard(Data);
             });
-            Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
             Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -217,7 +217,7 @@ namespace ViewModels.ModbusClient
 
                 await copyToClipboard(Data);
             });
-            Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
             Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(open_ModbusScanner);
 
@@ -228,7 +228,7 @@ namespace ViewModels.ModbusClient
                 RequestResponseItems.Clear();
                 LogData = string.Empty;
             });
-            Command_ClearData.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
+            Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
@@ -269,7 +269,7 @@ namespace ViewModels.ModbusClient
                             return;
                         }
 
-                        Message.Invoke("Задан неизвестный тип Modbus протокола: " + SelectedModbusType, MessageType.Error);
+                        _messageBox.Show("Задан неизвестный тип Modbus протокола: " + SelectedModbusType, MessageType.Error);
                     }
                 });
         }
@@ -299,7 +299,7 @@ namespace ViewModels.ModbusClient
 
             else
             {
-                Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
+                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Error);
                 return;
             }
 
@@ -512,11 +512,11 @@ namespace ViewModels.ModbusClient
             {
                 AddDataOnTable?.Invoke(this, data);
 
-                RunInUIThread.Invoke(() =>
+                _runInUIThread.Invoke(() =>
                 {
                     BinaryRepresentationItems.Clear();
 
-                    var binaryItems = BinaryRepresentation.GetData(data, Message, _copyToClipboard);
+                    var binaryItems = BinaryRepresentation.GetData(data, _messageBox, _copyToClipboard);
 
                     if (binaryItems != null)
                     {
@@ -524,7 +524,7 @@ namespace ViewModels.ModbusClient
                     }                    
                 });
 
-                RunInUIThread.Invoke(() =>
+                _runInUIThread.Invoke(() =>
                 {
                     FloatRepresentationItems.Clear();
 
@@ -542,7 +542,7 @@ namespace ViewModels.ModbusClient
                 (string[] Bytes, string LogString) request = ParseData(details.RequestBytes);
                 (string[] Bytes, string LogString) response = ParseData(details.ResponseBytes);
 
-                RunInUIThread.Invoke(() =>
+                _runInUIThread.Invoke(() =>
                 {
                     RequestResponseItems.Clear();
                     RequestResponseItems.AddRange(LastRequestRepresentation.GetData(request.Bytes, response.Bytes));

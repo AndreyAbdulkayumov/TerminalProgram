@@ -161,6 +161,14 @@
 									Height="40"
 									HorizontalAlignment="Stretch"
 									Command="{Binding Command_ProtocolMode_Modbus}"/>
+							
+							<Separator Background="{DynamicResource Group_Color_BorderBrush}"
+									   Margin="0,10,0,10"/>
+
+							<Button Content="Конвертер"
+									Height="40"
+									HorizontalAlignment="Stretch"
+									Click="Button_Converter_Click"/>
 
 						</StackPanel>
 

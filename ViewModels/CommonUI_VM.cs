@@ -173,7 +173,7 @@ namespace ViewModels
         private readonly Model_Settings SettingsFile;
         private readonly Model_AppUpdateSystem AppUpdateSystem;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox Message;
 
         private readonly Action Set_Dark_Theme, Set_Light_Theme;
 
@@ -189,7 +189,7 @@ namespace ViewModels
             Version? appVersion,
             Func<Action, Task> runInUIThread,
             Func<Task> open_ModbusScanner,
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Action set_Dark_Theme_Handler,
             Action set_Light_Theme_Handler,
             Func<string, Task> copyToClipboard
@@ -234,7 +234,7 @@ namespace ViewModels
 
                     catch (Exception error)
                     {
-                        Message.Invoke("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
+                        Message.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
                     }
                 });
 
@@ -244,7 +244,7 @@ namespace ViewModels
             });
 
             Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
-            Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
+            Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Show("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
 
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
@@ -253,7 +253,7 @@ namespace ViewModels
 
                 SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
             });
-            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
             {
@@ -262,16 +262,16 @@ namespace ViewModels
 
                 SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
             });
-            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
-            Command_Connect.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Connect.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
-            Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_UpdateApp = ReactiveCommand.Create(() => AppUpdateSystem.GoToWebPage(_newAppDownloadLink));
-            Command_UpdateApp.ThrownExceptions.Subscribe(error => Message.Invoke($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
+            Command_UpdateApp.ThrownExceptions.Subscribe(error => Message.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
 
             Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
             {

@@ -86,15 +86,15 @@ namespace ViewModels.NoProtocol
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private readonly NoProtocol_Mode_Normal_VM Mode_Normal_VM;
         private readonly NoProtocol_Mode_Cycle_VM Mode_Cycle_VM;
 
 
-        public NoProtocol_VM(Action<string, MessageType> messageBox)
+        public NoProtocol_VM(IMessageBox messageBox)
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -135,7 +135,7 @@ namespace ViewModels.NoProtocol
 
             else
             {
-                Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
+                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Error);
                 return;
             }
 
@@ -171,7 +171,7 @@ namespace ViewModels.NoProtocol
 
             if (RX_NextLine)
             {
-                stringData += RX_IsByteView ? "0A " : "\n";
+                stringData += RX_IsByteView ? "0D 0A " : "\r\n";
             }
 
             if (RX.Length + stringData.Length > RX.MaxCapacity)
@@ -186,7 +186,7 @@ namespace ViewModels.NoProtocol
 
         private void NoProtocol_Model_ErrorInReadThread(object? sender, string e)
         {
-            Message.Invoke(e, MessageType.Error);
+            _messageBox.Show(e, MessageType.Error);
         }
     }
 }

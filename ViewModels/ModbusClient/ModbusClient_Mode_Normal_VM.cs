@@ -1,5 +1,4 @@
-﻿using Core.Clients;
-using Core.Models;
+﻿using Core.Models;
 using Core.Models.Modbus;
 using MessageBox_Core;
 using ReactiveUI;
@@ -144,8 +143,6 @@ namespace ViewModels.ModbusClient
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
 
 
-        private readonly List<ushort> WriteBuffer = new List<ushort>();
-
         private NumberStyles _numberViewStyle;
 
         private byte _selectedSlaveID = 0;
@@ -154,7 +151,7 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
@@ -163,12 +160,12 @@ namespace ViewModels.ModbusClient
 
 
         public ModbusClient_Mode_Normal_VM(
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Func<byte, ushort, ModbusWriteFunction, byte[], int, bool, Task> modbus_Write,
             Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -215,19 +212,19 @@ namespace ViewModels.ModbusClient
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(Address))
                 {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(NumberOfRegisters))
                 {
-                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                    _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
                     return;
                 }
 
@@ -235,7 +232,7 @@ namespace ViewModels.ModbusClient
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    Message.Invoke(validationMessage, MessageType.Warning);
+                    _messageBox.Show(validationMessage, MessageType.Warning);
                     return;
                 }
 
@@ -243,25 +240,25 @@ namespace ViewModels.ModbusClient
 
                 await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_Enable);
             });
-            Command_Read.ThrownExceptions.Subscribe(error => Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
+            Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(Address))
                 {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
                 if (CurrentWriteFieldViewModel == null)
                 {
-                    Message.Invoke("Не выбран тип поля записи Modbus.", MessageType.Warning);
+                    _messageBox.Show("Не выбран тип поля записи Modbus.", MessageType.Warning);
                     return;
                 }
 
@@ -269,7 +266,7 @@ namespace ViewModels.ModbusClient
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    Message.Invoke(validationMessage, MessageType.Warning);
+                    _messageBox.Show(validationMessage, MessageType.Warning);
                     return;
                 }
 
@@ -279,13 +276,13 @@ namespace ViewModels.ModbusClient
 
                 if (modbusWriteData.Data.Length == 0)
                 {
-                    Message.Invoke("Укажите данные для записи.", MessageType.Warning);
+                    _messageBox.Show("Укажите данные для записи.", MessageType.Warning);
                     return;
                 }
 
                 await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_Enable);
             });
-            Command_Write.ThrownExceptions.Subscribe(error => Message.Invoke("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
+            Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -463,8 +460,6 @@ namespace ViewModels.ModbusClient
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
-            WriteBuffer.Clear();
-
             UI_IsEnable = true;
         }
 

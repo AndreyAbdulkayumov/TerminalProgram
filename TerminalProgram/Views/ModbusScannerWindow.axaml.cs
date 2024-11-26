@@ -17,7 +17,7 @@ namespace TerminalProgram.Views
 
             Message = new MessageBox(this, "Терминальная программа");
 
-            DataContext = new ModbusScanner_VM(Message.Show);
+            DataContext = new ModbusScanner_VM(Message);
         }
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

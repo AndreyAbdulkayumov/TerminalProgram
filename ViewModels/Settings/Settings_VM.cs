@@ -68,9 +68,8 @@ namespace ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
-        public readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
-        private readonly Func<string, MessageType, Task<MessageBoxResult>> MessageDialog;
         private readonly Func<string, Task<string?>> Get_FilePath;
         private readonly Func<Task<string?>> Get_NewFileName;
 
@@ -78,22 +77,20 @@ namespace ViewModels.Settings
 
 
         public Settings_VM(
-            Action<string, MessageType> messageBox,
-            Func<string, MessageType, Task<MessageBoxResult>> messageBoxDialog,
+            IMessageBox messageBox,
             Func<string, Task<string?>> get_FilePath_Handler,
             Func<Task<string?>> get_NewFileName_Handler,
             Action set_Dark_Theme_Handler,
             Action set_Light_Theme_Handler
             )
         {
-            Message = messageBox;
-            MessageDialog = messageBoxDialog;
+            _messageBox = messageBox;
             Get_FilePath = get_FilePath_Handler;
             Get_NewFileName = get_NewFileName_Handler;
 
             SettingsFile = Model_Settings.Model;
 
-            _tab_Connection_VM = new Connection_VM(this);
+            _tab_Connection_VM = new Connection_VM(this, messageBox);
             _tab_NoProtocol_VM = new NoProtocol_VM();
             _tab_Modbus_VM = new Modbus_VM();
             _tab_AppSettings_VM = new AppSettings_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
@@ -198,7 +195,7 @@ namespace ViewModels.Settings
             
             catch (Exception error)
             {
-                Message.Invoke("Ошибка при добавлении уже существующего файла.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка при добавлении уже существующего файла.\n\n" + error.Message, MessageType.Error);
             }
         }
 
@@ -208,11 +205,11 @@ namespace ViewModels.Settings
             {
                 if (Presets.Count <= 1)
                 {
-                    Message.Invoke("Нельзя удалить единственный файл.\nПопробуйте его изменить.", MessageType.Warning);
+                    _messageBox.Show("Нельзя удалить единственный файл.\nПопробуйте его изменить.", MessageType.Warning);
                     return;
                 }
 
-                MessageBoxResult dialogResult = await MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+                MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
 
                 if (dialogResult != MessageBoxResult.Yes)
                 {
@@ -228,7 +225,7 @@ namespace ViewModels.Settings
 
             catch (Exception error)
             {
-                Message.Invoke("Ошибка удаления файла настроек.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка удаления файла настроек.\n\n" + error.Message, MessageType.Error);
             }
         }
 
@@ -242,7 +239,7 @@ namespace ViewModels.Settings
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    Message.Invoke(validationMessage, MessageType.Warning);
+                    _messageBox.Show(validationMessage, MessageType.Warning);
                     return;
                 }
 
@@ -307,12 +304,12 @@ namespace ViewModels.Settings
 
                 _tab_Connection_VM.Connection_SerialPort_VM.ReScan_SerialPorts(data.Connection_SerialPort);
 
-                Message.Invoke("Настройки успешно сохранены!", MessageType.Information);
+                _messageBox.Show("Настройки успешно сохранены!", MessageType.Information);
             }
 
             catch (Exception error)
             {
-                Message.Invoke("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
             }
         }
 

@@ -134,12 +134,12 @@ namespace ViewModels.NoProtocol
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
 
-        public NoProtocol_Mode_Cycle_VM(Action<string, MessageType> messageBox)
+        public NoProtocol_Mode_Cycle_VM(IMessageBox messageBox)
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -152,7 +152,7 @@ namespace ViewModels.NoProtocol
             {
                 Start_Stop_Handler(!_isStart);
             });
-            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
@@ -169,7 +169,7 @@ namespace ViewModels.NoProtocol
 
         private void NoProtocol_Model_ErrorInCycleMode(object? sender, string e)
         {
-            Message.Invoke(e, MessageType.Error);
+            _messageBox.Show(e, MessageType.Error);
         }
 
         public void SourceWindowClosingAction()

@@ -12,7 +12,7 @@ namespace ViewModels.ModbusClient.DataTypes
         public ReactiveCommand<Unit, Unit> Command_Copy_BinaryWord { get; }
 
         public BinaryRepresentation_ItemData(string address, BinaryDataItemGroup[] binaryData,
-            Action<string, MessageType> messageBox, Func<string, Task> copyToClipboard)
+            IMessageBox messageBox, Func<string, Task> copyToClipboard)
         {
             Address = address;
             BinaryData = binaryData;
@@ -28,7 +28,7 @@ namespace ViewModels.ModbusClient.DataTypes
 
                 await copyToClipboard(Data);
             });
-            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Invoke($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n" + error.Message, MessageType.Error));
         }
     }
 

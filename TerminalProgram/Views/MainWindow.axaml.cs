@@ -10,6 +10,7 @@ using Avalonia.Threading;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using TerminalProgram.Views.Settings;
+using TerminalProgramBase;
 using ViewModels;
 
 
@@ -40,7 +41,7 @@ public partial class MainWindow : Window
                 AboutWindow.GetAppVersion(),
                 RunInUIThread,
                 OpenWindow_ModbusScanner,
-                Message.Show,
+                Message,
                 Set_Dark_Theme,
                 Set_Light_Theme,
                 CopyToClipboard
@@ -193,6 +194,13 @@ public partial class MainWindow : Window
 
             await window.ShowDialog(this);
         });
+    }
+
+    private void Button_Converter_Click(object? sender, RoutedEventArgs e)
+    {
+        var window = new NumberConverterWindow();
+
+        window.Show(this);
     }
 
     /********************************************************/

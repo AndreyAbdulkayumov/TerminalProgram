@@ -5,8 +5,8 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
 {
     internal static class BinaryRepresentation
     {
-        public static IEnumerable<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data, Action<string,
-            MessageType> messageBox, Func<string, Task> copyToClipboard)
+        public static IEnumerable<BinaryRepresentation_ItemData>? GetData(ModbusDataDisplayed data, 
+            IMessageBox messageBox, Func<string, Task> copyToClipboard)
         {
             if (data.Data == null)
                 return null;
@@ -49,7 +49,7 @@ namespace ViewModels.ModbusClient.ModbusRepresentations
         }
 
         private static BinaryRepresentation_ItemData GetBinaryRepresentation(ushort address, string inputData, 
-            Action<string, MessageType> messageBox, Func<string, Task> copyToClipboard)
+            IMessageBox messageBox, Func<string, Task> copyToClipboard)
         {
             char[] bitsValue = inputData.ToCharArray();
 

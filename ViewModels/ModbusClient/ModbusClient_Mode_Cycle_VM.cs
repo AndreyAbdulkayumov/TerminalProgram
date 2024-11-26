@@ -128,7 +128,7 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private NumberStyles _numberViewStyle;
 
@@ -147,11 +147,11 @@ namespace ViewModels.ModbusClient
 
 
         public ModbusClient_Mode_Cycle_VM(
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Modbus_Read = modbus_Read;
 
@@ -172,7 +172,7 @@ namespace ViewModels.ModbusClient
 
                 StartPolling();
             });
-            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             foreach (ModbusReadFunction element in Function.AllReadFunctions)
             {
@@ -250,7 +250,7 @@ namespace ViewModels.ModbusClient
         {
             StopPolling();
 
-            Message.Invoke(e, MessageType.Error);
+            _messageBox.Show(e, MessageType.Error);
         }
 
         private void SelectNumberFormat_Hex()
@@ -301,19 +301,19 @@ namespace ViewModels.ModbusClient
         {
             if (string.IsNullOrEmpty(SlaveID))
             {
-                Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(Address))
             {
-                Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(NumberOfRegisters))
             {
-                Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
                 return;
             }
 
@@ -321,13 +321,13 @@ namespace ViewModels.ModbusClient
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
-                Message.Invoke(validationMessage, MessageType.Warning);
+                _messageBox.Show(validationMessage, MessageType.Warning);
                 return;
             }
 
             if (_selectedPeriod < Model.Host_ReadTimeout + TimeForReadHandler)
             {
-                Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
+                _messageBox.Show("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
                     TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
                     "Таймаут чтения: " + Model.Host_ReadTimeout + " мс.", MessageType.Warning);
 

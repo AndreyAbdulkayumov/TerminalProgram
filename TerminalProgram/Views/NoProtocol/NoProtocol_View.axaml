@@ -94,7 +94,7 @@
 					           FontSize="14"
 						       VerticalAlignment="Center"/>
 					
-					<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+					<CheckBox Content="CR+LF (&#8216;\r\n &#8217;, &#8217;0D 0A&#8217; )"
 							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
 							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"/>
