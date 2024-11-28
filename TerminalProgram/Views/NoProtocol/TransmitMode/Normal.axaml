@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="150"
-             x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Normal">
+             x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Normal"
+			 DataContextChanged="UserControl_DataContextChanged">
 
 	<Grid>
 
@@ -13,10 +14,11 @@
 			<RowDefinition Height="60"/>
 		</Grid.RowDefinitions>
 
-		<TextBox Grid.Row="0"
+		<TextBox x:Name="TextBox_TX" Grid.Row="0"
 				 Classes="TX_RX_Field"
 				 Margin="10,10,10,0"
-				 Text="{Binding TX_String, Mode=TwoWay}"/>
+				 Text="{Binding TX_String, Mode=TwoWay}"
+				 TextChanged="TextBox_TextChanged"/>
 
 		<Grid Grid.Row="1">
 
@@ -46,7 +48,8 @@
 						HorizontalAlignment="Right">
 				
 				<ToggleSwitch OffContent="Строка"
-							  OnContent="Байты"/>
+							  OnContent="Байты"
+							  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"/>
 				
 				<Button Content="Отправить"
 						Width="95"

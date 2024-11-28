@@ -26,6 +26,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 		
 	</Window.Styles>
 	
@@ -74,10 +75,7 @@
 				</Grid.RowDefinitions>
 
 				<Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<Grid>
 
@@ -96,10 +94,7 @@
 				</Border>
 
 				<Border Grid.Row="0" Grid.Column="1"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<StackPanel Orientation="Vertical"
 								Spacing="20"
@@ -157,10 +152,7 @@
 				</Border>
 
 				<Border Grid.Row="1" Grid.Column="1"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<Grid>
 

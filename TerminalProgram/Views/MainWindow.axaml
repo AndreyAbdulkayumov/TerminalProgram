@@ -29,6 +29,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>		
 		
 	</Window.Styles>
 	
@@ -108,10 +109,7 @@
 				</Grid.ColumnDefinitions>
 
 				<Border Grid.Row="0" Grid.Column="0"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<StackPanel Orientation="Horizontal"
 								Spacing="10"
@@ -141,10 +139,7 @@
 				</Border>
 
 				<Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<Grid>
 						
@@ -222,10 +217,7 @@
 				</Border>
 
 				<Border Grid.Row="0" Grid.Column="1"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<Grid>
 
@@ -262,20 +254,14 @@
 				</Border>
 
 				<Border Grid.Row="1" Grid.Column="1"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<ContentControl Content="{Binding CurrentViewModel}"/>
 
 				</Border>
 
 				<Border Grid.Row="2" Grid.Column="1"
-						Background="{DynamicResource App_Field_Color_Background}"
-						BorderThickness="0"
-						CornerRadius="6"
-						Margin="10">
+						Classes="AppField">
 
 					<Grid>
 						

@@ -130,7 +130,7 @@ namespace Core.Models.NoProtocol
             Model_ErrorInReadThread?.Invoke(this, e);            
         }
 
-        public async Task Send(string? stringMessage, bool CR_Enable, bool LF_Enable)
+        public async Task SendString(string? stringMessage, bool CR_Enable, bool LF_Enable)
         {
             if (_client == null)
             {
@@ -157,13 +157,23 @@ namespace Core.Models.NoProtocol
             await _client.Send(Message.ToArray(), Message.Count);
         }
 
+        public async Task SendBytes(byte[] bytes)
+        {
+            if (_client == null)
+            {
+                throw new Exception("Клиент не инициализирован.");
+            }
+
+            await _client.Send(bytes, bytes.Length);
+        }
+
         public async void CycleMode_Start(CycleModeParameters info)
         {
             _cycleModeInfo = info;
 
             _outputArray = CreateOutputBuffer(info);
 
-            await Send(info.Message,
+            await SendString(info.Message,
                 info.Message_CR_Enable,
                 info.Message_LF_Enable);
 
@@ -244,7 +254,7 @@ namespace Core.Models.NoProtocol
             {
                 if (_cycleModeInfo != null)
                 {
-                    await Send(_cycleModeInfo.Message,
+                    await SendString(_cycleModeInfo.Message,
                         _cycleModeInfo.Message_CR_Enable,
                         _cycleModeInfo.Message_LF_Enable);
                 }
