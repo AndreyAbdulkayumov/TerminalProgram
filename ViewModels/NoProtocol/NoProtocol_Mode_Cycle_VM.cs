@@ -18,6 +18,14 @@ namespace ViewModels.NoProtocol
 
         #region Message
 
+        private bool _isBytesSend;
+
+        public bool IsBytesSend
+        {
+            get => _isBytesSend;
+            set => this.RaiseAndSetIfChanged(ref _isBytesSend, value);
+        }
+
         private string _message_Content = string.Empty;
 
         public string Message_Content
@@ -136,10 +144,17 @@ namespace ViewModels.NoProtocol
 
         private readonly IMessageBox _messageBox;
 
+        private readonly Func<string, string> _getValidatedByteString;
 
-        public NoProtocol_Mode_Cycle_VM(IMessageBox messageBox)
+        public NoProtocol_Mode_Cycle_VM(
+            IMessageBox messageBox, 
+            Func<string, byte[]> convertToBytes,
+            Func<string, bool, string> getMessageString, 
+            Func<string, string> getValidatedByteString
+            )
         {
             _messageBox = messageBox;
+            _getValidatedByteString = getValidatedByteString;
 
             Model = ConnectedHost.Model;
 
@@ -153,6 +168,22 @@ namespace ViewModels.NoProtocol
                 Start_Stop_Handler(!_isStart);
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+
+            this.WhenAnyValue(x => x.IsBytesSend)
+                .Subscribe(IsBytes =>
+                {
+                    Message_Content = getMessageString(Message_Content, IsBytes);
+                });
+        }
+
+        public string GetValidatedString()
+        {
+            if (IsBytesSend)
+            {
+                return _getValidatedByteString.Invoke(Message_Content);
+            }
+
+            return Message_Content;
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)

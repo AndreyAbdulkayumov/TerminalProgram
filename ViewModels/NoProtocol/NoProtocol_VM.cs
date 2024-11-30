@@ -5,6 +5,7 @@ using Core.Models;
 using ReactiveUI;
 using MessageBox_Core;
 using Core.Models.NoProtocol;
+using System.Text.RegularExpressions;
 
 namespace ViewModels.NoProtocol
 {
@@ -46,6 +47,14 @@ namespace ViewModels.NoProtocol
         {
             get => _interfaceType;
             set => this.RaiseAndSetIfChanged(ref _interfaceType, value);
+        }
+
+        private string? _selectedEncoding;
+
+        public string? SelectedEncoding
+        {
+            get => _selectedEncoding;
+            set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
         }
 
         private string _rx_String = string.Empty;
@@ -106,8 +115,8 @@ namespace ViewModels.NoProtocol
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
-            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox);
-            Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox);
+            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox, ConvertToBytes, GetMessageString, GetValidatedByteString);
+            Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox, ConvertToBytes, GetMessageString, GetValidatedByteString);
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
@@ -119,6 +128,41 @@ namespace ViewModels.NoProtocol
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
+        }
+
+        private string GetMessageString(string message, bool isBytesString)
+        {
+            if (isBytesString)
+            {
+                return string.Join(" ", Model.NoProtocol.HostEncoding.GetBytes(message).Select(x => x.ToString("X2"))); ;
+            }
+
+            return Model.NoProtocol.HostEncoding.GetString(ConvertToBytes(message));
+        }
+
+        private byte[] ConvertToBytes(string message)
+        {
+            message = message.Replace(" ", string.Empty);
+
+            byte[] bytesToSend = new byte[message.Length / 2 + message.Length % 2];
+
+            string byteString;
+
+            for (int i = 0; i < bytesToSend.Length; i++)
+            {
+                if (i * 2 + 2 > message.Length)
+                    byteString = "0" + message.Last();
+                else
+                    byteString = message.Substring(i * 2, 2);
+
+                bytesToSend[i] = Convert.ToByte(byteString, 16);
+            }
+            return bytesToSend;
+        }
+
+        private string GetValidatedByteString(string bytesString)
+        {
+            return Regex.Replace(bytesString, @"[^0-9a-fA-F\s]", string.Empty).ToUpper();
         }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)

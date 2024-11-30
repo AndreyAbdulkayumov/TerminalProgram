@@ -86,6 +86,11 @@ namespace Core.Models
             SelectedProtocol = new ProtocolMode_Modbus(Client, Model_Settings.Model.Settings);
         }
 
+        public void SetGlobalEncoding(Encoding globalEncoding)
+        {
+            GlobalEncoding = globalEncoding;
+        }
+
         public void Connect(ConnectionInfo information)
         {
             if (SelectedProtocol == null)
@@ -110,7 +115,7 @@ namespace Core.Models
 
             Client.Connect(information);
 
-            GlobalEncoding = information.GlobalEncoding;
+            SetGlobalEncoding(GlobalEncoding);
 
             var modbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
 

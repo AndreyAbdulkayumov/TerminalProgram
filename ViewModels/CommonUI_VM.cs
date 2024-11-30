@@ -226,6 +226,13 @@ namespace ViewModels
                     {
                         SettingsFile.ReadPreset(PresetName);
 
+                        if (SettingsFile.Settings != null)
+                        {
+                            string? encodingName = SettingsFile.Settings.GlobalEncoding;
+                            Model.SetGlobalEncoding(GetEncoding(encodingName));
+                            NoProtocol_VM.SelectedEncoding = encodingName;
+                        }                        
+
                         ConnectionString = GetConnectionString();
 
                         SettingsDocument = PresetName;

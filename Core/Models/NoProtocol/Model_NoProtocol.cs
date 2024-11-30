@@ -1,9 +1,12 @@
 ﻿using Core.Clients;
+using System.Text;
 
 namespace Core.Models.NoProtocol
 {
     public class CycleModeParameters
     {
+        public bool IsByteString = false;
+
         public string? Message;
 
         public bool Message_CR_Enable = false;
@@ -51,6 +54,8 @@ namespace Core.Models.NoProtocol
         public event EventHandler<NoProtocolDataReceivedEventArgs>? Model_DataReceived;
         public event EventHandler<string>? Model_ErrorInReadThread;
         public event EventHandler<string>? Model_ErrorInCycleMode;
+
+        public Encoding HostEncoding => ConnectedHost.GlobalEncoding;
 
         private IConnection? _client;
 
@@ -254,6 +259,12 @@ namespace Core.Models.NoProtocol
             {
                 if (_cycleModeInfo != null)
                 {
+                    if (_cycleModeInfo.IsByteString)
+                    {
+                        //await SendBytes()
+                        return;
+                    }
+
                     await SendString(_cycleModeInfo.Message,
                         _cycleModeInfo.Message_CR_Enable,
                         _cycleModeInfo.Message_LF_Enable);

@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="180"
-             x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Cycle">
+             x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Cycle"
+			 DataContextChanged="UserControl_DataContextChanged">
 
 	<UserControl.Styles>
 
@@ -30,12 +31,15 @@
 							   VerticalAlignment="Center"/>
 
 					<ToggleSwitch OffContent="Строка"
-							      OnContent="Байты"/>
+							      OnContent="Байты"
+								  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"/>
 
-					<TextBox Classes="InputField"
-							 Width="200"
+					<TextBox x:Name="TextBox_TX"
+							 Classes="InputField"
+							 Width="341"
 							 Text="{Binding Message_Content, Mode=TwoWay}"
-							 VerticalAlignment="Center"/>
+							 VerticalAlignment="Center"
+							 TextChanged="TextBox_TextChanged"/>
 
 					<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
 							  Foreground="{DynamicResource App_Color_Text}"

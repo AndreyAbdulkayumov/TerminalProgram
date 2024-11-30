@@ -3,7 +3,6 @@ using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text.RegularExpressions;
 
 namespace ViewModels.NoProtocol
 {
@@ -55,10 +54,17 @@ namespace ViewModels.NoProtocol
 
         private readonly IMessageBox _messageBox;
 
+        private readonly Func<string, string> _getValidatedByteString;
 
-        public NoProtocol_Mode_Normal_VM(IMessageBox messageBox)
+        public NoProtocol_Mode_Normal_VM(
+            IMessageBox messageBox, 
+            Func<string, byte[]> convertToBytes, 
+            Func<string, bool, string> getMessageString, 
+            Func<string, string> getValidatedByteString
+            )
         {
             _messageBox = messageBox;
+            _getValidatedByteString = getValidatedByteString;
 
             Model = ConnectedHost.Model;
 
@@ -69,7 +75,7 @@ namespace ViewModels.NoProtocol
             {
                 if (IsBytesSend)
                 {
-                    await Model.NoProtocol.SendBytes(ConvertToBytes(TX_String));
+                    await Model.NoProtocol.SendBytes(convertToBytes(TX_String));
                     return;
                 }
 
@@ -77,38 +83,23 @@ namespace ViewModels.NoProtocol
             });
 
             Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
+
+            this.WhenAnyValue(x => x.IsBytesSend)
+                .Subscribe(IsBytes =>
+                {
+                    TX_String = getMessageString(TX_String, IsBytes);
+                });
         }
 
         public string GetValidatedString()
         {
             if (IsBytesSend)
             {
-                return Regex.Replace(TX_String, @"[^0-9a-fA-F\s]", string.Empty).ToUpper();
+                return _getValidatedByteString.Invoke(TX_String);
             }
 
             return TX_String; 
-        }
-
-        private byte[] ConvertToBytes(string message)
-        {
-            message = message.Replace(" ", string.Empty);
-
-            byte[] bytesToSend = new byte[message.Length / 2 + message.Length % 2];
-
-            string byteString;
-
-            for (int i = 0; i < bytesToSend.Length; i++)
-            {
-                if (i * 2 + 2 > message.Length)
-                    byteString = "0" + message.Last();
-                else
-                    byteString = message.Substring(i * 2, 2);
-
-                bytesToSend[i] = Convert.ToByte(byteString, 16);
-            }
-
-            return bytesToSend;
-        }
+        }        
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
