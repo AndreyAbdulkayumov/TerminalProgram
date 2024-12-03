@@ -16,6 +16,14 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
         }
 
+        private bool _isStart = false;
+
+        public bool IsStart
+        {
+            get => _isStart;
+            set => this.RaiseAndSetIfChanged(ref _isStart, value);
+        }
+
         #region Message
 
         private bool _isBytesSend;
@@ -138,11 +146,11 @@ namespace ViewModels.NoProtocol
 
         #endregion
 
-        private bool _isStart = false;
-
         private readonly ConnectedHost Model;
 
         private readonly IMessageBox _messageBox;
+
+        private readonly Func<string, byte[]> _convertToBytes;
 
         private readonly Func<string, string> _getValidatedByteString;
 
@@ -154,6 +162,7 @@ namespace ViewModels.NoProtocol
             )
         {
             _messageBox = messageBox;
+            _convertToBytes = convertToBytes;
             _getValidatedByteString = getValidatedByteString;
 
             Model = ConnectedHost.Model;
@@ -163,9 +172,15 @@ namespace ViewModels.NoProtocol
 
             Model.NoProtocol.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
 
-            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+            Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
             {
-                Start_Stop_Handler(!_isStart);
+                if (IsStart)
+                {
+                    StopPolling();
+                    return;
+                }
+
+                await StartPolling();
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
@@ -195,7 +210,7 @@ namespace ViewModels.NoProtocol
         {
             UI_IsEnable = false;
 
-            Start_Stop_Handler(false);
+            StopPolling();
         }
 
         private void NoProtocol_Model_ErrorInCycleMode(object? sender, string e)
@@ -209,44 +224,36 @@ namespace ViewModels.NoProtocol
             Model.NoProtocol.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
         }
 
-        public void Start_Stop_Handler(bool startPolling)
+        public void StopPolling()
         {
-            if (startPolling)
-            {
-                Model.NoProtocol.CycleMode_Period = Message_Period_ms;
+            Model.NoProtocol.CycleMode_Stop();
 
-                var info = new CycleModeParameters()
-                {
-                    Message = Message_Content,
+            Button_Content = Button_Content_Start;
+            IsStart = false;
+        }
 
-                    Message_CR_Enable = Message_CR,
-                    Message_LF_Enable = Message_LF,
+        private async Task StartPolling()
+        {
+            Model.NoProtocol.CycleMode_Period = Message_Period_ms;
 
-                    Response_Date_Enable = Response_Date,
-                    Response_Time_Enable = Response_Time,
+            var info = new CycleModeParameters(
+                isByteString: _isBytesSend,
+                messageBytes: _isBytesSend ? _convertToBytes(Message_Content) : ConnectedHost.GlobalEncoding.GetBytes(Message_Content),
+                message_CR_Enable: Message_CR,
+                message_LF_Enable: Message_LF,
+                response_Date_Enable: Response_Date,
+                response_Time_Enable: Response_Time,
+                response_String_Start_Enable: Response_String_Start_Enable,
+                response_String_Start: Response_String_Start,
+                response_String_End_Enable: Response_String_End_Enable,
+                response_String_End: Response_String_End,
+                response_NextLine_Enable: Response_NextLine
+                );
 
-                    Response_String_Start_Enable = Response_String_Start_Enable,
-                    Response_String_Start = Response_String_Start,
+            await Model.NoProtocol.CycleMode_Start(info);
 
-                    Response_String_End_Enable = Response_String_End_Enable,
-                    Response_String_End = Response_String_End,
-
-                    Response_NextLine_Enable = Response_NextLine,
-                };
-
-                Model.NoProtocol.CycleMode_Start(info);
-
-                Button_Content = Button_Content_Stop;
-            }
-
-            else
-            {
-                Model.NoProtocol.CycleMode_Stop();
-
-                Button_Content = Button_Content_Start;
-            }
-
-            _isStart = startPolling;
+            Button_Content = Button_Content_Stop;
+            IsStart = true;
         }
     }
 }

@@ -270,9 +270,11 @@ namespace Core.Models.Modbus
             return Result;
         }
 
-        public void CycleMode_Start(Func<Task> readRegister_Handler)
+        public async Task CycleMode_Start(Func<Task> readRegister_Handler)
         {
             _readRegisterInCycleMode = readRegister_Handler;
+
+            await _readRegisterInCycleMode.Invoke();
 
             CycleModeTimer.Start();
         }

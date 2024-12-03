@@ -3,27 +3,6 @@ using System.Text;
 
 namespace Core.Models.NoProtocol
 {
-    public class CycleModeParameters
-    {
-        public bool IsByteString = false;
-
-        public string? Message;
-
-        public bool Message_CR_Enable = false;
-        public bool Message_LF_Enable = false;
-
-        public bool Response_Date_Enable = false;
-        public bool Response_Time_Enable = false;
-
-        public bool Response_String_Start_Enable = false;
-        public string? Response_String_Start;
-
-        public bool Response_String_End_Enable = false;
-        public string? Response_String_End;
-
-        public bool Response_NextLine_Enable = false;
-    }
-
     public class NoProtocolDataReceivedEventArgs : EventArgs
     {
         public readonly byte[] RawData;
@@ -75,6 +54,8 @@ namespace Core.Models.NoProtocol
 
         private bool _time_IsUsed = false;
         private int _timeIndex;
+
+        private string? CycleMessage;
 
         public Model_NoProtocol(ConnectedHost host)
         {
@@ -142,7 +123,7 @@ namespace Core.Models.NoProtocol
                 throw new Exception("Клиент не инициализирован.");
             }
 
-            if (stringMessage == null || stringMessage == String.Empty)
+            if (string.IsNullOrEmpty(stringMessage))
             {
                 throw new Exception("Буфер для отправления пуст. Введите отправляемое значение.");
             }
@@ -162,25 +143,40 @@ namespace Core.Models.NoProtocol
             await _client.Send(Message.ToArray(), Message.Count);
         }
 
-        public async Task SendBytes(byte[] bytes)
+        public async Task SendBytes(byte[]? bytes)
         {
             if (_client == null)
             {
                 throw new Exception("Клиент не инициализирован.");
             }
 
+            if (bytes == null || bytes.Length == 0)
+            {
+                throw new Exception("Буфер для отправления пуст. Введите отправляемое значение.");
+            }
+
             await _client.Send(bytes, bytes.Length);
         }
 
-        public async void CycleMode_Start(CycleModeParameters info)
+        public async Task CycleMode_Start(CycleModeParameters info)
         {
             _cycleModeInfo = info;
 
             _outputArray = CreateOutputBuffer(info);
 
-            await SendString(info.Message,
-                info.Message_CR_Enable,
-                info.Message_LF_Enable);
+            if (_cycleModeInfo.IsByteString)
+            {
+                await SendBytes(info.MessageBytes);
+            }
+
+            else
+            {
+                CycleMessage = ConnectedHost.GlobalEncoding.GetString(info.MessageBytes);
+
+                await SendString(CycleMessage,
+                    info.Message_CR_Enable,
+                    info.Message_LF_Enable);
+            }
 
             CycleModeTimer.Start();
         }
@@ -240,7 +236,7 @@ namespace Core.Models.NoProtocol
 
             if (info.Response_NextLine_Enable)
             {
-                RX.Add("\r\n");
+                RX.Add(Environment.NewLine);
             }
 
             return RX.ToArray();
@@ -257,18 +253,20 @@ namespace Core.Models.NoProtocol
         {
             try
             {
-                if (_cycleModeInfo != null)
+                if (_cycleModeInfo == null)
                 {
-                    if (_cycleModeInfo.IsByteString)
-                    {
-                        //await SendBytes()
-                        return;
-                    }
-
-                    await SendString(_cycleModeInfo.Message,
-                        _cycleModeInfo.Message_CR_Enable,
-                        _cycleModeInfo.Message_LF_Enable);
+                    throw new Exception("Нет данных для отправки.");
                 }
+
+                if (_cycleModeInfo.IsByteString)
+                {
+                    await SendBytes(_cycleModeInfo.MessageBytes);
+                    return;
+                }
+
+                await SendString(CycleMessage,
+                    _cycleModeInfo.Message_CR_Enable,
+                    _cycleModeInfo.Message_LF_Enable);
             }
 
             catch(Exception error)

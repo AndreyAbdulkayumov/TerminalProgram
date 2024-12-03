@@ -24,7 +24,8 @@
 			<StackPanel Orientation="Vertical" Spacing="15"
 						Margin="20,10,20,10">
 
-				<StackPanel Orientation="Horizontal" Spacing="20">
+				<StackPanel Orientation="Horizontal" Spacing="20"
+							IsEnabled="{Binding !IsStart, Mode=OneWay}">
 
 					<TextBlock Text="Запрос"
 							   Width="55"
@@ -53,7 +54,8 @@
 
 				</StackPanel>
 
-				<StackPanel Orientation="Horizontal" Spacing="20">
+				<StackPanel Orientation="Horizontal" Spacing="20"
+							IsEnabled="{Binding !IsStart, Mode=OneWay}">
 
 					<TextBlock Text="Ответ"
 							   Width="55"
@@ -123,6 +125,7 @@
 					<TextBox Classes="InputField"
 							 Width="60"
 							 Text="{Binding Message_Period_ms, Mode=TwoWay}"
+							 IsEnabled="{Binding !IsStart, Mode=OneWay}"
 							 VerticalAlignment="Center"/>
 
 					<TextBlock Text="мс."

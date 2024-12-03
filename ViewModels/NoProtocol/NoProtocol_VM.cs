@@ -123,7 +123,7 @@ namespace ViewModels.NoProtocol
                 {
                     if (!IsCycleMode)
                     {
-                        Mode_Cycle_VM.Start_Stop_Handler(false);
+                        Mode_Cycle_VM.StopPolling();
                     }
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
@@ -215,7 +215,7 @@ namespace ViewModels.NoProtocol
 
             if (RX_NextLine)
             {
-                stringData += "\r\n";
+                stringData += Environment.NewLine;
             }
 
             if (RX.Length + stringData.Length > RX.MaxCapacity)

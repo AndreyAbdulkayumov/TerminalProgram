@@ -162,7 +162,7 @@ namespace ViewModels.ModbusClient
 
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+            Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
             {
                 if (_isStart)
                 {
@@ -170,7 +170,7 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                StartPolling();
+                await StartPolling();
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
@@ -297,7 +297,7 @@ namespace ViewModels.ModbusClient
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
-        private void StartPolling()
+        private async Task StartPolling()
         {
             if (string.IsNullOrEmpty(SlaveID))
             {
@@ -337,7 +337,7 @@ namespace ViewModels.ModbusClient
             ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
             Model.Modbus.CycleMode_Period = _selectedPeriod;
-            Model.Modbus.CycleMode_Start(async () =>
+            await Model.Modbus.CycleMode_Start(async () =>
             {
                 await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, _checkSum_IsEnable);
             });
