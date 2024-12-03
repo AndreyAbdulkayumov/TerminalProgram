@@ -131,7 +131,7 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _connectionTimer_IsVisible, value);
         }
 
-        private string _connectionTimer_View = "";
+        private string _connectionTimer_View = string.Empty;
 
         public string ConnectionTimer_View
         {

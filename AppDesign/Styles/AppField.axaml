@@ -3,7 +3,7 @@
 
 	<Style Selector="Border.AppField">
 		<Setter Property="Background" Value="{DynamicResource App_Field_Color_Background}"/>
-		<Setter Property="CornerRadius" Value="6"/>
+		<Setter Property="CornerRadius" Value="10"/>
 		<Setter Property="BorderThickness" Value="0"/>
 		<Setter Property="Margin" Value="10"/>
 	</Style>
