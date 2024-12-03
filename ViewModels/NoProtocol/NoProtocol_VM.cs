@@ -215,7 +215,7 @@ namespace ViewModels.NoProtocol
 
             if (RX_NextLine)
             {
-                stringData += RX_IsByteView ? "0D 0A " : "\r\n";
+                stringData += "\r\n";
             }
 
             if (RX.Length + stringData.Length > RX.MaxCapacity)

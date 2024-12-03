@@ -102,21 +102,12 @@
 
 			<Grid Grid.Row="1">
 
-				<StackPanel Orientation="Horizontal" Spacing="15"
-							Margin="20,0,0,0"
-							HorizontalAlignment="Left">
-
-					<TextBlock Text="Добавить в конце сообщения:"
-							   Foreground="{DynamicResource App_Color_Text}"
-					           FontSize="14"
-						       VerticalAlignment="Center"/>
-					
-					<CheckBox Content="CR+LF (&#8216;\r\n &#8217;, &#8217;0D 0A&#8217; )"
-							  Foreground="{DynamicResource App_Color_Text}"
-							  FontSize="14"
-							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"/>
-					
-				</StackPanel>
+				<CheckBox Content="Каждое сообщение на новой строке"
+						  Foreground="{DynamicResource App_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
+						  Margin="20,0,0,0"
+						  HorizontalAlignment="Left"/>
 
 				<StackPanel Orientation="Horizontal" Spacing="15"
 							Margin="0,0,20,0"
