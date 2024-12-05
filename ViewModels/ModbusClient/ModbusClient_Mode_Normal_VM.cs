@@ -34,12 +34,12 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private bool _checkSum_Enable;
+        private bool _checkSum_IsEnable;
 
-        public bool CheckSum_Enable
+        public bool CheckSum_IsEnable
         {
-            get => _checkSum_Enable;
-            set => this.RaiseAndSetIfChanged(ref _checkSum_Enable, value);
+            get => _checkSum_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsEnable, value);
         }
 
         private bool _checkSum_IsVisible;
@@ -183,7 +183,7 @@ namespace ViewModels.ModbusClient
             //
             /****************************************************/
 
-            CheckSum_Enable = true;
+            CheckSum_IsEnable = true;
             CheckSum_IsVisible = true;
 
             SelectedNumberFormat_Hex = true;
@@ -238,7 +238,7 @@ namespace ViewModels.ModbusClient
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_Enable);
+                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
             });
             Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
@@ -280,7 +280,7 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_Enable);
+                await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable);
             });
             Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
 

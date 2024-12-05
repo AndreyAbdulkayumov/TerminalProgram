@@ -179,7 +179,8 @@ namespace ViewModels.ModbusClient
             Mode_Normal_VM = new ModbusClient_Mode_Normal_VM(messageBox, Modbus_Write, Modbus_Read);
             Mode_Normal_VM.Subscribe(this);
 
-            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);                  
+            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);       
+            Mode_Cycle_VM.Subscribe(this);
 
             /****************************************************/
             //

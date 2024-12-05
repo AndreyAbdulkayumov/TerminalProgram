@@ -58,6 +58,22 @@ namespace ViewModels.ModbusClient
             }
         }
 
+        private bool _checkSum_IsEnable;
+
+        public bool CheckSum_IsEnable
+        {
+            get => _checkSum_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsEnable, value);
+        }
+
+        private bool _checkSum_IsVisible;
+
+        public bool CheckSum_IsVisible
+        {
+            get => _checkSum_IsVisible;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsVisible, value);
+        }
+
         private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
 
         public ObservableCollection<string> ReadFunctions
@@ -137,8 +153,6 @@ namespace ViewModels.ModbusClient
         private ushort _selectedNumberOfRegisters = 1;
         private uint _selectedPeriod = 600;
 
-        private bool _checkSum_IsEnable;
-
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
         private const int TimeForReadHandler = 100;
@@ -183,6 +197,9 @@ namespace ViewModels.ModbusClient
 
             SelectedNumberFormat_Hex = true;
 
+            CheckSum_IsEnable = true;
+            CheckSum_IsVisible = true;
+
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
                 {
@@ -203,6 +220,16 @@ namespace ViewModels.ModbusClient
                         SelectNumberFormat_Dec();
                     }
                 });
+        }
+
+        public void Subscribe(ModbusClient_VM parent)
+        {
+            parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
+        }
+
+        private void Parent_CheckSum_VisibilityChanged(object? sender, bool e)
+        {
+            CheckSum_IsVisible = e;
         }
 
         public string GetFieldViewName(string fieldName)
@@ -235,8 +262,6 @@ namespace ViewModels.ModbusClient
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {
             UI_IsEnable = true;
-
-            _checkSum_IsEnable = e.ConnectedDevice is SerialPortClient;
         }
 
         private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
@@ -339,7 +364,7 @@ namespace ViewModels.ModbusClient
             Model.Modbus.CycleMode_Period = _selectedPeriod;
             await Model.Modbus.CycleMode_Start(async () =>
             {
-                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, _checkSum_IsEnable);
+                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
             });
 
             Button_Content = Button_Content_Stop;

@@ -12,6 +12,11 @@
 		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
 
+		<Style Selector="StackPanel.RowContent">
+			<Setter Property="Orientation" Value="Horizontal"/>
+			<Setter Property="Spacing" Value="15"/>
+		</Style>
+		
 	</UserControl.Styles>
 
 	<Grid>
@@ -62,18 +67,28 @@
 								   Margin="0,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-						<TextBox Classes="InputField"
-								 Width="60"
-								 Text="{Binding SlaveID, Mode=TwoWay}"
-								 Margin="90,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"
-								 TextChanged="UppercaseTextBox_TextChanged"/>
+						<StackPanel Classes="RowContent"
+									Margin="85,0,0,0">
 
-						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   Margin="170,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<TextBox Classes="InputField"
+									 Width="60"
+									 Text="{Binding SlaveID, Mode=TwoWay}"
+									 TextChanged="UppercaseTextBox_TextChanged"/>
+
+							<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   Margin="0,6,0,0"
+									   VerticalAlignment="Top"/>
+
+							<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
+									  Content="Контрольная сумма"
+									  FontSize="14"
+									  Foreground="{DynamicResource App_Color_Text}"
+									  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
+									  Width="170"/>
+							
+						</StackPanel>						
 
 					</Grid>
 
@@ -83,10 +98,10 @@
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-						<ComboBox Width="280"
+						<ComboBox Width="300"
 								  ItemsSource="{Binding ReadFunctions}"
 								  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
-								  Margin="90,0,0,0"
+								  Margin="85,0,0,0"
 								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
 						
 					</Grid>
@@ -98,16 +113,19 @@
 								   Margin="0,6,0,0"
 								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-						<TextBox Classes="InputField"
-								 Width="60"
-								 Text="{Binding Period_ms, Mode=TwoWay}"
-								 Margin="90,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+						<StackPanel Classes="RowContent"
+									Margin="85,0,0,0">
 
-						<TextBlock Text="мс."
-								   FontSize="16"
-								   Margin="160,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<TextBox Classes="InputField"
+									 Width="60"
+									 Text="{Binding Period_ms, Mode=TwoWay}"/>
+
+							<TextBlock Text="мс."
+									   FontSize="16"
+									   Margin="0,6,0,0"
+									   VerticalAlignment="Top"/>
+							
+						</StackPanel>						
 						
 					</Grid>
 
@@ -118,18 +136,21 @@
 								   Margin="0,6,0,0"
 								   VerticalAlignment="Top"/>
 
-						<TextBox Classes="InputField"
-								 Width="70"
-								 Margin="160,0,0,0"
-								 Text="{Binding Address, Mode=TwoWay}"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"
-								 TextChanged="UppercaseTextBox_TextChanged"/>
+						<StackPanel Classes="RowContent"
+									Margin="160,0,0,0">
 
-						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   Margin="240,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<TextBox Classes="InputField"
+									 Width="70"
+									 Text="{Binding Address, Mode=TwoWay}"
+									 TextChanged="UppercaseTextBox_TextChanged"/>
+
+							<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   Margin="0,6,0,0"
+									   VerticalAlignment="Top"/>
+							
+						</StackPanel>						
 
 					</Grid>
 
