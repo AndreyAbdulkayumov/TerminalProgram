@@ -163,9 +163,9 @@
 							<Separator Background="{DynamicResource Group_Color_BorderBrush}"
 									   Margin="0,10,0,10"/>
 
-							<Button Content="Конвертер"
+							<Button Content="Макросы"
 									Classes="LeftMenuButton"
-									Click="Button_Converter_Click"/>
+									Click="Button_Macros_Click"/>
 
 						</StackPanel>
 

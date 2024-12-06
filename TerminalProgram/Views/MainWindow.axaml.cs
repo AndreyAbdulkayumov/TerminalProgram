@@ -196,11 +196,9 @@ public partial class MainWindow : Window
         });
     }
 
-    private void Button_Converter_Click(object? sender, RoutedEventArgs e)
+    private void Button_Macros_Click(object? sender, RoutedEventArgs e)
     {
-        var window = new NumberConverterWindow();
-
-        window.Show(this);
+        
     }
 
     /********************************************************/
