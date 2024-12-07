@@ -121,7 +121,6 @@ namespace ViewModels.Settings
             DeviceData settings = SettingsFile.ReadPreset(fileName);
 
             Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? DeviceData.GlobalEncoding_Default;
-            Tab_NoProtocol_VM.SelectedReceiveBufferSize = settings.ReceiveBufferSize ?? DeviceData.ReceiveBufferSize_Default;
 
             Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? DeviceData.TimeoutWrite_Default;
             Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? DeviceData.TimeoutRead_Default;
@@ -286,7 +285,6 @@ namespace ViewModels.Settings
                     },
 
                     GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
-                    ReceiveBufferSize = Tab_NoProtocol_VM.SelectedReceiveBufferSize,
 
                     TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
                     TimeoutRead = Tab_Modbus_VM.ReadTimeout,

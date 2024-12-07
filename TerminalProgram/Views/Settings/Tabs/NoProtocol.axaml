@@ -63,18 +63,7 @@
 			<ComboBox ItemsSource="{Binding TypeOfEncoding}"
 					  SelectedItem="{Binding SelectedEncoding}"/>
 			
-		</Grid>
-
-		<Grid>
-
-			<TextBlock Text="Размер буфера приема" Classes="Parameters"/>
-
-			<TextBox Classes="InputField Settings"
-					 Text="{Binding SelectedReceiveBufferSize, Mode=TwoWay}"/>
-
-			<TextBlock Text="байт" Classes="Units"/>
-
-		</Grid>		
+		</Grid>	
 
 	</StackPanel>
 	

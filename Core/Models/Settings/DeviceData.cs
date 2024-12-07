@@ -36,10 +36,8 @@
 
         // Настройки режима "Без протокола"
         public string? GlobalEncoding { get; set; }
-        public string? ReceiveBufferSize { get; set; }
 
         public const string GlobalEncoding_Default = "UTF-8";
-        public const string ReceiveBufferSize_Default = "10000";
 
         // Настройки режима "Modbus"
         public string? TimeoutWrite { get; set; }
@@ -60,7 +58,6 @@
                 Connection_IP = null,
 
                 GlobalEncoding = GlobalEncoding_Default,
-                ReceiveBufferSize = ReceiveBufferSize_Default,
 
                 TimeoutWrite = TimeoutWrite_Default,
                 TimeoutRead = TimeoutRead_Default,
@@ -114,7 +111,6 @@
                 Connection_IP = IP,
 
                 GlobalEncoding = GlobalEncoding,
-                ReceiveBufferSize = ReceiveBufferSize,
 
                 TimeoutWrite = TimeoutWrite,
                 TimeoutRead = TimeoutRead,
