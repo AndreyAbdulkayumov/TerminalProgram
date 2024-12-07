@@ -1,0 +1,127 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
+		Width="800" Height="450"
+        x:Class="TerminalProgram.Views.Macros.MacrosWindow"
+		Title="Макросы"
+		Background="Transparent"
+		WindowStartupLocation="CenterScreen"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="BorderOnly">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
+	</Window.Styles>
+	
+	<Border Background="{DynamicResource App_Back_Color_Background}">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Grid x:Name="Grid_Workspace" Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="80"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+				
+				<Border Grid.Row="0"
+						Classes="AppField">
+
+					<Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="15"
+									Margin="10,0,0,0"
+									HorizontalAlignment="Left" VerticalAlignment="Center">
+
+							<TextBlock Text="Выбранный режим:"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text}"/>
+									   
+							<TextBlock Text="не выбран"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+						</StackPanel>
+
+						<Button Content="Добавить макрос"
+								Margin="0,0,10,0"
+								HorizontalAlignment="Right" VerticalAlignment="Center"/>
+						
+					</Grid>					
+					
+				</Border>
+
+				<Border Grid.Row="1"
+						Classes="AppField">
+
+					<Grid>
+						
+						
+						
+					</Grid>
+					
+				</Border>
+
+			</Grid>
+
+			<Border x:Name="Border_ResizeIcon" Grid.Row="1"
+					Background="Transparent"
+					Width="20" Height="20"
+					HorizontalAlignment="Right" VerticalAlignment="Bottom"
+					PointerPressed="ResizeIcon_PointerPressed">
+
+				<Border.Styles>
+					<Style Selector="Border">
+						<Style Selector="^:pointerover">
+							<Setter Property="Cursor" Value="BottomRightCorner"/>
+						</Style>
+					</Style>
+				</Border.Styles>
+
+				<Icons:MaterialIcon Kind="ResizeBottomRight"
+									Foreground="{DynamicResource ResizeGrip_Color_Foreground}"
+									Margin="0,0,10,10"
+									Width="30" Height="30"/>
+
+			</Border>
+
+		</Grid>
+		
+	</Border>
+	
+</Window>

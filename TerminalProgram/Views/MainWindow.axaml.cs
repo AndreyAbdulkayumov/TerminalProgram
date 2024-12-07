@@ -10,7 +10,7 @@ using Avalonia.Threading;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using TerminalProgram.Views.Settings;
-using TerminalProgramBase;
+using TerminalProgram.Views.Macros;
 using ViewModels;
 
 
@@ -198,7 +198,9 @@ public partial class MainWindow : Window
 
     private void Button_Macros_Click(object? sender, RoutedEventArgs e)
     {
-        
+        var window = new MacrosWindow();
+
+        window.Show();
     }
 
     /********************************************************/
