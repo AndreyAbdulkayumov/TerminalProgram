@@ -121,7 +121,7 @@ namespace Core.Clients
                 string.IsNullOrEmpty(socketInfo.Port))
             {
                 throw new Exception(
-                    (string.IsNullOrEmpty(socketInfo.IP) ? "IP адрес не задан.\n" : "") +
+                    (string.IsNullOrEmpty(socketInfo.IP) ? "IP-адрес не задан.\n" : "") +
                     (string.IsNullOrEmpty(socketInfo.Port) ? "Порт не задан." : "")
                     );
             }

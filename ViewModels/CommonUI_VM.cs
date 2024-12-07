@@ -436,7 +436,7 @@ namespace ViewModels
                     if (settings.Connection_IP != null)
                     {
                         connectionString =
-                            (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? "IP адрес не задан" : settings.Connection_IP.IP_Address) +
+                            (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? "IP-адрес не задан" : settings.Connection_IP.IP_Address) +
                             separator +
                             (string.IsNullOrEmpty(settings.Connection_IP.Port) ? "Порт не задан" : settings.Connection_IP.Port);
                     }

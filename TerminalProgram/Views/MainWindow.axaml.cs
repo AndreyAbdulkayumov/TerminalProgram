@@ -198,9 +198,7 @@ public partial class MainWindow : Window
 
     private void Button_Macros_Click(object? sender, RoutedEventArgs e)
     {
-        var window = new MacrosWindow();
-
-        window.Show();
+        MacrosWindow.ShowWindow(this);
     }
 
     /********************************************************/

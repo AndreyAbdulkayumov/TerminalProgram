@@ -9,6 +9,8 @@ namespace TerminalProgram.Views.Macros;
 
 public partial class MacrosWindow : Window
 {
+    private static bool _isOpen = false;
+
     private readonly IMessageBox _messageBox;
 
     public MacrosWindow()
@@ -18,6 +20,28 @@ public partial class MacrosWindow : Window
         _messageBox = new MessageBox(this, "Макросы");
 
         DataContext = new Macros_VM(_messageBox);
+    }
+
+    /// <summary>
+    /// Использовать для открытия окна в единственном экземпляре.
+    /// </summary>
+    public static void ShowWindow(Window owner)
+    {
+        if (_isOpen)
+        {
+            return;
+        }
+
+        var window = new MacrosWindow();
+
+        window.Show(owner);
+
+        _isOpen = true;
+    }
+
+    private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
+    {
+        _isOpen = false;
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -35,5 +59,5 @@ public partial class MacrosWindow : Window
         Cursor = new(StandardCursorType.BottomRightCorner);
         BeginResizeDrag(WindowEdge.SouthEast, e);
         Cursor = new(StandardCursorType.Arrow);
-    }
+    }    
 }

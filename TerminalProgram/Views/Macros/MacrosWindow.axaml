@@ -8,10 +8,11 @@
         x:Class="TerminalProgram.Views.Macros.MacrosWindow"
 		Title="Макросы"
 		Background="Transparent"
-		WindowStartupLocation="CenterScreen"
+		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly">
+		SystemDecorations="BorderOnly"
+		Closing="Window_Closing">
 
 	<Window.Styles>
 
@@ -80,7 +81,8 @@
 
 						<Button Content="Добавить макрос"
 								Margin="0,0,10,0"
-								HorizontalAlignment="Right" VerticalAlignment="Center"/>
+								HorizontalAlignment="Right" VerticalAlignment="Center"
+								Command="{Binding Command_AddMacros}"/>
 						
 					</Grid>					
 					
@@ -89,11 +91,35 @@
 				<Border Grid.Row="1"
 						Classes="AppField">
 
-					<Grid>
+					<ScrollViewer x:Name="ScrollViewer_Macros"
+								  VerticalScrollBarVisibility="Auto">
+
+						<ItemsControl ItemsSource="{Binding Items, Mode=TwoWay}"
+									  Margin="10"
+									  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+							
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<WrapPanel />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+
+							<ItemsControl.ItemTemplate>
+
+								<DataTemplate>
+
+									<Button Content="{Binding Title}"
+											Command="{Binding Command_ItemAction}"
+											Height="70"
+											Margin="10"/>
+									
+								</DataTemplate>
+								
+							</ItemsControl.ItemTemplate>
+							
+						</ItemsControl>
 						
-						
-						
-					</Grid>
+					</ScrollViewer>
 					
 				</Border>
 
