@@ -13,6 +13,12 @@ using Core.Models.AppUpdateSystem;
 
 namespace ViewModels
 {
+    public enum ApplicationWorkMode
+    {
+        NoProtocol,
+        ModbusClient
+    }
+
     public class DocArgs : EventArgs
     {
         public readonly string? FilePath;
@@ -25,6 +31,8 @@ namespace ViewModels
 
     public class CommonUI_VM : ReactiveObject
     {
+        public static ApplicationWorkMode CurrentApplicationWorkMode { get; private set; }
+
         private bool _ui_IsConnectedState = false;
 
         public bool UI_IsConnectedState
@@ -259,6 +267,7 @@ namespace ViewModels
                 Model.SetProtocol_NoProtocol();
 
                 SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
             });
             Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
@@ -268,6 +277,7 @@ namespace ViewModels
                 Model.SetProtocol_Modbus();
 
                 SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
+                CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
             });
             Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
@@ -331,6 +341,7 @@ namespace ViewModels
                     CurrentViewModel = NoProtocol_VM;
                     Model.SetProtocol_NoProtocol();
                     SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                    CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
             }
         }

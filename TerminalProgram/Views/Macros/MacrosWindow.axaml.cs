@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
+using System.Threading.Tasks;
 using ViewModels.Macros;
 
 namespace TerminalProgram.Views.Macros;
@@ -13,13 +14,28 @@ public partial class MacrosWindow : Window
 
     private readonly IMessageBox _messageBox;
 
+    private readonly Macros_VM _viewModel;
+
     public MacrosWindow()
     {
         InitializeComponent();
 
         _messageBox = new MessageBox(this, "Макросы");
 
-        DataContext = new Macros_VM(_messageBox);
+        _viewModel = new Macros_VM(_messageBox, OpenCreateMacrosWindow);
+
+        DataContext = _viewModel;
+    }
+
+    private async Task OpenCreateMacrosWindow()
+    {
+        await MainWindow.OpenWindowWithDimmer(async () =>
+        {
+            var window = new CreateMacrosWindow();
+
+            await window.ShowDialog(this);
+        },
+        Grid_Workspace);
     }
 
     /// <summary>
@@ -59,5 +75,5 @@ public partial class MacrosWindow : Window
         Cursor = new(StandardCursorType.BottomRightCorner);
         BeginResizeDrag(WindowEdge.SouthEast, e);
         Cursor = new(StandardCursorType.Arrow);
-    }    
+    }
 }

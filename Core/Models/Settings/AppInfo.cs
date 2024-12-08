@@ -9,8 +9,7 @@
     public enum AppMode
     {
         NoProtocol,
-        ModbusClient,
-        ModbusTCPServer
+        ModbusClient
     }
 
     public class AppInfo

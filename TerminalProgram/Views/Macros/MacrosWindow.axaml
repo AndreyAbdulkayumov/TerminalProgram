@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
-		Width="800" Height="450"
+		Width="1000" Height="600"
         x:Class="TerminalProgram.Views.Macros.MacrosWindow"
 		Title="Макросы"
 		Background="Transparent"
@@ -79,10 +79,10 @@
 
 						</StackPanel>
 
-						<Button Content="Добавить макрос"
+						<Button Content="Создать макрос"
 								Margin="0,0,10,0"
 								HorizontalAlignment="Right" VerticalAlignment="Center"
-								Command="{Binding Command_AddMacros}"/>
+								Command="{Binding Command_CreateMacros}"/>
 						
 					</Grid>					
 					
