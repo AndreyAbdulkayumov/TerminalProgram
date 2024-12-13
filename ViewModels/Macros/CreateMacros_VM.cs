@@ -13,15 +13,26 @@ namespace ViewModels.Macros
             set => this.RaiseAndSetIfChanged(ref _currentModeViewModel, value);
         }
 
-        private readonly NoProtocolMacros_VM _noProtocolMacros_VM;
-        private readonly ModbusMacros_VM _modbusMacros_VM;
-
         public CreateMacros_VM()
         {
-            _noProtocolMacros_VM = new NoProtocolMacros_VM();
-            _modbusMacros_VM = new ModbusMacros_VM();
+            CurrentModeViewModel = GetMacrosVM();
+        }
 
-            CurrentModeViewModel = _noProtocolMacros_VM;
+        private object GetMacrosVM()
+        {
+            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
+
+            switch (currentMode)
+            {
+                case ApplicationWorkMode.NoProtocol:
+                    return new NoProtocolMacros_VM();
+
+                case ApplicationWorkMode.ModbusClient:
+                    return new ModbusMacros_VM();
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

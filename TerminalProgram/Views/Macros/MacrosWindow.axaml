@@ -73,7 +73,7 @@
 									   FontSize="16"
 									   Foreground="{DynamicResource App_Color_Text}"/>
 									   
-							<TextBlock Text="не выбран"
+							<TextBlock Text="{Binding ModeName, Mode=OneWay}"
 									   FontSize="16"
 									   Foreground="{DynamicResource App_Color_Text_Bright}"/>
 

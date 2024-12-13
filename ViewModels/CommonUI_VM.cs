@@ -31,7 +31,19 @@ namespace ViewModels
 
     public class CommonUI_VM : ReactiveObject
     {
-        public static ApplicationWorkMode CurrentApplicationWorkMode { get; private set; }
+        private static ApplicationWorkMode _currentApplicationWorkMode;
+
+        public static ApplicationWorkMode CurrentApplicationWorkMode
+        {
+            get => _currentApplicationWorkMode;
+            private set
+            {
+                _currentApplicationWorkMode = value;
+                ApplicationWorkModeChanged?.Invoke(null, value);
+            }
+        }
+
+        public static event EventHandler<ApplicationWorkMode>? ApplicationWorkModeChanged;
 
         private bool _ui_IsConnectedState = false;
 
@@ -330,11 +342,13 @@ namespace ViewModels
                 case AppMode.NoProtocol:
                     CurrentViewModel = NoProtocol_VM;
                     Model.SetProtocol_NoProtocol();
+                    CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
 
                 case AppMode.ModbusClient:
                     CurrentViewModel = ModbusClient_VM;
                     Model.SetProtocol_Modbus();
+                    CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
                     break;
 
                 default:
