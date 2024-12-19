@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using MessageBox_Core;
+using ReactiveUI;
 using System.Reactive;
 
 namespace ViewModels.Macros
@@ -8,11 +9,12 @@ namespace ViewModels.Macros
         public string Title { get; set; }
         public ReactiveCommand<Unit, Unit> Command_ItemAction { get; set; }
 
-        public MacrosViewItem(string title, Action clickAction)
+        public MacrosViewItem(string title, Func<Task> clickAction, IMessageBox _messageBox)
         {
             Title = title;
 
-            Command_ItemAction = ReactiveCommand.Create(clickAction);
+            Command_ItemAction = ReactiveCommand.CreateFromTask(clickAction);
+            Command_ItemAction.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
         }
     }
 }

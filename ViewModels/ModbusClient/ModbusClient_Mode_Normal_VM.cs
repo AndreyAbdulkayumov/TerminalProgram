@@ -161,7 +161,7 @@ namespace ViewModels.ModbusClient
 
         public ModbusClient_Mode_Normal_VM(
             IMessageBox messageBox,
-            Func<byte, ushort, ModbusWriteFunction, byte[], int, bool, Task> modbus_Write,
+            Func<byte, ushort, ModbusWriteFunction, byte[]?, int, bool, Task> modbus_Write,
             Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
@@ -272,13 +272,7 @@ namespace ViewModels.ModbusClient
 
                 ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
-
-                if (modbusWriteData.Data.Length == 0)
-                {
-                    _messageBox.Show("Укажите данные для записи.", MessageType.Warning);
-                    return;
-                }
+                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();                               
 
                 await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable);
             });

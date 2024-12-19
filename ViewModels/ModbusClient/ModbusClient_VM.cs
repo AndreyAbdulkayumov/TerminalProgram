@@ -15,6 +15,8 @@ namespace ViewModels.ModbusClient
 {
     public class ModbusClient_VM : ReactiveObject
     {
+        public static ModbusClient_VM? Instance { get; private set; }
+
         public const string ViewContent_NumberStyle_dec = "(dec)";
         public const string ViewContent_NumberStyle_hex = "(hex)";
 
@@ -182,6 +184,8 @@ namespace ViewModels.ModbusClient
             Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);       
             Mode_Cycle_VM.Subscribe(this);
 
+            Instance = this;
+
             /****************************************************/
             //
             // Настройка свойств и команд модели отображения
@@ -322,7 +326,7 @@ namespace ViewModels.ModbusClient
             _packageNumber = 0;
         }
 
-        private async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
+        public async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
         {
             try
             {
@@ -389,7 +393,7 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[] modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
+        public async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[]? modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
         {
             try
             {
@@ -406,6 +410,11 @@ namespace ViewModels.ModbusClient
                 if (ModbusMessageType == null)
                 {
                     throw new Exception("Не задан тип протокола Modbus.");
+                }
+
+                if (modbusWriteData == null || modbusWriteData.Length == 0)
+                {
+                    throw new Exception("Укажите данные для записи.");
                 }
 
                 _currentFunction = writeFunction;

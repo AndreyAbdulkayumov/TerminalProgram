@@ -98,5 +98,17 @@
             ForceMultipleCoils,
             PresetMultipleRegisters
         };
+
+        public static readonly ModbusFunction[] AllFunctions =
+        {
+            ReadCoilStatus,
+            ReadDiscreteInputs,
+            ReadHoldingRegisters,
+            ReadInputRegisters,
+            ForceSingleCoil,
+            PresetSingleRegister,
+            ForceMultipleCoils,
+            PresetMultipleRegisters
+        };
     }
 }

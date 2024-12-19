@@ -58,7 +58,7 @@ namespace ViewModels.NoProtocol
 
         public NoProtocol_Mode_Normal_VM(
             IMessageBox messageBox, 
-            Func<string, byte[]> convertToBytes, 
+            Func<bool, string, bool, bool, Task> sendAction, 
             Func<string, bool, string> getMessageString, 
             Func<string, string> getValidatedByteString
             )
@@ -73,15 +73,8 @@ namespace ViewModels.NoProtocol
 
             Command_Send = ReactiveCommand.CreateFromTask(async () =>
             {
-                if (IsBytesSend)
-                {
-                    await Model.NoProtocol.SendBytes(convertToBytes(TX_String));
-                    return;
-                }
-
-                await Model.NoProtocol.SendString(TX_String, CR_Enable, LF_Enable);
+                await sendAction(IsBytesSend, TX_String, CR_Enable, LF_Enable);
             });
-
             Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.IsBytesSend)
@@ -99,7 +92,7 @@ namespace ViewModels.NoProtocol
             }
 
             return TX_String; 
-        }        
+        }
 
         private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
         {

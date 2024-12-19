@@ -2,17 +2,32 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using ViewModels.ModbusClient;
+using Core.Models.Modbus;
+using ViewModels.NoProtocol;
 
 namespace ViewModels.Macros
 {
+    public class MacrosItemData
+    {
+        public readonly string Name;
+        public readonly Func<Task> Action;
+
+        public MacrosItemData(string name, Func<Task> action)
+        {
+            Name = name;
+            Action = action;
+        }
+    }
+
     public class Macros_VM : ReactiveObject
     {
         private const string ModeName_NoProtocol = "Без протокола";
         private const string ModeName_ModbusClient = "Modbus";
 
-        private string _modeName;
+        private string? _modeName;
 
-        public string ModeName
+        public string? ModeName
         {
             get => _modeName;
             set => this.RaiseAndSetIfChanged(ref _modeName, value);
@@ -39,6 +54,7 @@ namespace ViewModels.Macros
             ModeName = GetModeName(CommonUI_VM.CurrentApplicationWorkMode);
 
             Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
+            Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error));
 
             CommonUI_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
         }
@@ -66,7 +82,7 @@ namespace ViewModels.Macros
         public async Task CreateMacros()
         {
             var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
-
+            
             await _openCreateMacrosWindow();
 
             // На случай если режим будет изменен при добавлении макроса
@@ -76,8 +92,77 @@ namespace ViewModels.Macros
 
                 int number = rand.Next(0, 65345);
 
-                Items.Add(new MacrosViewItem($"macros {number}", () => _messageBox.Show($"Это номер {number}", MessageType.Warning)));
-            }            
+                MacrosItemData itemData;
+
+                switch (currentMode)
+                {
+                    case ApplicationWorkMode.NoProtocol:
+                        itemData = CreateNoProtocolMacros(number.ToString(), "test message", true, true);
+                        break;
+
+                    case ApplicationWorkMode.ModbusClient:
+                        itemData = CreateModbusMacros(number.ToString(), 1, 2, 3, null, 2, false);
+                        break;
+
+                    default:
+                        throw new NotImplementedException($"Поддержка режима {currentMode} не реализована.");
+                }
+
+                BuildMacrosItem(itemData);
+            }
+        }
+
+        private MacrosItemData CreateNoProtocolMacros(string macrosName, string message, bool enableCR, bool enableLF)
+        {
+            Func<Task> action = async () =>
+            {
+                if (NoProtocol_VM.Instance == null)
+                {
+                    return;
+                }
+
+                await NoProtocol_VM.Instance.NoProtocol_Send(false, message, enableCR, enableLF);
+            };
+
+            return new MacrosItemData(macrosName, action);
+        }
+
+        private MacrosItemData CreateModbusMacros(string macrosName, byte slaveID, ushort address, int functionNumber, byte[]? writeBuffer, int numberOfRegisters, bool checkSum_IsEnable)
+        {
+            Func<Task> action = async () =>
+            {
+                if (ModbusClient_VM.Instance == null)
+                {
+                    return;
+                }
+
+                var modbusFunction = Function.AllFunctions.Single(x => x.Number == functionNumber);
+
+                if (modbusFunction != null)
+                {
+                    if (modbusFunction is ModbusReadFunction readFunction)
+                    {
+                        await ModbusClient_VM.Instance.Modbus_Read(slaveID, address, readFunction, numberOfRegisters, checkSum_IsEnable);
+                    }
+
+                    else if (modbusFunction is ModbusWriteFunction writeFunction)
+                    {
+                        await ModbusClient_VM.Instance.Modbus_Write(slaveID, address, writeFunction, writeBuffer, numberOfRegisters, checkSum_IsEnable);
+                    }
+                    
+                    else
+                    {
+                        throw new Exception("Выбранна неизвестная Modbus функция");
+                    }
+                }                
+            };
+
+            return new MacrosItemData(macrosName, action);
+        }
+
+        private void BuildMacrosItem(MacrosItemData itemData)
+        {
+            Items.Add(new MacrosViewItem($"macros {itemData.Name}", itemData.Action, _messageBox));
         }
     }
 }

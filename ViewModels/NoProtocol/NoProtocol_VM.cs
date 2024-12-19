@@ -11,6 +11,8 @@ namespace ViewModels.NoProtocol
 {
     public class NoProtocol_VM : ReactiveObject
     {
+        public static NoProtocol_VM? Instance { get; private set; }
+
         private object? _currentModeViewModel;
 
         public object? CurrentModeViewModel
@@ -115,8 +117,10 @@ namespace ViewModels.NoProtocol
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
-            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox, ConvertToBytes, GetMessageString, GetValidatedByteString);
+            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox, NoProtocol_Send, GetMessageString, GetValidatedByteString);
             Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox, ConvertToBytes, GetMessageString, GetValidatedByteString);
+
+            Instance = this;
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
@@ -128,6 +132,16 @@ namespace ViewModels.NoProtocol
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
+        }
+        public async Task NoProtocol_Send(bool isBytes, string Data, bool enableCR, bool enableLF)
+        {
+            if (isBytes)
+            {
+                await Model.NoProtocol.SendBytes(ConvertToBytes(Data));
+                return;
+            }
+
+            await Model.NoProtocol.SendString(Data, enableCR, enableLF);
         }
 
         private string GetMessageString(string message, bool isBytesString)
