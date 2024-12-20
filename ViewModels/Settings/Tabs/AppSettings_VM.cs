@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;

@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using ViewModels.Validation;
 using System.Globalization;
+using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.Settings.Tabs
 {

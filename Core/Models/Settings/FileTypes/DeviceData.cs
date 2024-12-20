@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Settings
+﻿namespace Core.Models.Settings.FileTypes
 {
     public class SerialPort_Info
     {
@@ -32,7 +32,7 @@
         public SerialPort_Info? Connection_SerialPort { get; set; }
         public IP_Info? Connection_IP { get; set; }
 
-        public const string TypeOfConnection_Default = DeviceData.ConnectionName_SerialPort;
+        public const string TypeOfConnection_Default = ConnectionName_SerialPort;
 
         // Настройки режима "Без протокола"
         public string? GlobalEncoding { get; set; }
@@ -46,7 +46,7 @@
 
         public const string TimeoutWrite_Default = "300";
         public const string TimeoutRead_Default = "300";
-        public const string FloatNumberFormat_Default = DeviceData.FloatWriteFormat_BA_DC;
+        public const string FloatNumberFormat_Default = FloatWriteFormat_BA_DC;
 
 
         public static DeviceData GetDefault()
@@ -61,7 +61,7 @@
 
                 TimeoutWrite = TimeoutWrite_Default,
                 TimeoutRead = TimeoutRead_Default,
-                FloatNumberFormat = FloatNumberFormat_Default,                
+                FloatNumberFormat = FloatNumberFormat_Default,
             };
         }
 
@@ -114,7 +114,7 @@
 
                 TimeoutWrite = TimeoutWrite,
                 TimeoutRead = TimeoutRead,
-                FloatNumberFormat = FloatNumberFormat,                
+                FloatNumberFormat = FloatNumberFormat,
             };
         }
     }

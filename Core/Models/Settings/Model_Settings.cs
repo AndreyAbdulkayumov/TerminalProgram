@@ -1,4 +1,6 @@
-﻿namespace Core.Models.Settings
+﻿using Core.Models.Settings.FileTypes;
+
+namespace Core.Models.Settings
 {
     public class Model_Settings
     {
@@ -22,6 +24,9 @@
         private const string FileName_DefaultPreset = "Unknown";
 
         private const string FileName_AppData = "AppData";
+
+        private const string FileName_Macros_NoProtocol = "Macros_NoProtocol";
+        private const string FileName_Macros_Modbus = "Macros_Modbus";
 
         private const string FileExtension = ".json";
 
@@ -179,6 +184,103 @@
                 );
 
             return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
+        }
+
+        public void SaveModbusMacros(string macrosName, byte slaveID, ushort address, int functionNumber, byte[]? writeBuffer, int numberOfRegisters, bool checkSum_IsEnable)
+        {
+            try
+            {
+                string filePath = DirectoryManager.FindOrCreateFile(
+                    DirectoryManager.Macros_Directory,
+                    FileName_Macros_Modbus,
+                    FileExtension,
+                    new MacrosModbus()
+                    );
+
+                var macros = FileIO.ReadOrCreateDefault(filePath, new MacrosModbus());
+
+                if (macros.Items == null)
+                {
+                    macros.Items = new List<MacrosModbusItem>();
+                }
+
+                macros.Items.Add(new MacrosModbusItem()
+                {
+                    Name = macrosName,
+                    SlaveID = slaveID,
+                    Address = address,
+                    FunctionNumber = functionNumber,
+                    WriteBuffer = writeBuffer,
+                    NumberOfRegisters = numberOfRegisters,
+                    CheckSum_IsEnable = checkSum_IsEnable
+                });
+
+                FileIO.Save(filePath, macros);
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка сохранения макроса \"Modbus\".\n\n" + error.Message);
+            }
+        }
+
+        public MacrosModbus ReadAllModbusMacros()
+        {
+            string filePath = DirectoryManager.FindOrCreateFile(
+                    DirectoryManager.Macros_Directory,
+                    FileName_Macros_Modbus,
+                    FileExtension,
+                    new MacrosModbus()
+                    );
+
+            return FileIO.ReadOrCreateDefault(filePath, new MacrosModbus());
+        }
+
+        public void SaveNoProtocolMacros(string macrosName, string message, bool enableCR, bool enableLF)
+        {
+            try
+            {
+                string filePath = DirectoryManager.FindOrCreateFile(
+                    DirectoryManager.Macros_Directory,
+                    FileName_Macros_NoProtocol,
+                    FileExtension,
+                    new MacrosNoProtocol()
+                    );
+
+                var macros = FileIO.ReadOrCreateDefault(filePath, new MacrosNoProtocol());
+
+                if (macros.Items == null)
+                {
+                    macros.Items = new List<MacrosNoProtocolItem>();
+                }
+
+                macros.Items.Add(new MacrosNoProtocolItem()
+                {
+                    Name = macrosName,
+                    Message = message,
+                    EnableCR = enableCR,
+                    EnableLF = enableLF
+                });
+
+                FileIO.Save(filePath, macros);
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception("Ошибка сохранения макроса режима \"Без протокола\".\n\n" + error.Message);
+            }
+        }
+
+        public MacrosNoProtocol ReadAllNoProtocolMacros()
+        {
+            string filePath = DirectoryManager.FindOrCreateFile(
+                    DirectoryManager.Macros_Directory,
+                    FileName_Macros_NoProtocol,
+                    FileExtension,
+                    new MacrosNoProtocol()
+                    );
+
+            return FileIO.ReadOrCreateDefault(filePath, new MacrosNoProtocol());
         }
     }
 }

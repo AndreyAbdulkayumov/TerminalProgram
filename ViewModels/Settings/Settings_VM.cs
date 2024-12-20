@@ -8,6 +8,7 @@ using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
 using System.Text;
 using ViewModels.FloatNumber;
+using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.Settings
 {

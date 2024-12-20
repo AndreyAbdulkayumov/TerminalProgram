@@ -1,4 +1,4 @@
-﻿using Core.Models.Settings;
+﻿using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.FloatNumber
 {
