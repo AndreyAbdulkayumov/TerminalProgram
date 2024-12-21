@@ -16,6 +16,8 @@ public partial class MacrosWindow : Window
 
     private readonly Macros_VM _viewModel;
 
+    private readonly Border? _resizeIcon;
+
     public MacrosWindow()
     {
         InitializeComponent();
@@ -24,6 +26,8 @@ public partial class MacrosWindow : Window
 
         _viewModel = new Macros_VM(_messageBox, OpenCreateMacrosWindow);
 
+        _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
+
         DataContext = _viewModel;
     }
 
@@ -31,7 +35,7 @@ public partial class MacrosWindow : Window
     {
         await MainWindow.OpenWindowWithDimmer(async () =>
         {
-            var window = new CreateMacrosWindow();
+            var window = new EditMacrosWindow();
 
             await window.ShowDialog(this);
         },
@@ -63,6 +67,21 @@ public partial class MacrosWindow : Window
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         BeginMoveDrag(e);
+    }
+
+    private void Button_Minimize_Click(object? sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState.Minimized;
+    }
+
+    private void Button_Maximize_Click(object? sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+        if (_resizeIcon != null)
+        {
+            _resizeIcon.IsVisible = WindowState == WindowState.Normal ? true : false;
+        }
     }
 
     private void Button_Close_Click(object? sender, RoutedEventArgs e)

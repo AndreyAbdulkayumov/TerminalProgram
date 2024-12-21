@@ -5,9 +5,9 @@ using ViewModels.Macros;
 
 namespace TerminalProgram.Views.Macros;
 
-public partial class CreateMacrosWindow : Window
+public partial class EditMacrosWindow : Window
 {
-    public CreateMacrosWindow()
+    public EditMacrosWindow()
     {
         InitializeComponent();
 

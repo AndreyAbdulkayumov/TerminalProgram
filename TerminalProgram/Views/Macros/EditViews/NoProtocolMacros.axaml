@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+			 d:DesignWidth="600" Height="160"
+             x:Class="TerminalProgram.Views.Macros.EditViews.NoProtocolMacros">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TX_RX_Field.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToggleSwitch.axaml"/>		
+		
+	</UserControl.Styles>
+
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="60"/>
+		</Grid.RowDefinitions>
+
+		<TextBox x:Name="TextBox_TX" Grid.Row="0"
+				 Classes="TX_RX_Field"
+				 Margin="10"
+				 Text="{Binding MessageString, Mode=TwoWay}"
+				 TextChanged="TextBox_TextChanged"/>
+
+		<Grid Grid.Row="1">
+
+			<StackPanel Orientation="Horizontal" Spacing="15"
+						Margin="20,0,0,0"
+						HorizontalAlignment="Left">
+
+				<TextBlock Text="Добавить в конце сообщения:"
+						   Foreground="{DynamicResource App_Color_Text}"
+					       FontSize="14"
+						   VerticalAlignment="Center"/>
+
+				<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
+						  Foreground="{DynamicResource App_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding CR_Enable, Mode=TwoWay}"/>
+
+				<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+						  Foreground="{DynamicResource App_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding LF_Enable, Mode=TwoWay}"/>
+
+			</StackPanel>
+
+			<ToggleSwitch OffContent="Строка"
+						  OnContent="Байты"
+						  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"
+						  Margin="0,0,20,0"
+						  HorizontalAlignment="Right"/>
+
+		</Grid>
+
+	</Grid>
+	
+</UserControl>

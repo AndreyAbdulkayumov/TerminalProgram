@@ -3,7 +3,7 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
-using ViewModels.FloatNumber;
+using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.WriteFields.DataItems;
 
 namespace ViewModels.ModbusClient.WriteFields

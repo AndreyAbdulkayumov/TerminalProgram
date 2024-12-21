@@ -3,14 +3,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosCreate;assembly=ViewModels"
-		xmlns:CreateViews="clr-namespace:TerminalProgram.Views.Macros.CreateViews;assembly=TerminalProgramBase"
-        x:Class="TerminalProgram.Views.Macros.CreateMacrosWindow"
-        Title="Создание макроса"
-		Width="400" Height="300"
+		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels"
+		xmlns:EditViews="clr-namespace:TerminalProgram.Views.Macros.EditViews;assembly=TerminalProgramBase"
+        x:Class="TerminalProgram.Views.Macros.EditMacrosWindow"
+        Title="Редактирование макроса"
+		Width="680"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
+		SizeToContent="Height"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
@@ -19,20 +20,20 @@
 	<Window.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 
 	</Window.Styles>
 
 	<Window.DataTemplates>
 
 		<DataTemplate DataType="{x:Type ViewModels:NoProtocolMacros_VM}">
-			<CreateViews:NoProtocolMacros/>
+			<EditViews:NoProtocolMacros/>
 		</DataTemplate>
 
 		<DataTemplate DataType="{x:Type ViewModels:ModbusMacros_VM}">
-			<CreateViews:ModbusMacros/>
+			<EditViews:ModbusMacros/>
 		</DataTemplate>
 
 	</Window.DataTemplates>
@@ -67,8 +68,29 @@
 
 			</Grid>
 
-			<ContentControl Grid.Row="1"
-							Content="{Binding CurrentModeViewModel}"/>
+			<StackPanel Grid.Row="1" 
+						Orientation="Vertical" Spacing="20"
+						Margin="0,20,0,20">
+
+				<Grid>
+					
+					<TextBlock Text="Имя макроса"
+							   Margin="0,0,280,0"
+							   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					
+					<TextBox Classes="InputField"
+							 Width="300"
+							 Margin="140,0,0,0"
+							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					
+				</Grid>
+				
+				<ContentControl Content="{Binding CurrentModeViewModel}"/>
+				
+				<Button Content="Сохранить"
+						HorizontalAlignment="Center"/>
+				
+			</StackPanel>
 
 		</Grid>
 

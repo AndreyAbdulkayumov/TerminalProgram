@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace TerminalProgram.Views.Macros.CreateViews;
+namespace TerminalProgram.Views.Macros.EditViews;
 
 public partial class ModbusMacros : UserControl
 {

@@ -7,8 +7,8 @@ using MessageBox_Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
 using System.Text;
-using ViewModels.FloatNumber;
 using Core.Models.Settings.FileTypes;
+using ViewModels.Helpers.FloatNumber;
 
 namespace ViewModels.Settings
 {

@@ -1,5 +1,5 @@
 ﻿using ReactiveUI;
-using ViewModels.Macros.MacrosCreate;
+using ViewModels.Macros.MacrosEdit;
 
 namespace ViewModels.Macros
 {

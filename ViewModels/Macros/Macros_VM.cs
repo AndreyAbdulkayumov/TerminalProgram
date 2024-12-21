@@ -146,33 +146,33 @@ namespace ViewModels.Macros
             
             await _openCreateMacrosWindow();
 
-            var rand = new Random();
+            //var rand = new Random();
 
-            int number = rand.Next(0, 65345);
+            //int number = rand.Next(0, 65345);
 
-            IMacrosContext _macrosContext;
+            //IMacrosContext _macrosContext;
 
-            switch (currentMode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    _macrosContext = new NoProtocolMacrosContext(number.ToString(), "test message", true, true);
-                    _settings.SaveNoProtocolMacros(number.ToString(), "test message", true, true);
-                    break;
+            //switch (currentMode)
+            //{
+            //    case ApplicationWorkMode.NoProtocol:
+            //        _macrosContext = new NoProtocolMacrosContext(number.ToString(), "test message", true, true);
+            //        _settings.SaveNoProtocolMacros(number.ToString(), "test message", true, true);
+            //        break;
 
-                case ApplicationWorkMode.ModbusClient:
-                    _macrosContext = new ModbusMacrosContext(number.ToString(), 1, 2, 3, null, 2, false);
-                    _settings.SaveModbusMacros(number.ToString(), 1, 2, 3, null, 2, false);
-                    break;
+            //    case ApplicationWorkMode.ModbusClient:
+            //        _macrosContext = new ModbusMacrosContext(number.ToString(), 1, 2, 3, null, 2, false);
+            //        _settings.SaveModbusMacros(number.ToString(), 1, 2, 3, null, 2, false);
+            //        break;
 
-                default:
-                    throw new NotImplementedException($"Поддержка режима {currentMode} не реализована.");
-            }
+            //    default:
+            //        throw new NotImplementedException($"Поддержка режима {currentMode} не реализована.");
+            //}
 
-            // На случай если режим будет изменен во время создания нового макроса
-            if (currentMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
-            {
-                BuildMacrosItem(_macrosContext.CreateContext());
-            }
+            //// На случай если режим будет изменен во время создания нового макроса
+            //if (currentMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
+            //{
+            //    BuildMacrosItem(_macrosContext.CreateContext());
+            //}
         }
 
         private void BuildMacrosItem(MacrosData itemData)

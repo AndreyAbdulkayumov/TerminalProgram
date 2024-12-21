@@ -1,4 +1,4 @@
-﻿namespace ViewModels.FloatNumber
+﻿namespace ViewModels.Helpers.FloatNumber
 {
     public enum FloatNumberFormat
     {

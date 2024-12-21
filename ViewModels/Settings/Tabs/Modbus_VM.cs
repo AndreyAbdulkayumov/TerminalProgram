@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 using System.Globalization;
-using ViewModels.FloatNumber;
+using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;
 
 namespace ViewModels.Settings.Tabs

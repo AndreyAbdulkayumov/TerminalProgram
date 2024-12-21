@@ -3,6 +3,7 @@ using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
+using ViewModels.Helpers;
 
 namespace ViewModels.NoProtocol
 {
@@ -54,17 +55,12 @@ namespace ViewModels.NoProtocol
 
         private readonly IMessageBox _messageBox;
 
-        private readonly Func<string, string> _getValidatedByteString;
-
         public NoProtocol_Mode_Normal_VM(
             IMessageBox messageBox, 
-            Func<bool, string, bool, bool, Task> sendAction, 
-            Func<string, bool, string> getMessageString, 
-            Func<string, string> getValidatedByteString
+            Func<bool, string, bool, bool, Task> sendAction
             )
         {
             _messageBox = messageBox;
-            _getValidatedByteString = getValidatedByteString;
 
             Model = ConnectedHost.Model;
 
@@ -80,7 +76,7 @@ namespace ViewModels.NoProtocol
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
-                    TX_String = getMessageString(TX_String, IsBytes);
+                    TX_String = StringByteConverter.GetMessageString(TX_String, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
                 });
         }
 
@@ -88,7 +84,7 @@ namespace ViewModels.NoProtocol
         {
             if (IsBytesSend)
             {
-                return _getValidatedByteString.Invoke(TX_String);
+                return StringByteConverter.GetValidatedByteString(TX_String);
             }
 
             return TX_String; 

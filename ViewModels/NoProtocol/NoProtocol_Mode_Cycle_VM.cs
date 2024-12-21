@@ -3,6 +3,7 @@ using Core.Models.NoProtocol;
 using ReactiveUI;
 using MessageBox_Core;
 using System.Reactive;
+using ViewModels.Helpers;
 
 namespace ViewModels.NoProtocol
 {
@@ -150,20 +151,9 @@ namespace ViewModels.NoProtocol
 
         private readonly IMessageBox _messageBox;
 
-        private readonly Func<string, byte[]> _convertToBytes;
-
-        private readonly Func<string, string> _getValidatedByteString;
-
-        public NoProtocol_Mode_Cycle_VM(
-            IMessageBox messageBox, 
-            Func<string, byte[]> convertToBytes,
-            Func<string, bool, string> getMessageString, 
-            Func<string, string> getValidatedByteString
-            )
+        public NoProtocol_Mode_Cycle_VM(IMessageBox messageBox)
         {
             _messageBox = messageBox;
-            _convertToBytes = convertToBytes;
-            _getValidatedByteString = getValidatedByteString;
 
             Model = ConnectedHost.Model;
 
@@ -187,7 +177,7 @@ namespace ViewModels.NoProtocol
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
-                    Message_Content = getMessageString(Message_Content, IsBytes);
+                    Message_Content = StringByteConverter.GetMessageString(Message_Content, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
                 });
         }
 
@@ -195,7 +185,7 @@ namespace ViewModels.NoProtocol
         {
             if (IsBytesSend)
             {
-                return _getValidatedByteString.Invoke(Message_Content);
+                return StringByteConverter.GetValidatedByteString(Message_Content);
             }
 
             return Message_Content;
@@ -238,7 +228,7 @@ namespace ViewModels.NoProtocol
 
             var info = new CycleModeParameters(
                 isByteString: _isBytesSend,
-                messageBytes: _isBytesSend ? _convertToBytes(Message_Content) : ConnectedHost.GlobalEncoding.GetBytes(Message_Content),
+                messageBytes: _isBytesSend ? StringByteConverter.StringToBytes(Message_Content) : ConnectedHost.Model.NoProtocol.HostEncoding.GetBytes(Message_Content),
                 message_CR_Enable: Message_CR,
                 message_LF_Enable: Message_LF,
                 response_Date_Enable: Response_Date,

@@ -48,8 +48,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\Macros\CreateMacrosWindow.axaml.cs">
-      <DependentUpon>CreateMacrosWindow.axaml</DependentUpon>
+    <Compile Update="Views\Macros\EditMacrosWindow.axaml.cs">
+      <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">
       <DependentUpon>LastRequest.axaml</DependentUpon>
