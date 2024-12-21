@@ -1,9 +1,10 @@
 ﻿using Core.Models.Modbus;
+using Core.Models.Settings.FileTypes;
 using ViewModels.ModbusClient;
 
 namespace ViewModels.Macros.MacrosItem
 {
-    internal class ModbusMacrosContext : IMacrosContext
+    internal class ModbusMacrosItemContext : IMacrosContext
     {
         private string _macrosName;
         private byte _slaveID;
@@ -13,15 +14,15 @@ namespace ViewModels.Macros.MacrosItem
         private int _numberOfRegisters;
         private bool _checkSum_IsEnable;
 
-        public ModbusMacrosContext(string macrosName, byte slaveID, ushort address, int functionNumber, byte[]? writeBuffer, int numberOfRegisters, bool checkSum_IsEnable)
+        public ModbusMacrosItemContext(MacrosModbusItem info)
         {
-            _macrosName = macrosName;
-            _slaveID = slaveID;
-            _address = address;
-            _functionNumber = functionNumber;
-            _writeBuffer = writeBuffer;
-            _numberOfRegisters = numberOfRegisters;
-            _checkSum_IsEnable = checkSum_IsEnable;
+            _macrosName = info.Name;
+            _slaveID = info.SlaveID;
+            _address = info.Address;
+            _functionNumber = info.FunctionNumber;
+            _writeBuffer = info.WriteBuffer;
+            _numberOfRegisters = info.NumberOfRegisters;
+            _checkSum_IsEnable = info.CheckSum_IsEnable;
         }
 
         public MacrosData CreateContext()

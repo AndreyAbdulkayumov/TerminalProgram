@@ -144,7 +144,7 @@
 					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
 							Classes="AppField">
 
-						<TabControl >
+						<TabControl>
 
 							<TabItem Header="Подключение">
 								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>

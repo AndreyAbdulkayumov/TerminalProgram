@@ -2,14 +2,168 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.WriteFields;assembly=ViewModels"
+			 xmlns:Fields="clr-namespace:TerminalProgram.Views.ModbusClient.WriteFields;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
-			 d:DesignWidth="800" d:DesignHeight="450"
+			 Width="450" Height="330"
              x:Class="TerminalProgram.Views.Macros.EditViews.ModbusMacros">
 
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+
+		<Style Selector="ComboBox.Functions">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Width" Value="410"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+	</UserControl.Styles>
+
+	<UserControl.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:MultipleCoils_VM}">
+			<Fields:MultipleCoils/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:MultipleRegisters_VM}">
+			<Fields:MultipleRegisters/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:SingleCoil_VM}">
+			<Fields:SingleCoil/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:SingleRegister_VM}">
+			<Fields:SingleRegister/>
+		</DataTemplate>
+
+	</UserControl.DataTemplates>
+	
 	<Grid>
-		
-		<TextBlock Text="Modbus"/>
-		
+
+		<ScrollViewer HorizontalScrollBarVisibility="Auto"
+					      VerticalScrollBarVisibility="Auto">
+
+			<StackPanel Orientation="Vertical"
+						Spacing="10"
+						Margin="10"
+						HorizontalAlignment="Center" VerticalAlignment="Stretch">
+
+				<Grid>
+
+					<TextBlock Text="Формат числа"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text}"
+							   Margin="0,0,180,0"
+							   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+					<RadioButton Content="hex"
+								 IsChecked="{Binding SelectedNumberFormat_Hex, Mode=TwoWay}"
+								 FontSize="16"
+								 Foreground="{DynamicResource App_Color_Text}"
+								 Margin="40,0,0,0"
+								 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+					<RadioButton Content="dec"
+								 IsChecked="{Binding SelectedNumberFormat_Dec, Mode=TwoWay}"
+								 FontSize="16"
+								 Foreground="{DynamicResource App_Color_Text}"
+								 Margin="200,0,0,0"
+								 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+				</Grid>
+
+				<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
+
+				<Grid>
+
+					<TextBlock Text="Slave ID"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text}"
+							   Margin="40,6,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text_Bright}"
+							   Margin="110,6,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+					<TextBox Classes="InputField"
+							 Width="60"
+							 Text="{Binding SlaveID, Mode=TwoWay}"
+							 Margin="160,0,0,0"
+							 HorizontalAlignment="Left" VerticalAlignment="Top"
+							 TextChanged="UppercaseTextBox_TextChanged"/>
+
+					<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
+							  Content="Контрольная сумма"
+							  FontSize="14"
+							  Foreground="{DynamicResource App_Color_Text}"
+							  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
+							  Width="170"
+							  Margin="240,0,0,0"
+							  HorizontalAlignment="Left" VerticalAlignment="Top"/>
+				</Grid>
+
+				<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
+
+				<Grid>
+
+					<TextBlock Text="Адрес"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text}"
+							   Margin="0,6,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text_Bright}"
+							   Margin="60,6,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+					<TextBox Classes="InputField"
+							 Width="70"
+							 Text="{Binding Address, Mode=TwoWay}"
+							 Margin="110,0,0,0"
+							 HorizontalAlignment="Left" VerticalAlignment="Top"
+							 TextChanged="UppercaseTextBox_TextChanged"/>
+
+					<TextBlock Text="Кол-во регистров"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text}"
+							   Margin="200,6,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+					<TextBox Classes="InputField"
+							 Width="60"
+							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
+							 Margin="355,0,0,0"
+							 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+				</Grid>
+
+				<ComboBox Classes="Functions"
+						  ItemsSource="{Binding ReadFunctions}"
+						  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
+
+				<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
+
+				<ComboBox Classes="Functions"
+						  ItemsSource="{Binding WriteFunctions}"
+						  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
+
+				<ContentControl Content="{Binding CurrentWriteFieldViewModel}"/>
+
+			</StackPanel>
+
+		</ScrollViewer>
+
 	</Grid>
 	
 </UserControl>

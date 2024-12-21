@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-			 d:DesignWidth="600" Height="160"
+			 Width="660" Height="160"
              x:Class="TerminalProgram.Views.Macros.EditViews.NoProtocolMacros">
 
 	<UserControl.Styles>
@@ -20,7 +20,7 @@
 			<RowDefinition Height="1*"/>
 			<RowDefinition Height="60"/>
 		</Grid.RowDefinitions>
-
+		
 		<TextBox x:Name="TextBox_TX" Grid.Row="0"
 				 Classes="TX_RX_Field"
 				 Margin="10"

@@ -31,15 +31,17 @@ public partial class MacrosWindow : Window
         DataContext = _viewModel;
     }
 
-    private async Task OpenCreateMacrosWindow()
+    private async Task<object?> OpenCreateMacrosWindow()
     {
+        var window = new EditMacrosWindow();
+
         await MainWindow.OpenWindowWithDimmer(async () =>
         {
-            var window = new EditMacrosWindow();
-
             await window.ShowDialog(this);
         },
         Grid_Workspace);
+
+        return window.GetData();
     }
 
     /// <summary>

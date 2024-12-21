@@ -1,10 +1,11 @@
 ﻿using Core.Models;
+using Core.Models.Settings.FileTypes;
 using ReactiveUI;
 using ViewModels.Helpers;
 
 namespace ViewModels.Macros.MacrosEdit
 {
-    public class NoProtocolMacros_VM : ReactiveObject
+    public class NoProtocolMacros_VM : ReactiveObject, IMacrosContent<MacrosNoProtocolItem>
     {
         private string _messageString = string.Empty;
 
@@ -45,6 +46,16 @@ namespace ViewModels.Macros.MacrosEdit
                 {
                     MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
                 });
+        }
+
+        public MacrosNoProtocolItem GetContent()
+        {
+            return new MacrosNoProtocolItem()
+            {
+                Message = MessageString,
+                EnableCR = CR_Enable,
+                EnableLF = LF_Enable,
+            };
         }
 
         public string GetValidatedString()

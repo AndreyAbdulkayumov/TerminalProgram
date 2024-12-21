@@ -7,11 +7,20 @@ namespace TerminalProgram.Views.Macros;
 
 public partial class EditMacrosWindow : Window
 {
+    private readonly CreateMacros_VM _viewModel;
+
     public EditMacrosWindow()
     {
         InitializeComponent();
 
-        DataContext = new CreateMacros_VM();
+        _viewModel = new CreateMacros_VM(Close);
+
+        DataContext = _viewModel;
+    }
+
+    public object? GetData()
+    {
+        return _viewModel.Saved ? _viewModel.GetMacrosContent() : null;
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

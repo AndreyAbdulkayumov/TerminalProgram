@@ -186,7 +186,7 @@ namespace Core.Models.Settings
             return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
         }
 
-        public void SaveModbusMacros(string macrosName, byte slaveID, ushort address, int functionNumber, byte[]? writeBuffer, int numberOfRegisters, bool checkSum_IsEnable)
+        public void SaveModbusMacros(MacrosModbusItem item)
         {
             try
             {
@@ -204,16 +204,7 @@ namespace Core.Models.Settings
                     macros.Items = new List<MacrosModbusItem>();
                 }
 
-                macros.Items.Add(new MacrosModbusItem()
-                {
-                    Name = macrosName,
-                    SlaveID = slaveID,
-                    Address = address,
-                    FunctionNumber = functionNumber,
-                    WriteBuffer = writeBuffer,
-                    NumberOfRegisters = numberOfRegisters,
-                    CheckSum_IsEnable = checkSum_IsEnable
-                });
+                macros.Items.Add(item);
 
                 FileIO.Save(filePath, macros);
             }
@@ -236,7 +227,7 @@ namespace Core.Models.Settings
             return FileIO.ReadOrCreateDefault(filePath, new MacrosModbus());
         }
 
-        public void SaveNoProtocolMacros(string macrosName, string message, bool enableCR, bool enableLF)
+        public void SaveNoProtocolMacros(MacrosNoProtocolItem item)
         {
             try
             {
@@ -254,13 +245,7 @@ namespace Core.Models.Settings
                     macros.Items = new List<MacrosNoProtocolItem>();
                 }
 
-                macros.Items.Add(new MacrosNoProtocolItem()
-                {
-                    Name = macrosName,
-                    Message = message,
-                    EnableCR = enableCR,
-                    EnableLF = enableLF
-                });
+                macros.Items.Add(item);
 
                 FileIO.Save(filePath, macros);
             }

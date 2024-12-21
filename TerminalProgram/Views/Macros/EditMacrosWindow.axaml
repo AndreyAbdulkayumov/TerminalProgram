@@ -7,11 +7,10 @@
 		xmlns:EditViews="clr-namespace:TerminalProgram.Views.Macros.EditViews;assembly=TerminalProgramBase"
         x:Class="TerminalProgram.Views.Macros.EditMacrosWindow"
         Title="Редактирование макроса"
-		Width="680"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
-		SizeToContent="Height"
+		SizeToContent="WidthAndHeight"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
@@ -22,7 +21,9 @@
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 
 	</Window.Styles>
 
@@ -68,29 +69,61 @@
 
 			</Grid>
 
-			<StackPanel Grid.Row="1" 
-						Orientation="Vertical" Spacing="20"
-						Margin="0,20,0,20">
+			<Border x:Name="Border_Workspace" Grid.Row="1">
 
 				<Grid>
-					
-					<TextBlock Text="Имя макроса"
-							   Margin="0,0,280,0"
-							   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-					
-					<TextBox Classes="InputField"
-							 Width="300"
-							 Margin="140,0,0,0"
-							 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="80"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="60"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
+
+					<Border Grid.Row="0" Grid.Column="0"
+							Classes="AppField">
+
+						<Button Classes="MenuToolButton"
+								ToolTip.Tip="Сохранить макрос"
+								Margin="10"
+								Command="{Binding Command_SaveMacros}">
+
+							<Icons:MaterialIcon Kind="ContentSave"/>
+
+						</Button>
+
+					</Border>
+
+					<Border Grid.Row="0" Grid.Column="1"
+							Classes="AppField">
+
+						<Grid>
+
+							<TextBlock Text="Имя макроса"
+									   Margin="10,0,0,0"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+							
+							<TextBox Classes="InputField"
+									 Text="{Binding MacrosName, Mode=TwoWay}"
+									 Margin="115,0,10,0"
+									 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+						</Grid>
+
+					</Border>
+
+					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+							Classes="AppField">
+
+						<ContentControl Content="{Binding CurrentModeViewModel}"/>
+
+					</Border>
 					
 				</Grid>
 				
-				<ContentControl Content="{Binding CurrentModeViewModel}"/>
-				
-				<Button Content="Сохранить"
-						HorizontalAlignment="Center"/>
-				
-			</StackPanel>
+			</Border>
 
 		</Grid>
 

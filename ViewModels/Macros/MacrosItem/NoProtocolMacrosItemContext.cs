@@ -1,20 +1,21 @@
-﻿using ViewModels.NoProtocol;
+﻿using Core.Models.Settings.FileTypes;
+using ViewModels.NoProtocol;
 
 namespace ViewModels.Macros.MacrosItem
 {
-    internal class NoProtocolMacrosContext : IMacrosContext
+    internal class NoProtocolMacrosItemContext : IMacrosContext
     {
-        private string _macrosName;
-        private string _message;
+        private string? _macrosName;
+        private string? _message;
         private bool _enableCR;
         private bool _enableLF;
 
-        public NoProtocolMacrosContext(string macrosName, string message, bool enableCR, bool enableLF)
+        public NoProtocolMacrosItemContext(MacrosNoProtocolItem info)
         {
-            _macrosName = macrosName;
-            _message = message;
-            _enableCR = enableCR;
-            _enableLF = enableLF;
+            _macrosName = info.Name;
+            _message = info.Message;
+            _enableCR = info.EnableCR;
+            _enableLF = info.EnableLF;
         }
 
         public MacrosData CreateContext()
