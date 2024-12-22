@@ -1,19 +1,25 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using MessageBox_AvaloniaUI;
+using System.Collections.Generic;
 using ViewModels.Macros;
 
 namespace TerminalProgram.Views.Macros;
 
 public partial class EditMacrosWindow : Window
 {
-    private readonly CreateMacros_VM _viewModel;
+    private readonly EditMacros_VM _viewModel;
 
-    public EditMacrosWindow()
+    public EditMacrosWindow(IEnumerable<string?>? existingMacrosNames)
     {
         InitializeComponent();
 
-        _viewModel = new CreateMacros_VM(Close);
+        _viewModel = new EditMacros_VM(
+            existingMacrosNames, 
+            Close, 
+            new MessageBox(this, "Макросы")
+            );
 
         DataContext = _viewModel;
     }

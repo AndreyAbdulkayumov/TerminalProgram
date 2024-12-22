@@ -1,11 +1,12 @@
 ﻿using Core.Models.Settings.FileTypes;
+using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
 using ViewModels.Macros.MacrosEdit;
 
 namespace ViewModels.Macros
 {
-    public class CreateMacros_VM : ReactiveObject
+    public class EditMacros_VM : ReactiveObject
     {
         private string _macrosName = string.Empty;
 
@@ -27,10 +28,16 @@ namespace ViewModels.Macros
 
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
 
-        public CreateMacros_VM(Action closeWindowAction)
+        public EditMacros_VM(IEnumerable<string?>? existingMacrosNames, Action closeWindowAction, IMessageBox messageBox)
         {
             Command_SaveMacros = ReactiveCommand.Create(() =>
             {
+                if (existingMacrosNames != null && existingMacrosNames.Contains(MacrosName))
+                {
+                    messageBox.Show("Макрос с таким именем уже существует.", MessageType.Warning);
+                    return;
+                }
+
                 Saved = true;
                 closeWindowAction();
             });

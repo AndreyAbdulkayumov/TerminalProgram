@@ -2,6 +2,8 @@
 using Core.Models.Settings.FileTypes;
 using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using ViewModels.ModbusClient;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.Validation;
 
@@ -27,14 +29,6 @@ namespace ViewModels.Macros.MacrosEdit
         {
             get => _checkSum_IsEnable;
             set => this.RaiseAndSetIfChanged(ref _checkSum_IsEnable, value);
-        }
-
-        private bool _checkSum_IsVisible;
-
-        public bool CheckSum_IsVisible
-        {
-            get => _checkSum_IsVisible;
-            set => this.RaiseAndSetIfChanged(ref _checkSum_IsVisible, value);
         }
 
         private bool _selectedNumberFormat_Hex;
@@ -73,16 +67,20 @@ namespace ViewModels.Macros.MacrosEdit
             }
         }
 
-        private string? _numberOfRegisters;
+        private bool _selectedFunctionType_Read;
 
-        public string? NumberOfRegisters
+        public bool SelectedFunctionType_Read
         {
-            get => _numberOfRegisters;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
-                ValidateInput(nameof(NumberOfRegisters), value);
-            }
+            get => _selectedFunctionType_Read;
+            set => this.RaiseAndSetIfChanged(ref _selectedFunctionType_Read, value);
+        }
+
+        private bool _selectedFunctionType_Write;
+
+        public bool SelectedFunctionType_Write
+        {
+            get => _selectedFunctionType_Write;
+            set => this.RaiseAndSetIfChanged(ref _selectedFunctionType_Write, value);
         }
 
         private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
@@ -99,6 +97,18 @@ namespace ViewModels.Macros.MacrosEdit
         {
             get => _selectedReadFunction;
             set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
+        }
+
+        private string? _numberOfRegisters;
+
+        public string? NumberOfRegisters
+        {
+            get => _numberOfRegisters;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
+                ValidateInput(nameof(NumberOfRegisters), value);
+            }
         }
 
         private ObservableCollection<string> _writeFunctions = new ObservableCollection<string>();
@@ -125,6 +135,12 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _currentWriteFieldViewModel, value);
         }
 
+        private NumberStyles _numberViewStyle;
+
+        private byte _selectedSlaveID = 0;
+        private ushort _selectedAddress = 0;
+        private ushort _selectedNumberOfRegisters = 1;
+
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
@@ -144,9 +160,10 @@ namespace ViewModels.Macros.MacrosEdit
             /****************************************************/
 
             CheckSum_IsEnable = true;
-            CheckSum_IsVisible = true;
 
             SelectedNumberFormat_Hex = true;
+
+            SelectedFunctionType_Read = true;
 
             foreach (ModbusReadFunction element in Function.AllReadFunctions)
             {
@@ -192,21 +209,172 @@ namespace ViewModels.Macros.MacrosEdit
                         CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
                     }
                 });
+
+            this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
+                .Subscribe(values =>
+                {
+                    if (values.Item1 == true && values.Item2 == true)
+                    {
+                        return;
+                    }
+
+                    // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
+                    if (values.Item1)
+                    {
+                        SelectNumberFormat_Hex();
+                    }
+
+                    // Выбран десятичный формат числа в полях Адрес и Данные
+                    else if (values.Item2)
+                    {
+                        SelectNumberFormat_Dec();
+                    }
+                });
         }
 
         public MacrosModbusItem GetContent()
         {
-            return new MacrosModbusItem();
+            var selectedFunction = SelectedFunctionType_Read ? SelectedReadFunction : SelectedWriteFunction;
+
+            int functionNumber = Function.AllFunctions.Single(x => x.DisplayedName == selectedFunction).Number;
+
+            return new MacrosModbusItem()
+            {
+                SlaveID = _selectedSlaveID,
+                Address = _selectedAddress,
+                FunctionNumber = functionNumber,
+                WriteBuffer = SelectedFunctionType_Write ? CurrentWriteFieldViewModel?.GetData().Data : null,
+                NumberOfRegisters = _selectedNumberOfRegisters,
+                CheckSum_IsEnable = CheckSum_IsEnable,
+            };
+        }
+
+        private void SelectNumberFormat_Hex()
+        {
+            NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
+            _numberViewStyle = NumberStyles.HexNumber;
+
+            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            {
+                SlaveID = _selectedSlaveID.ToString("X");
+            }
+
+            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            {
+                Address = _selectedAddress.ToString("X");
+            }
+
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
+
+            ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.HexNumber);
+            ChangeNumberStyleInErrors(nameof(Address), NumberStyles.HexNumber);
+        }
+
+        private void SelectNumberFormat_Dec()
+        {
+            NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
+            _numberViewStyle = NumberStyles.Number;
+
+            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            {
+                SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
+            }
+
+            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            {
+                Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
+            }
+
+            ValidateInput(nameof(SlaveID), SlaveID);
+            ValidateInput(nameof(Address), Address);
+
+            ChangeNumberStyleInErrors(nameof(SlaveID), NumberStyles.Number);
+            ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
         public string GetFieldViewName(string fieldName)
         {
-            throw new NotImplementedException();
+            switch (fieldName)
+            {
+                case nameof(SlaveID):
+                    return "Slave ID";
+
+                case nameof(Address):
+                    return "Адрес";
+
+                case nameof(NumberOfRegisters):
+                    return "Кол-во регистров";
+
+                default:
+                    return fieldName;
+            }
         }
 
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+
+            switch (fieldName)
+            {
+                case nameof(SlaveID):
+                    return Check_SlaveID(value);
+
+                case nameof(Address):
+                    return Check_Address(value);
+
+                case nameof(NumberOfRegisters):
+                    return Check_NumberOfRegisters(value);
+            }
+
+            return null;
+        }
+
+        private ValidateMessage? Check_SlaveID(string value)
+        {
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
+            {
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        return AllErrorMessages[DecError_Byte];
+
+                    case NumberStyles.HexNumber:
+                        return AllErrorMessages[HexError_Byte];
+                }
+            }
+
+            return null;
+        }
+
+        private ValidateMessage? Check_Address(string value)
+        {
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedAddress))
+            {
+                switch (_numberViewStyle)
+                {
+                    case NumberStyles.Number:
+                        return AllErrorMessages[DecError_UInt16];
+
+                    case NumberStyles.HexNumber:
+                        return AllErrorMessages[HexError_UInt16];
+                }
+            }
+
+            return null;
+        }
+
+        private ValidateMessage? Check_NumberOfRegisters(string value)
+        {
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
+            {
+                return AllErrorMessages[DecError_UInt16];
+            }
+
+            return null;
         }
     }
 }

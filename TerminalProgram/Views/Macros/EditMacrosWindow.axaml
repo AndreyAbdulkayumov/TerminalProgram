@@ -102,13 +102,14 @@
 
 						<Grid>
 
-							<TextBlock Text="Имя макроса"
+							<TextBlock Text="Имя"
+									   FontSize="16"
 									   Margin="10,0,0,0"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 							
 							<TextBox Classes="InputField"
 									 Text="{Binding MacrosName, Mode=TwoWay}"
-									 Margin="115,0,10,0"
+									 Margin="55,0,10,0"
 									 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
 						</Grid>
 

@@ -5,7 +5,7 @@
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:TerminalProgram.Views.ModbusClient.WriteFields;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
-			 Width="450" Height="330"
+			 Width="450" Height="340"
              x:Class="TerminalProgram.Views.Macros.EditViews.ModbusMacros">
 
 	<UserControl.Styles>
@@ -17,7 +17,7 @@
 
 		<Style Selector="ComboBox.Functions">
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Width" Value="410"/>
+			<Setter Property="Width" Value="415"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
 		</Style>
@@ -105,7 +105,6 @@
 							  Content="Контрольная сумма"
 							  FontSize="14"
 							  Foreground="{DynamicResource App_Color_Text}"
-							  IsVisible="{Binding CheckSum_IsVisible, Mode=OneWay}"
 							  Width="170"
 							  Margin="240,0,0,0"
 							  HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -115,7 +114,7 @@
 
 				<Grid>
 
-					<TextBlock Text="Адрес"
+					<TextBlock Text="Начальный адрес"
 							   FontSize="16"
 							   Foreground="{DynamicResource App_Color_Text}"
 							   Margin="0,6,0,0"
@@ -124,41 +123,64 @@
 					<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
 							   FontSize="16"
 							   Foreground="{DynamicResource App_Color_Text_Bright}"
-							   Margin="60,6,0,0"
+							   Margin="150,6,0,0"
 							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 					<TextBox Classes="InputField"
 							 Width="70"
 							 Text="{Binding Address, Mode=TwoWay}"
-							 Margin="110,0,0,0"
+							 Margin="200,0,0,0"
 							 HorizontalAlignment="Left" VerticalAlignment="Top"
 							 TextChanged="UppercaseTextBox_TextChanged"/>
-
-					<TextBlock Text="Кол-во регистров"
-							   FontSize="16"
-							   Foreground="{DynamicResource App_Color_Text}"
-							   Margin="200,6,0,0"
-							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
-
-					<TextBox Classes="InputField"
-							 Width="60"
-							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
-							 Margin="355,0,0,0"
-							 HorizontalAlignment="Left" VerticalAlignment="Top"/>
-
+					
 				</Grid>
+
+				<StackPanel Orientation="Horizontal" Spacing="30"
+							Margin="10"
+							HorizontalAlignment="Center">
+
+					<RadioButton Content="Чтение"
+								 IsChecked="{Binding SelectedFunctionType_Read, Mode=TwoWay}"
+								 FontSize="16"
+								 Foreground="{DynamicResource App_Color_Text}"/>
+
+					<RadioButton Content="Запись"
+								 IsChecked="{Binding SelectedFunctionType_Write, Mode=TwoWay}"
+								 FontSize="16"
+								 Foreground="{DynamicResource App_Color_Text}"/>
+
+				</StackPanel>
+				
 
 				<ComboBox Classes="Functions"
 						  ItemsSource="{Binding ReadFunctions}"
-						  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"/>
+						  SelectedItem="{Binding SelectedReadFunction, Mode=TwoWay}"
+						  IsVisible="{Binding SelectedFunctionType_Read, Mode=OneWay}"/>
+				
+				<StackPanel Orientation="Horizontal" Spacing="15"
+							IsVisible="{Binding SelectedFunctionType_Read, Mode=OneWay}">
+					
+					<TextBlock Text="Кол-во регистров"
+							   FontSize="16"
+							   Foreground="{DynamicResource App_Color_Text}"
+							   Margin="0,6,0,0"
+							   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-				<Separator Background="{DynamicResource Group_Color_BorderBrush}" />
-
+					<TextBox Classes="InputField"
+							 Width="70"
+							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
+							 HorizontalAlignment="Left" VerticalAlignment="Top"/>
+					
+				</StackPanel>							
+				
+				
 				<ComboBox Classes="Functions"
 						  ItemsSource="{Binding WriteFunctions}"
-						  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"/>
+						  SelectedItem="{Binding SelectedWriteFunction, Mode=TwoWay}"
+						  IsVisible="{Binding SelectedFunctionType_Write, Mode=OneWay}"/>
 
-				<ContentControl Content="{Binding CurrentWriteFieldViewModel}"/>
+				<ContentControl Content="{Binding CurrentWriteFieldViewModel}"
+								IsVisible="{Binding SelectedFunctionType_Write, Mode=OneWay}"/>
 
 			</StackPanel>
 

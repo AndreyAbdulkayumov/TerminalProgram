@@ -1,6 +1,6 @@
 ﻿namespace Core.Models.Settings.FileTypes
 {
-    public class MacrosModbusItem
+    public class MacrosModbusItem : IMacros
     {
         public string? Name { get; set; }
         public byte SlaveID { get; set; }

@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ViewModels.Macros;
 
@@ -31,9 +32,9 @@ public partial class MacrosWindow : Window
         DataContext = _viewModel;
     }
 
-    private async Task<object?> OpenCreateMacrosWindow()
+    private async Task<object?> OpenCreateMacrosWindow(IEnumerable<string?>? existingMacrosNames)
     {
-        var window = new EditMacrosWindow();
+        var window = new EditMacrosWindow(existingMacrosNames);
 
         await MainWindow.OpenWindowWithDimmer(async () =>
         {

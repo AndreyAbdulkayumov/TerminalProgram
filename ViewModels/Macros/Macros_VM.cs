@@ -31,12 +31,14 @@ namespace ViewModels.Macros
 
         public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; set; }
 
+        private IEnumerable<IMacros>? _allMacros;
+
         private readonly IMessageBox _messageBox;
-        private readonly Func<Task<object?>> _openCreateMacrosWindow;
+        private readonly Func<IEnumerable<string?>?, Task<object?>> _openCreateMacrosWindow;
 
         private readonly Model_Settings _settings;
 
-        public Macros_VM(IMessageBox messageBox, Func<Task<object?>> openCreateMacrosWindow)
+        public Macros_VM(IMessageBox messageBox, Func<IEnumerable<string?>?, Task<object?>> openCreateMacrosWindow)
         {
             _messageBox = messageBox;
             _openCreateMacrosWindow = openCreateMacrosWindow;
@@ -82,15 +84,16 @@ namespace ViewModels.Macros
         private void UpdateWorkspace(ApplicationWorkMode mode)
         {
             Items.Clear();
+            _allMacros = null;
 
             switch (mode)
             {
                 case ApplicationWorkMode.NoProtocol:
-                    BuildNoProtocolMacros();
+                    _allMacros = BuildNoProtocolMacros();
                     break;
 
                 case ApplicationWorkMode.ModbusClient:
-                    BuildModbusMacros();
+                    _allMacros = BuildModbusMacros();
                     break;
 
                 default:
@@ -98,45 +101,51 @@ namespace ViewModels.Macros
             }
         }
 
-        private void BuildNoProtocolMacros()
+        private IEnumerable<MacrosNoProtocolItem>? BuildNoProtocolMacros()
         {
-            var noProtocolMacros = _settings.ReadAllNoProtocolMacros();
+            var macros = _settings.ReadAllNoProtocolMacros();
 
-            if (noProtocolMacros.Items == null || noProtocolMacros.Items.Count == 0)
+            if (macros.Items == null || macros.Items.Count == 0)
             {
-                return;
+                return null;
             }
 
-            foreach (var element in noProtocolMacros.Items)
+            foreach (var element in macros.Items)
             {
                 IMacrosContext _macrosContext = new NoProtocolMacrosItemContext(element);
 
                 BuildMacrosItem(_macrosContext.CreateContext());
             }
+
+            return macros.Items;
         }
 
-        private void BuildModbusMacros()
+        private IEnumerable<MacrosModbusItem>? BuildModbusMacros()
         {
-            var modbusMacros = _settings.ReadAllModbusMacros();
+            var macros = _settings.ReadAllModbusMacros();
 
-            if (modbusMacros.Items == null || modbusMacros.Items.Count == 0)
+            if (macros.Items == null || macros.Items.Count == 0)
             {
-                return;
+                return null;
             }
 
-            foreach (var element in modbusMacros.Items)
+            foreach (var element in macros.Items)
             {
                 IMacrosContext _macrosContext = new ModbusMacrosItemContext(element);
 
                 BuildMacrosItem(_macrosContext.CreateContext());
             }
+
+            return macros.Items;
         }
 
         public async Task CreateMacros()
         {
             var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
-            
-            var result = await _openCreateMacrosWindow();
+
+            IEnumerable<string?>? allMacrosNames = _allMacros?.Select(e => e.Name);
+
+            var result = await _openCreateMacrosWindow(allMacrosNames);
 
             if (result == null)
             {
