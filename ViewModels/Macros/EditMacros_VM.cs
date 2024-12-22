@@ -28,14 +28,35 @@ namespace ViewModels.Macros
 
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
 
+        private readonly IMessageBox _messageBox;
+
         public EditMacros_VM(IEnumerable<string?>? existingMacrosNames, Action closeWindowAction, IMessageBox messageBox)
         {
+            _messageBox = messageBox;
+
             Command_SaveMacros = ReactiveCommand.Create(() =>
             {
+                if (string.IsNullOrWhiteSpace(MacrosName))
+                {
+                    messageBox.Show("Задайте имя макроса.", MessageType.Warning);
+                    return;
+                }
+
                 if (existingMacrosNames != null && existingMacrosNames.Contains(MacrosName))
                 {
                     messageBox.Show("Макрос с таким именем уже существует.", MessageType.Warning);
                     return;
+                }
+
+                if (CurrentModeViewModel is IMacrosValidation validatedMacros)
+                {
+                    string? message = validatedMacros.GetValidationMessage();
+
+                    if (!string.IsNullOrEmpty(message))
+                    {
+                        messageBox.Show(message, MessageType.Warning);
+                        return;
+                    }                    
                 }
 
                 Saved = true;
@@ -81,7 +102,7 @@ namespace ViewModels.Macros
                     return new NoProtocolMacros_VM();
 
                 case ApplicationWorkMode.ModbusClient:
-                    return new ModbusMacros_VM();
+                    return new ModbusMacros_VM(_messageBox);
 
                 default:
                     throw new NotImplementedException();

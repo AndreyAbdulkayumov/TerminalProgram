@@ -1,15 +1,17 @@
 ﻿using Core.Models.Modbus;
 using Core.Models.Settings.FileTypes;
+using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Text;
 using ViewModels.ModbusClient;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.Validation;
 
 namespace ViewModels.Macros.MacrosEdit
 {
-    public class ModbusMacros_VM : ValidatedDateInput, IValidationFieldInfo, IMacrosContent<MacrosModbusItem>
+    public class ModbusMacros_VM : ValidatedDateInput, IValidationFieldInfo, IMacrosContent<MacrosModbusItem>, IMacrosValidation
     {
         private string? _slaveID;
 
@@ -146,8 +148,12 @@ namespace ViewModels.Macros.MacrosEdit
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        public ModbusMacros_VM()
+        private readonly IMessageBox _messageBox;
+
+        public ModbusMacros_VM(IMessageBox messageBox)
         {
+            _messageBox = messageBox;
+
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
             WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();
             WriteField_SingleCoil_VM = new SingleCoil_VM();
@@ -247,6 +253,71 @@ namespace ViewModels.Macros.MacrosEdit
                 NumberOfRegisters = _selectedNumberOfRegisters,
                 CheckSum_IsEnable = CheckSum_IsEnable,
             };
+        }
+
+        public string? GetValidationMessage()
+        {
+            return SelectedFunctionType_Write ? CheckWriteFields() : CheckReadFields();
+        }
+
+        private string? CheckWriteFields()
+        {
+            StringBuilder message = new StringBuilder();
+
+            // Проверка полей в основном контроле
+
+            if (HasErrors)
+            {
+                foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+                {
+                    if (element.Key == nameof(NumberOfRegisters))
+                    {
+                        continue;
+                    }
+
+                    message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+                }
+            }
+
+            // Проверка полей в текущем контроле записи
+
+            if (CurrentWriteFieldViewModel != null && CurrentWriteFieldViewModel.HasValidationErrors)
+            {
+                message.AppendLine(CurrentWriteFieldViewModel.ValidationMessage);
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
+        }
+
+        private string? CheckReadFields()
+        {
+            if (!HasErrors)
+            {
+                return null;
+            }
+
+            StringBuilder message = new StringBuilder();
+
+            // Проверка полей в основном контроле
+
+            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            {
+                message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, "Ошибки валидации\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
         }
 
         private void SelectNumberFormat_Hex()

@@ -363,6 +363,11 @@ namespace ViewModels.ModbusClient
             {
                 foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
                 {
+                    if (element.Key == nameof(NumberOfRegisters))
+                    {
+                        continue;
+                    }
+
                     message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
                 }
             }
