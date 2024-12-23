@@ -178,9 +178,28 @@ namespace ViewModels.Macros
             }
         }
 
+        private void DeleteMacros(string name)
+        {
+            switch (CommonUI_VM.CurrentApplicationWorkMode)
+            {
+                case ApplicationWorkMode.NoProtocol:
+                    _settings.DeleteNoProtocolMacros(name);
+                    break;
+
+                case ApplicationWorkMode.ModbusClient:
+                    _settings.DeleteModbusMacros(name);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            UpdateWorkspace(CommonUI_VM.CurrentApplicationWorkMode);
+        }
+
         private void BuildMacrosItem(MacrosData itemData)
         {
-            Items.Add(new MacrosViewItem(itemData.Name, itemData.Action, _messageBox));
+            Items.Add(new MacrosViewItem(itemData.Name, itemData.Action, DeleteMacros, _messageBox));
         }
     }
 }

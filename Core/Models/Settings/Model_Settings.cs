@@ -186,6 +186,11 @@ namespace Core.Models.Settings
             return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
         }
 
+        /// <summary>
+        /// Сохранение макроса режима "Modbus"
+        /// </summary>
+        /// <param name="item"></param>
+        /// <exception cref="Exception"></exception>
         public void SaveModbusMacros(MacrosModbusItem item)
         {
             try
@@ -215,6 +220,44 @@ namespace Core.Models.Settings
             }
         }
 
+        /// <summary>
+        /// Удаление макроса режима "Modbus"
+        /// </summary>
+        /// <param name="name"></param>
+        /// <exception cref="Exception"></exception>
+        public void DeleteModbusMacros(string name)
+        {
+            try
+            {
+                string filePath = DirectoryManager.FindOrCreateFile(
+                    DirectoryManager.Macros_Directory,
+                    FileName_Macros_Modbus,
+                    FileExtension,
+                    new MacrosModbus()
+                    );
+
+                var macros = FileIO.ReadOrCreateDefault(filePath, new MacrosModbus());
+
+                if (macros.Items == null)
+                {
+                    macros.Items = new List<MacrosModbusItem>();
+                }
+
+                macros.Items = macros.Items.Where(item => item.Name != name).ToList();
+
+                FileIO.Save(filePath, macros);
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception($"Ошибка удаления макроса \"{name}\".\n\n" + error.Message);
+            }
+        }
+
+        /// <summary>
+        /// Получение всех доступных макросов для режима "Modbus"
+        /// </summary>
+        /// <returns></returns>
         public MacrosModbus ReadAllModbusMacros()
         {
             string filePath = DirectoryManager.FindOrCreateFile(
@@ -227,6 +270,11 @@ namespace Core.Models.Settings
             return FileIO.ReadOrCreateDefault(filePath, new MacrosModbus());
         }
 
+        /// <summary>
+        /// Сохранение макроса режима "Без протокола"
+        /// </summary>
+        /// <param name="item"></param>
+        /// <exception cref="Exception"></exception>
         public void SaveNoProtocolMacros(MacrosNoProtocolItem item)
         {
             try
@@ -256,6 +304,44 @@ namespace Core.Models.Settings
             }
         }
 
+        /// <summary>
+        /// Удаление макроса режима "Без протокола"
+        /// </summary>
+        /// <param name="name"></param>
+        /// <exception cref="Exception"></exception>
+        public void DeleteNoProtocolMacros(string name)
+        {
+            try
+            {
+                string filePath = DirectoryManager.FindOrCreateFile(
+                    DirectoryManager.Macros_Directory,
+                    FileName_Macros_NoProtocol,
+                    FileExtension,
+                    new MacrosNoProtocol()
+                    );
+
+                var macros = FileIO.ReadOrCreateDefault(filePath, new MacrosNoProtocol());
+
+                if (macros.Items == null)
+                {
+                    macros.Items = new List<MacrosNoProtocolItem>();
+                }
+
+                macros.Items = macros.Items.Where(item => item.Name != name).ToList();
+
+                FileIO.Save(filePath, macros);
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception($"Ошибка удаления макроса \"{name}\".\n\n" + error.Message);
+            }
+        }
+
+        /// <summary>
+        ///  Получение всех доступных макросов для режима "Без протокола"
+        /// </summary>
+        /// <returns></returns>
         public MacrosNoProtocol ReadAllNoProtocolMacros()
         {
             string filePath = DirectoryManager.FindOrCreateFile(

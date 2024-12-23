@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:TerminalProgram.Views.Macros;assembly=TerminalProgramBase"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
 		Width="1000" Height="600"
@@ -127,11 +128,8 @@
 
 								<DataTemplate>
 
-									<Button Content="{Binding Title}"
-											Command="{Binding Command_ItemAction}"
-											Height="70" 
-											MinWidth="70"
-											Margin="10"/>
+									<local:MacrosItem Height="80" MinWidth="70"
+													  Margin="10"/>
 									
 								</DataTemplate>
 								
