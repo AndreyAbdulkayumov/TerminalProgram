@@ -21,7 +21,8 @@
 					BorderThickness="1"
 					Cursor="Hand"
 					ToolTip.Tip="Редактировать"
-					HorizontalAlignment="Left" VerticalAlignment="Top">
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					Command="{Binding Command_EditMacros}">
 
 				<Icons:MaterialIcon Kind="Cog"/>
 

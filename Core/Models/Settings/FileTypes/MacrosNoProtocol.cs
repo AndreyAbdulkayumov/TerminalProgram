@@ -1,6 +1,6 @@
 ﻿namespace Core.Models.Settings.FileTypes
 {
-    public class MacrosNoProtocolItem : IMacros
+    public class MacrosNoProtocolItem : IMacrosItem
     {
         public string? Name { get; set; }
         public string? Message { get; set; }

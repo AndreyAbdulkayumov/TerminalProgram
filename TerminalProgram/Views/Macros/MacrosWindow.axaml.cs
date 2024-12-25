@@ -6,6 +6,7 @@ using MessageBox_Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ViewModels.Macros;
+using ViewModels.Macros.DataTypes;
 
 namespace TerminalProgram.Views.Macros;
 
@@ -25,16 +26,16 @@ public partial class MacrosWindow : Window
 
         _messageBox = new MessageBox(this, "Макросы");
 
-        _viewModel = new Macros_VM(_messageBox, OpenCreateMacrosWindow);
+        _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow);
 
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
 
         DataContext = _viewModel;
     }
 
-    private async Task<object?> OpenCreateMacrosWindow(IEnumerable<string?>? existingMacrosNames)
+    private async Task<object?> OpenEditMacrosWindow(EditMacrosParameters parameters)
     {
-        var window = new EditMacrosWindow(existingMacrosNames);
+        var window = new EditMacrosWindow(parameters);
 
         await MainWindow.OpenWindowWithDimmer(async () =>
         {

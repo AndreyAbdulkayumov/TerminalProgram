@@ -1,10 +1,10 @@
 ﻿using Core.Models.Modbus;
 using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
+using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.Validation;
@@ -148,11 +148,16 @@ namespace ViewModels.Macros.MacrosEdit
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        private readonly IMessageBox _messageBox;
-
-        public ModbusMacros_VM(IMessageBox messageBox)
+        public ModbusMacros_VM(object? initData)
         {
-            _messageBox = messageBox;
+            if (initData is MacrosModbusItem data)
+            {
+                // По умолчанию формат числа hex
+                SlaveID = data.SlaveID.ToString();
+                Address = data.Address.ToString();
+                NumberOfRegisters = data.NumberOfRegisters.ToString();
+
+            }
 
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
             WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();

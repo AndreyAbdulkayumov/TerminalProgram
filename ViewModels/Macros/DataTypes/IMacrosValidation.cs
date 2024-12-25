@@ -1,4 +1,4 @@
-﻿namespace ViewModels.Macros.MacrosEdit
+﻿namespace ViewModels.Macros.DataTypes
 {
     public interface IMacrosValidation
     {

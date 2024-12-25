@@ -19,7 +19,7 @@ public partial class MacrosItem : UserControl
 
     private async void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
-        var viewModel = DataContext as MacrosViewItem;
+        var viewModel = DataContext as MacrosViewItem_VM;
 
         if (viewModel != null)
         {

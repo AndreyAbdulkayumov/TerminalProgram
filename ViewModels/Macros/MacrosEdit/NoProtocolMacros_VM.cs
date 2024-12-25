@@ -2,6 +2,7 @@
 using Core.Models.Settings.FileTypes;
 using ReactiveUI;
 using ViewModels.Helpers;
+using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit
 {
@@ -39,8 +40,15 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _isBytesSend, value);
         }
 
-        public NoProtocolMacros_VM()
+        public NoProtocolMacros_VM(object? initData)
         {
+            if (initData is MacrosNoProtocolItem data)
+            {
+                MessageString = data.Message;
+                CR_Enable = data.EnableCR;
+                LF_Enable = data.EnableLF;
+            }
+
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
