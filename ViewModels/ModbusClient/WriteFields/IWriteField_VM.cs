@@ -1,22 +1,11 @@
-﻿using ViewModels.Validation;
+﻿using ViewModels.ModbusClient.DataTypes;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
-    public class WriteData
-    {
-        public readonly byte[] Data;
-        public readonly int NumberOfRegisters;
-
-        public WriteData(byte[] data, int numberOfRegisters)
-        {
-            Data = data;
-            NumberOfRegisters = numberOfRegisters;
-        }
-    }
-
     public interface IWriteField_VM
     {
         WriteData GetData();
+        void SetData(WriteData data);
         bool HasValidationErrors { get; }
         string? ValidationMessage { get; }
     }

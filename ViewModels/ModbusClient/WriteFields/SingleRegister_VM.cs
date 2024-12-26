@@ -1,6 +1,7 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
@@ -57,6 +58,11 @@ namespace ViewModels.ModbusClient.WriteFields
             byte[] data = BitConverter.GetBytes(_data);
 
             return new WriteData(data, 1);
+        }
+
+        public void SetData(WriteData data)
+        {
+            ViewData = ConvertNumberToString(BitConverter.ToUInt16(data.Data), DataFormat);
         }
 
         public override void SetDataFormat(string? format)

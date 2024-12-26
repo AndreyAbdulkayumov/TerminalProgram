@@ -28,10 +28,10 @@ namespace ViewModels.Macros
             _messageBox = messageBox;
 
             Command_EditMacros = ReactiveCommand.CreateFromTask(() => editMacros(Title));
-            Command_EditMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования макроса \"{Title}\"", MessageType.Error));
+            Command_EditMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования макроса \"{Title}\".\n\n{error.Message}", MessageType.Error));
 
             Command_MacrosDelete = ReactiveCommand.CreateFromTask(() => DeleteMacros(deleteMacrosAction));
-            Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления макроса \"{Title}\"", MessageType.Error));
+            Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления макроса \"{Title}\".\n\n{error.Message}", MessageType.Error));
         }
 
         public async Task MacrosAction()

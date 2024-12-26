@@ -45,7 +45,7 @@ namespace ViewModels.Macros
                     return;
                 }
 
-                if (parameters.ExistingMacrosNames != null && parameters.ExistingMacrosNames.Contains(MacrosName))
+                if (parameters.InitData == null && parameters.ExistingMacrosNames != null && parameters.ExistingMacrosNames.Contains(MacrosName))
                 {
                     messageBox.Show("Макрос с таким именем уже существует.", MessageType.Warning);
                     return;

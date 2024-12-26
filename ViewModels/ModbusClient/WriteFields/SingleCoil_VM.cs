@@ -1,5 +1,5 @@
 ﻿using ReactiveUI;
-using ViewModels.Validation;
+using ViewModels.ModbusClient.DataTypes;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -32,6 +32,8 @@ namespace ViewModels.ModbusClient.WriteFields
         private const byte LogicZero_Value_High = 0;
         private const byte LogicZero_Value_Low = 0;
 
+        private readonly byte[] LogicOneData = { LogicOne_Value_Low, LogicOne_Value_High };
+        private readonly byte[] LogicZeroData = { LogicZero_Value_Low, LogicZero_Value_High };
 
         public SingleCoil_VM()
         {
@@ -40,11 +42,24 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
-            byte[] data = Logic_One ? 
-                [LogicOne_Value_Low, LogicOne_Value_High] : 
-                [LogicZero_Value_Low, LogicZero_Value_High];
+            byte[] data = Logic_One ?
+                LogicOneData :
+                LogicZeroData;
 
             return new WriteData(data, 1);
+        }
+
+        public void SetData(WriteData data)
+        {
+            if (data.Data.SequenceEqual(LogicOneData))
+            {
+                Logic_Zero = false;
+                Logic_One = true;
+                return;
+            }
+
+            Logic_Zero = true;
+            Logic_One = false;
         }
     }
 }

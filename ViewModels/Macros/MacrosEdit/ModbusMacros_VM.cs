@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text;
 using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.Validation;
 
@@ -150,45 +151,12 @@ namespace ViewModels.Macros.MacrosEdit
 
         public ModbusMacros_VM(object? initData)
         {
-            if (initData is MacrosModbusItem data)
-            {
-                // По умолчанию формат числа hex
-                SlaveID = data.SlaveID.ToString();
-                Address = data.Address.ToString();
-                NumberOfRegisters = data.NumberOfRegisters.ToString();
-
-            }
-
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
             WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM();
 
-            /****************************************************/
-            //
-            // Первоначальная настройка UI
-            //
-            /****************************************************/
-
-            CheckSum_IsEnable = true;
-
-            SelectedNumberFormat_Hex = true;
-
-            SelectedFunctionType_Read = true;
-
-            foreach (ModbusReadFunction element in Function.AllReadFunctions)
-            {
-                ReadFunctions.Add(element.DisplayedName);
-            }
-
-            SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
-
-            foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
-            {
-                WriteFunctions.Add(element.DisplayedName);
-            }
-
-            SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
+            InitUI(initData);
 
             /****************************************************/
             //
@@ -198,28 +166,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             this.WhenAnyValue(x => x.SelectedWriteFunction)
                 .WhereNotNull()
-                .Subscribe(x =>
-                {
-                    if (x == Function.ForceMultipleCoils.DisplayedName)
-                    {
-                        CurrentWriteFieldViewModel = WriteField_MultipleCoils_VM;
-                    }
-
-                    else if (x == Function.PresetMultipleRegisters.DisplayedName)
-                    {
-                        CurrentWriteFieldViewModel = WriteField_MultipleRegisters_VM;
-                    }
-
-                    else if (x == Function.ForceSingleCoil.DisplayedName)
-                    {
-                        CurrentWriteFieldViewModel = WriteField_SingleCoil_VM;
-                    }
-
-                    else if (x == Function.PresetSingleRegister.DisplayedName)
-                    {
-                        CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
-                    }
-                });
+                .Subscribe(SetWriteFieldVM);
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -243,19 +190,117 @@ namespace ViewModels.Macros.MacrosEdit
                 });
         }
 
+        private void InitUI(object? initData)
+        {
+            SelectedNumberFormat_Hex = true;
+
+            foreach (ModbusReadFunction element in Function.AllReadFunctions)
+            {
+                ReadFunctions.Add(element.DisplayedName);
+            }
+
+            foreach (ModbusWriteFunction element in Function.AllWriteFunctions)
+            {
+                WriteFunctions.Add(element.DisplayedName);
+            }
+
+            if (initData is MacrosModbusItem data)
+            {
+                // По умолчанию формат числа hex
+
+                SlaveID = data.SlaveID.ToString();
+                CheckSum_IsEnable = data.CheckSum_IsEnable;
+                Address = data.Address.ToString();                
+
+                var selectedFunction = Function.AllFunctions.First(func => func.Number == data.FunctionNumber);
+
+                if (selectedFunction is ModbusReadFunction)
+                {
+                    SelectedFunctionType_Read = true;
+
+                    SelectedReadFunction = selectedFunction.DisplayedName;
+                    SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
+
+                    NumberOfRegisters = data.NumberOfRegisters.ToString();
+                }
+
+                else
+                {
+                    SelectedFunctionType_Write = true;
+
+                    SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
+                    SelectedWriteFunction = selectedFunction.DisplayedName;
+
+                    SetWriteFieldVM(selectedFunction.DisplayedName);
+
+                    CurrentWriteFieldViewModel?.SetData(
+                        new WriteData(
+                            data.WriteBuffer ?? Array.Empty<byte>(), 
+                            data.NumberOfRegisters
+                            ));
+                }
+
+                return;
+            }
+
+            CheckSum_IsEnable = true;
+
+            SelectedFunctionType_Read = true;
+
+            SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
+            SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
+        }
+
+        private void SetWriteFieldVM(string displayedName)
+        {
+            if (displayedName == Function.ForceMultipleCoils.DisplayedName)
+            {
+                CurrentWriteFieldViewModel = WriteField_MultipleCoils_VM;
+                return;
+            }
+
+            if (displayedName == Function.PresetMultipleRegisters.DisplayedName)
+            {
+                CurrentWriteFieldViewModel = WriteField_MultipleRegisters_VM;
+                return;
+            }
+
+            if (displayedName == Function.ForceSingleCoil.DisplayedName)
+            {
+                CurrentWriteFieldViewModel = WriteField_SingleCoil_VM;
+                return;
+            }
+
+            if (displayedName == Function.PresetSingleRegister.DisplayedName)
+            {
+                CurrentWriteFieldViewModel = WriteField_SingleRegister_VM;
+                return;
+            }
+
+            throw new Exception($"Выбрана неизвестная функция записи \"{displayedName}\"");
+        }
+
         public MacrosModbusItem GetContent()
         {
             var selectedFunction = SelectedFunctionType_Read ? SelectedReadFunction : SelectedWriteFunction;
 
             int functionNumber = Function.AllFunctions.Single(x => x.DisplayedName == selectedFunction).Number;
 
+            WriteData? writeData = CurrentWriteFieldViewModel?.GetData();
+
             return new MacrosModbusItem()
             {
                 SlaveID = _selectedSlaveID,
                 Address = _selectedAddress,
                 FunctionNumber = functionNumber,
-                WriteBuffer = SelectedFunctionType_Write ? CurrentWriteFieldViewModel?.GetData().Data : null,
-                NumberOfRegisters = _selectedNumberOfRegisters,
+                WriteBuffer = 
+                    SelectedFunctionType_Write ? 
+                        writeData?.Data : 
+                        null,
+                NumberOfRegisters = 
+                    SelectedFunctionType_Write ? 
+                        writeData?.NumberOfRegisters ?? 0 : 
+                        _selectedNumberOfRegisters,
                 CheckSum_IsEnable = CheckSum_IsEnable,
             };
         }

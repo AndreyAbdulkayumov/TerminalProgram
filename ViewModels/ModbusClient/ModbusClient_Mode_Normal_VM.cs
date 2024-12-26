@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.Validation;
 

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 using ViewModels.Helpers.FloatNumber;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;
 
 namespace ViewModels.ModbusClient.WriteFields
@@ -87,6 +88,13 @@ namespace ViewModels.ModbusClient.WriteFields
             .ToArray();
 
             return new WriteData(data, registerCounter);
+        }
+
+        public void SetData(WriteData data)
+        {
+            WriteDataCollection.Clear();
+
+
         }
 
         private void Item_RequestToUpdateAddresses(object? sender, RequestToUpdateAddressesArgs e)

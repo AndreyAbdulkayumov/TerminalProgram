@@ -2,6 +2,7 @@
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;
 
 namespace ViewModels.ModbusClient.WriteFields
@@ -27,11 +28,17 @@ namespace ViewModels.ModbusClient.WriteFields
         {
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
-                Items.Add(new MultipleCoils_Item(
-                    startAddressAddition: Items.Count,
-                    removeItemHandler: RemoveWriteDataItem
-                    ));
+                AddCoilItem(null);
             });
+        }
+
+        private void AddCoilItem(bool? value)
+        {
+            Items.Add(new MultipleCoils_Item(
+                startAddressAddition: Items.Count,
+                removeItemHandler: RemoveWriteDataItem,
+                isLogicOne: value
+                ));
         }
 
         public WriteData GetData()
@@ -64,6 +71,29 @@ namespace ViewModels.ModbusClient.WriteFields
             }
 
             return new WriteData(result.ToArray(), bitArray.Length);
+        }
+
+        public void SetData(WriteData data)
+        {
+            Items.Clear();
+
+            int totalBits = data.NumberOfRegisters;
+
+            for (int i = 0; i < data.Data.Length; i++)
+            {
+                byte currentByte = data.Data[i];
+
+                for (int bitIndex = 0; bitIndex < 8; bitIndex++)
+                {
+                    // Проверяем, не превышает ли индекс общего количества битов
+                    if (i * 8 + bitIndex >= totalBits)
+                        break;
+
+                    bool logicOne = (currentByte & (1 << bitIndex)) != 0;
+
+                    AddCoilItem(logicOne);
+                }
+            }
         }
 
         private void RemoveWriteDataItem(Guid selectedId)
