@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings.FileTypes;
+using ViewModels.Macros.DataTypes;
 using ViewModels.NoProtocol;
 
 namespace ViewModels.Macros.MacrosItem

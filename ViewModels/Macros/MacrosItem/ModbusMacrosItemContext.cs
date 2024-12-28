@@ -1,5 +1,6 @@
 ﻿using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings.FileTypes;
+using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient;
 
 namespace ViewModels.Macros.MacrosItem

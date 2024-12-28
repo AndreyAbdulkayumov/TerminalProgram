@@ -1,4 +1,4 @@
-﻿namespace ViewModels.Macros.MacrosItem
+﻿namespace ViewModels.Macros.DataTypes
 {
     internal interface IMacrosContext
     {
