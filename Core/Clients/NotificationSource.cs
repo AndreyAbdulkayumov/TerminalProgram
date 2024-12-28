@@ -1,19 +1,9 @@
 ﻿namespace Core.Clients
 {
-    public class NotificationArgs : EventArgs
-    {
-        public readonly bool IsStarted;
-
-        public NotificationArgs(bool isStarted)
-        {
-            IsStarted = isStarted;
-        }
-    }
-
     public partial class NotificationSource
     {
-        public event EventHandler<NotificationArgs>? TX_Notification;
-        public event EventHandler<NotificationArgs>? RX_Notification;
+        public event EventHandler<bool>? TX_Notification;
+        public event EventHandler<bool>? RX_Notification;
 
         private ulong TX_Counter;
         private ulong RX_Counter;
@@ -77,7 +67,7 @@
 
                         if (isStarted == false)
                         {
-                            TX_Notification?.Invoke(null, new NotificationArgs(true));
+                            TX_Notification?.Invoke(null, true);
 
                             isStarted = true;
                         }
@@ -87,7 +77,7 @@
                     {
                         await Task.Delay(TX_ViewLatency_ms);
 
-                        TX_Notification?.Invoke(null, new NotificationArgs(false));
+                        TX_Notification?.Invoke(null, false);
 
                         isStarted = false;
                     }
@@ -101,7 +91,7 @@
             // Задача отменена
             catch (OperationCanceledException)
             {                
-                TX_Notification?.Invoke(null, new NotificationArgs(false));
+                TX_Notification?.Invoke(null, false);
             }
         }
 
@@ -119,7 +109,7 @@
 
                         if (isStarted == false)
                         {
-                            RX_Notification?.Invoke(null, new NotificationArgs(true));
+                            RX_Notification?.Invoke(null, true);
 
                             isStarted = true;
                         }
@@ -129,7 +119,7 @@
                     {
                         await Task.Delay(RX_ViewLatency_ms);
 
-                        RX_Notification?.Invoke(null, new NotificationArgs(false));
+                        RX_Notification?.Invoke(null, false);
 
                         isStarted = false;
                     }
@@ -143,7 +133,7 @@
             // Задача отменена
             catch (OperationCanceledException)
             {
-                RX_Notification?.Invoke(null, new NotificationArgs(false));
+                RX_Notification?.Invoke(null, false);
             }
         }
     }

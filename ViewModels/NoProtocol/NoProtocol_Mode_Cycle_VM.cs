@@ -4,6 +4,7 @@ using ReactiveUI;
 using MessageBox_Core;
 using System.Reactive;
 using ViewModels.Helpers;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.NoProtocol
 {
@@ -191,12 +192,12 @@ namespace ViewModels.NoProtocol
             return Message_Content;
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
             UI_IsEnable = true;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
 

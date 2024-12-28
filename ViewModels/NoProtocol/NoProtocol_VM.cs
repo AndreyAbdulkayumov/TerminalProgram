@@ -6,6 +6,7 @@ using Core.Models.NoProtocol.DataTypes;
 using ReactiveUI;
 using MessageBox_Core;
 using ViewModels.Helpers;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.NoProtocol
 {
@@ -144,14 +145,14 @@ namespace ViewModels.NoProtocol
             await Model.NoProtocol.SendString(Data, enableCR, enableLF);
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice is IPClient)
+            if (e is IPClient)
             {
                 InterfaceType = InterfaceType_Ethernet;
             }
 
-            else if (e.ConnectedDevice is SerialPortClient)
+            else if (e is SerialPortClient)
             {
                 InterfaceType = InterfaceType_SerialPort;
             }
@@ -165,7 +166,7 @@ namespace ViewModels.NoProtocol
             UI_IsEnable = true;
         }        
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             InterfaceType = InterfaceType_Default;
 

@@ -22,18 +22,10 @@ namespace ViewModels
         ModbusClient
     }
 
-    public class DocArgs : EventArgs
-    {
-        public readonly string? FilePath;
-
-        public DocArgs(string? filePath)
-        {
-            FilePath = filePath;
-        }
-    }
-
     public class CommonUI_VM : ReactiveObject
     {
+        public static string? SettingsDocument;
+
         private static ApplicationWorkMode _currentApplicationWorkMode;
 
         public static ApplicationWorkMode CurrentApplicationWorkMode
@@ -62,24 +54,6 @@ namespace ViewModels
         {
             get => _currentViewModel;
             set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
-        }
-
-        public static event EventHandler<DocArgs>? SettingsDocument_Changed;
-
-        private static string? _settingsDocument;
-
-        public static string? SettingsDocument
-        {
-            get
-            {
-                return _settingsDocument;
-            }
-
-            set
-            {
-                _settingsDocument = value;
-                SettingsDocument_Changed?.Invoke(null, new DocArgs(value));
-            }
         }
 
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
@@ -493,7 +467,7 @@ namespace ViewModels
                 _connectionTime.Seconds);
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
             if (Model.Client != null)
             {
@@ -520,35 +494,23 @@ namespace ViewModels
             _connectionTimer.Start();
         }
 
-        private void Notifications_TX_Notification(object? sender, NotificationArgs e)
+        private void Notifications_TX_Notification(object? sender, bool e)
         {
             lock (TX_View_Locker)
             {
-                if (e.IsStarted)
-                {
-                    Led_TX_IsActive = true;
-                    return;
-                }
-
-                Led_TX_IsActive = false;
+                Led_TX_IsActive = e;
             }
         }
 
-        private void Notifications_RX_Notification(object? sender, NotificationArgs e)
+        private void Notifications_RX_Notification(object? sender, bool e)
         {
             lock (RX_View_Locker)
             {
-                if (e.IsStarted)
-                {
-                    Led_RX_IsActive = true;
-                    return;
-                }
-
-                Led_RX_IsActive = false;
+                Led_RX_IsActive = e;
             }
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _connectionTimer.Stop();
 

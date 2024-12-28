@@ -32,15 +32,15 @@ namespace Core.Models.Modbus
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
 
-        private void Host_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice != null && e.ConnectedDevice.IsConnected)
+            if (e != null && e.IsConnected)
             {
-                _device = e.ConnectedDevice;
+                _device = e;
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _device = null;
         }

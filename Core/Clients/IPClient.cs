@@ -6,7 +6,7 @@ namespace Core.Clients
 {
     public class IPClient : IConnection
     {
-        public event EventHandler<DataFromDevice>? DataReceived;
+        public event EventHandler<byte[]>? DataReceived;
         public event EventHandler<string>? ErrorInReadThread;
 
         public bool IsConnected { get; private set; } = false;
@@ -329,14 +329,7 @@ namespace Core.Clients
 
                         numberOfReceiveBytes = readResult.Result;
 
-                        var Data = new DataFromDevice(numberOfReceiveBytes);
-
-                        for (int i = 0; i < numberOfReceiveBytes; i++)
-                        {
-                            Data.RX[i] = bufferRX[i];
-                        }
-
-                        DataReceived?.Invoke(this, Data);
+                        DataReceived?.Invoke(this, bufferRX.Take(numberOfReceiveBytes).ToArray());
 
                         Notifications.ReceiveEvent();
 

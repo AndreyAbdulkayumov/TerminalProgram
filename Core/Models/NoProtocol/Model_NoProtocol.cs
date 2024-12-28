@@ -48,23 +48,23 @@ namespace Core.Models.NoProtocol
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
         
-        private void Host_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice != null && e.ConnectedDevice.IsConnected)
+            if (e != null && e.IsConnected)
             {
-                _client = e.ConnectedDevice;
+                _client = e;
 
                 _client.DataReceived += Client_DataReceived;
                 _client.ErrorInReadThread += Client_ErrorInReadThread;
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _client = null;
-        }     
+        }
 
-        private void Client_DataReceived(object? sender, DataFromDevice e)
+        private void Client_DataReceived(object? sender, byte[] e)
         {
             if (_outputArray != null)
             {
@@ -83,12 +83,12 @@ namespace Core.Models.NoProtocol
                     }
                 }
 
-                Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e.RX, _outputArray, _resultIndex));
+                Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e, _outputArray, _resultIndex));
 
                 return;
             }
 
-            Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e.RX));
+            Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e));
         }
 
         private void Client_ErrorInReadThread(object? sender, string e)

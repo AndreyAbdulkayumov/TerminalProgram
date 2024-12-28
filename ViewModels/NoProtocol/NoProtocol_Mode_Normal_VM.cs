@@ -1,4 +1,5 @@
-﻿using Core.Models;
+﻿using Core.Clients.DataTypes;
+using Core.Models;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
@@ -90,12 +91,12 @@ namespace ViewModels.NoProtocol
             return TX_String; 
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
             UI_IsEnable = true;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
         }

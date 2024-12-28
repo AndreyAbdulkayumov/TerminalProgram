@@ -10,6 +10,7 @@ using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
 using Core.Models.Modbus.DataTypes;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.ModbusClient
 {
@@ -286,16 +287,16 @@ namespace ViewModels.ModbusClient
             CheckSum_VisibilityChanged?.Invoke(this, isVisible);
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice is IPClient)
+            if (e is IPClient)
             {
                 AvailableModbusTypes = _modbusTypes_IPClient;
 
                 ButtonModbusScanner_IsVisible = false;
             }
 
-            else if (e.ConnectedDevice is SerialPortClient)
+            else if (e is SerialPortClient)
             {
                 AvailableModbusTypes = _modbusTypes_SerialPortClient;
 
@@ -315,7 +316,7 @@ namespace ViewModels.ModbusClient
             UI_IsEnable = true;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
 

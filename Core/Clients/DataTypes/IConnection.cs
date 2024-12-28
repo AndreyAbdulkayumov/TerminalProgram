@@ -5,7 +5,7 @@
         /// <summary>
         /// Событие получения данных в режиме асинхронного чтения.
         /// </summary>
-        event EventHandler<DataFromDevice> DataReceived;
+        event EventHandler<byte[]> DataReceived;
 
         /// <summary>
         /// Событие ошибки в потоке чтения (асинхронный режим). 
