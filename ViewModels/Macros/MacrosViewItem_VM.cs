@@ -14,17 +14,19 @@ namespace ViewModels.Macros
             set => this.RaiseAndSetIfChanged(ref _title, value);
         }
 
+        public Func<Task> ClickAction;
+
         public ReactiveCommand<Unit, Unit> Command_EditMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_MacrosDelete { get; }
 
-        private readonly Func<Task> _clickAction;
         private readonly IMessageBox _messageBox;
 
         public MacrosViewItem_VM(string title, Func<Task> clickAction, Func<string, Task> editMacros, Action<string> deleteMacrosAction, IMessageBox messageBox)
         {
             Title = title;
 
-            _clickAction = clickAction;
+            ClickAction = clickAction;
+
             _messageBox = messageBox;
 
             Command_EditMacros = ReactiveCommand.CreateFromTask(() => editMacros(Title));
@@ -38,7 +40,7 @@ namespace ViewModels.Macros
         {
             try
             {
-                await _clickAction();
+                await ClickAction();
             }
 
             catch (Exception error)

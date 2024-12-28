@@ -3,9 +3,8 @@ using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
 using ViewModels.Macros.DataTypes;
-using ViewModels.Macros.MacrosEdit;
 
-namespace ViewModels.Macros
+namespace ViewModels.Macros.MacrosEdit
 {
     public class EditMacros_VM : ReactiveObject
     {
@@ -69,7 +68,7 @@ namespace ViewModels.Macros
                     {
                         messageBox.Show(message, MessageType.Warning);
                         return;
-                    }                    
+                    }
                 }
 
                 Saved = true;

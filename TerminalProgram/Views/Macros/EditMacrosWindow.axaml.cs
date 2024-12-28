@@ -2,8 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
-using ViewModels.Macros;
 using ViewModels.Macros.DataTypes;
+using ViewModels.Macros.MacrosEdit;
 
 namespace TerminalProgram.Views.Macros;
 
