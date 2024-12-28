@@ -1,31 +1,9 @@
-﻿using Core.Clients;
+﻿using Core.Clients.DataTypes;
+using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 
 namespace Core.Models.Modbus
 {
-    public struct ModbusResponse
-    {
-        // Только для Modbus TCP
-        public UInt16 OperationNumber;
-        public UInt16 ProtocolID;
-        public UInt16 LengthOfPDU;
-
-        // Общая часть для всех типов Modbus протокола
-        public byte SlaveID;
-
-        // PDU - Protocol Data Unit
-        public byte Command;
-        public int LengthOfData;
-        public byte[] Data;
-    }
-
-    public class ModbusOperationResult
-    {
-        public byte[]? ReadedData;
-
-        public ModbusActionDetails? Details;
-    }
-
     public class Model_Modbus
     {
         public double CycleMode_Period

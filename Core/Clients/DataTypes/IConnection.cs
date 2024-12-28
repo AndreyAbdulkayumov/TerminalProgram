@@ -1,33 +1,5 @@
-﻿namespace Core.Clients
+﻿namespace Core.Clients.DataTypes
 {
-    public enum ReadMode
-    {
-        Async,
-        Sync
-    }
-
-    public class ModbusOperationInfo
-    {
-        public readonly DateTime ExecutionTime;
-        public readonly byte[]? ResponseBytes;
-
-        public ModbusOperationInfo(DateTime executionTime, byte[]? responseBytes)
-        {
-            ExecutionTime = executionTime;
-            ResponseBytes = responseBytes;
-        }
-    }
-
-    public class DataFromDevice : EventArgs
-    {
-        public readonly byte[] RX;
-
-        public DataFromDevice(int RX_ArrayLength)
-        {
-            RX = new byte[RX_ArrayLength];
-        }
-    }
-
     public interface IConnection
     {
         /// <summary>

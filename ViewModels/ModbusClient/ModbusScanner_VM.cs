@@ -1,5 +1,5 @@
 ﻿using Core.Models;
-using Core.Models.Modbus;
+using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using MessageBox_Core;
 using ReactiveUI;

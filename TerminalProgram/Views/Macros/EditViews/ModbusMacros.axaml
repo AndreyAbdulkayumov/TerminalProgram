@@ -168,7 +168,7 @@
 
 					<TextBox Classes="InputField"
 							 Width="70"
-							 Text="{Binding NumberOfRegisters, Mode=TwoWay}"
+							 Text="{Binding NumberOfReadRegisters, Mode=TwoWay}"
 							 HorizontalAlignment="Left" VerticalAlignment="Top"/>
 					
 				</StackPanel>							

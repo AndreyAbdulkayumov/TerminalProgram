@@ -2,9 +2,9 @@
 using System.Text;
 using Core.Clients;
 using Core.Models;
+using Core.Models.NoProtocol.DataTypes;
 using ReactiveUI;
 using MessageBox_Core;
-using Core.Models.NoProtocol;
 using ViewModels.Helpers;
 
 namespace ViewModels.NoProtocol

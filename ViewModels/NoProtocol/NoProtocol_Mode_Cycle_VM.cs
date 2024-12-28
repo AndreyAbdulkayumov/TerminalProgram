@@ -1,5 +1,5 @@
 ﻿using Core.Models;
-using Core.Models.NoProtocol;
+using Core.Models.NoProtocol.DataTypes;
 using ReactiveUI;
 using MessageBox_Core;
 using System.Reactive;

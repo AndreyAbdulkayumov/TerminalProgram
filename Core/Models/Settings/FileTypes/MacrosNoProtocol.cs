@@ -1,4 +1,6 @@
-﻿namespace Core.Models.Settings.FileTypes
+﻿using Core.Models.Settings.DataTypes;
+
+namespace Core.Models.Settings.FileTypes
 {
     public class MacrosNoProtocolItem : IMacrosItem
     {

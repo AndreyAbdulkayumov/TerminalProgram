@@ -1,4 +1,6 @@
 ﻿
+using Core.Models.Settings.DataTypes;
+
 namespace Core.Models.Settings.FileTypes
 {
     public class MacrosModbusItem : IMacrosItem
@@ -7,12 +9,8 @@ namespace Core.Models.Settings.FileTypes
         public byte SlaveID { get; set; }
         public ushort Address { get; set; }
         public int FunctionNumber { get; set; }
-        public byte[]? WriteBuffer { get; set; }
-
-        /// <summary>
-        /// Используется и для чтения, и для записи. Смотри на номер функции.
-        /// </summary>
-        public int NumberOfRegisters { get; set; }
+        public ModbusMacrosWriteInfo? WriteInfo { get; set; }
+        public int NumberOfReadRegisters { get; set; }
         public bool CheckSum_IsEnable { get; set; }
     }
 

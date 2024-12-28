@@ -1,4 +1,4 @@
-﻿using Core.Clients;
+﻿using Core.Clients.DataTypes;
 using Core.Models.Settings.FileTypes;
 
 namespace Core.Models

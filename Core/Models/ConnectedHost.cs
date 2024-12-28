@@ -1,4 +1,5 @@
 ﻿using Core.Clients;
+using Core.Clients.DataTypes;
 using Core.Models.Modbus;
 using Core.Models.NoProtocol;
 using Core.Models.Settings;

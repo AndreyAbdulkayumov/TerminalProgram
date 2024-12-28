@@ -1,4 +1,6 @@
-﻿namespace Core.Models.Modbus.Message
+﻿using Core.Models.Modbus.DataTypes;
+
+namespace Core.Models.Modbus.Message
 {
     public static class Modbus_PDU
     {

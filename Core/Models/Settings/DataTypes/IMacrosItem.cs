@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Settings.FileTypes
+﻿namespace Core.Models.Settings.DataTypes
 {
     public interface IMacrosItem
     {

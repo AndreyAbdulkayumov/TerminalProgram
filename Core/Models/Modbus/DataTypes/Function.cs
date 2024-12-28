@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Modbus
+﻿namespace Core.Models.Modbus.DataTypes
 {
     public abstract class ModbusFunction
     {
@@ -16,8 +16,8 @@
 
     public class ModbusReadFunction : ModbusFunction
     {
-        public ModbusReadFunction(string displayedName, string displayedNumber, byte number) : 
-            base (displayedName, displayedNumber, number)
+        public ModbusReadFunction(string displayedName, string displayedNumber, byte number) :
+            base(displayedName, displayedNumber, number)
         {
 
         }
@@ -32,10 +32,10 @@
         }
     }
 
-    
+
     public static class Function
     {
-        public static readonly ModbusReadFunction ReadCoilStatus = 
+        public static readonly ModbusReadFunction ReadCoilStatus =
             new ModbusReadFunction(
                 "0x01 Чтение регистров флагов",
                 "0x01 (чтение)",
@@ -53,7 +53,7 @@
                 "0x03 (чтение)",
                 0x03);
 
-        public static readonly ModbusReadFunction ReadInputRegisters = 
+        public static readonly ModbusReadFunction ReadInputRegisters =
             new ModbusReadFunction(
                 "0x04 Чтение входных регистров",
                 "0x04 (чтение)",

@@ -11,6 +11,8 @@ using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using Core.Models.AppUpdateSystem;
 using Core.Models.Settings.FileTypes;
+using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Clients.DataTypes;
 
 namespace ViewModels
 {

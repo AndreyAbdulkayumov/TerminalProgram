@@ -1,4 +1,4 @@
-﻿using Core.Models.Modbus.Message;
+﻿using Core.Models.Modbus;
 
 namespace Core.Tests.Modbus
 {

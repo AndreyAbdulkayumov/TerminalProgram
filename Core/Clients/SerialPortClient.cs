@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using Core.Clients.DataTypes;
 using Core.Models;
 
 namespace Core.Clients

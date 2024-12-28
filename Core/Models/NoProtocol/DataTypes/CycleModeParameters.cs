@@ -1,4 +1,4 @@
-﻿namespace Core.Models.NoProtocol
+﻿namespace Core.Models.NoProtocol.DataTypes
 {
     public class CycleModeParameters
     {

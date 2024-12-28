@@ -1,4 +1,5 @@
-﻿using Core.Models.Modbus;
+﻿using Core.Models.Modbus.DataTypes;
+using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -6,8 +7,8 @@ using System.Globalization;
 using System.Text;
 using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient;
-using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
 namespace ViewModels.Macros.MacrosEdit
@@ -102,15 +103,15 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _selectedReadFunction, value);
         }
 
-        private string? _numberOfRegisters;
+        private string? _numberOfReadRegisters;
 
-        public string? NumberOfRegisters
+        public string? NumberOfReadRegisters
         {
-            get => _numberOfRegisters;
+            get => _numberOfReadRegisters;
             set
             {
-                this.RaiseAndSetIfChanged(ref _numberOfRegisters, value);
-                ValidateInput(nameof(NumberOfRegisters), value);
+                this.RaiseAndSetIfChanged(ref _numberOfReadRegisters, value);
+                ValidateInput(nameof(NumberOfReadRegisters), value);
             }
         }
 
@@ -142,7 +143,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         private byte _selectedSlaveID = 0;
         private ushort _selectedAddress = 0;
-        private ushort _selectedNumberOfRegisters = 1;
+        private ushort _selectedNumberOfReadRegisters = 1;
 
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
@@ -221,7 +222,7 @@ namespace ViewModels.Macros.MacrosEdit
                     SelectedReadFunction = selectedFunction.DisplayedName;
                     SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
 
-                    NumberOfRegisters = data.NumberOfRegisters.ToString();
+                    NumberOfReadRegisters = data.NumberOfReadRegisters.ToString();
                 }
 
                 else
@@ -233,11 +234,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                     SetWriteFieldVM(selectedFunction.DisplayedName);
 
-                    CurrentWriteFieldViewModel?.SetData(
-                        new WriteData(
-                            data.WriteBuffer ?? Array.Empty<byte>(), 
-                            data.NumberOfRegisters
-                            ));
+                    CurrentWriteFieldViewModel?.SetDataFromMacros(data.WriteInfo);
                 }
 
                 return;
@@ -286,21 +283,15 @@ namespace ViewModels.Macros.MacrosEdit
 
             int functionNumber = Function.AllFunctions.Single(x => x.DisplayedName == selectedFunction).Number;
 
-            WriteData? writeData = CurrentWriteFieldViewModel?.GetData();
+            ModbusMacrosWriteInfo? writeData = CurrentWriteFieldViewModel?.GetMacrosData();
 
             return new MacrosModbusItem()
             {
                 SlaveID = _selectedSlaveID,
                 Address = _selectedAddress,
                 FunctionNumber = functionNumber,
-                WriteBuffer = 
-                    SelectedFunctionType_Write ? 
-                        writeData?.Data : 
-                        null,
-                NumberOfRegisters = 
-                    SelectedFunctionType_Write ? 
-                        writeData?.NumberOfRegisters ?? 0 : 
-                        _selectedNumberOfRegisters,
+                WriteInfo = writeData,
+                NumberOfReadRegisters = _selectedNumberOfReadRegisters,
                 CheckSum_IsEnable = CheckSum_IsEnable,
             };
         }
@@ -320,7 +311,7 @@ namespace ViewModels.Macros.MacrosEdit
             {
                 foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
                 {
-                    if (element.Key == nameof(NumberOfRegisters))
+                    if (element.Key == nameof(NumberOfReadRegisters))
                     {
                         continue;
                     }
@@ -424,7 +415,7 @@ namespace ViewModels.Macros.MacrosEdit
                 case nameof(Address):
                     return "Адрес";
 
-                case nameof(NumberOfRegisters):
+                case nameof(NumberOfReadRegisters):
                     return "Кол-во регистров";
 
                 default:
@@ -447,7 +438,7 @@ namespace ViewModels.Macros.MacrosEdit
                 case nameof(Address):
                     return Check_Address(value);
 
-                case nameof(NumberOfRegisters):
+                case nameof(NumberOfReadRegisters):
                     return Check_NumberOfRegisters(value);
             }
 
@@ -490,7 +481,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         private ValidateMessage? Check_NumberOfRegisters(string value)
         {
-            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfRegisters))
+            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out _selectedNumberOfReadRegisters))
             {
                 return AllErrorMessages[DecError_UInt16];
             }

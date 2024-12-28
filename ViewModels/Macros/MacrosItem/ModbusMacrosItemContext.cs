@@ -1,4 +1,4 @@
-﻿using Core.Models.Modbus;
+﻿using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.ModbusClient;
 
@@ -20,8 +20,8 @@ namespace ViewModels.Macros.MacrosItem
             _slaveID = info.SlaveID;
             _address = info.Address;
             _functionNumber = info.FunctionNumber;
-            _writeBuffer = info.WriteBuffer;
-            _numberOfRegisters = info.NumberOfRegisters;
+            _writeBuffer = info.WriteInfo?.WriteBuffer;
+            _numberOfRegisters = info.NumberOfReadRegisters;
             _checkSum_IsEnable = info.CheckSum_IsEnable;
         }
 

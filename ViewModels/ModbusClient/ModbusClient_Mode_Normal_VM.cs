@@ -1,5 +1,5 @@
 ﻿using Core.Models;
-using Core.Models.Modbus;
+using Core.Models.Modbus.DataTypes;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -9,6 +9,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient

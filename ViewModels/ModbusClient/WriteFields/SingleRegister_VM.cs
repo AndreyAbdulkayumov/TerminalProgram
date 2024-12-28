@@ -1,7 +1,9 @@
-﻿using ReactiveUI;
+﻿using Core.Models.Settings.DataTypes;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using ViewModels.ModbusClient.DataTypes;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields
@@ -55,14 +57,35 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
+            return PrepareData();
+        }
+
+        private WriteData PrepareData()
+        {
             byte[] data = BitConverter.GetBytes(_data);
 
             return new WriteData(data, 1);
         }
 
-        public void SetData(WriteData data)
+        public void SetDataFromMacros(ModbusMacrosWriteInfo data)
         {
-            ViewData = ConvertNumberToString(BitConverter.ToUInt16(data.Data), DataFormat);
+            if (data.WriteBuffer == null || data.WriteBuffer.Length == 0)
+            {
+                return;
+            }
+
+            ViewData = ConvertNumberToString(BitConverter.ToUInt16(data.WriteBuffer), DataFormat);
+        }
+
+        public ModbusMacrosWriteInfo GetMacrosData()
+        {
+            WriteData data = PrepareData();
+
+            return new ModbusMacrosWriteInfo()
+            {
+                WriteBuffer = data.Data,
+                NumberOfWriteRegisters = data.NumberOfRegisters,
+            };
         }
 
         public override void SetDataFormat(string? format)

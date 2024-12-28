@@ -1,27 +1,9 @@
-﻿using Core.Clients;
+﻿using Core.Clients.DataTypes;
+using Core.Models.NoProtocol.DataTypes;
 using System.Text;
 
 namespace Core.Models.NoProtocol
 {
-    public class NoProtocolDataReceivedEventArgs : EventArgs
-    {
-        public readonly byte[] RawData;
-        public readonly string[]? DataWithDebugInfo;
-        public int DataIndex = 0;
-
-        public NoProtocolDataReceivedEventArgs(byte[] rawData)
-        {
-            RawData = rawData;
-        }
-
-        public NoProtocolDataReceivedEventArgs(byte[] rawData, string[]? dataWithDebugInfo, int dataIndex)
-        {
-            RawData = rawData;
-            DataWithDebugInfo = dataWithDebugInfo;
-            DataIndex = dataIndex;
-        }
-    }
-
     public class Model_NoProtocol
     {
         public double CycleMode_Period

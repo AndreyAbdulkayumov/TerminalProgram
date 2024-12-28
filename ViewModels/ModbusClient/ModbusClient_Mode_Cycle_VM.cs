@@ -2,13 +2,12 @@
 using ReactiveUI;
 using System.Reactive;
 using System.Collections.ObjectModel;
-using Core.Models.Modbus;
 using System.Globalization;
 using System.Reactive.Linq;
 using MessageBox_Core;
-using Core.Clients;
 using ViewModels.Validation;
 using System.Text;
+using Core.Models.Modbus.DataTypes;
 
 namespace ViewModels.ModbusClient
 {

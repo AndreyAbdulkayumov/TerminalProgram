@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using Core.Clients.DataTypes;
 using Core.Models;
 
 namespace Core.Clients

@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings;
+using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using MessageBox_Core;
 using ReactiveUI;
@@ -277,8 +278,8 @@ namespace ViewModels.Macros
                     item.SlaveID = modbusInfo.SlaveID;
                     item.Address = modbusInfo.Address;
                     item.FunctionNumber = modbusInfo.FunctionNumber;
-                    item.WriteBuffer = modbusInfo.WriteBuffer;
-                    item.NumberOfRegisters = modbusInfo.NumberOfRegisters;
+                    item.WriteInfo = modbusInfo.WriteInfo;
+                    item.NumberOfReadRegisters = modbusInfo.NumberOfReadRegisters;
                     item.CheckSum_IsEnable = modbusInfo.CheckSum_IsEnable;
 
                     _settings.SaveMacros(_modbusMacros);
@@ -328,7 +329,9 @@ namespace ViewModels.Macros
                 {
                     viewItem.Title = resultMacrosName;
 
-                    // Обновление экшона !!!!!!!!!!!!!!!!!!!!!!!!!!
+                    // TODO: Обновление экшона !!!!!!!!!!!!!!!!!!!!!!!!!!
+
+                    _allMacrosNames = Items.Select(item => item.Title).ToList();
                 }
             }
         }

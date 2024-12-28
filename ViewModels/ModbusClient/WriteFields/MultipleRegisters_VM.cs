@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings;
+using Core.Models.Settings.DataTypes;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -6,6 +7,7 @@ using System.Reactive;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -63,6 +65,11 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
+            return PrepareData();
+        }
+
+        private WriteData PrepareData()
+        {
             if (WriteDataCollection.Count == 0)
             {
                 return new WriteData(Array.Empty<byte>(), 0);
@@ -88,13 +95,27 @@ namespace ViewModels.ModbusClient.WriteFields
             .ToArray();
 
             return new WriteData(data, registerCounter);
-        }
+        } 
 
-        public void SetData(WriteData data)
+        public void SetDataFromMacros(ModbusMacrosWriteInfo data)
         {
             WriteDataCollection.Clear();
 
 
+        }
+
+        public ModbusMacrosWriteInfo GetMacrosData()
+        {
+            WriteData data = PrepareData();
+
+            int[] floatIndices = Array.Empty<int>();
+
+            return new ModbusMacrosWriteInfo()
+            {
+                WriteBuffer = data.Data,
+                NumberOfWriteRegisters = data.NumberOfRegisters,
+                FloatByteIndices = floatIndices,
+            };
         }
 
         private void Item_RequestToUpdateAddresses(object? sender, RequestToUpdateAddressesArgs e)

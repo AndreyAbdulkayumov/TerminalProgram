@@ -1,9 +1,11 @@
-﻿using DynamicData;
+﻿using Core.Models.Settings.DataTypes;
+using DynamicData;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -43,6 +45,11 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
+            return PrepareData();
+        }
+
+        private WriteData PrepareData()
+        {
             if (Items.Count == 0)
             {
                 return new WriteData(Array.Empty<byte>(), 0);
@@ -73,15 +80,20 @@ namespace ViewModels.ModbusClient.WriteFields
             return new WriteData(result.ToArray(), bitArray.Length);
         }
 
-        public void SetData(WriteData data)
+        public void SetDataFromMacros(ModbusMacrosWriteInfo data)
         {
             Items.Clear();
 
-            int totalBits = data.NumberOfRegisters;
-
-            for (int i = 0; i < data.Data.Length; i++)
+            if (data.WriteBuffer == null || data.WriteBuffer.Length == 0 )
             {
-                byte currentByte = data.Data[i];
+                return;
+            }
+
+            int totalBits = data.NumberOfWriteRegisters;
+
+            for (int i = 0; i < data.WriteBuffer.Length; i++)
+            {
+                byte currentByte = data.WriteBuffer[i];
 
                 for (int bitIndex = 0; bitIndex < 8; bitIndex++)
                 {
@@ -94,6 +106,17 @@ namespace ViewModels.ModbusClient.WriteFields
                     AddCoilItem(logicOne);
                 }
             }
+        }
+
+        public ModbusMacrosWriteInfo GetMacrosData()
+        {
+            WriteData data = PrepareData();
+
+            return new ModbusMacrosWriteInfo()
+            {
+                WriteBuffer = data.Data,
+                NumberOfWriteRegisters = data.NumberOfRegisters,
+            };
         }
 
         private void RemoveWriteDataItem(Guid selectedId)

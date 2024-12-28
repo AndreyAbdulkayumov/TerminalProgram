@@ -45,10 +45,20 @@ namespace ViewModels.Macros
                     return;
                 }
 
-                if (parameters.InitData == null && parameters.ExistingMacrosNames != null && parameters.ExistingMacrosNames.Contains(MacrosName))
+                if (parameters.ExistingMacrosNames != null)
                 {
-                    messageBox.Show("Макрос с таким именем уже существует.", MessageType.Warning);
-                    return;
+                    var macrosNames = parameters.ExistingMacrosNames;
+
+                    if (parameters.InitData != null)
+                    {
+                        macrosNames = macrosNames.Where(e => e != parameters.MacrosName);
+                    }
+
+                    if (macrosNames.Contains(MacrosName))
+                    {
+                        messageBox.Show("Макрос с таким именем уже существует.", MessageType.Warning);
+                        return;
+                    }
                 }
 
                 if (CurrentModeViewModel is IMacrosValidation validatedMacros)

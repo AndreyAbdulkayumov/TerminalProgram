@@ -2,7 +2,6 @@
 using System.Reactive;
 using ReactiveUI;
 using Core.Models;
-using Core.Models.Modbus;
 using Core.Models.Modbus.Message;
 using System.Reactive.Linq;
 using Core.Clients;
@@ -10,6 +9,7 @@ using MessageBox_Core;
 using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
+using Core.Models.Modbus.DataTypes;
 
 namespace ViewModels.ModbusClient
 {
