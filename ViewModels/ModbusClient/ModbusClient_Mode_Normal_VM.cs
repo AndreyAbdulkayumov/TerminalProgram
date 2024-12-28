@@ -176,7 +176,7 @@ namespace ViewModels.ModbusClient
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM(); 
 

@@ -153,7 +153,7 @@ namespace ViewModels.Macros.MacrosEdit
         public ModbusMacros_VM(object? initData)
         {
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM();
 
@@ -211,7 +211,9 @@ namespace ViewModels.Macros.MacrosEdit
 
                 SlaveID = data.SlaveID.ToString();
                 CheckSum_IsEnable = data.CheckSum_IsEnable;
-                Address = data.Address.ToString();                
+                Address = data.Address.ToString();
+
+                NumberOfReadRegisters = data.NumberOfReadRegisters.ToString();
 
                 var selectedFunction = Function.AllFunctions.First(func => func.Number == data.FunctionNumber);
 
@@ -221,8 +223,6 @@ namespace ViewModels.Macros.MacrosEdit
 
                     SelectedReadFunction = selectedFunction.DisplayedName;
                     SelectedWriteFunction = Function.PresetSingleRegister.DisplayedName;
-
-                    NumberOfReadRegisters = data.NumberOfReadRegisters.ToString();
                 }
 
                 else

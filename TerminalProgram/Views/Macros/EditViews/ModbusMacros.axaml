@@ -5,7 +5,7 @@
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:TerminalProgram.Views.ModbusClient.WriteFields;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
-			 Width="450" Height="340"
+			 Width="450" Height="370"
              x:Class="TerminalProgram.Views.Macros.EditViews.ModbusMacros">
 
 	<UserControl.Styles>
@@ -47,7 +47,7 @@
 	<Grid>
 
 		<ScrollViewer HorizontalScrollBarVisibility="Auto"
-					      VerticalScrollBarVisibility="Auto">
+					  VerticalScrollBarVisibility="Auto">
 
 			<StackPanel Orientation="Vertical"
 						Spacing="10"

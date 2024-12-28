@@ -7,11 +7,11 @@ namespace Core.Models.Settings.FileTypes
     {
         public string? Name { get; set; }
         public byte SlaveID { get; set; }
+        public bool CheckSum_IsEnable { get; set; }
         public ushort Address { get; set; }
         public int FunctionNumber { get; set; }
-        public ModbusMacrosWriteInfo? WriteInfo { get; set; }
         public int NumberOfReadRegisters { get; set; }
-        public bool CheckSum_IsEnable { get; set; }
+        public ModbusMacrosWriteInfo? WriteInfo { get; set; }
     }
 
     public class MacrosModbus
