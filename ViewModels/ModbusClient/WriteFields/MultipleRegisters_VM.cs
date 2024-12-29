@@ -77,26 +77,29 @@ namespace ViewModels.ModbusClient.WriteFields
 
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
-                int addressAddition;
-
-                if (WriteDataCollection.Count == 0)
-                {
-                    addressAddition = 0;
-                }
-
-                else
-                {
-                    int formatAddition = WriteDataCollection.Last().SelectedDataFormat == ModbusDataFormatter.DataFormatName_float ? 2 : 1;
-                    addressAddition = WriteDataCollection.Last().StartAddressAddition + formatAddition;
-                }
-
                 WriteDataCollection.Add(new MultipleRegisters_Item(
-                    startAddressAddition: addressAddition,
+                    startAddressAddition: GetAddressAddition(),
+                    initWordValue: null,
+                    initFloatValue: null,
                     removeItemHandler: RemoveWriteDataItem
                     ));
 
                 WriteDataCollection.Last().RequestToUpdateAddresses += Item_RequestToUpdateAddresses;
             });
+        }
+
+        private int GetAddressAddition()
+        {
+            if (WriteDataCollection.Count == 0)
+            {
+                return 0;
+            }
+
+            else
+            {
+                int formatAddition = WriteDataCollection.Last().SelectedDataFormat == ModbusDataFormatter.DataFormatName_float ? 2 : 1;
+                return WriteDataCollection.Last().StartAddressAddition + formatAddition;
+            }
         }
 
         public WriteData GetData()
@@ -121,7 +124,8 @@ namespace ViewModels.ModbusClient.WriteFields
             {
                 if (x.DataFormat == NumberStyles.Float)
                 {
-                    _floatStartByteIndices.Add(registerCounter);
+                    // т.к. один регистр содержит два байта.
+                    _floatStartByteIndices.Add(registerCounter * 2);
 
                     registerCounter += 2;
 
@@ -143,12 +147,51 @@ namespace ViewModels.ModbusClient.WriteFields
 
             SelectedFloatFormat = data.FloatNumberFormat;
 
-            if (data.WriteBuffer == null || data.WriteBuffer.Length == 0)
+            if (data.WriteBuffer == null || data.FloatStartByteIndices == null || data.WriteBuffer.Length == 0)
             {
                 return;
             }
 
+            FloatNumberFormat floatFormat = FloatHelper.GetFloatNumberFormatOrDefault(data.FloatNumberFormat);
 
+            int byteCounter = 0;
+
+            float floatValue = 0;
+            UInt16 wordValue = 0;
+
+            do
+            {
+                if (data.FloatStartByteIndices.Contains(byteCounter))
+                {
+                    byte[] temp = data.WriteBuffer.Take(new Range(byteCounter, byteCounter + 4)).ToArray();
+
+                    Array.Reverse(temp); // т.к. в протоколе Modbus используется передача данных старшим байтом вперед.
+
+                    floatValue = FloatHelper.GetFloatNumberFromBytes(temp, floatFormat);
+
+                    WriteDataCollection.Add(new MultipleRegisters_Item(
+                        startAddressAddition: GetAddressAddition(),
+                        initWordValue: null,
+                        initFloatValue: floatValue,
+                        removeItemHandler: RemoveWriteDataItem
+                        ));
+
+                    byteCounter += 4;
+                    continue;
+                }
+
+                wordValue = BitConverter.ToUInt16(data.WriteBuffer.Take(new Range(byteCounter, byteCounter + 2)).ToArray());
+
+                WriteDataCollection.Add(new MultipleRegisters_Item(
+                    startAddressAddition: GetAddressAddition(),
+                    initWordValue: wordValue,
+                    initFloatValue: null,
+                    removeItemHandler: RemoveWriteDataItem
+                    ));
+
+                byteCounter += 2;
+
+            } while (byteCounter < data.WriteBuffer.Length);
         }
 
         public ModbusMacrosWriteInfo GetMacrosData()

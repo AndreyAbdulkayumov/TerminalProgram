@@ -76,16 +76,30 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
 
         public MultipleRegisters_Item(
             int startAddressAddition,
+            UInt16? initWordValue,
+            float? initFloatValue,
             Action<Guid> removeItemHandler)
         {
             Id = Guid.NewGuid();
 
             StartAddressAddition = startAddressAddition;
 
-            SelectedDataFormat = DataFormatName_hex;
+            if (initWordValue != null)
+            {
+                _data = (UInt16)initWordValue;
+                SelectedDataFormat = DataFormatName_hex;
+            }
 
-            _data = 0;
-            ViewData = ConvertNumberToString(_data, DataFormat);
+            else if (initFloatValue != null)
+            {
+                FloatData = (float)initFloatValue;
+                SelectedDataFormat = DataFormatName_float;
+            }
+            
+            else
+            {
+                SelectedDataFormat = DataFormatName_hex;
+            }
 
             Command_RemoveItem = ReactiveCommand.Create(() =>
             {
