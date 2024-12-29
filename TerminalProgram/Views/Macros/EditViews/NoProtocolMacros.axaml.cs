@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using System;
-using ViewModels.NoProtocol;
+using ViewModels.Macros.MacrosEdit;
 
 namespace TerminalProgram.Views.Macros.EditViews;
 
@@ -27,7 +27,7 @@ public partial class NoProtocolMacros : UserControl
 
     private void UserControl_DataContextChanged(object? sender, System.EventArgs e)
     {
-        var normalMode_VM = DataContext as NoProtocol_Mode_Cycle_VM;
+        var normalMode_VM = DataContext as NoProtocolMacros_VM;
 
         if (normalMode_VM != null)
         {

@@ -40,11 +40,16 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _isBytesSend, value);
         }
 
+        private bool _isInit;
+
         public NoProtocolMacros_VM(object? initData)
         {
+            _isInit = false;
+
             if (initData is MacrosNoProtocolItem data)
             {
                 MessageString = data.Message;
+                IsBytesSend = data.IsByteString;
                 CR_Enable = data.EnableCR;
                 LF_Enable = data.EnableLF;
             }
@@ -52,8 +57,14 @@ namespace ViewModels.Macros.MacrosEdit
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
-                    MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
+                    if (_isInit)
+                    {
+                        MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
+                    }
+                    
                 });
+
+            _isInit = true;
         }
 
         public MacrosNoProtocolItem GetContent()
@@ -61,6 +72,7 @@ namespace ViewModels.Macros.MacrosEdit
             return new MacrosNoProtocolItem()
             {
                 Message = MessageString,
+                IsByteString = IsBytesSend,
                 EnableCR = CR_Enable,
                 EnableLF = LF_Enable,
             };

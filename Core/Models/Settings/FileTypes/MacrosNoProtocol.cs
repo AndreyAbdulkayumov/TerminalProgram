@@ -6,6 +6,7 @@ namespace Core.Models.Settings.FileTypes
     {
         public string? Name { get; set; }
         public string? Message { get; set; }
+        public bool IsByteString { get; set; }
         public bool EnableCR { get; set; }
         public bool EnableLF { get; set; }
     }
