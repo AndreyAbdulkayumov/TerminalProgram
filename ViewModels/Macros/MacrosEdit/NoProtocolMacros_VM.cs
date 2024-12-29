@@ -1,6 +1,6 @@
-﻿using Core.Models;
-using Core.Models.Settings.FileTypes;
+﻿using Core.Models.Settings.FileTypes;
 using ReactiveUI;
+using System.Collections.ObjectModel;
 using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 
@@ -8,9 +8,27 @@ namespace ViewModels.Macros.MacrosEdit
 {
     public class NoProtocolMacros_VM : ReactiveObject, IMacrosContent<MacrosNoProtocolItem>
     {
-        private string _messageString = string.Empty;
+        private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
+        {
+            AppEncoding.Name_ASCII, AppEncoding.Name_UTF8, AppEncoding.Name_UTF32, AppEncoding.Name_Unicode
+        };
 
-        public string MessageString
+        public ObservableCollection<string> TypeOfEncoding
+        {
+            get => _typeOfEncoding;
+        }
+
+        private string? _selectedEncoding = AppEncoding.Name_UTF8;
+
+        public string? SelectedEncoding
+        {
+            get => _selectedEncoding;
+            set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
+        }
+
+        private string? _messageString;
+
+        public string? MessageString
         {
             get => _messageString;
             set => this.RaiseAndSetIfChanged(ref _messageString, value);
@@ -48,6 +66,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (initData is MacrosNoProtocolItem data)
             {
+                SelectedEncoding = string.IsNullOrEmpty(data.MacrosEncoding) ? AppEncoding.Name_UTF8 : data.MacrosEncoding;
                 MessageString = data.Message;
                 IsBytesSend = data.IsByteString;
                 CR_Enable = data.EnableCR;
@@ -57,9 +76,9 @@ namespace ViewModels.Macros.MacrosEdit
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
-                    if (_isInit)
+                    if (_isInit && !string.IsNullOrEmpty(MessageString))
                     {
-                        MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
+                        MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, AppEncoding.GetEncoding(SelectedEncoding));
                     }
                     
                 });
@@ -71,6 +90,7 @@ namespace ViewModels.Macros.MacrosEdit
         {
             return new MacrosNoProtocolItem()
             {
+                MacrosEncoding = SelectedEncoding,
                 Message = MessageString,
                 IsByteString = IsBytesSend,
                 EnableCR = CR_Enable,
@@ -80,6 +100,11 @@ namespace ViewModels.Macros.MacrosEdit
 
         public string GetValidatedString()
         {
+            if (string.IsNullOrEmpty(MessageString))
+            {
+                return string.Empty;
+            }
+
             if (IsBytesSend)
             {
                 return StringByteConverter.GetValidatedByteString(MessageString);

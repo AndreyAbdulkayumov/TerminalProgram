@@ -229,7 +229,7 @@ namespace ViewModels.NoProtocol
 
             var info = new CycleModeParameters(
                 isByteString: _isBytesSend,
-                messageBytes: _isBytesSend ? StringByteConverter.StringToBytes(Message_Content) : ConnectedHost.Model.NoProtocol.HostEncoding.GetBytes(Message_Content),
+                messageBytes: _isBytesSend ? StringByteConverter.ByteStringToByteArray(Message_Content) : ConnectedHost.Model.NoProtocol.HostEncoding.GetBytes(Message_Content),
                 message_CR_Enable: Message_CR,
                 message_LF_Enable: Message_LF,
                 response_Date_Enable: Response_Date,

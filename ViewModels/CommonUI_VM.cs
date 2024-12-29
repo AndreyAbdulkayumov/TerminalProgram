@@ -13,6 +13,7 @@ using Core.Models.AppUpdateSystem;
 using Core.Models.Settings.FileTypes;
 using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Clients.DataTypes;
+using ViewModels.Helpers;
 
 namespace ViewModels
 {
@@ -226,7 +227,7 @@ namespace ViewModels
                         if (SettingsFile.Settings != null)
                         {
                             string? encodingName = SettingsFile.Settings.GlobalEncoding;
-                            Model.SetGlobalEncoding(GetEncoding(encodingName));
+                            Model.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
                             NoProtocol_VM.SelectedEncoding = encodingName;
                         }                        
 
@@ -572,7 +573,7 @@ namespace ViewModels
                         settings.Connection_SerialPort?.DataBits,
                         settings.Connection_SerialPort?.StopBits
                         ),
-                        GetEncoding(settings.GlobalEncoding));
+                        AppEncoding.GetEncoding(settings.GlobalEncoding));
 
                     break;
 
@@ -582,7 +583,7 @@ namespace ViewModels
                         settings.Connection_IP?.IP_Address,
                         settings.Connection_IP?.Port
                         ),
-                        GetEncoding(settings.GlobalEncoding));
+                        AppEncoding.GetEncoding(settings.GlobalEncoding));
 
                     break;
 
@@ -591,27 +592,6 @@ namespace ViewModels
             }
 
             Model.Connect(info);
-        }
-
-        public Encoding GetEncoding(string? encodingName)
-        {
-            switch (encodingName)
-            {
-                case "ASCII":
-                    return Encoding.ASCII;
-
-                case "Unicode":
-                    return Encoding.Unicode;
-
-                case "UTF-32":
-                    return Encoding.UTF32;
-
-                case "UTF-8":
-                    return Encoding.UTF8;
-
-                default:
-                    throw new Exception("Задан неизвестный тип кодировки: " + encodingName);
-            }
         }
     }
 }

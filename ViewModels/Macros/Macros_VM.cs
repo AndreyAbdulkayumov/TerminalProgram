@@ -259,10 +259,12 @@ namespace ViewModels.Macros
 
                 if (item != null)
                 {
+                    item.MacrosEncoding = noProtocolContent.MacrosEncoding;
                     item.Name = noProtocolContent.Name;
                     item.Message = noProtocolContent.Message;
                     item.EnableCR = noProtocolContent.EnableCR;
                     item.EnableLF = noProtocolContent.EnableLF;
+                    item.IsByteString = noProtocolContent.IsByteString;
 
                     _settings.SaveMacros(_noProtocolMacros);
                 }

@@ -17,8 +17,7 @@
 			<TextBlock Text="Формат числа типа float"
 					   VerticalAlignment="Center"/>
 			
-			<ComboBox Classes="Functions"
-					  Width="100"
+			<ComboBox Width="100"
 					  ItemsSource="{Binding FloatFormats}"
 					  SelectedItem="{Binding SelectedFloatFormat}"
 					  VerticalAlignment="Top"/>

@@ -134,15 +134,65 @@ namespace ViewModels.NoProtocol
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
         }
+
         public async Task NoProtocol_Send(bool isBytes, string Data, bool enableCR, bool enableLF)
         {
             if (isBytes)
             {
-                await Model.NoProtocol.SendBytes(StringByteConverter.StringToBytes(Data));
+                await Model.NoProtocol.SendBytes(StringByteConverter.ByteStringToByteArray(Data));
                 return;
             }
 
             await Model.NoProtocol.SendString(Data, enableCR, enableLF);
+        }
+
+        public async Task NoProtocol_Send(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                _messageBox.Show("Не заданы данные для отправки.", MessageType.Warning);
+                return;
+            }
+
+            byte[] buffer = isBytes ? 
+                CreateBufferFromBytes(message, enableCR, enableLF) : 
+                CreateBufferFromString(message, enableCR, enableLF, encoding);
+
+            await Model.NoProtocol.SendBytes(buffer);
+        }
+
+        private byte[] CreateBufferFromBytes(string message, bool enableCR, bool enableLF)
+        {
+            var byteMessage = new List<byte>(StringByteConverter.ByteStringToByteArray(message));
+
+            if (enableCR)
+            {
+                byteMessage.Add((byte)'\r');
+            }
+
+            if (enableLF)
+            {
+                byteMessage.Add((byte)'\n');
+            }
+
+            return byteMessage.ToArray();
+        }
+
+        private byte[] CreateBufferFromString(string message, bool enableCR, bool enableLF, Encoding encoding)
+        {
+            var stringMessage = new List<byte>(encoding.GetBytes(message));
+
+            if (enableCR)
+            {
+                stringMessage.Add((byte)'\r');
+            }
+
+            if (enableLF)
+            {
+                stringMessage.Add((byte)'\n');
+            }
+
+            return stringMessage.ToArray();
         }
 
         private void Model_DeviceIsConnect(object? sender, IConnection? e)

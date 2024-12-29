@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings.FileTypes;
+using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 using ViewModels.NoProtocol;
 
@@ -22,7 +23,7 @@ namespace ViewModels.Macros.MacrosItemContext
                     return;
                 }
 
-                await NoProtocol_VM.Instance.NoProtocol_Send(false, _content.Message, _content.EnableCR, _content.EnableLF);
+                await NoProtocol_VM.Instance.NoProtocol_Send(_content.IsByteString, _content.Message, _content.EnableCR, _content.EnableLF, AppEncoding.GetEncoding(_content.MacrosEncoding));
             };
 
             return new MacrosData(_content.Name, action);

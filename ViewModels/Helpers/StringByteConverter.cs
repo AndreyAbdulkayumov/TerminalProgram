@@ -12,10 +12,10 @@ namespace ViewModels.Helpers
                 return string.Join(" ", encoding.GetBytes(message).Select(x => x.ToString("X2"))); ;
             }
 
-            return encoding.GetString(StringToBytes(message));
+            return encoding.GetString(ByteStringToByteArray(message));
         }
 
-        public static byte[] StringToBytes(string message)
+        public static byte[] ByteStringToByteArray(string message)
         {
             message = message.Replace(" ", string.Empty);
 
