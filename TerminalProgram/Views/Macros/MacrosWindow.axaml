@@ -99,10 +99,20 @@
 
 						</StackPanel>
 
-						<Button Content="Создать макрос"
-								Margin="0,0,10,0"
-								HorizontalAlignment="Right" VerticalAlignment="Center"
-								Command="{Binding Command_CreateMacros}"/>
+						<StackPanel Orientation="Horizontal" Spacing="15"
+									Margin="0,0,10,0"
+									HorizontalAlignment="Right" VerticalAlignment="Center">
+
+							<Button Content="Импорт"
+									Command="{Binding Command_Import}"/>
+
+							<Button Content="Экспорт"
+									Command="{Binding Command_Export}"/>
+							
+							<Button Content="Создать макрос"
+									Command="{Binding Command_CreateMacros}"/>
+							
+						</StackPanel>
 						
 					</Grid>					
 					

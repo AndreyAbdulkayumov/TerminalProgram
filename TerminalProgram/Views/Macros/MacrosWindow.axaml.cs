@@ -1,9 +1,10 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ViewModels.Macros;
 using ViewModels.Macros.DataTypes;
@@ -26,7 +27,7 @@ public partial class MacrosWindow : Window
 
         _messageBox = new MessageBox(this, "Макросы");
 
-        _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow);
+        _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow, GetFilePath);
 
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
 
@@ -44,6 +45,25 @@ public partial class MacrosWindow : Window
         Grid_Workspace);
 
         return window.GetData();
+    }
+
+    private async Task<string?> GetFilePath(string WindowTitle)
+    {
+        // Get top level from the current control. Alternatively, you can use Window reference instead.
+        TopLevel? topLevel = TopLevel.GetTopLevel(this);
+
+        if (topLevel != null)
+        {
+            var folder = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+            {
+                Title = WindowTitle,
+                AllowMultiple = false
+            });
+
+            return folder.First().Path.OriginalString;
+        }
+
+        return null;
     }
 
     /// <summary>

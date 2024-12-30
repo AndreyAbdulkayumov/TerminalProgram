@@ -186,7 +186,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                string fileName = SettingsFile.CopyFrom(filePath);
+                string fileName = SettingsFile.CopyInPresetFolderFrom(filePath);
 
                 UpdateListOfPresets();
 
@@ -216,7 +216,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                SettingsFile.Delete(SelectedPreset);
+                SettingsFile.DeletePreset(SelectedPreset);
 
                 UpdateListOfPresets();
 

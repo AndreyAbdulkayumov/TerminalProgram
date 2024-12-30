@@ -32,6 +32,8 @@ namespace ViewModels.Macros
             set => this.RaiseAndSetIfChanged(ref _items, value);
         }
 
+        public ReactiveCommand<Unit, Unit> Command_Import { get; set; }
+        public ReactiveCommand<Unit, Unit> Command_Export { get; set; }
         public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; set; }
 
         private MacrosNoProtocol? _noProtocolMacros;
@@ -44,12 +46,53 @@ namespace ViewModels.Macros
 
         private readonly Model_Settings _settings;
 
-        public Macros_VM(IMessageBox messageBox, Func<EditMacrosParameters, Task<object?>> openEditMacrosWindow)
+        public Macros_VM(
+            IMessageBox messageBox, 
+            Func<EditMacrosParameters, Task<object?>> openEditMacrosWindow,
+            Func<string, Task<string?>> getFilePath_Handler)
         {
             _messageBox = messageBox;
             _openEditMacrosWindow = openEditMacrosWindow;
 
             _settings = Model_Settings.Model;
+
+            Command_Import = ReactiveCommand.Create(() =>
+            {
+
+            });
+            Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макроса.\n\n{error.Message}", MessageType.Error));
+
+            Command_Export = ReactiveCommand.CreateFromTask(async () =>
+            {
+                string? outputFilePath = await getFilePath_Handler("Выбор папки для экспорта файла макроса.");
+
+                if (outputFilePath != null)
+                {
+                    string macrosFileName;
+
+                    if (_noProtocolMacros != null)
+                    {
+                        macrosFileName = _settings.FilePath_Macros_NoProtocol;
+                    }
+
+                    else if (_modbusMacros != null)
+                    {
+                        macrosFileName = _settings.FilePath_Macros_Modbus;
+                    }
+
+                    else
+                    {
+                        throw new Exception("Не выбран режим.");
+                    }
+
+                    string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
+
+                    _settings.CopyFile(macrosFileName, outputFileName);
+
+                    _messageBox.Show($"Экспорт прошел успешно.\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
+                }
+            });
+            Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error));
 
             Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
             Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error));

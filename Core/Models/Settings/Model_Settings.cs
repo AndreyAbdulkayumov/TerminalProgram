@@ -15,10 +15,22 @@ namespace Core.Models.Settings
             get => _model ?? (_model = new Model_Settings());
         }
 
-        // Путь к папке с файлами настроек
+        /// <summary>
+        /// Путь к папке с файлами настроек
+        /// </summary>
         public string FolderPath_Settings
         {
             get => DirectoryManager.SettingsFiles_Directory;
+        }
+
+        public string FilePath_Macros_NoProtocol
+        {
+            get => Path.Combine(DirectoryManager.Macros_Directory, FileName_Macros_NoProtocol + FileExtension);
+        }
+
+        public string FilePath_Macros_Modbus
+        {
+            get => Path.Combine(DirectoryManager.Macros_Directory, FileName_Macros_Modbus + FileExtension);
         }
 
         private const string FileName_DefaultPreset = "Unknown";
@@ -100,7 +112,21 @@ namespace Core.Models.Settings
         /// Удаляет файл по указанному пути, если он существует.
         /// </summary>
         /// <param name="fileName"></param>
-        public void Delete(string fileName)
+        public void DeleteFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                throw new Exception($"Файла \"{fileName}\" не существует.");
+            }
+
+            File.Delete(fileName);
+        }
+
+        /// <summary>
+        /// Удаляет файл пресета по указанному пути, если он существует.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void DeletePreset(string fileName)
         {
             string[] arrayOfFiles = Directory.GetFiles(DirectoryManager.SettingsFiles_Directory);
 
@@ -118,11 +144,26 @@ namespace Core.Models.Settings
         }
 
         /// <summary>
-        /// Копирует файл с указанным путем в директорию приложения.
+        /// Копирование файла из одной директории в другую.
+        /// </summary>
+        /// <param name="sourceFileName"></param>
+        /// <param name="destFileName"></param>
+        public void CopyFile(string sourceFileName, string destFileName)
+        {
+            if (File.Exists(destFileName))
+            {
+                throw new Exception($"Файл с именем \"{Path.GetFileName(destFileName)}\" уже существует в директории \"{Path.GetDirectoryName(destFileName)}\".");
+            }
+
+            File.Copy(sourceFileName, destFileName);
+        }
+
+        /// <summary>
+        /// Копирует файл с указанным путем в директорию пресетов.
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>Имя скопированного файла без расширения.</returns>
-        public string CopyFrom(string filePath)
+        public string CopyInPresetFolderFrom(string filePath)
         {
             string destFilePath = Path.Combine(DirectoryManager.SettingsFiles_Directory, Path.GetFileName(filePath));
 
