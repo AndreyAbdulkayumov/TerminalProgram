@@ -39,59 +39,32 @@ namespace ViewModels.Macros
         private MacrosNoProtocol? _noProtocolMacros;
         private MacrosModbus? _modbusMacros;
 
-        private List<string?> _allMacrosNames = new List<string?>();
+        private List<string> _allMacrosNames = new List<string>();
 
         private readonly IMessageBox _messageBox;
         private readonly Func<EditMacrosParameters, Task<object?>> _openEditMacrosWindow;
+        private readonly Func<string, Task<string?>> _getFolderPath;
+        private readonly Func<string, Task<string?>> _getFilePath;
 
         private readonly Model_Settings _settings;
 
         public Macros_VM(
             IMessageBox messageBox, 
             Func<EditMacrosParameters, Task<object?>> openEditMacrosWindow,
+            Func<string, Task<string?>> getFolderPath_Handler,
             Func<string, Task<string?>> getFilePath_Handler)
         {
             _messageBox = messageBox;
             _openEditMacrosWindow = openEditMacrosWindow;
+            _getFolderPath = getFolderPath_Handler;
+            _getFilePath = getFilePath_Handler;
 
             _settings = Model_Settings.Model;
 
-            Command_Import = ReactiveCommand.Create(() =>
-            {
+            Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
+            Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error));
 
-            });
-            Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макроса.\n\n{error.Message}", MessageType.Error));
-
-            Command_Export = ReactiveCommand.CreateFromTask(async () =>
-            {
-                string? outputFilePath = await getFilePath_Handler("Выбор папки для экспорта файла макроса.");
-
-                if (outputFilePath != null)
-                {
-                    string macrosFileName;
-
-                    if (_noProtocolMacros != null)
-                    {
-                        macrosFileName = _settings.FilePath_Macros_NoProtocol;
-                    }
-
-                    else if (_modbusMacros != null)
-                    {
-                        macrosFileName = _settings.FilePath_Macros_Modbus;
-                    }
-
-                    else
-                    {
-                        throw new Exception("Не выбран режим.");
-                    }
-
-                    string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
-
-                    _settings.CopyFile(macrosFileName, outputFileName);
-
-                    _messageBox.Show($"Экспорт прошел успешно.\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
-                }
-            });
+            Command_Export = ReactiveCommand.CreateFromTask(ExportMacros);
             Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error));
 
             Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
@@ -106,6 +79,21 @@ namespace ViewModels.Macros
         {
             ModeName = GetModeName(CommonUI_VM.CurrentApplicationWorkMode);
             UpdateWorkspace(CommonUI_VM.CurrentApplicationWorkMode);
+        }
+
+        private string GetValidMacrosFileName()
+        {
+            if (_noProtocolMacros != null)
+            {
+                return _settings.FilePath_Macros_NoProtocol;
+            }
+
+            else if (_modbusMacros != null)
+            {
+                return _settings.FilePath_Macros_Modbus;
+            }
+
+            throw new Exception("Не выбран режим.");
         }
 
         private string GetModeName(ApplicationWorkMode mode)
@@ -156,7 +144,7 @@ namespace ViewModels.Macros
 
         private MacrosNoProtocol? BuildNoProtocolMacros()
         {
-            var macros = _settings.ReadMacros<MacrosNoProtocol>();
+            var macros = _settings.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
 
             if (macros.Items == null || macros.Items.Count == 0)
             {
@@ -175,7 +163,7 @@ namespace ViewModels.Macros
 
         private MacrosModbus? BuildModbusMacros()
         {
-            var macros = _settings.ReadMacros<MacrosModbus>();
+            var macros = _settings.ReadOrCreateDefaultMacros<MacrosModbus>();
 
             if (macros.Items == null || macros.Items.Count == 0)
             {
@@ -428,6 +416,87 @@ namespace ViewModels.Macros
         {
             Items.Add(new MacrosViewItem_VM(itemData.Name, itemData.Action, EditMacros, DeleteMacros, _messageBox));
             _allMacrosNames.Add(itemData.Name);
+        }
+
+        private async Task ImportMacros()
+        {
+            ApplicationWorkMode workMode = CommonUI_VM.CurrentApplicationWorkMode;
+
+            string modeName = GetModeName(workMode);
+
+            if (await _messageBox.ShowYesNoDialog(
+                "Внимание!!!\n\n" +
+                $"При импорте файла макросов для режима \"{modeName}\" старые макросы будут удалены без возможности восстановления.\n\n" +
+                "Продолжить?",
+                MessageType.Warning) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            string? macrosFilePath = await _getFilePath($"Выбор файла для импорта макросов режима \"{modeName}\".");
+
+            if (macrosFilePath != null)
+            {
+                string fileName = Path.GetFileName(macrosFilePath);
+
+                string macrosValidFilePath = GetValidMacrosFileName();
+                string validFileName = Path.GetFileName(macrosValidFilePath);
+
+                if (fileName != validFileName)
+                {
+                    throw new Exception($"Некорректное имя файла макроса.\nОжидается имя \"{validFileName}\".");
+                }
+
+                try
+                {
+                    switch (workMode)
+                    {
+                        case ApplicationWorkMode.NoProtocol:
+                            var macrosNoProtocol = _settings.ReadMacros<MacrosNoProtocol>(macrosFilePath);
+                            break;
+
+                        case ApplicationWorkMode.ModbusClient:
+                            var macrosModbus = _settings.ReadMacros<MacrosModbus>(macrosFilePath);
+                            break;
+
+                        default:
+                            throw new NotImplementedException();
+                    }
+                }
+
+                catch (Exception)
+                {
+                    throw new Exception("Нарушена целостность файла.");
+                }
+
+                _settings.DeleteFile(macrosValidFilePath);
+
+                _settings.CopyFile(macrosFilePath, macrosValidFilePath);
+
+                // На случай если режим будет изменен во время импорта
+                if (workMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
+                {
+                    UpdateWorkspace(workMode);
+                }
+
+                _messageBox.Show($"Файл с макросами для режима \"{modeName}\" успешно импортирован!", MessageType.Information);
+            }
+        }
+
+        private async Task ExportMacros()
+        {
+            string? outputFilePath = await _getFolderPath("Выбор папки для экспорта файла макросов.");
+
+            if (outputFilePath != null)
+            {
+                string macrosFileName = GetValidMacrosFileName();
+
+                string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
+
+                _settings.CopyFile(macrosFileName, outputFileName);
+
+                _messageBox.Show($"Экспорт прошел успешно!\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
+            }
         }
     }
 }

@@ -63,11 +63,12 @@
 
 			<ScrollViewer Grid.Row="1">
 
-				<TextBlock x:Name="TextBlock_Content" 
-					   Foreground="{DynamicResource WindowChrome_Color_Title}"
-					   TextWrapping="Wrap"
-					   Margin="20"
-					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+				<SelectableTextBlock x:Name="SelectableTextBlock_Content" 
+									 Foreground="{DynamicResource WindowChrome_Color_Title}"
+									 SelectionBrush="#0099BC"
+									 TextWrapping="Wrap"
+									 Margin="20"
+									 HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 			</ScrollViewer>		
 			

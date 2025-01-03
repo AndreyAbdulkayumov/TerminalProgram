@@ -38,7 +38,7 @@ namespace MessageBox_AvaloniaUI.Views
 
             DataContext = this;
 
-            TextBlock_Content.Text = message;
+            SelectableTextBlock_Content.Text = message;
             TextBlock_Title.Text = title;
 
             switch (type)

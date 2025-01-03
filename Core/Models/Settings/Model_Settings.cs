@@ -240,11 +240,29 @@ namespace Core.Models.Settings
         }
 
         /// <summary>
-        /// Чтение макросов
+        /// Чтение файла макросов
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public T ReadMacros<T>(string filePath)
+        {
+            var macros = FileIO.Read<T>(filePath);
+
+            if (macros == null)
+            {
+                throw new Exception("Не удалось прочитать файл макроса.");
+            }
+
+            return macros;
+        }
+
+        /// <summary>
+        /// Чтение файла макросов или создание файла по умолчанию
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T ReadMacros<T>()
+        public T ReadOrCreateDefaultMacros<T>()
         {
             string filePath = GetMacrosFilePath<T>(out object defaultMacrosValue);
 

@@ -27,7 +27,7 @@ public partial class MacrosWindow : Window
 
         _messageBox = new MessageBox(this, "Макросы");
 
-        _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow, GetFilePath);
+        _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow, GetFolderPath, GetFilePath);
 
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
 
@@ -47,7 +47,7 @@ public partial class MacrosWindow : Window
         return window.GetData();
     }
 
-    private async Task<string?> GetFilePath(string WindowTitle)
+    private async Task<string?> GetFolderPath(string WindowTitle)
     {
         // Get top level from the current control. Alternatively, you can use Window reference instead.
         TopLevel? topLevel = TopLevel.GetTopLevel(this);
@@ -60,7 +60,34 @@ public partial class MacrosWindow : Window
                 AllowMultiple = false
             });
 
-            return folder.First().Path.OriginalString;
+            if (folder != null && folder.Count > 0)
+            {
+                return folder.First().Path.OriginalString;
+            }
+        }
+
+        return null;
+    }
+
+    private async Task<string?> GetFilePath(string WindowTitle)
+    {
+        // Get top level from the current control. Alternatively, you can use Window reference instead.
+        TopLevel? topLevel = TopLevel.GetTopLevel(this);
+
+        if (topLevel != null)
+        {
+            // Start async operation to open the dialog.
+            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = WindowTitle,
+                FileTypeFilter = [new FilePickerFileType("Файл макросов") { Patterns = ["*.json"] }],
+                AllowMultiple = false
+            });
+
+            if (files.Count >= 1)
+            {
+                return files.First().Path.AbsolutePath;
+            }
         }
 
         return null;
