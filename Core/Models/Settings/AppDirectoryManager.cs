@@ -4,7 +4,9 @@ namespace Core.Models.Settings
 {
     internal class AppDirectoryManager
     {
-        // Имя папки приложения
+        /// <summary>
+        /// Имя папки приложения
+        /// </summary>
         private const string ProgramFolderName = "TerminalProgram";
 
         /*******************************************************/
@@ -13,14 +15,25 @@ namespace Core.Models.Settings
         //
         /*******************************************************/
 
-        // Папка с файлами настроек
+        /// <summary>
+        /// Папка с файлами настроек
+        /// </summary>
         private const string SettingsFiles_FolderName = "Settings";
 
-        // Папка с файлами логов
+        /// <summary>
+        /// Папка с файлами логов
+        /// </summary>
         private const string LogFiles_FolderName = "LogFiles";
 
-        // Папка с общими файлами (сейчас общие файлы лежат в корне папки приложения)
+        /// <summary>
+        /// Папка с общими файлами (сейчас общие файлы лежат в корне папки приложения)
+        /// </summary>
         private readonly string CommonFiles_FolderName = string.Empty;
+
+        /// <summary>
+        /// Папка с файлами макросов
+        /// </summary>
+        private const string Macros_FolderName = "Macros";
 
         /*******************************************************/
         //
@@ -43,6 +56,11 @@ namespace Core.Models.Settings
         /// </summary>
         public readonly string CommonFiles_Directory;
 
+        /// <summary>
+        /// Полный путь к папке макросов
+        /// </summary>
+        public readonly string Macros_Directory;
+
 
         public AppDirectoryManager()
         {
@@ -56,6 +74,8 @@ namespace Core.Models.Settings
             LogFiles_Directory = Path.Combine(folderInDocuments, LogFiles_FolderName);
 
             CommonFiles_Directory = Path.Combine(folderInDocuments, CommonFiles_FolderName);
+
+            Macros_Directory = Path.Combine(folderInDocuments, Macros_FolderName);
         }
 
         /// <summary>

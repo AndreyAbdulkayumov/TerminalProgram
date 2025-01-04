@@ -1,4 +1,4 @@
-﻿namespace Core.Models.AppUpdateSystem
+﻿namespace Core.Models.AppUpdateSystem.DataTypes
 {
     public class LastestVersionInfo
     {

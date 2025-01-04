@@ -1,14 +1,7 @@
-﻿namespace Core.Models.Modbus.Message
+﻿using Core.Models.Modbus.DataTypes;
+
+namespace Core.Models.Modbus.Message
 {
-    public class ModbusActionDetails
-    {
-        public byte[]? RequestBytes;
-        public byte[]? ResponseBytes;
-
-        public DateTime Request_ExecutionTime;
-        public DateTime Response_ExecutionTime;
-    }    
-
     public abstract class ModbusMessage
     {
         /***********************************************/

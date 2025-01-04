@@ -2,13 +2,13 @@
 using ReactiveUI;
 using System.Reactive;
 using System.Collections.ObjectModel;
-using Core.Models.Modbus;
 using System.Globalization;
 using System.Reactive.Linq;
 using MessageBox_Core;
-using Core.Clients;
 using ViewModels.Validation;
 using System.Text;
+using Core.Models.Modbus.DataTypes;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.ModbusClient
 {
@@ -56,6 +56,22 @@ namespace ViewModels.ModbusClient
                 this.RaiseAndSetIfChanged(ref _slaveID, value);
                 ValidateInput(nameof(SlaveID), value);
             }
+        }
+
+        private bool _checkSum_IsEnable;
+
+        public bool CheckSum_IsEnable
+        {
+            get => _checkSum_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsEnable, value);
+        }
+
+        private bool _checkSum_IsVisible;
+
+        public bool CheckSum_IsVisible
+        {
+            get => _checkSum_IsVisible;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsVisible, value);
         }
 
         private ObservableCollection<string> _readFunctions = new ObservableCollection<string>();
@@ -128,7 +144,7 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private NumberStyles _numberViewStyle;
 
@@ -136,8 +152,6 @@ namespace ViewModels.ModbusClient
         private ushort _selectedAddress = 0;
         private ushort _selectedNumberOfRegisters = 1;
         private uint _selectedPeriod = 600;
-
-        private bool _checkSum_IsEnable;
 
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
@@ -147,11 +161,11 @@ namespace ViewModels.ModbusClient
 
 
         public ModbusClient_Mode_Cycle_VM(
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Modbus_Read = modbus_Read;
 
@@ -162,7 +176,7 @@ namespace ViewModels.ModbusClient
 
             Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+            Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
             {
                 if (_isStart)
                 {
@@ -170,9 +184,9 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                StartPolling();
+                await StartPolling();
             });
-            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             foreach (ModbusReadFunction element in Function.AllReadFunctions)
             {
@@ -182,6 +196,9 @@ namespace ViewModels.ModbusClient
             SelectedReadFunction = Function.ReadInputRegisters.DisplayedName;
 
             SelectedNumberFormat_Hex = true;
+
+            CheckSum_IsEnable = true;
+            CheckSum_IsVisible = true;
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -203,6 +220,16 @@ namespace ViewModels.ModbusClient
                         SelectNumberFormat_Dec();
                     }
                 });
+        }
+
+        public void Subscribe(ModbusClient_VM parent)
+        {
+            parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
+        }
+
+        private void Parent_CheckSum_VisibilityChanged(object? sender, bool e)
+        {
+            CheckSum_IsVisible = e;
         }
 
         public string GetFieldViewName(string fieldName)
@@ -232,14 +259,12 @@ namespace ViewModels.ModbusClient
             Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
             UI_IsEnable = true;
-
-            _checkSum_IsEnable = e.ConnectedDevice is SerialPortClient;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
 
@@ -250,7 +275,7 @@ namespace ViewModels.ModbusClient
         {
             StopPolling();
 
-            Message.Invoke(e, MessageType.Error);
+            _messageBox.Show(e, MessageType.Error);
         }
 
         private void SelectNumberFormat_Hex()
@@ -297,23 +322,23 @@ namespace ViewModels.ModbusClient
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
-        private void StartPolling()
+        private async Task StartPolling()
         {
             if (string.IsNullOrEmpty(SlaveID))
             {
-                Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(Address))
             {
-                Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
                 return;
             }
 
             if (string.IsNullOrEmpty(NumberOfRegisters))
             {
-                Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
                 return;
             }
 
@@ -321,13 +346,13 @@ namespace ViewModels.ModbusClient
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
-                Message.Invoke(validationMessage, MessageType.Warning);
+                _messageBox.Show(validationMessage, MessageType.Warning);
                 return;
             }
 
             if (_selectedPeriod < Model.Host_ReadTimeout + TimeForReadHandler)
             {
-                Message.Invoke("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
+                _messageBox.Show("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
                     TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
                     "Таймаут чтения: " + Model.Host_ReadTimeout + " мс.", MessageType.Warning);
 
@@ -337,9 +362,9 @@ namespace ViewModels.ModbusClient
             ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
             Model.Modbus.CycleMode_Period = _selectedPeriod;
-            Model.Modbus.CycleMode_Start(async () =>
+            await Model.Modbus.CycleMode_Start(async () =>
             {
-                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, _checkSum_IsEnable);
+                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
             });
 
             Button_Content = Button_Content_Stop;

@@ -32,8 +32,7 @@ namespace TerminalProgram.Views.Settings
             Message = new MessageBox(this, "Терминальная программа");
 
             ViewModel = new Settings_VM(
-                Message.Show,
-                Message.ShowYesNoDialog,
+                Message,
                 Get_FilePath,
                 Get_NewFileName,
                 set_Dark_Theme,

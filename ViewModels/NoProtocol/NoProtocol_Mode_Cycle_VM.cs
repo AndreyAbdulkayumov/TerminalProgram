@@ -1,8 +1,10 @@
 ﻿using Core.Models;
-using Core.Models.NoProtocol;
+using Core.Models.NoProtocol.DataTypes;
 using ReactiveUI;
 using MessageBox_Core;
 using System.Reactive;
+using ViewModels.Helpers;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.NoProtocol
 {
@@ -16,7 +18,23 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
         }
 
+        private bool _isStart = false;
+
+        public bool IsStart
+        {
+            get => _isStart;
+            set => this.RaiseAndSetIfChanged(ref _isStart, value);
+        }
+
         #region Message
+
+        private bool _isBytesSend;
+
+        public bool IsBytesSend
+        {
+            get => _isBytesSend;
+            set => this.RaiseAndSetIfChanged(ref _isBytesSend, value);
+        }
 
         private string _message_Content = string.Empty;
 
@@ -103,20 +121,12 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _response_String_End, value);
         }
 
-        private bool _response_CR = false;
+        private bool _response_NextLine = false;
 
-        public bool Response_CR
+        public bool Response_NextLine
         {
-            get => _response_CR;
-            set => this.RaiseAndSetIfChanged(ref _response_CR, value);
-        }
-
-        private bool _response_LF = false;
-
-        public bool Response_LF
-        {
-            get => _response_LF;
-            set => this.RaiseAndSetIfChanged(ref _response_LF, value);
+            get => _response_NextLine;
+            set => this.RaiseAndSetIfChanged(ref _response_NextLine, value);
         }
 
         #endregion
@@ -138,16 +148,13 @@ namespace ViewModels.NoProtocol
 
         #endregion
 
-        private bool _isStart = false;
-
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
-
-        public NoProtocol_Mode_Cycle_VM(Action<string, MessageType> messageBox)
+        public NoProtocol_Mode_Cycle_VM(IMessageBox messageBox)
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -156,28 +163,50 @@ namespace ViewModels.NoProtocol
 
             Model.NoProtocol.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
 
-            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
+            Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
             {
-                Start_Stop_Handler(!_isStart);
+                if (IsStart)
+                {
+                    StopPolling();
+                    return;
+                }
+
+                await StartPolling();
             });
-            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+
+            this.WhenAnyValue(x => x.IsBytesSend)
+                .Subscribe(IsBytes =>
+                {
+                    Message_Content = StringByteConverter.GetMessageString(Message_Content, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
+                });
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        public string GetValidatedString()
+        {
+            if (IsBytesSend)
+            {
+                return StringByteConverter.GetValidatedByteString(Message_Content);
+            }
+
+            return Message_Content;
+        }
+
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
             UI_IsEnable = true;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
 
-            Start_Stop_Handler(false);
+            StopPolling();
         }
 
         private void NoProtocol_Model_ErrorInCycleMode(object? sender, string e)
         {
-            Message.Invoke(e, MessageType.Error);
+            _messageBox.Show(e, MessageType.Error);
         }
 
         public void SourceWindowClosingAction()
@@ -186,45 +215,35 @@ namespace ViewModels.NoProtocol
             Model.NoProtocol.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
         }
 
-        public void Start_Stop_Handler(bool startPolling)
+        public void StopPolling()
         {
-            if (startPolling)
-            {
-                Model.NoProtocol.CycleMode_Period = Message_Period_ms;
+            Model.NoProtocol.CycleMode_Stop();
 
-                var info = new CycleModeParameters()
-                {
-                    Message = Message_Content,
+            Button_Content = Button_Content_Start;
+            IsStart = false;
+        }
 
-                    Message_CR_Enable = Message_CR,
-                    Message_LF_Enable = Message_LF,
+        private async Task StartPolling()
+        {
+            byte[] buffer = NoProtocol_VM.CreateSendBuffer(_isBytesSend, Message_Content, Message_CR, Message_LF, ConnectedHost.Model.NoProtocol.HostEncoding);
 
-                    Response_Date_Enable = Response_Date,
-                    Response_Time_Enable = Response_Time,
+            Model.NoProtocol.CycleMode_Period = Message_Period_ms;
 
-                    Response_String_Start_Enable = Response_String_Start_Enable,
-                    Response_String_Start = Response_String_Start,
+            var info = new CycleModeParameters(
+                messageBytes: buffer,
+                response_Date_Enable: Response_Date,
+                response_Time_Enable: Response_Time,
+                response_String_Start_Enable: Response_String_Start_Enable,
+                response_String_Start: Response_String_Start,
+                response_String_End_Enable: Response_String_End_Enable,
+                response_String_End: Response_String_End,
+                response_NextLine_Enable: Response_NextLine
+                );
 
-                    Response_String_End_Enable = Response_String_End_Enable,
-                    Response_String_End = Response_String_End,
+            await Model.NoProtocol.CycleMode_Start(info);
 
-                    Response_CR_Enable = Response_CR,
-                    Response_LF_Enable = Response_LF,
-                };
-
-                Model.NoProtocol.CycleMode_Start(info);
-
-                Button_Content = Button_Content_Stop;
-            }
-
-            else
-            {
-                Model.NoProtocol.CycleMode_Stop();
-
-                Button_Content = Button_Content_Start;
-            }
-
-            _isStart = startPolling;
+            Button_Content = Button_Content_Stop;
+            IsStart = true;
         }
     }
 }

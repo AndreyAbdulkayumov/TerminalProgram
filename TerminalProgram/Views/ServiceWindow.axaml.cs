@@ -18,14 +18,14 @@ namespace TerminalProgram.Views
 
         private readonly ControlForSelect _controlForSelect;
 
-        private readonly IMessageBox Message;
+        private readonly IMessageBox _messageBox;
 
 
         public ServiceWindow()
         {
             InitializeComponent();
 
-            Message = new MessageBox(this, "Терминальная программа");
+            _messageBox = new MessageBox(this, "Терминальная программа");
 
             _controlForSelect = ControlForSelect.TextBox;
 
@@ -39,7 +39,7 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            Message = new MessageBox(this, "Терминальная программа");
+            _messageBox = new MessageBox(this, "Терминальная программа");
 
             _controlForSelect = ControlForSelect.ComboBox;
 
@@ -86,7 +86,7 @@ namespace TerminalProgram.Views
 
             if (selectedFile == null)
             {
-                Message.Show("Не удалось выбрать документ.", MessageType.Error);
+                _messageBox.Show("Не удалось выбрать документ.", MessageType.Error);
             }
 
             else

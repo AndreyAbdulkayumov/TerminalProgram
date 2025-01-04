@@ -1,0 +1,133 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels"
+		xmlns:EditViews="clr-namespace:TerminalProgram.Views.Macros.EditViews;assembly=TerminalProgramBase"
+        x:Class="TerminalProgram.Views.Macros.EditMacrosWindow"
+        Title="Редактирование макроса"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		SizeToContent="WidthAndHeight"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
+	</Window.Styles>
+
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocolMacros_VM}">
+			<EditViews:NoProtocolMacros/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ModbusMacros_VM}">
+			<EditViews:ModbusMacros/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
+
+	<Border Background="{DynamicResource App_Back_Color_Background}">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Border x:Name="Border_Workspace" Grid.Row="1">
+
+				<Grid>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="80"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="60"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
+
+					<Border Grid.Row="0" Grid.Column="0"
+							Classes="AppField">
+
+						<Button Classes="MenuToolButton"
+								ToolTip.Tip="Сохранить макрос"
+								Margin="10"
+								Command="{Binding Command_SaveMacros}">
+
+							<Icons:MaterialIcon Kind="ContentSave"/>
+
+						</Button>
+
+					</Border>
+
+					<Border Grid.Row="0" Grid.Column="1"
+							Classes="AppField">
+
+						<Grid>
+
+							<TextBlock Text="Имя"
+									   FontSize="16"
+									   Margin="10,0,0,0"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+							
+							<TextBox Classes="InputField"
+									 Text="{Binding MacrosName, Mode=TwoWay}"
+									 Margin="55,0,10,0"
+									 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+						</Grid>
+
+					</Border>
+
+					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+							Classes="AppField">
+
+						<ContentControl Content="{Binding CurrentModeViewModel}"/>
+
+					</Border>
+					
+				</Grid>
+				
+			</Border>
+
+		</Grid>
+
+	</Border>
+
+</Window>

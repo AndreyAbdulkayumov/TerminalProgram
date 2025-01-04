@@ -1,6 +1,6 @@
-﻿using Core.Models.Settings;
+﻿using Core.Models.Settings.FileTypes;
 
-namespace ViewModels.FloatNumber
+namespace ViewModels.Helpers.FloatNumber
 {
     public static class FloatHelper
     {

@@ -2,13 +2,18 @@
 using System.Text;
 using Core.Clients;
 using Core.Models;
+using Core.Models.NoProtocol.DataTypes;
 using ReactiveUI;
 using MessageBox_Core;
+using ViewModels.Helpers;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.NoProtocol
 {
     public class NoProtocol_VM : ReactiveObject
     {
+        public static NoProtocol_VM? Instance { get; private set; }
+
         private object? _currentModeViewModel;
 
         public object? CurrentModeViewModel
@@ -47,6 +52,14 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _interfaceType, value);
         }
 
+        private string? _selectedEncoding;
+
+        public string? SelectedEncoding
+        {
+            get => _selectedEncoding;
+            set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
+        }
+
         private string _rx_String = string.Empty;
 
         public string RX_String
@@ -54,12 +67,6 @@ namespace ViewModels.NoProtocol
             get => _rx_String;
             set => this.RaiseAndSetIfChanged(ref _rx_String, value);
         }
-
-        // Делаем эти значения одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
-        private const int RX_Capacity = 300;
-        private const int RX_MaxCapacity = 300;
-
-        private readonly StringBuilder RX = new StringBuilder(RX_Capacity, RX_MaxCapacity);
 
         private bool _rx_NextLine;
 
@@ -69,23 +76,37 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _rx_NextLine, value);
         }
 
-        #endregion
+        private bool _rx_IsByteView = false;
 
+        public bool RX_IsByteView
+        {
+            get => _rx_IsByteView;
+            set => this.RaiseAndSetIfChanged(ref _rx_IsByteView, value);
+        }
+
+        #endregion
 
         public ReactiveCommand<Unit, Unit> Command_ClearRX { get; }
 
+        private const int MaxCapacity = 3000;
+
+        // Делаем эти значения емкости одинаковыми, чтобы не тратить ресурсы на дополнительное выделение памяти.
+        private readonly StringBuilder RX = new StringBuilder(MaxCapacity, MaxCapacity);
+
+        private const string BytesSeparator = " ";
+        private const string ElementSeparatorInCycleMode = "  ";
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private readonly NoProtocol_Mode_Normal_VM Mode_Normal_VM;
         private readonly NoProtocol_Mode_Cycle_VM Mode_Cycle_VM;
 
 
-        public NoProtocol_VM(Action<string, MessageType> messageBox)
+        public NoProtocol_VM(IMessageBox messageBox)
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -95,71 +116,124 @@ namespace ViewModels.NoProtocol
             Model.NoProtocol.Model_DataReceived += NoProtocol_Model_DataReceived;
             Model.NoProtocol.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
 
-            Command_ClearRX = ReactiveCommand.Create(() => { RX.Clear(); RX_String = RX.ToString(); });
+            Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
             Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox);
             Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox);
+
+            Instance = this;
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
                 {
                     if (!IsCycleMode)
                     {
-                        Mode_Cycle_VM.Start_Stop_Handler(false);
+                        Mode_Cycle_VM.StopPolling();
                     }
 
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        public async Task NoProtocol_Send(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)
         {
-            if (e.ConnectedDevice is IPClient)
+            byte[] buffer = CreateSendBuffer(isBytes, message, enableCR, enableLF, encoding);
+
+            await Model.NoProtocol.SendBytes(buffer);
+        }
+
+        public static byte[] CreateSendBuffer(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new Exception("Не заданы данные для отправки.");
+            }
+
+            List<byte> buffer = new List<byte>(
+                isBytes ?
+                    StringByteConverter.ByteStringToByteArray(message) :
+                    encoding.GetBytes(message)
+                    );
+
+            if (enableCR == true)
+            {
+                buffer.Add((byte)'\r');
+            }
+
+            if (enableLF == true)
+            {
+                buffer.Add((byte)'\n');
+            }
+
+            return buffer.ToArray();
+        }
+
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
+        {
+            if (e is IPClient)
             {
                 InterfaceType = InterfaceType_Ethernet;
             }
 
-            else if (e.ConnectedDevice is SerialPortClient)
+            else if (e is SerialPortClient)
             {
                 InterfaceType = InterfaceType_SerialPort;
             }
 
             else
             {
-                Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
+                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Error);
                 return;
             }
 
             UI_IsEnable = true;
-        }
+        }        
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             InterfaceType = InterfaceType_Default;
 
             UI_IsEnable = false;
         }
 
-        private void NoProtocol_Model_DataReceived(object? sender, string e)
+        private void NoProtocol_Model_DataReceived(object? sender, NoProtocolDataReceivedEventArgs e)
         {
+            string stringData;
+
+            if (RX_IsByteView)
+            {
+                stringData = BitConverter.ToString(e.RawData).Replace("-", BytesSeparator) + BytesSeparator;
+            }
+
+            else
+            {
+                stringData = ConnectedHost.GlobalEncoding.GetString(e.RawData);
+            }
+
+            if (e.DataWithDebugInfo != null)
+            {
+                e.DataWithDebugInfo[e.DataIndex] = stringData;
+                stringData = string.Join(ElementSeparatorInCycleMode, e.DataWithDebugInfo);
+            }
+
             if (RX_NextLine)
             {
-                e += "\n";
+                stringData += Environment.NewLine;
             }
 
-            if (RX.Length + e.Length > RX.MaxCapacity)
+            if (RX.Length + stringData.Length > RX.MaxCapacity)
             {
-                RX.Remove(0, RX.Length + e.Length - RX.MaxCapacity);
+                RX.Remove(0, RX.Length + stringData.Length - RX.MaxCapacity);
             }
 
-            RX.Append(e);
+            RX.Append(stringData);
 
             RX_String = RX.ToString();
         }
 
         private void NoProtocol_Model_ErrorInReadThread(object? sender, string e)
         {
-            Message.Invoke(e, MessageType.Error);
+            _messageBox.Show(e, MessageType.Error);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Core.Models.Modbus.DataTypes;
+using System.Text;
 
 namespace Core.Models.Modbus.Message
 {

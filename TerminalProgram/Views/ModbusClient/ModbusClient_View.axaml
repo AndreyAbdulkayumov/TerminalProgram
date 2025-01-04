@@ -47,18 +47,17 @@
                        Margin="10,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-			<TextBlock Text="{Binding ModbusMode_Name, Mode=OneWay}"
+			<TextBlock Text="не определен"
                        FontSize="16"
                        Foreground="{DynamicResource App_Color_Text_Bright}"
-					   IsVisible="{Binding !Connection_IsSerialPort, Mode=OneWay}"
                        Margin="220,0,0,0"
                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-			<ComboBox ItemsSource="{Binding Modbus_RTU_ASCII}"
-                      SelectedItem="{Binding Selected_Modbus_RTU_ASCII, Mode=TwoWay}"
+			<ComboBox ItemsSource="{Binding AvailableModbusTypes}"
+                      SelectedItem="{Binding SelectedModbusType, Mode=TwoWay}"
                       FontSize="16"
-					  IsVisible="{Binding Connection_IsSerialPort, Mode=OneWay}"
-                      Width="150"
+					  IsVisible="{Binding UI_IsEnable, Mode=OneWay}"
+                      Width="225"
                       Margin="220,0,0,0"
                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
 

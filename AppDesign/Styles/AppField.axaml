@@ -1,0 +1,11 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Style Selector="Border.AppField">
+		<Setter Property="Background" Value="{DynamicResource App_Field_Color_Background}"/>
+		<Setter Property="CornerRadius" Value="10"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="Margin" Value="10"/>
+	</Style>
+	
+</Styles>

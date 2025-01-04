@@ -116,7 +116,7 @@
 								 HorizontalAlignment="Left" VerticalAlignment="Top"
 								 TextChanged="UppercaseTextBox_TextChanged"/>
 
-						<CheckBox IsChecked="{Binding CheckSum_Enable, Mode=TwoWay}"
+						<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
 								  Content="Контрольная сумма"
 								  FontSize="14"
 								  Foreground="{DynamicResource App_Color_Text}"

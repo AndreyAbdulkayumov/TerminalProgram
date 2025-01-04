@@ -1,6 +1,6 @@
-﻿using Core.Clients;
+﻿using Core.Clients.DataTypes;
 using Core.Models;
-using Core.Models.Modbus;
+using Core.Models.Modbus.DataTypes;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
@@ -8,7 +8,9 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient
@@ -35,12 +37,12 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private bool _checkSum_Enable;
+        private bool _checkSum_IsEnable;
 
-        public bool CheckSum_Enable
+        public bool CheckSum_IsEnable
         {
-            get => _checkSum_Enable;
-            set => this.RaiseAndSetIfChanged(ref _checkSum_Enable, value);
+            get => _checkSum_IsEnable;
+            set => this.RaiseAndSetIfChanged(ref _checkSum_IsEnable, value);
         }
 
         private bool _checkSum_IsVisible;
@@ -144,8 +146,6 @@ namespace ViewModels.ModbusClient
         public ReactiveCommand<Unit, Unit> Command_Write { get; }
 
 
-        private readonly List<ushort> WriteBuffer = new List<ushort>();
-
         private NumberStyles _numberViewStyle;
 
         private byte _selectedSlaveID = 0;
@@ -154,7 +154,7 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
@@ -163,12 +163,12 @@ namespace ViewModels.ModbusClient
 
 
         public ModbusClient_Mode_Normal_VM(
-            Action<string, MessageType> messageBox,
-            Func<byte, ushort, ModbusWriteFunction, byte[], int, bool, Task> modbus_Write,
+            IMessageBox messageBox,
+            Func<byte, ushort, ModbusWriteFunction, byte[]?, int, bool, Task> modbus_Write,
             Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
             )
         {
-            Message = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -176,7 +176,7 @@ namespace ViewModels.ModbusClient
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM();
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM(); 
 
@@ -186,7 +186,7 @@ namespace ViewModels.ModbusClient
             //
             /****************************************************/
 
-            CheckSum_Enable = true;
+            CheckSum_IsEnable = true;
             CheckSum_IsVisible = true;
 
             SelectedNumberFormat_Hex = true;
@@ -215,19 +215,19 @@ namespace ViewModels.ModbusClient
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(Address))
                 {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(NumberOfRegisters))
                 {
-                    Message.Invoke("Укажите количество регистров для чтения.", MessageType.Warning);
+                    _messageBox.Show("Укажите количество регистров для чтения.", MessageType.Warning);
                     return;
                 }
 
@@ -235,33 +235,33 @@ namespace ViewModels.ModbusClient
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    Message.Invoke(validationMessage, MessageType.Warning);
+                    _messageBox.Show(validationMessage, MessageType.Warning);
                     return;
                 }
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_Enable);
+                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
             });
-            Command_Read.ThrownExceptions.Subscribe(error => Message.Invoke("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
+            Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
             Command_Write = ReactiveCommand.CreateFromTask(async () =>
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
-                    Message.Invoke("Укажите Slave ID.", MessageType.Warning);
+                    _messageBox.Show("Укажите Slave ID.", MessageType.Warning);
                     return;
                 }
 
                 if (string.IsNullOrEmpty(Address))
                 {
-                    Message.Invoke("Укажите адрес Modbus регистра.", MessageType.Warning);
+                    _messageBox.Show("Укажите адрес Modbus регистра.", MessageType.Warning);
                     return;
                 }
 
                 if (CurrentWriteFieldViewModel == null)
                 {
-                    Message.Invoke("Не выбран тип поля записи Modbus.", MessageType.Warning);
+                    _messageBox.Show("Не выбран тип поля записи Modbus.", MessageType.Warning);
                     return;
                 }
 
@@ -269,23 +269,17 @@ namespace ViewModels.ModbusClient
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    Message.Invoke(validationMessage, MessageType.Warning);
+                    _messageBox.Show(validationMessage, MessageType.Warning);
                     return;
                 }
 
                 ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
+                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();                               
 
-                if (modbusWriteData.Data.Length == 0)
-                {
-                    Message.Invoke("Укажите данные для записи.", MessageType.Warning);
-                    return;
-                }
-
-                await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_Enable);
+                await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable);
             });
-            Command_Write.ThrownExceptions.Subscribe(error => Message.Invoke("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
+            Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -334,6 +328,16 @@ namespace ViewModels.ModbusClient
                 });
         }
 
+        public void Subscribe(ModbusClient_VM parent)
+        {
+            parent.CheckSum_VisibilityChanged += Parent_CheckSum_VisibilityChanged;
+        }
+
+        private void Parent_CheckSum_VisibilityChanged(object? sender, bool e)
+        {
+            CheckSum_IsVisible = e;
+        }
+
         public string GetFieldViewName(string fieldName)
         {
             switch (fieldName)
@@ -362,6 +366,11 @@ namespace ViewModels.ModbusClient
             {
                 foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
                 {
+                    if (element.Key == nameof(NumberOfRegisters))
+                    {
+                        continue;
+                    }
+
                     message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
                 }
             }
@@ -451,33 +460,14 @@ namespace ViewModels.ModbusClient
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice is IPClient)
-            {
-                CheckSum_IsVisible = false;
-            }
-
-            else if (e.ConnectedDevice is SerialPortClient)
-            {
-                CheckSum_IsVisible = true;
-            }
-
-            else
-            {
-                return;
-            }
-
-            WriteBuffer.Clear();
-
             UI_IsEnable = true;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
-
-            CheckSum_IsVisible = true;
         }
 
         protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)

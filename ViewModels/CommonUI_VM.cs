@@ -10,21 +10,37 @@ using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using Core.Models.AppUpdateSystem;
+using Core.Models.Settings.FileTypes;
+using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Clients.DataTypes;
+using ViewModels.Helpers;
 
 namespace ViewModels
 {
-    public class DocArgs : EventArgs
+    public enum ApplicationWorkMode
     {
-        public readonly string? FilePath;
-
-        public DocArgs(string? filePath)
-        {
-            FilePath = filePath;
-        }
+        NoProtocol,
+        ModbusClient
     }
 
     public class CommonUI_VM : ReactiveObject
     {
+        public static string? SettingsDocument;
+
+        private static ApplicationWorkMode _currentApplicationWorkMode;
+
+        public static ApplicationWorkMode CurrentApplicationWorkMode
+        {
+            get => _currentApplicationWorkMode;
+            private set
+            {
+                _currentApplicationWorkMode = value;
+                ApplicationWorkModeChanged?.Invoke(null, value);
+            }
+        }
+
+        public static event EventHandler<ApplicationWorkMode>? ApplicationWorkModeChanged;
+
         private bool _ui_IsConnectedState = false;
 
         public bool UI_IsConnectedState
@@ -39,24 +55,6 @@ namespace ViewModels
         {
             get => _currentViewModel;
             set => this.RaiseAndSetIfChanged(ref _currentViewModel, value);
-        }
-
-        public static event EventHandler<DocArgs>? SettingsDocument_Changed;
-
-        private static string? _settingsDocument;
-
-        public static string? SettingsDocument
-        {
-            get
-            {
-                return _settingsDocument;
-            }
-
-            set
-            {
-                _settingsDocument = value;
-                SettingsDocument_Changed?.Invoke(null, new DocArgs(value));
-            }
         }
 
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
@@ -131,7 +129,7 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _connectionTimer_IsVisible, value);
         }
 
-        private string _connectionTimer_View = "";
+        private string _connectionTimer_View = string.Empty;
 
         public string ConnectionTimer_View
         {
@@ -173,7 +171,7 @@ namespace ViewModels
         private readonly Model_Settings SettingsFile;
         private readonly Model_AppUpdateSystem AppUpdateSystem;
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox Message;
 
         private readonly Action Set_Dark_Theme, Set_Light_Theme;
 
@@ -189,7 +187,7 @@ namespace ViewModels
             Version? appVersion,
             Func<Action, Task> runInUIThread,
             Func<Task> open_ModbusScanner,
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Action set_Dark_Theme_Handler,
             Action set_Light_Theme_Handler,
             Func<string, Task> copyToClipboard
@@ -226,6 +224,13 @@ namespace ViewModels
                     {
                         SettingsFile.ReadPreset(PresetName);
 
+                        if (SettingsFile.Settings != null)
+                        {
+                            string? encodingName = SettingsFile.Settings.GlobalEncoding;
+                            Model.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
+                            NoProtocol_VM.SelectedEncoding = encodingName;
+                        }                        
+
                         ConnectionString = GetConnectionString();
 
                         SettingsDocument = PresetName;
@@ -234,7 +239,7 @@ namespace ViewModels
 
                     catch (Exception error)
                     {
-                        Message.Invoke("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
+                        Message.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
                     }
                 });
 
@@ -244,7 +249,7 @@ namespace ViewModels
             });
 
             Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
-            Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
+            Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Show("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
 
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
@@ -252,8 +257,9 @@ namespace ViewModels
                 Model.SetProtocol_NoProtocol();
 
                 SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
             });
-            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
             {
@@ -261,17 +267,18 @@ namespace ViewModels
                 Model.SetProtocol_Modbus();
 
                 SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
+                CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
             });
-            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
-            Command_Connect.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Connect.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
-            Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
 
             Command_UpdateApp = ReactiveCommand.Create(() => AppUpdateSystem.GoToWebPage(_newAppDownloadLink));
-            Command_UpdateApp.ThrownExceptions.Subscribe(error => Message.Invoke($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
+            Command_UpdateApp.ThrownExceptions.Subscribe(error => Message.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
 
             Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
             {
@@ -313,17 +320,20 @@ namespace ViewModels
                 case AppMode.NoProtocol:
                     CurrentViewModel = NoProtocol_VM;
                     Model.SetProtocol_NoProtocol();
+                    CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
 
                 case AppMode.ModbusClient:
                     CurrentViewModel = ModbusClient_VM;
                     Model.SetProtocol_Modbus();
+                    CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
                     break;
 
                 default:
                     CurrentViewModel = NoProtocol_VM;
                     Model.SetProtocol_NoProtocol();
                     SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                    CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
             }
         }
@@ -429,7 +439,7 @@ namespace ViewModels
                     if (settings.Connection_IP != null)
                     {
                         connectionString =
-                            (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? "IP адрес не задан" : settings.Connection_IP.IP_Address) +
+                            (string.IsNullOrEmpty(settings.Connection_IP.IP_Address) ? "IP-адрес не задан" : settings.Connection_IP.IP_Address) +
                             separator +
                             (string.IsNullOrEmpty(settings.Connection_IP.Port) ? "Порт не задан" : settings.Connection_IP.Port);
                     }
@@ -458,7 +468,7 @@ namespace ViewModels
                 _connectionTime.Seconds);
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
             if (Model.Client != null)
             {
@@ -485,35 +495,23 @@ namespace ViewModels
             _connectionTimer.Start();
         }
 
-        private void Notifications_TX_Notification(object? sender, NotificationArgs e)
+        private void Notifications_TX_Notification(object? sender, bool e)
         {
             lock (TX_View_Locker)
             {
-                if (e.IsStarted)
-                {
-                    Led_TX_IsActive = true;
-                    return;
-                }
-
-                Led_TX_IsActive = false;
+                Led_TX_IsActive = e;
             }
         }
 
-        private void Notifications_RX_Notification(object? sender, NotificationArgs e)
+        private void Notifications_RX_Notification(object? sender, bool e)
         {
             lock (RX_View_Locker)
             {
-                if (e.IsStarted)
-                {
-                    Led_RX_IsActive = true;
-                    return;
-                }
-
-                Led_RX_IsActive = false;
+                Led_RX_IsActive = e;
             }
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _connectionTimer.Stop();
 
@@ -575,7 +573,7 @@ namespace ViewModels
                         settings.Connection_SerialPort?.DataBits,
                         settings.Connection_SerialPort?.StopBits
                         ),
-                        GetEncoding(settings.GlobalEncoding));
+                        AppEncoding.GetEncoding(settings.GlobalEncoding));
 
                     break;
 
@@ -585,7 +583,7 @@ namespace ViewModels
                         settings.Connection_IP?.IP_Address,
                         settings.Connection_IP?.Port
                         ),
-                        GetEncoding(settings.GlobalEncoding));
+                        AppEncoding.GetEncoding(settings.GlobalEncoding));
 
                     break;
 
@@ -594,27 +592,6 @@ namespace ViewModels
             }
 
             Model.Connect(info);
-        }
-
-        public Encoding GetEncoding(string? encodingName)
-        {
-            switch (encodingName)
-            {
-                case "ASCII":
-                    return Encoding.ASCII;
-
-                case "Unicode":
-                    return Encoding.Unicode;
-
-                case "UTF-32":
-                    return Encoding.UTF32;
-
-                case "UTF-8":
-                    return Encoding.UTF8;
-
-                default:
-                    throw new Exception("Задан неизвестный тип кодировки: " + encodingName);
-            }
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System.IO.Ports;
+using Core.Clients.DataTypes;
 using Core.Models;
 
 namespace Core.Clients
 {
     public class SerialPortClient : IConnection
     {
-        public event EventHandler<DataFromDevice>? DataReceived;
+        public event EventHandler<byte[]>? DataReceived;
         public event EventHandler<string>? ErrorInReadThread;
 
         public bool IsConnected
@@ -379,7 +380,7 @@ namespace Core.Clients
         {
             try
             {
-                byte[] bufferRX = new byte[50];
+                byte[] bufferRX = new byte[65536];
 
                 int numberOfReceiveBytes;
 
@@ -412,25 +413,16 @@ namespace Core.Clients
 
                         completedTask = await Task.WhenAny(readResult, waitCancel).ConfigureAwait(false);
 
-                        readCancel.ThrowIfCancellationRequested();
-
                         if (completedTask == waitCancel)
                         {
                             throw new OperationCanceledException();
                         }
 
-                        numberOfReceiveBytes = readResult.Result;
-
-                        var Data = new DataFromDevice(numberOfReceiveBytes);
-
-                        for (int i = 0; i < numberOfReceiveBytes; i++)
-                        {
-                            Data.RX[i] = bufferRX[i];
-                        }
-
                         readCancel.ThrowIfCancellationRequested();
 
-                        DataReceived?.Invoke(this, Data);
+                        numberOfReceiveBytes = readResult.Result;
+
+                        DataReceived?.Invoke(this, bufferRX.Take(numberOfReceiveBytes).ToArray());
 
                         Notifications.ReceiveEvent();
 

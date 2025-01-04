@@ -1,27 +1,9 @@
-﻿using Core.Clients;
+﻿using Core.Clients.DataTypes;
+using Core.Models.NoProtocol.DataTypes;
+using System.Text;
 
 namespace Core.Models.NoProtocol
 {
-    public class CycleModeParameters
-    {
-        public string? Message;
-
-        public bool Message_CR_Enable = false;
-        public bool Message_LF_Enable = false;
-
-        public bool Response_Date_Enable = false;
-        public bool Response_Time_Enable = false;
-
-        public bool Response_String_Start_Enable = false;
-        public string? Response_String_Start;
-
-        public bool Response_String_End_Enable = false;
-        public string? Response_String_End;
-
-        public bool Response_CR_Enable = false;
-        public bool Response_LF_Enable = false;
-    }
-
     public class Model_NoProtocol
     {
         public double CycleMode_Period
@@ -30,9 +12,11 @@ namespace Core.Models.NoProtocol
             set => CycleModeTimer.Interval = value;
         }
 
-        public event EventHandler<string>? Model_DataReceived;
+        public event EventHandler<NoProtocolDataReceivedEventArgs>? Model_DataReceived;
         public event EventHandler<string>? Model_ErrorInReadThread;
         public event EventHandler<string>? Model_ErrorInCycleMode;
+
+        public Encoding HostEncoding => ConnectedHost.GlobalEncoding;
 
         private IConnection? _client;
 
@@ -40,8 +24,6 @@ namespace Core.Models.NoProtocol
         private const double IntervalDefault = 100;
 
         private CycleModeParameters? _cycleModeInfo;
-
-        private const string SpaceString = "  ";
 
         private string[]? _outputArray;
         private int _resultIndex;
@@ -55,6 +37,7 @@ namespace Core.Models.NoProtocol
         private bool _time_IsUsed = false;
         private int _timeIndex;
 
+
         public Model_NoProtocol(ConnectedHost host)
         {
             host.DeviceIsConnect += Host_DeviceIsConnect;
@@ -64,23 +47,23 @@ namespace Core.Models.NoProtocol
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
         
-        private void Host_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice != null && e.ConnectedDevice.IsConnected)
+            if (e != null && e.IsConnected)
             {
-                _client = e.ConnectedDevice;
+                _client = e;
 
                 _client.DataReceived += Client_DataReceived;
                 _client.ErrorInReadThread += Client_ErrorInReadThread;
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _client = null;
-        }     
+        }
 
-        private void Client_DataReceived(object? sender, DataFromDevice e)
+        private void Client_DataReceived(object? sender, byte[] e)
         {
             if (_outputArray != null)
             {
@@ -99,15 +82,12 @@ namespace Core.Models.NoProtocol
                     }
                 }
 
-                _outputArray[_resultIndex] = ConnectedHost.GlobalEncoding.GetString(e.RX);
+                Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e, _outputArray, _resultIndex));
 
-                Model_DataReceived?.Invoke(this, string.Concat(_outputArray));
+                return;
             }
 
-            else
-            {
-                Model_DataReceived?.Invoke(this, ConnectedHost.GlobalEncoding.GetString(e.RX));
-            }
+            Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e));
         }
 
         private void Client_ErrorInReadThread(object? sender, string e)
@@ -117,42 +97,28 @@ namespace Core.Models.NoProtocol
             Model_ErrorInReadThread?.Invoke(this, e);            
         }
 
-        public async Task Send(string? stringMessage, bool CR_Enable, bool LF_Enable)
+        public async Task SendBytes(byte[]? bytes)
         {
             if (_client == null)
             {
                 throw new Exception("Клиент не инициализирован.");
             }
 
-            if (stringMessage == null || stringMessage == String.Empty)
+            if (bytes == null || bytes.Length == 0)
             {
                 throw new Exception("Буфер для отправления пуст. Введите отправляемое значение.");
             }
 
-            var Message = new List<byte>(ConnectedHost.GlobalEncoding.GetBytes(stringMessage));
-
-            if (CR_Enable == true)
-            {
-                Message.Add((byte)'\r');
-            }
-
-            if (LF_Enable == true)
-            {
-                Message.Add((byte)'\n');
-            }
-
-            await _client.Send(Message.ToArray(), Message.Count);
+            await _client.Send(bytes, bytes.Length);
         }
 
-        public async void CycleMode_Start(CycleModeParameters info)
+        public async Task CycleMode_Start(CycleModeParameters info)
         {
             _cycleModeInfo = info;
 
             _outputArray = CreateOutputBuffer(info);
 
-            await Send(info.Message,
-                info.Message_CR_Enable,
-                info.Message_LF_Enable);
+            await SendBytes(info.MessageBytes);
 
             CycleModeTimer.Start();
         }
@@ -171,23 +137,21 @@ namespace Core.Models.NoProtocol
             if (info.Response_Date_Enable)
             {
                 RX.Add(String.Empty);   // Элемент для даты
-                RX.Add(SpaceString);
 
-                _resultIndex += 2;
+                _resultIndex++;
 
                 _dateTime_IsUsed = true;
 
                 _date_IsUsed = true;
 
-                _timeIndex += 2;
+                _timeIndex++;
             }
 
             if (info.Response_Time_Enable)
             {
                 RX.Add(String.Empty);   // Элемент для времени
-                RX.Add(SpaceString);
 
-                _resultIndex += 2;
+                _resultIndex++;
 
                 _dateTime_IsUsed = true;
 
@@ -197,7 +161,7 @@ namespace Core.Models.NoProtocol
             if (info.Response_String_Start_Enable)
             {
                 // Элемент для пользовательской строки в начале
-                RX.Add((info.Response_String_Start == null ? String.Empty : info.Response_String_Start) + SpaceString);
+                RX.Add(info.Response_String_Start == null ? String.Empty : info.Response_String_Start);
                 _resultIndex++;
             }
 
@@ -207,19 +171,14 @@ namespace Core.Models.NoProtocol
             if (info.Response_String_End_Enable)
             {
                 // Элемент для пользовательской строки в конце
-                RX.Add(SpaceString + (info.Response_String_End == null ? String.Empty : info.Response_String_End));
+                RX.Add(info.Response_String_End == null ? String.Empty : info.Response_String_End);
             }
 
             // Два элемента для специальных символов
 
-            if (info.Response_CR_Enable)
+            if (info.Response_NextLine_Enable)
             {
-                RX.Add("\r");
-            }
-
-            if (info.Response_LF_Enable)
-            {
-                RX.Add("\n");
+                RX.Add(Environment.NewLine);
             }
 
             return RX.ToArray();
@@ -236,12 +195,12 @@ namespace Core.Models.NoProtocol
         {
             try
             {
-                if (_cycleModeInfo != null)
+                if (_cycleModeInfo == null)
                 {
-                    await Send(_cycleModeInfo.Message,
-                        _cycleModeInfo.Message_CR_Enable,
-                        _cycleModeInfo.Message_LF_Enable);
+                    throw new Exception("Нет данных для отправки.");
                 }
+
+                await SendBytes(_cycleModeInfo.MessageBytes);
             }
 
             catch(Exception error)

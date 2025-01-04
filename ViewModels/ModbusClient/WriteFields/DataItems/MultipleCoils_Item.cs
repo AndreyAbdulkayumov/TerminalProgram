@@ -37,7 +37,7 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
         public readonly Guid Id;
 
 
-        public MultipleCoils_Item(int startAddressAddition, Action<Guid> removeItemHandler)
+        public MultipleCoils_Item(int startAddressAddition, Action<Guid> removeItemHandler, bool? isLogicOne)
         {
             Id = Guid.NewGuid();
 
@@ -47,6 +47,18 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
             {
                 removeItemHandler?.Invoke(Id);
             });
+
+            if (isLogicOne != null)
+            {
+                if ((bool)isLogicOne)
+                {
+                    Logic_One = true;
+                    return;
+                }
+
+                Logic_Zero = true;
+                return;
+            }
 
             Logic_Zero = true;
         }

@@ -2,22 +2,11 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusClient.WriteFields.DataItems
 {
-    public class RequestToUpdateAddressesArgs : EventArgs
-    {
-        public readonly Guid ItemId;
-        public readonly string NewFormat;
-
-        public RequestToUpdateAddressesArgs(Guid itemId, string newFormat)
-        {
-            ItemId = itemId;
-            NewFormat = newFormat;
-        }
-    }
-
     public class MultipleRegisters_Item : ModbusDataFormatter
     {
         public event EventHandler<RequestToUpdateAddressesArgs>? RequestToUpdateAddresses;
@@ -87,16 +76,30 @@ namespace ViewModels.ModbusClient.WriteFields.DataItems
 
         public MultipleRegisters_Item(
             int startAddressAddition,
+            UInt16? initWordValue,
+            float? initFloatValue,
             Action<Guid> removeItemHandler)
         {
             Id = Guid.NewGuid();
 
             StartAddressAddition = startAddressAddition;
 
-            SelectedDataFormat = DataFormatName_hex;
+            if (initWordValue != null)
+            {
+                _data = (UInt16)initWordValue;
+                SelectedDataFormat = DataFormatName_hex;
+            }
 
-            _data = 0;
-            ViewData = ConvertNumberToString(_data, DataFormat);
+            else if (initFloatValue != null)
+            {
+                FloatData = (float)initFloatValue;
+                SelectedDataFormat = DataFormatName_float;
+            }
+            
+            else
+            {
+                SelectedDataFormat = DataFormatName_hex;
+            }
 
             Command_RemoveItem = ReactiveCommand.Create(() =>
             {

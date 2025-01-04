@@ -1,4 +1,4 @@
-﻿using ViewModels.FloatNumber;
+﻿using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.DataTypes;
 
 namespace ViewModels.ModbusClient.ModbusRepresentations

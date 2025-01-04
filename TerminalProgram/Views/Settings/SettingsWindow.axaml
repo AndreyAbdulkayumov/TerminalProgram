@@ -28,7 +28,8 @@
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
-		
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
 	</Window.Styles>
 	
 	
@@ -77,10 +78,7 @@
 					</Grid.ColumnDefinitions>
 
 					<Border Grid.Row="0" Grid.Column="0"
-							Background="{DynamicResource App_Field_Color_Background}"
-							BorderThickness="0"
-							CornerRadius="6"
-							Margin="10">
+							Classes="AppField">
 
 						<StackPanel Orientation="Horizontal"
 									Spacing="10"
@@ -124,10 +122,7 @@
 					</Border>
 
 					<Border Grid.Row="0" Grid.Column="1"
-							Background="{DynamicResource App_Field_Color_Background}"
-							BorderThickness="0"
-							CornerRadius="6"
-							Margin="10">
+							Classes="AppField">
 
 						<StackPanel Orientation="Horizontal"
 									Spacing="15"
@@ -147,12 +142,9 @@
 					</Border>
 
 					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-							Background="{DynamicResource App_Field_Color_Background}"
-							BorderThickness="0"
-							CornerRadius="6"
-							Margin="10">
+							Classes="AppField">
 
-						<TabControl >
+						<TabControl>
 
 							<TabItem Header="Подключение">
 								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>

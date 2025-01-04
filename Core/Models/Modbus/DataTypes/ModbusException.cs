@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Modbus.Message
+﻿namespace Core.Models.Modbus.DataTypes
 {
     public class ModbusException : Exception
     {

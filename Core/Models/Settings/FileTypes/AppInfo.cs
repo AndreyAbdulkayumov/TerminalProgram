@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Settings
+﻿namespace Core.Models.Settings.FileTypes
 {
     public enum AppTheme
     {
@@ -9,8 +9,7 @@
     public enum AppMode
     {
         NoProtocol,
-        ModbusClient,
-        ModbusTCPServer
+        ModbusClient
     }
 
     public class AppInfo

@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using ViewModels.Validation;
 using System.Globalization;
+using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.Settings.Tabs
 {
@@ -168,16 +169,16 @@ namespace ViewModels.Settings.Tabs
 
         public ReactiveCommand<Unit, Unit> Command_ReScan_SerialPorts { get; }
 
-        private readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
         private readonly Model_Settings SettingsFile;
 
 
-        public Connection_SerialPort_VM(Settings_VM main_VM)
+        public Connection_SerialPort_VM(Settings_VM main_VM, IMessageBox messageBox)
         {
             main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
 
-            Message = main_VM.Message;
+            _messageBox = messageBox;
 
             SettingsFile = Model_Settings.Model;
 
@@ -191,7 +192,7 @@ namespace ViewModels.Settings.Tabs
                 ReScan_SerialPorts(SettingsFile.Settings.Connection_SerialPort);
             });
 
-            Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => Message.Invoke(error.Message, MessageType.Error));
+            Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
         }
 
         public string GetFieldViewName(string fieldName)
@@ -251,7 +252,7 @@ namespace ViewModels.Settings.Tabs
 
             catch (Exception error)
             {
-                Message.Invoke("Ошибка обновления значений на странице SerialPort.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка обновления значений на странице SerialPort.\n\n" + error.Message, MessageType.Error);
             }
         }
 

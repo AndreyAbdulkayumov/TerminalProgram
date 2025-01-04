@@ -1,4 +1,4 @@
-﻿namespace Core.Models.Settings
+﻿namespace Core.Models.Settings.FileTypes
 {
     public class SerialPort_Info
     {
@@ -27,31 +27,41 @@
         public const string FloatWriteFormat_CD_AB = "CD_AB";
         public const string FloatWriteFormat_DC_BA = "DC_BA";
 
+        // Настройки подключения
+        public string? TypeOfConnection { get; set; }
+        public SerialPort_Info? Connection_SerialPort { get; set; }
+        public IP_Info? Connection_IP { get; set; }
+
+        public const string TypeOfConnection_Default = ConnectionName_SerialPort;
+
+        // Настройки режима "Без протокола"
         public string? GlobalEncoding { get; set; }
 
+        public const string GlobalEncoding_Default = "UTF-8";
+
+        // Настройки режима "Modbus"
         public string? TimeoutWrite { get; set; }
         public string? TimeoutRead { get; set; }
         public string? FloatNumberFormat { get; set; }
-        public string? TypeOfConnection { get; set; }
 
-        public SerialPort_Info? Connection_SerialPort { get; set; }
-        public IP_Info? Connection_IP { get; set; }
+        public const string TimeoutWrite_Default = "300";
+        public const string TimeoutRead_Default = "300";
+        public const string FloatNumberFormat_Default = FloatWriteFormat_BA_DC;
+
 
         public static DeviceData GetDefault()
         {
             return new DeviceData()
             {
-                GlobalEncoding = "UTF-8",
-
-                TimeoutWrite = "300",
-                TimeoutRead = "300",
-
-                FloatNumberFormat = DeviceData.FloatWriteFormat_BA_DC,
-
-                TypeOfConnection = DeviceData.ConnectionName_SerialPort,
-
+                TypeOfConnection = TypeOfConnection_Default,
                 Connection_SerialPort = null,
-                Connection_IP = null
+                Connection_IP = null,
+
+                GlobalEncoding = GlobalEncoding_Default,
+
+                TimeoutWrite = TimeoutWrite_Default,
+                TimeoutRead = TimeoutRead_Default,
+                FloatNumberFormat = FloatNumberFormat_Default,
             };
         }
 
@@ -96,18 +106,15 @@
 
             return new DeviceData()
             {
+                TypeOfConnection = TypeOfConnection,
+                Connection_SerialPort = SerialPort,
+                Connection_IP = IP,
+
                 GlobalEncoding = GlobalEncoding,
 
                 TimeoutWrite = TimeoutWrite,
                 TimeoutRead = TimeoutRead,
-
                 FloatNumberFormat = FloatNumberFormat,
-
-                TypeOfConnection = TypeOfConnection,
-
-                Connection_SerialPort = SerialPort,
-
-                Connection_IP = IP
             };
         }
     }

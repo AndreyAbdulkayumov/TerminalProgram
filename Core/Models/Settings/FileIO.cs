@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Encodings.Web;
 
 namespace Core.Models.Settings
 {
@@ -15,7 +16,8 @@ namespace Core.Models.Settings
 
             var options = new JsonSerializerOptions
             {
-                WriteIndented = true
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             };
 
             using var stream = new FileStream(filePath, FileMode.Open);

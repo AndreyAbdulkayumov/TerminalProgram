@@ -1,31 +1,9 @@
-﻿using Core.Clients;
+﻿using Core.Clients.DataTypes;
+using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 
 namespace Core.Models.Modbus
 {
-    public struct ModbusResponse
-    {
-        // Только для Modbus TCP
-        public UInt16 OperationNumber;
-        public UInt16 ProtocolID;
-        public UInt16 LengthOfPDU;
-
-        // Общая часть для всех типов Modbus протокола
-        public byte SlaveID;
-
-        // PDU - Protocol Data Unit
-        public byte Command;
-        public int LengthOfData;
-        public byte[] Data;
-    }
-
-    public class ModbusOperationResult
-    {
-        public byte[]? ReadedData;
-
-        public ModbusActionDetails? Details;
-    }
-
     public class Model_Modbus
     {
         public double CycleMode_Period
@@ -54,15 +32,15 @@ namespace Core.Models.Modbus
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
 
-        private void Host_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (e.ConnectedDevice != null && e.ConnectedDevice.IsConnected)
+            if (e != null && e.IsConnected)
             {
-                _device = e.ConnectedDevice;
+                _device = e;
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _device = null;
         }
@@ -270,9 +248,11 @@ namespace Core.Models.Modbus
             return Result;
         }
 
-        public void CycleMode_Start(Func<Task> readRegister_Handler)
+        public async Task CycleMode_Start(Func<Task> readRegister_Handler)
         {
             _readRegisterInCycleMode = readRegister_Handler;
+
+            await _readRegisterInCycleMode.Invoke();
 
             CycleModeTimer.Start();
         }

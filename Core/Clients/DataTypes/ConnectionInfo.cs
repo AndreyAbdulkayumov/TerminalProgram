@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Core.Clients
+namespace Core.Clients.DataTypes
 {
     public interface ITypeOfInfo
     {

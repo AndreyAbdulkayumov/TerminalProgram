@@ -1,4 +1,6 @@
-﻿namespace Core.Models.Settings
+﻿using Core.Models.Settings.FileTypes;
+
+namespace Core.Models.Settings
 {
     public class Model_Settings
     {
@@ -13,15 +15,30 @@
             get => _model ?? (_model = new Model_Settings());
         }
 
-        // Путь к папке с файлами настроек
+        /// <summary>
+        /// Путь к папке с файлами настроек
+        /// </summary>
         public string FolderPath_Settings
         {
             get => DirectoryManager.SettingsFiles_Directory;
         }
 
+        public string FilePath_Macros_NoProtocol
+        {
+            get => Path.Combine(DirectoryManager.Macros_Directory, FileName_Macros_NoProtocol + FileExtension);
+        }
+
+        public string FilePath_Macros_Modbus
+        {
+            get => Path.Combine(DirectoryManager.Macros_Directory, FileName_Macros_Modbus + FileExtension);
+        }
+
         private const string FileName_DefaultPreset = "Unknown";
 
         private const string FileName_AppData = "AppData";
+
+        private const string FileName_Macros_NoProtocol = "Macros_NoProtocol";
+        private const string FileName_Macros_Modbus = "Macros_Modbus";
 
         private const string FileExtension = ".json";
 
@@ -95,7 +112,21 @@
         /// Удаляет файл по указанному пути, если он существует.
         /// </summary>
         /// <param name="fileName"></param>
-        public void Delete(string fileName)
+        public void DeleteFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                throw new Exception($"Файла \"{fileName}\" не существует.");
+            }
+
+            File.Delete(fileName);
+        }
+
+        /// <summary>
+        /// Удаляет файл пресета по указанному пути, если он существует.
+        /// </summary>
+        /// <param name="fileName"></param>
+        public void DeletePreset(string fileName)
         {
             string[] arrayOfFiles = Directory.GetFiles(DirectoryManager.SettingsFiles_Directory);
 
@@ -113,11 +144,26 @@
         }
 
         /// <summary>
-        /// Копирует файл с указанным путем в директорию приложения.
+        /// Копирование файла из одной директории в другую.
+        /// </summary>
+        /// <param name="sourceFileName"></param>
+        /// <param name="destFileName"></param>
+        public void CopyFile(string sourceFileName, string destFileName)
+        {
+            if (File.Exists(destFileName))
+            {
+                throw new Exception($"Файл с именем \"{Path.GetFileName(destFileName)}\" уже существует в директории \"{Path.GetDirectoryName(destFileName)}\".");
+            }
+
+            File.Copy(sourceFileName, destFileName);
+        }
+
+        /// <summary>
+        /// Копирует файл с указанным путем в директорию пресетов.
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>Имя скопированного файла без расширения.</returns>
-        public string CopyFrom(string filePath)
+        public string CopyInPresetFolderFrom(string filePath)
         {
             string destFilePath = Path.Combine(DirectoryManager.SettingsFiles_Directory, Path.GetFileName(filePath));
 
@@ -179,6 +225,77 @@
                 );
 
             return FileIO.ReadOrCreateDefault(filePath, AppInfo.GetDefault(FileName_DefaultPreset));
+        }
+
+        /// <summary>
+        /// Сохранение макросов
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="macros"></param>
+        public void SaveMacros<T>(T macros)
+        {
+            string filePath = GetMacrosFilePath<T>(out _);
+
+            FileIO.Save(filePath, macros);
+        }
+
+        /// <summary>
+        /// Чтение файла макросов
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public T ReadMacros<T>(string filePath)
+        {
+            var macros = FileIO.Read<T>(filePath);
+
+            if (macros == null)
+            {
+                throw new Exception("Не удалось прочитать файл макроса.");
+            }
+
+            return macros;
+        }
+
+        /// <summary>
+        /// Чтение файла макросов или создание файла по умолчанию
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T ReadOrCreateDefaultMacros<T>()
+        {
+            string filePath = GetMacrosFilePath<T>(out object defaultMacrosValue);
+
+            return FileIO.ReadOrCreateDefault(filePath, (T)defaultMacrosValue);
+        }
+
+        private string GetMacrosFilePath<T>(out object defaultMacrosValue)
+        {
+            string fileName;
+
+            if (typeof(T) == typeof(MacrosModbus))
+            {
+                fileName = FileName_Macros_Modbus;
+                defaultMacrosValue = new MacrosModbus();
+            }
+
+            else if (typeof(T) == typeof(MacrosNoProtocol))
+            {
+                fileName = FileName_Macros_NoProtocol;
+                defaultMacrosValue = new MacrosNoProtocol();
+            }
+
+            else
+            {
+                throw new Exception("Попытка сохранить неподдерживаемый тип макросов.");
+            }
+
+            return DirectoryManager.FindOrCreateFile(
+                DirectoryManager.Macros_Directory,
+                fileName,
+                FileExtension,
+                defaultMacrosValue
+                );
         }
     }
 }

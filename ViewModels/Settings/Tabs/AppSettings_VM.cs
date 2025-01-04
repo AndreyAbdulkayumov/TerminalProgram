@@ -1,4 +1,5 @@
 ﻿using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
@@ -25,7 +26,7 @@ namespace ViewModels.Settings.Tabs
         private readonly Model_Settings SettingsFile;
 
 
-        public AppSettings_VM(Action set_Dark_Theme_Handler, Action set_Light_Theme_Handler, Action<string, MessageType> message)
+        public AppSettings_VM(Action set_Dark_Theme_Handler, Action set_Light_Theme_Handler, IMessageBox messageBox)
         {
             SettingsFile = Model_Settings.Model;
 
@@ -35,7 +36,7 @@ namespace ViewModels.Settings.Tabs
 
                 SettingsFile.AppData.ThemeName = AppTheme.Dark;
             });
-            Select_Dark_Theme.ThrownExceptions.Subscribe(error => message.Invoke("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
+            Select_Dark_Theme.ThrownExceptions.Subscribe(error => messageBox.Show("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
 
             Select_Light_Theme = ReactiveCommand.Create(() =>
             {
@@ -43,7 +44,7 @@ namespace ViewModels.Settings.Tabs
 
                 SettingsFile.AppData.ThemeName = AppTheme.Light;
             });
-            Select_Light_Theme.ThrownExceptions.Subscribe(error => message.Invoke("Не удалось корректно переключиться на светлую тему.\n\n" + error.Message, MessageType.Error));
+            Select_Light_Theme.ThrownExceptions.Subscribe(error => messageBox.Show("Не удалось корректно переключиться на светлую тему.\n\n" + error.Message, MessageType.Error));
         }
     }
 }

@@ -10,6 +10,7 @@ using Avalonia.Threading;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using TerminalProgram.Views.Settings;
+using TerminalProgram.Views.Macros;
 using ViewModels;
 
 
@@ -21,16 +22,13 @@ public partial class MainWindow : Window
 
     private readonly IMessageBox Message;
 
-    private readonly double WorkspaceOpacity_Default;
-    private const double WorkspaceOpacity_OpenChildWindow = 0.15;
+    private static double WorkspaceOpacity_OpenChildWindow = 0.15;
 
     private readonly Border? _resizeIcon;
 
     public MainWindow()
     {
         InitializeComponent();
-
-        WorkspaceOpacity_Default = Grid_Workspace.Opacity;
 
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
 
@@ -40,7 +38,7 @@ public partial class MainWindow : Window
                 AboutWindow.GetAppVersion(),
                 RunInUIThread,
                 OpenWindow_ModbusScanner,
-                Message.Show,
+                Message,
                 Set_Dark_Theme,
                 Set_Light_Theme,
                 CopyToClipboard
@@ -61,7 +59,8 @@ public partial class MainWindow : Window
             var window = new ModbusScannerWindow();
 
             await window.ShowDialog(this);
-        });
+        }, 
+        Grid_Workspace);
     }
 
     private async Task CopyToClipboard(string Data)
@@ -182,7 +181,8 @@ public partial class MainWindow : Window
             await window.ShowDialog(this);
 
             await ViewModel.Command_UpdatePresets.Execute();
-        });
+        },
+        Grid_Workspace);
     }
 
     private async void Button_About_Click(object? sender, RoutedEventArgs e)
@@ -192,7 +192,13 @@ public partial class MainWindow : Window
             var window = new AboutWindow();
 
             await window.ShowDialog(this);
-        });
+        },
+        Grid_Workspace);
+    }
+
+    private void Button_Macros_Click(object? sender, RoutedEventArgs e)
+    {
+        MacrosWindow.ShowWindow(this);
     }
 
     /********************************************************/
@@ -201,15 +207,17 @@ public partial class MainWindow : Window
     //
     /********************************************************/
 
-    private async Task OpenWindowWithDimmer(Func<Task> OpenAction)
+    public static async Task OpenWindowWithDimmer(Func<Task> OpenAction, Grid workspace)
     {
         await Dispatcher.UIThread.Invoke(async () =>
         {
-            Grid_Workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
+            double workspaceOpacity_Default = workspace.Opacity;
+
+            workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
 
             await OpenAction();
 
-            Grid_Workspace.Opacity = WorkspaceOpacity_Default;
+            workspace.Opacity = workspaceOpacity_Default;
         });
     }
 }

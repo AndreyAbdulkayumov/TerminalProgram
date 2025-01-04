@@ -41,17 +41,34 @@
 
 		<Grid Grid.Row="0">
 
-			<TextBlock Text="Тип интерфейса:"
-                       FontSize="16"
-                       Foreground="{DynamicResource App_Color_Text}"
-                       Margin="10,0,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Left" VerticalAlignment="Center">
 
-			<TextBlock Text="{Binding InterfaceType, Mode=OneWay}"
-                       FontSize="16"
-                       Foreground="{DynamicResource App_Color_Text_Bright}"
-                       Margin="155,0,0,0"
-                       HorizontalAlignment="Left" VerticalAlignment="Center"/>
+				<TextBlock Text="Тип интерфейса:"
+						   FontSize="16"
+                           Foreground="{DynamicResource App_Color_Text}"/>
+
+				<TextBlock Text="{Binding InterfaceType, Mode=OneWay}"
+						   FontSize="16"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+				
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="290,0,0,0"
+						HorizontalAlignment="Left" VerticalAlignment="Center">
+
+				<TextBlock Text="Кодировка:"
+						   FontSize="16"
+                           Foreground="{DynamicResource App_Color_Text}"/>
+
+				<TextBlock Text="{Binding SelectedEncoding, Mode=OneWay}"
+						   FontSize="16"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+			</StackPanel>	
+			
 			 
 			<ToggleSwitch Margin="0,0,20,0"
 						  OffContent="Цикличный опрос"
@@ -79,37 +96,33 @@
 					 Text="{Binding RX_String, Mode=OneWay}"
 					 IsReadOnly="True"
                      IsUndoEnabled="False"
-                     MaxLines="50"
-                     MaxLength="300"
 					 TextAlignment="Left"
 					 Margin="10,10,10,0"
 					 TextChanged="TextBox_TextChanged"/>
 
 			<Grid Grid.Row="1">
 
-				<StackPanel Orientation="Horizontal" Spacing="30"
-							HorizontalAlignment="Left"
-							Margin="20,0,0,0">
+				<CheckBox Content="Каждое сообщение на новой строке"
+						  Foreground="{DynamicResource App_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
+						  Margin="20,0,0,0"
+						  HorizontalAlignment="Left"/>
 
-					<Button x:Name="Button_SaveAs"
-							Width="130"
-							Content="Сохранить как..."/>
+				<StackPanel Orientation="Horizontal" Spacing="15"
+							Margin="0,0,20,0"
+							HorizontalAlignment="Right">
 
-					<CheckBox x:Name="CheckBox_NextLine"
-							  Foreground="{DynamicResource App_Color_Text}"
-							  FontSize="14"
-							  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
-							  Content="LF ( &#8216;\n	&#8216;, 0x0A)"/>
+					<ToggleSwitch OffContent="Строка"
+								  OnContent="Байты"
+								  IsChecked="{Binding RX_IsByteView, Mode=TwoWay}"/>
+
+					<Button Content="Очистить поле"
+							Width="120"
+							Command="{Binding Command_ClearRX}"/>
 					
-				</StackPanel>				
-
-				<Button x:Name="Button_ClearFieldRX"
-                        Margin="0,0,20,0"
-                        Width="120"
-                        Content="Очистить поле"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Command="{Binding Command_ClearRX}"/>
-
+				</StackPanel>
+				
 			</Grid>
 
 		</Grid>

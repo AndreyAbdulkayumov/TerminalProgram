@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
+using ViewModels.Helpers;
 
 namespace ViewModels.Settings.Tabs
 {
@@ -7,7 +8,7 @@ namespace ViewModels.Settings.Tabs
     {
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
         {
-            "ASCII", "UTF-8", "UTF-32", "Unicode"
+            AppEncoding.Name_ASCII, AppEncoding.Name_UTF8, AppEncoding.Name_UTF32, AppEncoding.Name_Unicode
         };
 
         public ObservableCollection<string> TypeOfEncoding
@@ -22,7 +23,6 @@ namespace ViewModels.Settings.Tabs
             get => _selectedEncoding;
             set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
         }
-
 
         public NoProtocol_VM()
         {

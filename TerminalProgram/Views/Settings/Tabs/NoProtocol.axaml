@@ -10,12 +10,13 @@
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
 
 		<Style Selector="TextBlock.Parameters">
 			<Setter Property="FontSize" Value="14"/>
-			<Setter Property="Margin" Value="0,0,235,0"/>
+			<Setter Property="Margin" Value="0,8,235,0"/>
 			<Setter Property="HorizontalAlignment" Value="Right"/>
-			<Setter Property="VerticalAlignment" Value="Center"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
 		</Style>
 
 		<Style Selector="ComboBox">
@@ -26,6 +27,24 @@
 			<Setter Property="Margin" Value="235,0,0,0"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBox.InputField.Settings">
+			<Setter Property="Width" Value="100"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Padding" Value="10,0,10,0"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBlock.Units">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="350,8,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
 		</Style>
 		
 	</UserControl.Styles>
@@ -44,7 +63,7 @@
 			<ComboBox ItemsSource="{Binding TypeOfEncoding}"
 					  SelectedItem="{Binding SelectedEncoding}"/>
 			
-		</Grid>
+		</Grid>	
 
 	</StackPanel>
 	

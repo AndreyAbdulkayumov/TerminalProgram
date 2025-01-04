@@ -1,11 +1,12 @@
 ﻿using System.Net.Sockets;
+using Core.Clients.DataTypes;
 using Core.Models;
 
 namespace Core.Clients
 {
     public class IPClient : IConnection
     {
-        public event EventHandler<DataFromDevice>? DataReceived;
+        public event EventHandler<byte[]>? DataReceived;
         public event EventHandler<string>? ErrorInReadThread;
 
         public bool IsConnected { get; private set; } = false;
@@ -121,7 +122,7 @@ namespace Core.Clients
                 string.IsNullOrEmpty(socketInfo.Port))
             {
                 throw new Exception(
-                    (string.IsNullOrEmpty(socketInfo.IP) ? "IP адрес не задан.\n" : "") +
+                    (string.IsNullOrEmpty(socketInfo.IP) ? "IP-адрес не задан.\n" : "") +
                     (string.IsNullOrEmpty(socketInfo.Port) ? "Порт не задан." : "")
                     );
             }
@@ -287,7 +288,7 @@ namespace Core.Clients
         {
             try
             {
-                byte[] bufferRX = new byte[50];
+                byte[] bufferRX = new byte[currentStream.Socket.ReceiveBufferSize];
 
                 int numberOfReceiveBytes;
 
@@ -328,14 +329,7 @@ namespace Core.Clients
 
                         numberOfReceiveBytes = readResult.Result;
 
-                        var Data = new DataFromDevice(numberOfReceiveBytes);
-
-                        for (int i = 0; i < numberOfReceiveBytes; i++)
-                        {
-                            Data.RX[i] = bufferRX[i];
-                        }
-
-                        DataReceived?.Invoke(this, Data);
+                        DataReceived?.Invoke(this, bufferRX.Take(numberOfReceiveBytes).ToArray());
 
                         Notifications.ReceiveEvent();
 

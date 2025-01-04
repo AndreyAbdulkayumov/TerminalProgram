@@ -2,7 +2,6 @@
 using System.Reactive;
 using ReactiveUI;
 using Core.Models;
-using Core.Models.Modbus;
 using Core.Models.Modbus.Message;
 using System.Reactive.Linq;
 using Core.Clients;
@@ -10,17 +9,23 @@ using MessageBox_Core;
 using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
+using Core.Models.Modbus.DataTypes;
+using Core.Clients.DataTypes;
 
 namespace ViewModels.ModbusClient
 {
     public class ModbusClient_VM : ReactiveObject
     {
+        public static ModbusClient_VM? Instance { get; private set; }
+
         public const string ViewContent_NumberStyle_dec = "(dec)";
         public const string ViewContent_NumberStyle_hex = "(hex)";
 
         // Добавлять данные в DataGrid можно только из UI потока.
         // Поэтому используется событие, обработчик которого вызывается в behind code у файла с разметкой DataGrid.
         public static event EventHandler<ModbusDataDisplayed?>? AddDataOnTable;
+
+        public event EventHandler<bool>? CheckSum_VisibilityChanged;
 
         private object? _currentModeViewModel;
 
@@ -48,44 +53,39 @@ namespace ViewModels.ModbusClient
             set => this.RaiseAndSetIfChanged(ref _isCycleMode, value);
         }
 
-        private const string ModbusMode_Name_Default = "не определен";
-
-        private string? _modbusMode_Name;
-
-        public string? ModbusMode_Name
-        {
-            get => _modbusMode_Name;
-            set => this.RaiseAndSetIfChanged(ref _modbusMode_Name, value);
-        }
-
+        private const string Modbus_TCP_Name = "Modbus TCP";
         private const string Modbus_RTU_Name = "Modbus RTU";
         private const string Modbus_ASCII_Name = "Modbus ASCII";
+        private const string Modbus_RTU_over_TCP_Name = "Modbus RTU over TCP";
+        private const string Modbus_ASCII_over_TCP_Name = "Modbus ASCII over TCP";
 
-        private readonly ObservableCollection<string> _modbus_RTU_ASCII =
+
+        private readonly ObservableCollection<string> _modbusTypes_SerialPortClient =
             new ObservableCollection<string>()
             {
                 Modbus_RTU_Name, Modbus_ASCII_Name
             };
 
-        public ObservableCollection<string> Modbus_RTU_ASCII
+        private readonly ObservableCollection<string> _modbusTypes_IPClient =
+            new ObservableCollection<string>()
+            {
+                Modbus_TCP_Name, Modbus_RTU_over_TCP_Name, Modbus_ASCII_over_TCP_Name
+            };
+
+        private ObservableCollection<string>? _availableModbusTypes;
+
+        public ObservableCollection<string>? AvailableModbusTypes
         {
-            get => _modbus_RTU_ASCII;
+            get => _availableModbusTypes;
+            set => this.RaiseAndSetIfChanged(ref _availableModbusTypes, value);
         }
 
-        private string? _selected_Modbus_RTU_ASCII;
+        private string _selectedModbusType = string.Empty;
 
-        public string? Selected_Modbus_RTU_ASCII
+        public string SelectedModbusType
         {
-            get => _selected_Modbus_RTU_ASCII;
-            set => this.RaiseAndSetIfChanged(ref _selected_Modbus_RTU_ASCII, value);
-        }
-
-        private bool _connection_IsSerialPort = false;
-
-        public bool Connection_IsSerialPort
-        {
-            get => _connection_IsSerialPort;
-            set => this.RaiseAndSetIfChanged(ref _connection_IsSerialPort, value);
+            get => _selectedModbusType;
+            set => this.RaiseAndSetIfChanged(ref _selectedModbusType, value);
         }
 
         private bool _buttonModbusScanner_IsVisible = true;
@@ -148,9 +148,9 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Func<Action, Task> RunInUIThread;
+        private readonly Func<Action, Task> _runInUIThread;
 
-        private readonly Action<string, MessageType> Message;     
+        private readonly IMessageBox _messageBox;     
 
         private ushort _packageNumber = 0;
 
@@ -164,13 +164,13 @@ namespace ViewModels.ModbusClient
         public ModbusClient_VM(
             Func<Action, Task> runInUIThread,
             Func<Task> open_ModbusScanner,
-            Action<string, MessageType> messageBox,
+            IMessageBox messageBox,
             Func<string, Task> copyToClipboard
             )
         {
-            RunInUIThread = runInUIThread;
+            _runInUIThread = runInUIThread;
 
-            Message = messageBox;
+            _messageBox = messageBox;
 
             _copyToClipboard = copyToClipboard;
 
@@ -180,17 +180,12 @@ namespace ViewModels.ModbusClient
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             Mode_Normal_VM = new ModbusClient_Mode_Normal_VM(messageBox, Modbus_Write, Modbus_Read);
-            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);
+            Mode_Normal_VM.Subscribe(this);
 
-            /****************************************************/
-            //
-            // Первоначальная настройка UI
-            //
-            /****************************************************/
+            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);       
+            Mode_Cycle_VM.Subscribe(this);
 
-            Selected_Modbus_RTU_ASCII = Modbus_RTU_ASCII.First();
-
-            ModbusMode_Name = ModbusMode_Name_Default;
+            Instance = this;
 
             /****************************************************/
             //
@@ -212,7 +207,7 @@ namespace ViewModels.ModbusClient
 
                 await copyToClipboard(Data);
             });
-            Command_Copy_Request.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
             Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -228,7 +223,7 @@ namespace ViewModels.ModbusClient
 
                 await copyToClipboard(Data);
             });
-            Command_Copy_Response.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
             Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(open_ModbusScanner);
 
@@ -239,7 +234,7 @@ namespace ViewModels.ModbusClient
                 RequestResponseItems.Clear();
                 LogData = string.Empty;
             });
-            Command_ClearData.ThrownExceptions.Subscribe(error => Message.Invoke("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
+            Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
@@ -252,88 +247,87 @@ namespace ViewModels.ModbusClient
                     CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
                 });
 
-            this.WhenAnyValue(x => x.Selected_Modbus_RTU_ASCII)
+            this.WhenAnyValue(x => x.SelectedModbusType)
                 .WhereNotNull()
                 .Subscribe(x =>
                 {
                     if (Model.HostIsConnect)
                     {
-                        if (Selected_Modbus_RTU_ASCII == Modbus_RTU_Name)
-                        {
-                            ModbusMessageType = new ModbusRTU_Message();
-                        }
+                        SetCheckSumVisiblity();
 
-                        else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
+                        if (SelectedModbusType == Modbus_TCP_Name)
                         {
-                            ModbusMessageType = new ModbusASCII_Message();
-                        }
-
-                        else
-                        {
-                            Message.Invoke("Задан неизвестный тип Modbus протокола: " + Selected_Modbus_RTU_ASCII, MessageType.Error);
+                            ModbusMessageType = new ModbusTCP_Message();
                             return;
                         }
+
+                        if (SelectedModbusType == Modbus_RTU_Name || 
+                            SelectedModbusType == Modbus_RTU_over_TCP_Name)
+                        {
+                            ModbusMessageType = new ModbusRTU_Message();
+                            return;
+                        }
+
+                        if (SelectedModbusType == Modbus_ASCII_Name ||
+                            SelectedModbusType == Modbus_ASCII_over_TCP_Name)
+                        {
+                            ModbusMessageType = new ModbusASCII_Message();
+                            return;
+                        }
+
+                        _messageBox.Show("Задан неизвестный тип Modbus протокола: " + SelectedModbusType, MessageType.Error);
                     }
                 });
         }
 
-        private void Model_DeviceIsConnect(object? sender, ConnectArgs e)
+        private void SetCheckSumVisiblity()
         {
-            if (e.ConnectedDevice is IPClient)
-            {
-                ModbusMessageType = new ModbusTCP_Message();
+            bool isVisible = !Model.HostIsConnect || SelectedModbusType != Modbus_TCP_Name;
 
-                Connection_IsSerialPort = false;
+            CheckSum_VisibilityChanged?.Invoke(this, isVisible);
+        }
+
+        private void Model_DeviceIsConnect(object? sender, IConnection? e)
+        {
+            if (e is IPClient)
+            {
+                AvailableModbusTypes = _modbusTypes_IPClient;
+
                 ButtonModbusScanner_IsVisible = false;
             }
 
-            else if (e.ConnectedDevice is SerialPortClient)
+            else if (e is SerialPortClient)
             {
-                if (Selected_Modbus_RTU_ASCII == Modbus_RTU_Name)
-                {
-                    ModbusMessageType = new ModbusRTU_Message();
-                }
+                AvailableModbusTypes = _modbusTypes_SerialPortClient;
 
-                else if (Selected_Modbus_RTU_ASCII == Modbus_ASCII_Name)
-                {
-                    ModbusMessageType = new ModbusASCII_Message();
-                }
-
-                else
-                {
-                    Message.Invoke("Задан неизвестный тип Modbus протокола: " + Selected_Modbus_RTU_ASCII, MessageType.Error);
-                    return;
-                }
-
-                Connection_IsSerialPort = true;
                 ButtonModbusScanner_IsVisible = true;
             }
 
             else
             {
-                Message.Invoke("Задан неизвестный тип подключения.", MessageType.Error);
+                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Error);
                 return;
             }
 
-            ModbusMode_Name = ModbusMessageType.ProtocolName;
+            SelectedModbusType = AvailableModbusTypes.Contains(SelectedModbusType) ? SelectedModbusType : AvailableModbusTypes.First();
+
+            SetCheckSumVisiblity();
 
             UI_IsEnable = true;
         }
 
-        private void Model_DeviceIsDisconnected(object? sender, ConnectArgs e)
+        private void Model_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             UI_IsEnable = false;
 
             ButtonModbusScanner_IsVisible = true;
 
-            Connection_IsSerialPort = false;
-
-            ModbusMode_Name = ModbusMode_Name_Default;
+            SetCheckSumVisiblity();
 
             _packageNumber = 0;
         }
 
-        private async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
+        public async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
         {
             try
             {
@@ -400,7 +394,7 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[] modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
+        public async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[]? modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
         {
             try
             {
@@ -417,6 +411,11 @@ namespace ViewModels.ModbusClient
                 if (ModbusMessageType == null)
                 {
                     throw new Exception("Не задан тип протокола Modbus.");
+                }
+
+                if (modbusWriteData == null || modbusWriteData.Length == 0)
+                {
+                    throw new Exception("Укажите данные для записи.");
                 }
 
                 _currentFunction = writeFunction;
@@ -524,11 +523,11 @@ namespace ViewModels.ModbusClient
             {
                 AddDataOnTable?.Invoke(this, data);
 
-                RunInUIThread.Invoke(() =>
+                _runInUIThread.Invoke(() =>
                 {
                     BinaryRepresentationItems.Clear();
 
-                    var binaryItems = BinaryRepresentation.GetData(data, Message, _copyToClipboard);
+                    var binaryItems = BinaryRepresentation.GetData(data, _messageBox, _copyToClipboard);
 
                     if (binaryItems != null)
                     {
@@ -536,7 +535,7 @@ namespace ViewModels.ModbusClient
                     }                    
                 });
 
-                RunInUIThread.Invoke(() =>
+                _runInUIThread.Invoke(() =>
                 {
                     FloatRepresentationItems.Clear();
 
@@ -554,7 +553,7 @@ namespace ViewModels.ModbusClient
                 (string[] Bytes, string LogString) request = ParseData(details.RequestBytes);
                 (string[] Bytes, string LogString) response = ParseData(details.ResponseBytes);
 
-                RunInUIThread.Invoke(() =>
+                _runInUIThread.Invoke(() =>
                 {
                     RequestResponseItems.Clear();
                     RequestResponseItems.AddRange(LastRequestRepresentation.GetData(request.Bytes, response.Bytes));

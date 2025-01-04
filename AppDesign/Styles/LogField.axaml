@@ -5,7 +5,7 @@
 
 		<Setter Property="Background" Value="{DynamicResource TX_RX_Field_Background}"/>
 		<Setter Property="Foreground" Value="{DynamicResource TX_RX_Field_Foreground}"/>
-		<Setter Property="SelectionBrush" Value="#91C1E6"/> <!-- Для всех тем -->
+		<Setter Property="SelectionBrush" Value="{DynamicResource TX_RX_Field_SelectionBrush}"/>
 		<Setter Property="CaretBrush" Value="{DynamicResource TX_RX_Field_Foreground}"/>
 		<Setter Property="BorderBrush" Value="{DynamicResource TX_RX_Field_BorderBrush}"/>
 		<Setter Property="BorderThickness" Value="1"/>

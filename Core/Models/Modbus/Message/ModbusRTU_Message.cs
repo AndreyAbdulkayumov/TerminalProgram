@@ -1,4 +1,6 @@
-﻿namespace Core.Models.Modbus.Message
+﻿using Core.Models.Modbus.DataTypes;
+
+namespace Core.Models.Modbus.Message
 {
     public class ModbusRTU_Message : ModbusMessage
     {

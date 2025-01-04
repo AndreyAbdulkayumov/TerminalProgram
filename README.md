@@ -31,7 +31,7 @@
 В поле передачи пользователь пишет данные, которые нужно отправить. В поле приема находятся данные, которые прислал сервер или внешнее устройство. 
 
 	Поддерживаются протоколы: 
-	- SerialPort (UART)
+	- UART
 	- TCP
 
 <p align="center">
@@ -49,6 +49,8 @@
 	- Modbus TCP
 	- Modbus RTU
  	- Modbus ASCII
+  	- Modbus RTU over TCP
+ 	- Modbus ASCII over TCP
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/00f85b38-ac78-453d-b3d6-b36a68c26afd"/>
@@ -66,6 +68,8 @@ GUI Framework - [Avalonia UI](https://avaloniaui.net/)
 Для тестирования используется [xUnit](https://xunit.net/)
 
 Скрипт установщика написан с помощью [Inno Setup Compiler](https://jrsoftware.org/isdl.php)
+
+Иконки приложения [Material.Icons.Avalonia](https://github.com/AvaloniaUtils/Material.Icons.Avalonia/)
 
 # *Система версирования* Global.Major.Minor
 

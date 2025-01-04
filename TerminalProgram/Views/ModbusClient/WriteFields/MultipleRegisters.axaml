@@ -10,6 +10,21 @@
 				Spacing="10"
 				HorizontalAlignment="Center" VerticalAlignment="Stretch">
 
+		<StackPanel Orientation="Horizontal" Spacing="10"
+					Width="415"
+					IsVisible="{Binding FloatFormatChangeIsEnabled, Mode=OneWay}">
+
+			<TextBlock Text="Формат числа типа float"
+					   VerticalAlignment="Center"/>
+			
+			<ComboBox Width="100"
+					  ItemsSource="{Binding FloatFormats}"
+					  SelectedItem="{Binding SelectedFloatFormat}"
+					  VerticalAlignment="Top"/>
+
+		</StackPanel>
+		
+		
 		<ItemsControl ItemsSource="{Binding WriteDataCollection, Mode=OneWay}">
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>

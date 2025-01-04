@@ -1,5 +1,5 @@
 ﻿using Core.Models;
-using Core.Models.Modbus;
+using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using MessageBox_Core;
 using ReactiveUI;
@@ -117,7 +117,7 @@ namespace ViewModels.ModbusClient
 
         public ReactiveCommand<Unit, Unit> Command_Start_Stop_Search { get; }
 
-        private readonly Action<string, MessageType> MessageBox;
+        private readonly IMessageBox _messageBox;
 
         private readonly ConnectedHost Model;
 
@@ -126,9 +126,9 @@ namespace ViewModels.ModbusClient
 
         private uint _pauseBetweenRequests_ForWork;
 
-        public ModbusScanner_VM(Action<string, MessageType> messageBox)
+        public ModbusScanner_VM(IMessageBox messageBox)
         {
-            MessageBox = messageBox;
+            _messageBox = messageBox;
 
             Model = ConnectedHost.Model;
 
@@ -145,7 +145,7 @@ namespace ViewModels.ModbusClient
 
                 StartPolling();
             });
-            Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => messageBox.Invoke(error.Message, MessageType.Error));
+            Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             // Значения по умолчанию
             PauseBetweenRequests = "100";
@@ -165,7 +165,7 @@ namespace ViewModels.ModbusClient
         {
             if (string.IsNullOrEmpty(PauseBetweenRequests))
             {
-                MessageBox.Invoke("Не задано значение паузы.", MessageType.Warning);
+                _messageBox.Show("Не задано значение паузы.", MessageType.Warning);
                 return;
             }
 
@@ -173,7 +173,7 @@ namespace ViewModels.ModbusClient
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
-                MessageBox.Invoke(validationMessage, MessageType.Warning);
+                _messageBox.Show(validationMessage, MessageType.Warning);
                 return;
             }
 
@@ -301,7 +301,7 @@ namespace ViewModels.ModbusClient
 
             catch (Exception error)
             {
-                MessageBox.Invoke(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error);
             }
 
             finally

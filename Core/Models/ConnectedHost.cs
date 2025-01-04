@@ -1,4 +1,5 @@
 ﻿using Core.Clients;
+using Core.Clients.DataTypes;
 using Core.Models.Modbus;
 using Core.Models.NoProtocol;
 using Core.Models.Settings;
@@ -6,16 +7,6 @@ using System.Text;
 
 namespace Core.Models
 {
-    public class ConnectArgs : EventArgs
-    {
-        public readonly IConnection? ConnectedDevice;
-
-        public ConnectArgs(IConnection? connectedDevice)
-        {
-            ConnectedDevice = connectedDevice;
-        }
-    }
-
     public class ConnectedHost
     {
         public bool HostIsConnect
@@ -44,8 +35,8 @@ namespace Core.Models
             }
         }
 
-        public event EventHandler<ConnectArgs>? DeviceIsConnect;
-        public event EventHandler<ConnectArgs>? DeviceIsDisconnected;
+        public event EventHandler<IConnection?>? DeviceIsConnect;
+        public event EventHandler<IConnection?>? DeviceIsDisconnected;
 
         // Реализация паттерна "Одиночка"
         private static ConnectedHost? _model;
@@ -73,7 +64,7 @@ namespace Core.Models
 
             SetProtocol_NoProtocol();
 
-            DeviceIsDisconnected?.Invoke(this, new ConnectArgs(Client));
+            DeviceIsDisconnected?.Invoke(this, Client);
         }
 
         public void SetProtocol_NoProtocol()
@@ -84,6 +75,11 @@ namespace Core.Models
         public void SetProtocol_Modbus()
         {
             SelectedProtocol = new ProtocolMode_Modbus(Client, Model_Settings.Model.Settings);
+        }
+
+        public void SetGlobalEncoding(Encoding globalEncoding)
+        {
+            GlobalEncoding = globalEncoding;
         }
 
         public void Connect(ConnectionInfo information)
@@ -110,7 +106,7 @@ namespace Core.Models
 
             Client.Connect(information);
 
-            GlobalEncoding = information.GlobalEncoding;
+            SetGlobalEncoding(GlobalEncoding);
 
             var modbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
 
@@ -118,7 +114,7 @@ namespace Core.Models
 
             SelectedProtocol.InitMode(Client);
 
-            DeviceIsConnect?.Invoke(this, new ConnectArgs(Client));
+            DeviceIsConnect?.Invoke(this, Client);
         }
 
         public async Task Disconnect()
@@ -130,7 +126,7 @@ namespace Core.Models
 
             await Client.Disconnect();
 
-            DeviceIsDisconnected?.Invoke(this, new ConnectArgs(Client));
+            DeviceIsDisconnected?.Invoke(this, Client);
         }        
     }
 }

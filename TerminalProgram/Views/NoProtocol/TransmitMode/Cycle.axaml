@@ -3,8 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="1000" d:DesignHeight="150"
-             x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Cycle">
+			 d:DesignWidth="1000" d:DesignHeight="180"
+             x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Cycle"
+			 DataContextChanged="UserControl_DataContextChanged">
 
 	<UserControl.Styles>
 
@@ -23,32 +24,38 @@
 			<StackPanel Orientation="Vertical" Spacing="15"
 						Margin="20,10,20,10">
 
-				<StackPanel Orientation="Horizontal" Spacing="20">
+				<StackPanel Orientation="Horizontal" Spacing="20"
+							IsEnabled="{Binding !IsStart, Mode=OneWay}">
 
 					<TextBlock Text="Запрос"
 							   Width="55"
 							   VerticalAlignment="Center"/>
 
-					<TextBox Classes="InputField"
-							 Width="200"
-							 Text="{Binding Message_Content, Mode=TwoWay}"
-							 VerticalAlignment="Center"/>
+					<ToggleSwitch OffContent="Строка"
+							      OnContent="Байты"
+								  IsChecked="{Binding IsBytesSend, Mode=TwoWay}"/>
 
-					<CheckBox Foreground="{DynamicResource App_Color_Text}"
+					<TextBox x:Name="TextBox_TX"
+							 Classes="InputField"
+							 Width="341"
+							 Text="{Binding Message_Content, Mode=TwoWay}"
+							 VerticalAlignment="Center"
+							 TextChanged="TextBox_TextChanged"/>
+
+					<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
+							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="CR ( &#8216;\r &#8217;)"
-							  VerticalAlignment="Center"
 							  IsChecked="{Binding Message_CR, Mode=TwoWay}"/>
 
-					<CheckBox Foreground="{DynamicResource App_Color_Text}"
+					<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+							  Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="LF ( &#8216;\n	&#8216;)"
-							  VerticalAlignment="Center"
 							  IsChecked="{Binding Message_LF, Mode=TwoWay}"/>
 
 				</StackPanel>
 
-				<StackPanel Orientation="Horizontal" Spacing="20">
+				<StackPanel Orientation="Horizontal" Spacing="20"
+							IsEnabled="{Binding !IsStart, Mode=OneWay}">
 
 					<TextBlock Text="Ответ"
 							   Width="55"
@@ -103,15 +110,9 @@
 
 					<CheckBox Foreground="{DynamicResource App_Color_Text}"
 							  FontSize="14"
-							  Content="CR ( &#8216;\r &#8217;)"
+							  Content="CR+LF ( &#8216;\r\n &#8217;)"
 							  VerticalAlignment="Center"
-							  IsChecked="{Binding Response_CR, Mode=TwoWay}"/>
-
-					<CheckBox Foreground="{DynamicResource App_Color_Text}"
-							  FontSize="14"
-							  Content="LF ( &#8216;\n	&#8216;)"
-							  VerticalAlignment="Center"
-							  IsChecked="{Binding Response_LF, Mode=TwoWay}"/>
+							  IsChecked="{Binding Response_NextLine, Mode=TwoWay}"/>
 
 				</StackPanel>
 
@@ -124,6 +125,7 @@
 					<TextBox Classes="InputField"
 							 Width="60"
 							 Text="{Binding Message_Period_ms, Mode=TwoWay}"
+							 IsEnabled="{Binding !IsStart, Mode=OneWay}"
 							 VerticalAlignment="Center"/>
 
 					<TextBlock Text="мс."
@@ -135,7 +137,7 @@
 							IsEnabled="{Binding UI_IsEnable}"
 							HorizontalAlignment="Center" VerticalAlignment="Center"
 							Command="{Binding Command_Start_Stop_Polling}"/>
-
+					
 				</StackPanel>
 
 			</StackPanel>

@@ -1,4 +1,5 @@
 ﻿using Core.Models.AppUpdateSystem;
+using Core.Models.AppUpdateSystem.DataTypes;
 using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;

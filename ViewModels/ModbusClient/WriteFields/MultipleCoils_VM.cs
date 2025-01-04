@@ -1,8 +1,11 @@
-﻿using DynamicData;
+﻿using Core.Models.Settings.DataTypes;
+using DynamicData;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;
+using ViewModels.ModbusClient.WriteFields.DataTypes;
 
 namespace ViewModels.ModbusClient.WriteFields
 {
@@ -27,14 +30,25 @@ namespace ViewModels.ModbusClient.WriteFields
         {
             Command_AddRegister = ReactiveCommand.Create(() =>
             {
-                Items.Add(new MultipleCoils_Item(
-                    startAddressAddition: Items.Count,
-                    removeItemHandler: RemoveWriteDataItem
-                    ));
+                AddCoilItem(null);
             });
         }
 
+        private void AddCoilItem(bool? value)
+        {
+            Items.Add(new MultipleCoils_Item(
+                startAddressAddition: Items.Count,
+                removeItemHandler: RemoveWriteDataItem,
+                isLogicOne: value
+                ));
+        }
+
         public WriteData GetData()
+        {
+            return PrepareData();
+        }
+
+        private WriteData PrepareData()
         {
             if (Items.Count == 0)
             {
@@ -64,6 +78,45 @@ namespace ViewModels.ModbusClient.WriteFields
             }
 
             return new WriteData(result.ToArray(), bitArray.Length);
+        }
+
+        public void SetDataFromMacros(ModbusMacrosWriteInfo data)
+        {
+            Items.Clear();
+
+            if (data.WriteBuffer == null || data.WriteBuffer.Length == 0 )
+            {
+                return;
+            }
+
+            int totalBits = data.NumberOfWriteRegisters;
+
+            for (int i = 0; i < data.WriteBuffer.Length; i++)
+            {
+                byte currentByte = data.WriteBuffer[i];
+
+                for (int bitIndex = 0; bitIndex < 8; bitIndex++)
+                {
+                    // Проверяем, не превышает ли индекс общего количества битов
+                    if (i * 8 + bitIndex >= totalBits)
+                        break;
+
+                    bool logicOne = (currentByte & (1 << bitIndex)) != 0;
+
+                    AddCoilItem(logicOne);
+                }
+            }
+        }
+
+        public ModbusMacrosWriteInfo GetMacrosData()
+        {
+            WriteData data = PrepareData();
+
+            return new ModbusMacrosWriteInfo()
+            {
+                WriteBuffer = data.Data,
+                NumberOfWriteRegisters = data.NumberOfRegisters,
+            };
         }
 
         private void RemoveWriteDataItem(Guid selectedId)

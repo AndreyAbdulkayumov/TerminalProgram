@@ -7,7 +7,8 @@ using MessageBox_Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
 using System.Text;
-using ViewModels.FloatNumber;
+using Core.Models.Settings.FileTypes;
+using ViewModels.Helpers.FloatNumber;
 
 namespace ViewModels.Settings
 {
@@ -68,9 +69,8 @@ namespace ViewModels.Settings
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
-        public readonly Action<string, MessageType> Message;
+        private readonly IMessageBox _messageBox;
 
-        private readonly Func<string, MessageType, Task<MessageBoxResult>> MessageDialog;
         private readonly Func<string, Task<string?>> Get_FilePath;
         private readonly Func<Task<string?>> Get_NewFileName;
 
@@ -78,22 +78,20 @@ namespace ViewModels.Settings
 
 
         public Settings_VM(
-            Action<string, MessageType> messageBox,
-            Func<string, MessageType, Task<MessageBoxResult>> messageBoxDialog,
+            IMessageBox messageBox,
             Func<string, Task<string?>> get_FilePath_Handler,
             Func<Task<string?>> get_NewFileName_Handler,
             Action set_Dark_Theme_Handler,
             Action set_Light_Theme_Handler
             )
         {
-            Message = messageBox;
-            MessageDialog = messageBoxDialog;
+            _messageBox = messageBox;
             Get_FilePath = get_FilePath_Handler;
             Get_NewFileName = get_NewFileName_Handler;
 
             SettingsFile = Model_Settings.Model;
 
-            _tab_Connection_VM = new Connection_VM(this);
+            _tab_Connection_VM = new Connection_VM(this, messageBox);
             _tab_NoProtocol_VM = new NoProtocol_VM();
             _tab_Modbus_VM = new Modbus_VM();
             _tab_AppSettings_VM = new AppSettings_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
@@ -123,10 +121,10 @@ namespace ViewModels.Settings
         {
             DeviceData settings = SettingsFile.ReadPreset(fileName);
 
-            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? "UTF-8";
+            Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? DeviceData.GlobalEncoding_Default;
 
-            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? "300";
-            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? "300";
+            Tab_Modbus_VM.WriteTimeout = settings.TimeoutWrite ?? DeviceData.TimeoutWrite_Default;
+            Tab_Modbus_VM.ReadTimeout = settings.TimeoutRead ?? DeviceData.TimeoutRead_Default;
 
             Tab_Modbus_VM.FloatFormat = FloatHelper.GetFloatNumberFormatOrDefault(settings.FloatNumberFormat);
 
@@ -188,7 +186,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                string fileName = SettingsFile.CopyFrom(filePath);
+                string fileName = SettingsFile.CopyInPresetFolderFrom(filePath);
 
                 UpdateListOfPresets();
 
@@ -197,7 +195,7 @@ namespace ViewModels.Settings
             
             catch (Exception error)
             {
-                Message.Invoke("Ошибка при добавлении уже существующего файла.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка при добавлении уже существующего файла.\n\n" + error.Message, MessageType.Error);
             }
         }
 
@@ -207,18 +205,18 @@ namespace ViewModels.Settings
             {
                 if (Presets.Count <= 1)
                 {
-                    Message.Invoke("Нельзя удалить единственный файл.\nПопробуйте его изменить.", MessageType.Warning);
+                    _messageBox.Show("Нельзя удалить единственный файл.\nПопробуйте его изменить.", MessageType.Warning);
                     return;
                 }
 
-                MessageBoxResult dialogResult = await MessageDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+                MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
 
                 if (dialogResult != MessageBoxResult.Yes)
                 {
                     return;
                 }
 
-                SettingsFile.Delete(SelectedPreset);
+                SettingsFile.DeletePreset(SelectedPreset);
 
                 UpdateListOfPresets();
 
@@ -227,7 +225,7 @@ namespace ViewModels.Settings
 
             catch (Exception error)
             {
-                Message.Invoke("Ошибка удаления файла настроек.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка удаления файла настроек.\n\n" + error.Message, MessageType.Error);
             }
         }
 
@@ -241,7 +239,7 @@ namespace ViewModels.Settings
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
-                    Message.Invoke(validationMessage, MessageType.Warning);
+                    _messageBox.Show(validationMessage, MessageType.Warning);
                     return;
                 }
 
@@ -268,15 +266,8 @@ namespace ViewModels.Settings
 
                 var data = new DeviceData()
                 {
-                    GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
-
-                    TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
-                    TimeoutRead = Tab_Modbus_VM.ReadTimeout,
-
-                    FloatNumberFormat = floatFormat,
-
                     TypeOfConnection = connectionType,
-                                        
+
                     Connection_SerialPort = new SerialPort_Info()
                     {
                         Port = Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort,
@@ -292,27 +283,32 @@ namespace ViewModels.Settings
                     {
                         IP_Address = Tab_Connection_VM.Connection_Ethernet_VM.IP_Address,
                         Port = Tab_Connection_VM.Connection_Ethernet_VM.Port
-                    }
+                    },
+
+                    GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
+
+                    TimeoutWrite = Tab_Modbus_VM.WriteTimeout,
+                    TimeoutRead = Tab_Modbus_VM.ReadTimeout,
+                    FloatNumberFormat = floatFormat,                    
                 };
 
                 SettingsFile.SavePreset(SelectedPreset, data);
 
                 CommonUI_VM.SettingsDocument = SelectedPreset;
 
-                if (Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort == null ||
-                    Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort == String.Empty)
+                if (string.IsNullOrEmpty(Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort))
                 {
                     Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = true;
                 }
 
                 _tab_Connection_VM.Connection_SerialPort_VM.ReScan_SerialPorts(data.Connection_SerialPort);
 
-                Message.Invoke("Настройки успешно сохранены!", MessageType.Information);
+                _messageBox.Show("Настройки успешно сохранены!", MessageType.Information);
             }
 
             catch (Exception error)
             {
-                Message.Invoke("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
             }
         }
 

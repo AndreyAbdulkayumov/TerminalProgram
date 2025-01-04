@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using MessageBox_Core;
+using ReactiveUI;
 using System.Reactive.Linq;
 
 namespace ViewModels.Settings.Tabs
@@ -33,10 +34,10 @@ namespace ViewModels.Settings.Tabs
         public readonly Connection_Ethernet_VM Connection_Ethernet_VM;
 
 
-        public Connection_VM(Settings_VM main_VM)
+        public Connection_VM(Settings_VM main_VM, IMessageBox messageBox)
         {
-            Connection_SerialPort_VM = new Connection_SerialPort_VM(main_VM);
-            Connection_Ethernet_VM = new Connection_Ethernet_VM(main_VM);
+            Connection_SerialPort_VM = new Connection_SerialPort_VM(main_VM, messageBox);
+            Connection_Ethernet_VM = new Connection_Ethernet_VM(main_VM, messageBox);
 
             this.WhenAnyValue(x => x.Selected_SerialPort)
                 .Where(x => x == true)

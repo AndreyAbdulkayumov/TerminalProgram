@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Core.Models.AppUpdateSystem.DataTypes;
+using System.Diagnostics;
 using System.Text.Json;
 
 namespace Core.Models.AppUpdateSystem
