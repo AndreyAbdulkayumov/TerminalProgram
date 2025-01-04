@@ -72,10 +72,10 @@ namespace ViewModels.Macros
 
             CommonUI_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
 
-            Init();
+            InitUI();
         }
 
-        private void Init()
+        private void InitUI()
         {
             ModeName = GetModeName(CommonUI_VM.CurrentApplicationWorkMode);
             UpdateWorkspace(CommonUI_VM.CurrentApplicationWorkMode);
@@ -180,7 +180,7 @@ namespace ViewModels.Macros
             return macros;
         }
 
-        public async Task CreateMacros()
+        private async Task CreateMacros()
         {
             var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
 

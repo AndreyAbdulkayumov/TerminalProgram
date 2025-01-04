@@ -118,7 +118,7 @@ namespace ViewModels.NoProtocol
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
-            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox, NoProtocol_Send);
+            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox);
             Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox);
 
             Instance = this;
@@ -135,64 +135,37 @@ namespace ViewModels.NoProtocol
                 });
         }
 
-        public async Task NoProtocol_Send(bool isBytes, string Data, bool enableCR, bool enableLF)
-        {
-            if (isBytes)
-            {
-                await Model.NoProtocol.SendBytes(StringByteConverter.ByteStringToByteArray(Data));
-                return;
-            }
-
-            await Model.NoProtocol.SendString(Data, enableCR, enableLF);
-        }
-
         public async Task NoProtocol_Send(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)
         {
-            if (string.IsNullOrEmpty(message))
-            {
-                _messageBox.Show("Не заданы данные для отправки.", MessageType.Warning);
-                return;
-            }
-
-            byte[] buffer = isBytes ? 
-                CreateBufferFromBytes(message, enableCR, enableLF) : 
-                CreateBufferFromString(message, enableCR, enableLF, encoding);
+            byte[] buffer = CreateSendBuffer(isBytes, message, enableCR, enableLF, encoding);
 
             await Model.NoProtocol.SendBytes(buffer);
         }
 
-        private byte[] CreateBufferFromBytes(string message, bool enableCR, bool enableLF)
+        public static byte[] CreateSendBuffer(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)
         {
-            var byteMessage = new List<byte>(StringByteConverter.ByteStringToByteArray(message));
-
-            if (enableCR)
+            if (string.IsNullOrEmpty(message))
             {
-                byteMessage.Add((byte)'\r');
+                throw new Exception("Не заданы данные для отправки.");
             }
 
-            if (enableLF)
+            List<byte> buffer = new List<byte>(
+                isBytes ?
+                    StringByteConverter.ByteStringToByteArray(message) :
+                    encoding.GetBytes(message)
+                    );
+
+            if (enableCR == true)
             {
-                byteMessage.Add((byte)'\n');
+                buffer.Add((byte)'\r');
             }
 
-            return byteMessage.ToArray();
-        }
-
-        private byte[] CreateBufferFromString(string message, bool enableCR, bool enableLF, Encoding encoding)
-        {
-            var stringMessage = new List<byte>(encoding.GetBytes(message));
-
-            if (enableCR)
+            if (enableLF == true)
             {
-                stringMessage.Add((byte)'\r');
+                buffer.Add((byte)'\n');
             }
 
-            if (enableLF)
-            {
-                stringMessage.Add((byte)'\n');
-            }
-
-            return stringMessage.ToArray();
+            return buffer.ToArray();
         }
 
         private void Model_DeviceIsConnect(object? sender, IConnection? e)

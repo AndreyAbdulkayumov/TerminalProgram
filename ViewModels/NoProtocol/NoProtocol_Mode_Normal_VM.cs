@@ -56,10 +56,7 @@ namespace ViewModels.NoProtocol
 
         private readonly IMessageBox _messageBox;
 
-        public NoProtocol_Mode_Normal_VM(
-            IMessageBox messageBox, 
-            Func<bool, string, bool, bool, Task> sendAction
-            )
+        public NoProtocol_Mode_Normal_VM(IMessageBox messageBox)
         {
             _messageBox = messageBox;
 
@@ -70,7 +67,9 @@ namespace ViewModels.NoProtocol
 
             Command_Send = ReactiveCommand.CreateFromTask(async () =>
             {
-                await sendAction(IsBytesSend, TX_String, CR_Enable, LF_Enable);
+                byte[] buffer = NoProtocol_VM.CreateSendBuffer(IsBytesSend, TX_String, CR_Enable, LF_Enable, ConnectedHost.Model.NoProtocol.HostEncoding);
+
+                await Model.NoProtocol.SendBytes(buffer);
             });
             Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
 

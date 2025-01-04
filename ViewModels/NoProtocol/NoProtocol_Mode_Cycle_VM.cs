@@ -225,13 +225,12 @@ namespace ViewModels.NoProtocol
 
         private async Task StartPolling()
         {
+            byte[] buffer = NoProtocol_VM.CreateSendBuffer(_isBytesSend, Message_Content, Message_CR, Message_LF, ConnectedHost.Model.NoProtocol.HostEncoding);
+
             Model.NoProtocol.CycleMode_Period = Message_Period_ms;
 
             var info = new CycleModeParameters(
-                isByteString: _isBytesSend,
-                messageBytes: _isBytesSend ? StringByteConverter.ByteStringToByteArray(Message_Content) : ConnectedHost.Model.NoProtocol.HostEncoding.GetBytes(Message_Content),
-                message_CR_Enable: Message_CR,
-                message_LF_Enable: Message_LF,
+                messageBytes: buffer,
                 response_Date_Enable: Response_Date,
                 response_Time_Enable: Response_Time,
                 response_String_Start_Enable: Response_String_Start_Enable,

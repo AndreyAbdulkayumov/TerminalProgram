@@ -37,7 +37,6 @@ namespace Core.Models.NoProtocol
         private bool _time_IsUsed = false;
         private int _timeIndex;
 
-        private string? CycleMessage;
 
         public Model_NoProtocol(ConnectedHost host)
         {
@@ -98,33 +97,6 @@ namespace Core.Models.NoProtocol
             Model_ErrorInReadThread?.Invoke(this, e);            
         }
 
-        public async Task SendString(string? stringMessage, bool CR_Enable, bool LF_Enable)
-        {
-            if (_client == null)
-            {
-                throw new Exception("Клиент не инициализирован.");
-            }
-
-            if (string.IsNullOrEmpty(stringMessage))
-            {
-                throw new Exception("Буфер для отправления пуст. Введите отправляемое значение.");
-            }
-
-            var Message = new List<byte>(ConnectedHost.GlobalEncoding.GetBytes(stringMessage));
-
-            if (CR_Enable == true)
-            {
-                Message.Add((byte)'\r');
-            }
-
-            if (LF_Enable == true)
-            {
-                Message.Add((byte)'\n');
-            }
-
-            await _client.Send(Message.ToArray(), Message.Count);
-        }
-
         public async Task SendBytes(byte[]? bytes)
         {
             if (_client == null)
@@ -146,19 +118,7 @@ namespace Core.Models.NoProtocol
 
             _outputArray = CreateOutputBuffer(info);
 
-            if (_cycleModeInfo.IsByteString)
-            {
-                await SendBytes(info.MessageBytes);
-            }
-
-            else
-            {
-                CycleMessage = ConnectedHost.GlobalEncoding.GetString(info.MessageBytes);
-
-                await SendString(CycleMessage,
-                    info.Message_CR_Enable,
-                    info.Message_LF_Enable);
-            }
+            await SendBytes(info.MessageBytes);
 
             CycleModeTimer.Start();
         }
@@ -240,15 +200,7 @@ namespace Core.Models.NoProtocol
                     throw new Exception("Нет данных для отправки.");
                 }
 
-                if (_cycleModeInfo.IsByteString)
-                {
-                    await SendBytes(_cycleModeInfo.MessageBytes);
-                    return;
-                }
-
-                await SendString(CycleMessage,
-                    _cycleModeInfo.Message_CR_Enable,
-                    _cycleModeInfo.Message_LF_Enable);
+                await SendBytes(_cycleModeInfo.MessageBytes);
             }
 
             catch(Exception error)
