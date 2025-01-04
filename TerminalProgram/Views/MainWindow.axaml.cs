@@ -12,6 +12,8 @@ using MessageBox_Core;
 using TerminalProgram.Views.Settings;
 using TerminalProgram.Views.Macros;
 using ViewModels;
+using System.Diagnostics;
+using System.IO;
 
 
 namespace TerminalProgram.Views;
@@ -194,6 +196,42 @@ public partial class MainWindow : Window
             await window.ShowDialog(this);
         },
         Grid_Workspace);
+    }
+
+    private void Button_UserManual_Click(object? sender, RoutedEventArgs e)
+    {
+        try
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Path.Combine("Documentation", "UserManual.pdf"),
+                    UseShellExecute = true,
+                });
+
+                return;
+            }
+
+            else if (OperatingSystem.IsLinux())
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "xdg-open",
+                    Arguments = Path.Combine("Documentation", "UserManual.pdf"),
+                    UseShellExecute = false,
+                });
+
+                return;
+            }
+
+            throw new Exception("Неподдерживаемый тип ОС.");
+        }
+     
+        catch (Exception error)
+        {
+            Message.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error);
+        }
     }
 
     private void Button_Macros_Click(object? sender, RoutedEventArgs e)

@@ -93,4 +93,10 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\NoProtocol\Modbus_Client_Mode_Normal.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Documentation\UserManual.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
