@@ -1,5 +1,3 @@
-# TerminalProgram
-
 ## *Статьи на Хабр*
 
 [Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 2](https://habr.com/ru/articles/854824/)
@@ -35,11 +33,11 @@
 	- TCP
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/abafe38b-fe23-45d4-87bf-ad9c16c2453a"/>
+  <img src="https://github.com/user-attachments/assets/1cecbd44-6c89-463d-bbc1-ffeedf281db6"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/730c45ef-106a-4a69-85fe-75880ec3d3f3"/>
+  <img src="https://github.com/user-attachments/assets/e25536d1-977e-42a3-a864-cd6b452dbd71"/>
 </p>
 
 ## *"Modbus"*
@@ -53,11 +51,23 @@
  	- Modbus ASCII over TCP
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/00f85b38-ac78-453d-b3d6-b36a68c26afd"/>
+  <img src="https://github.com/user-attachments/assets/9548b19c-19fb-4be5-8915-d344a4eea920"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/20cb7161-e1dc-43aa-b1c9-6eabea093ccb"/>
+  <img src="https://github.com/user-attachments/assets/e8045c3e-f4b4-4001-952e-8fd2ba04dc94"/>
+</p>
+
+## *"Макросы"*
+
+Этот режим позволяет работать с макросами для режимов "Без протокола" и "Modbus". При наведении курсора на макрос появляются кнопки редактирования и удаления.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/89928b5b-eb8f-4073-9c18-98aa3dd82811"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d0b2bd02-2010-4d63-b7d0-102ccb982f58"/>
 </p>
 
 # *Вспомогательный софт*
