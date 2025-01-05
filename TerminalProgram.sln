@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBox_AvaloniaUI", "Me
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppDesign", "AppDesign\AppDesign.csproj", "{734A305C-6E39-4DCF-A814-8F3BD77F22A0}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Documentation", "Documentation\Documentation.shproj", "{7C577CAD-AD89-4FCE-9C58-EBC93898A037}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,8 +63,5 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E13A41F0-198E-4459-BD0C-78E9F95AF3CD}
-	EndGlobalSection
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Documentation\Documentation.projitems*{7c577cad-ad89-4fce-9c58-ebc93898a037}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
