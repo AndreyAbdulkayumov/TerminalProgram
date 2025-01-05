@@ -62,7 +62,7 @@ public partial class MacrosWindow : Window
 
             if (folder != null && folder.Count > 0)
             {
-                return folder.First().Path.OriginalString;
+                return folder.First().TryGetLocalPath();
             }
         }
 
@@ -86,7 +86,7 @@ public partial class MacrosWindow : Window
 
             if (files.Count >= 1)
             {
-                return files.First().Path.AbsolutePath;
+                return files.First().TryGetLocalPath();
             }
         }
 

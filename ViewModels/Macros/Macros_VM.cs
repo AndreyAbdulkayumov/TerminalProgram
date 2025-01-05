@@ -464,9 +464,9 @@ namespace ViewModels.Macros
                     }
                 }
 
-                catch (Exception)
+                catch (Exception error)
                 {
-                    throw new Exception("Нарушена целостность файла.");
+                    throw new Exception($"Ошибка чтения файла.\n\n{error.Message}");
                 }
 
                 _settings.DeleteFile(macrosValidFilePath);
