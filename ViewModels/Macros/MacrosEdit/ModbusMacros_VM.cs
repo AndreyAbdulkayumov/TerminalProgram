@@ -1,6 +1,7 @@
 ﻿using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
+using MessageBox_Core;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -150,7 +151,7 @@ namespace ViewModels.Macros.MacrosEdit
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        public ModbusMacros_VM(object? initData)
+        public ModbusMacros_VM(object? initData, IMessageBox messageBox)
         {
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
             WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true);
@@ -172,21 +173,29 @@ namespace ViewModels.Macros.MacrosEdit
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
                 {
-                    if (values.Item1 == true && values.Item2 == true)
+                    try
                     {
-                        return;
-                    }
+                        if (values.Item1 == true && values.Item2 == true)
+                        {
+                            return;
+                        }
 
-                    // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
-                    if (values.Item1)
-                    {
-                        SelectNumberFormat_Hex();
-                    }
+                        // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
+                        if (values.Item1)
+                        {
+                            SelectNumberFormat_Hex();
+                        }
 
-                    // Выбран десятичный формат числа в полях Адрес и Данные
-                    else if (values.Item2)
+                        // Выбран десятичный формат числа в полях Адрес и Данные
+                        else if (values.Item2)
+                        {
+                            SelectNumberFormat_Dec();
+                        }
+                    }
+                    
+                    catch (Exception error)
                     {
-                        SelectNumberFormat_Dec();
+                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error);
                     }
                 });
         }
@@ -298,6 +307,16 @@ namespace ViewModels.Macros.MacrosEdit
 
         public string? GetValidationMessage()
         {
+            if (string.IsNullOrWhiteSpace(SlaveID))
+            {
+                return "Не задан SlaveID.";
+            }
+
+            if (string.IsNullOrWhiteSpace(Address))
+            {
+                return "Не задан Адрес.";
+            }
+
             return SelectedFunctionType_Write ? CheckWriteFields() : CheckReadFields();
         }
 
@@ -338,6 +357,16 @@ namespace ViewModels.Macros.MacrosEdit
 
         private string? CheckReadFields()
         {
+            if (string.IsNullOrWhiteSpace(NumberOfReadRegisters))
+            {
+                return "Укажите количество регистров для чтения.";
+            }
+
+            if (_selectedNumberOfReadRegisters < 1)
+            {
+                return "Сколько, сколько регистров вы хотите прочитать? :)";
+            }
+
             if (!HasErrors)
             {
                 return null;
@@ -366,14 +395,24 @@ namespace ViewModels.Macros.MacrosEdit
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             _numberViewStyle = NumberStyles.HexNumber;
 
-            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
                 SlaveID = _selectedSlaveID.ToString("X");
             }
 
-            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            else
+            {
+                _selectedSlaveID = 0;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
             {
                 Address = _selectedAddress.ToString("X");
+            }
+
+            else
+            {
+                _selectedAddress = 0;
             }
 
             ValidateInput(nameof(SlaveID), SlaveID);
@@ -388,14 +427,24 @@ namespace ViewModels.Macros.MacrosEdit
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             _numberViewStyle = NumberStyles.Number;
 
-            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
                 SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
             }
+            
+            else
+            {
+                _selectedSlaveID = 0;
+            }
 
-            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
             {
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
+            }
+
+            else
+            {
+                _selectedAddress = 0;
             }
 
             ValidateInput(nameof(SlaveID), SlaveID);

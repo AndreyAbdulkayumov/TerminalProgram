@@ -29,10 +29,12 @@ namespace ViewModels.Macros.MacrosEdit
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
 
         private readonly object? _initData;
+        private readonly IMessageBox _messageBox;
 
         public EditMacros_VM(EditMacrosParameters parameters, Action closeWindowAction, IMessageBox messageBox)
         {
             _initData = parameters.InitData;
+            _messageBox = messageBox;
 
             MacrosName = parameters.MacrosName;
 
@@ -114,7 +116,7 @@ namespace ViewModels.Macros.MacrosEdit
                     return new NoProtocolMacros_VM(_initData);
 
                 case ApplicationWorkMode.ModbusClient:
-                    return new ModbusMacros_VM(_initData);
+                    return new ModbusMacros_VM(_initData, _messageBox);
 
                 default:
                     throw new NotImplementedException();

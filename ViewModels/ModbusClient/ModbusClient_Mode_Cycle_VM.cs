@@ -203,21 +203,29 @@ namespace ViewModels.ModbusClient
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
                 {
-                    if (values.Item1 == true && values.Item2 == true)
+                    try
                     {
-                        return;
+                        if (values.Item1 == true && values.Item2 == true)
+                        {
+                            return;
+                        }
+
+                        // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
+                        if (values.Item1)
+                        {
+                            SelectNumberFormat_Hex();
+                        }
+
+                        // Выбран десятичный формат числа в полях Адрес и Данные
+                        else if (values.Item2)
+                        {
+                            SelectNumberFormat_Dec();
+                        }
                     }
 
-                    // Выбран шестнадцатеричный формат числа в полях Адрес и Данные
-                    if (values.Item1)
+                    catch (Exception error)
                     {
-                        SelectNumberFormat_Hex();
-                    }
-
-                    // Выбран десятичный формат числа в полях Адрес и Данные
-                    else if (values.Item2)
-                    {
-                        SelectNumberFormat_Dec();
+                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error);
                     }
                 });
         }
@@ -283,14 +291,24 @@ namespace ViewModels.ModbusClient
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_hex;
             _numberViewStyle = NumberStyles.HexNumber;
 
-            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
                 SlaveID = _selectedSlaveID.ToString("X");
             }
 
-            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            else
+            {
+                _selectedSlaveID = 0;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
             {
                 Address = _selectedAddress.ToString("X");
+            }
+
+            else
+            {
+                _selectedAddress = 0;
             }
 
             ValidateInput(nameof(SlaveID), SlaveID);
@@ -305,14 +323,24 @@ namespace ViewModels.ModbusClient
             NumberFormat = ModbusClient_VM.ViewContent_NumberStyle_dec;
             _numberViewStyle = NumberStyles.Number;
 
-            if (SlaveID != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
+            if (!string.IsNullOrWhiteSpace(SlaveID) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(SlaveID))))
             {
                 SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
             }
 
-            if (Address != null && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
+            else
+            {
+                _selectedSlaveID = 0;
+            }
+
+            if (!string.IsNullOrWhiteSpace(Address) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(Address))))
             {
                 Address = int.Parse(Address, NumberStyles.HexNumber).ToString();
+            }
+
+            else
+            {
+                _selectedAddress = 0;
             }
 
             ValidateInput(nameof(SlaveID), SlaveID);
