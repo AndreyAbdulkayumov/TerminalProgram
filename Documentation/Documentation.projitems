@@ -9,6 +9,7 @@
     <Import_RootNamespace>Documentation</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" />
     <None Include="$(MSBuildThisFileDirectory)UserManual.docx" />
   </ItemGroup>
 </Project>

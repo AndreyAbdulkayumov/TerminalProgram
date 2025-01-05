@@ -7,7 +7,7 @@
 			 d:DesignWidth="100" d:DesignHeight="100"
              x:Class="TerminalProgram.Views.Macros.MacrosItem">
 
-	<Border Background="Silver"
+	<Border Background="{DynamicResource Button_Color_Enabled_Background}"
 			CornerRadius="6"
 			PointerPressed="Border_PointerPressed"
 			PointerEntered="Border_PointerEntered"
@@ -65,7 +65,7 @@
 					   FontSize="16"
 					   Padding="20"
 					   MinWidth="60"
-					   Foreground="Black"
+					   Foreground="{DynamicResource Button_Color_Enabled_Foreground}"
 					   TextAlignment="Center"
 					   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 

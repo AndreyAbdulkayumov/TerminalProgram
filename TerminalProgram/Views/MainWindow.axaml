@@ -144,7 +144,7 @@
 								Click="Button_UserManual_Click">
 
 							<Icons:MaterialIcon Kind="HelpCircle"
-												Foreground="{DynamicResource ToolBar_Icon_About}"/>
+												Foreground="{DynamicResource ToolBar_Icon_UserManual}"/>
 
 						</Button>
 
