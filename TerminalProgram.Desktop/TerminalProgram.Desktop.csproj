@@ -9,6 +9,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 	<AssemblyName>TerminalProgram</AssemblyName>
 	<ApplicationIcon>MainLogo.ico</ApplicationIcon>
+    <Company>Абдулкаюмов Андрей</Company>
+	<Authors>Abdulkayumov Andrey</Authors>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="MainLogo.ico" />

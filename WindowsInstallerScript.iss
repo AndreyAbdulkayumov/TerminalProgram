@@ -5,7 +5,7 @@
 
 
 ; Менять версию тут
-#define MyAppVersion "3.0.0"
+#define MyAppVersion "3.1.0"
 
 ; Директория установки приложения по умолчанию (папка Program Files на диске с системой)
 #define InstallDirectory "{commonpf64}\TerminalProgram"
@@ -78,6 +78,7 @@ Source: "{#PublishDirectory}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreve
 
 ; Служебные файлы
 Source: "{#PublishDirectory}\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion
+Source: "{#PublishDirectory}\Documentation\*"; DestDir: "{app}\Documentation"; Flags: ignoreversion
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
