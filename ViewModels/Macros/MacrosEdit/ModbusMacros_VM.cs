@@ -243,7 +243,10 @@ namespace ViewModels.Macros.MacrosEdit
 
                     SetWriteFieldVM(selectedFunction.DisplayedName);
 
-                    CurrentWriteFieldViewModel?.SetDataFromMacros(data.WriteInfo);
+                    if (data.WriteInfo != null)
+                    {
+                        CurrentWriteFieldViewModel?.SetDataFromMacros(data.WriteInfo);
+                    }                    
                 }
 
                 return;

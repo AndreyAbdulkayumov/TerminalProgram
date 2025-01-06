@@ -142,13 +142,16 @@ namespace ViewModels.Macros
             }
         }
 
-        private MacrosNoProtocol? BuildNoProtocolMacros()
+        private MacrosNoProtocol BuildNoProtocolMacros()
         {
-            var macros = _settings.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
+            MacrosNoProtocol macros = _settings.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
 
-            if (macros.Items == null || macros.Items.Count == 0)
+            if (macros.Items == null)
             {
-                return null;
+                return new MacrosNoProtocol()
+                {
+                    Items = new List<MacrosNoProtocolItem>()
+                };
             }
 
             foreach (var element in macros.Items)
@@ -161,13 +164,16 @@ namespace ViewModels.Macros
             return macros;
         }
 
-        private MacrosModbus? BuildModbusMacros()
+        private MacrosModbus BuildModbusMacros()
         {
-            var macros = _settings.ReadOrCreateDefaultMacros<MacrosModbus>();
+            MacrosModbus macros = _settings.ReadOrCreateDefaultMacros<MacrosModbus>();
 
-            if (macros.Items == null || macros.Items.Count == 0)
+            if (macros.Items == null)
             {
-                return null;
+                return new MacrosModbus()
+                {
+                    Items = new List<MacrosModbusItem>()
+                };
             }
 
             foreach (var element in macros.Items)

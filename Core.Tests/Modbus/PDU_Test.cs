@@ -142,7 +142,7 @@ namespace Core.Tests.Modbus
 
         private void CheckMultiplyWriteFunction(ModbusWriteFunction SelectedFunction, UInt16 Address, UInt16[] WriteData)
         {
-            byte[] bytes = ModbusField.Get_WriteData(WriteData);
+            byte[] bytes = WriteData.SelectMany(BitConverter.GetBytes).ToArray();
 
             MessageData Data = new WriteTypeMessage(
                 16,

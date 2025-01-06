@@ -209,7 +209,7 @@ namespace Core.Tests.Modbus
         private void CheckMultiplyWriteFunction(ModbusWriteFunction SelectedFunction,
             byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable)
         {
-            byte[] bytes = ModbusField.Get_WriteData(WriteData);
+            byte[] bytes = WriteData.SelectMany(BitConverter.GetBytes).ToArray();
 
             MessageData Data = new WriteTypeMessage(
                 SlaveID,
