@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.1.11" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>

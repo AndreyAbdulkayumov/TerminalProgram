@@ -36,7 +36,17 @@ public partial class MacrosWindow : Window
 
     private async Task<object?> OpenEditMacrosWindow(EditMacrosParameters parameters)
     {
-        var window = new EditMacrosWindow(parameters);
+        //var window = new EditMacrosWindow(parameters);
+
+        //await MainWindow.OpenWindowWithDimmer(async () =>
+        //{
+        //    await window.ShowDialog(this);
+        //},
+        //Grid_Workspace);
+
+        //return window.GetData();
+
+        var window = new FullEditMacrosWindow();
 
         await MainWindow.OpenWindowWithDimmer(async () =>
         {
@@ -44,7 +54,7 @@ public partial class MacrosWindow : Window
         },
         Grid_Workspace);
 
-        return window.GetData();
+        return new object();
     }
 
     private async Task<string?> GetFolderPath(string WindowTitle)

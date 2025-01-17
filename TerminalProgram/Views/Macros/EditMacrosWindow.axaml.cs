@@ -18,7 +18,7 @@ public partial class EditMacrosWindow : Window
         _viewModel = new EditMacros_VM(
             parameters,
             Close, 
-            new MessageBox(this, "Макросы")
+            new MessageBox(this, "Команды макросов")
             );
 
         DataContext = _viewModel;

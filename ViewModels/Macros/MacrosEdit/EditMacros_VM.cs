@@ -76,6 +76,7 @@ namespace ViewModels.Macros.MacrosEdit
                 Saved = true;
                 closeWindowAction();
             });
+            Command_SaveMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
 
             CurrentModeViewModel = GetMacrosVM();
         }
