@@ -1,4 +1,5 @@
-﻿using Core.Models.Settings.FileTypes;
+﻿using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
 
 namespace Core.Models.Settings
 {
@@ -276,13 +277,19 @@ namespace Core.Models.Settings
             if (typeof(T) == typeof(MacrosModbus))
             {
                 fileName = FileName_Macros_Modbus;
-                defaultMacrosValue = new MacrosModbus();
+                defaultMacrosValue = new MacrosModbus()
+                {
+                    Items = new List<MacrosContent<MacrosCommandModbus>>()
+                };
             }
 
             else if (typeof(T) == typeof(MacrosNoProtocol))
             {
                 fileName = FileName_Macros_NoProtocol;
-                defaultMacrosValue = new MacrosNoProtocol();
+                defaultMacrosValue = new MacrosNoProtocol()
+                {
+                    Items = new List<MacrosContent<MacrosCommandNoProtocol>>()
+                };
             }
 
             else

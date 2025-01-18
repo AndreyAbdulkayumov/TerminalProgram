@@ -2,6 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using ViewModels.Macros.DataTypes;
 using ViewModels.Macros.MacrosEdit;
 
@@ -11,15 +13,11 @@ public partial class EditMacrosWindow : Window
 {
     private readonly EditMacros_VM _viewModel;
 
-    public EditMacrosWindow(EditMacrosParameters parameters)
+    public EditMacrosWindow(List<EditCommandParameters>? allCommandParameters)
     {
         InitializeComponent();
 
-        _viewModel = new EditMacros_VM(
-            parameters,
-            Close, 
-            new MessageBox(this, "Команды макросов")
-            );
+        _viewModel = new EditMacros_VM(allCommandParameters, OpenEditCommandWindow, Close, new MessageBox(this, "Макросы"));
 
         DataContext = _viewModel;
     }
@@ -37,5 +35,14 @@ public partial class EditMacrosWindow : Window
     private void Button_Close_Click(object? sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    private async Task<object?> OpenEditCommandWindow(EditCommandParameters parameters)
+    {
+        var window = new EditCommandWindow(parameters);
+
+        await window.ShowDialog(this);
+
+        return window.GetData();
     }
 }

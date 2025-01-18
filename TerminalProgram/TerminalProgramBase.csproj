@@ -48,6 +48,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\Macros\EditCommandWindow.axaml.cs">
+      <DependentUpon>EditCommandWindow.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\Macros\EditMacrosWindow.axaml.cs">
       <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
     </Compile>

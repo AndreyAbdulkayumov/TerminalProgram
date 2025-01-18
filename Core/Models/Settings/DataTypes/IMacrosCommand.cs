@@ -1,6 +1,6 @@
 ﻿namespace Core.Models.Settings.DataTypes
 {
-    public interface IMacrosItem
+    public interface IMacrosCommand
     {
         string? Name { get; set; }
     }

@@ -12,9 +12,9 @@ using ViewModels.ModbusClient.WriteFields;
 using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
-namespace ViewModels.Macros.MacrosEdit
+namespace ViewModels.Macros.CommandEdit.Types
 {
-    public class ModbusMacros_VM : ValidatedDateInput, IValidationFieldInfo, IMacrosContent<MacrosModbusItem>, IMacrosValidation
+    public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IMacrosContent<MacrosCommandModbus>, IMacrosValidation
     {
         private string? _slaveID;
 
@@ -151,7 +151,7 @@ namespace ViewModels.Macros.MacrosEdit
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        public ModbusMacros_VM(object? initData, IMessageBox messageBox)
+        public ModbusCommand_VM(object? initData, IMessageBox messageBox)
         {
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
             WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true);
@@ -192,7 +192,7 @@ namespace ViewModels.Macros.MacrosEdit
                             SelectNumberFormat_Dec();
                         }
                     }
-                    
+
                     catch (Exception error)
                     {
                         messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error);
@@ -214,7 +214,7 @@ namespace ViewModels.Macros.MacrosEdit
                 WriteFunctions.Add(element.DisplayedName);
             }
 
-            if (initData is MacrosModbusItem data)
+            if (initData is MacrosCommandModbus data)
             {
                 // По умолчанию формат числа hex
 
@@ -246,7 +246,7 @@ namespace ViewModels.Macros.MacrosEdit
                     if (data.WriteInfo != null)
                     {
                         CurrentWriteFieldViewModel?.SetDataFromMacros(data.WriteInfo);
-                    }                    
+                    }
                 }
 
                 return;
@@ -289,7 +289,7 @@ namespace ViewModels.Macros.MacrosEdit
             throw new Exception($"Выбрана неизвестная функция записи \"{displayedName}\"");
         }
 
-        public MacrosModbusItem GetContent()
+        public MacrosCommandModbus GetContent()
         {
             var selectedFunction = SelectedFunctionType_Read ? SelectedReadFunction : SelectedWriteFunction;
 
@@ -297,7 +297,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             ModbusMacrosWriteInfo? writeData = CurrentWriteFieldViewModel?.GetMacrosData();
 
-            return new MacrosModbusItem()
+            return new MacrosCommandModbus()
             {
                 SlaveID = _selectedSlaveID,
                 Address = _selectedAddress,
@@ -434,7 +434,7 @@ namespace ViewModels.Macros.MacrosEdit
             {
                 SlaveID = int.Parse(SlaveID, NumberStyles.HexNumber).ToString();
             }
-            
+
             else
             {
                 _selectedSlaveID = 0;

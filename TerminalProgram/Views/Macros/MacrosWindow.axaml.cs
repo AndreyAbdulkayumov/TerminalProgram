@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ViewModels.Macros;
@@ -34,7 +35,7 @@ public partial class MacrosWindow : Window
         DataContext = _viewModel;
     }
 
-    private async Task<object?> OpenEditMacrosWindow(EditMacrosParameters parameters)
+    private async Task<object?> OpenEditMacrosWindow(List<EditCommandParameters>? allParameters)
     {
         //var window = new EditMacrosWindow(parameters);
 
@@ -46,7 +47,7 @@ public partial class MacrosWindow : Window
 
         //return window.GetData();
 
-        var window = new FullEditMacrosWindow();
+        var window = new EditMacrosWindow(allParameters);
 
         await MainWindow.OpenWindowWithDimmer(async () =>
         {
@@ -54,7 +55,7 @@ public partial class MacrosWindow : Window
         },
         Grid_Workspace);
 
-        return new object();
+        return window.GetData();
     }
 
     private async Task<string?> GetFolderPath(string WindowTitle)

@@ -1,6 +1,9 @@
-﻿using Core.Models.Settings.FileTypes;
+﻿using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
+using DynamicData;
 using MessageBox_Core;
 using ReactiveUI;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using ViewModels.Macros.DataTypes;
 
@@ -16,27 +19,29 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _macrosName, value);
         }
 
-        private object? _currentModeViewModel;
+        private ObservableCollection<MacrosCommandItem_VM> _commandItems = new ObservableCollection<MacrosCommandItem_VM>();
 
-        public object? CurrentModeViewModel
+        public ObservableCollection<MacrosCommandItem_VM> CommandItems
         {
-            get => _currentModeViewModel;
-            set => this.RaiseAndSetIfChanged(ref _currentModeViewModel, value);
+            get => _commandItems;
+            set => this.RaiseAndSetIfChanged(ref _commandItems, value);
         }
+
+        public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
+        public ReactiveCommand<Unit, Unit> Command_RunMacros { get; }
+        public ReactiveCommand<Unit, Unit> Command_AddCommand { get; }
+        public ReactiveCommand<Unit, Unit> Command_AddDelay { get; }
 
         public bool Saved { get; private set; } = false;
 
-        public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
+        private readonly List<EditCommandParameters> _allCommandParameters = new List<EditCommandParameters>();
 
-        private readonly object? _initData;
-        private readonly IMessageBox _messageBox;
-
-        public EditMacros_VM(EditMacrosParameters parameters, Action closeWindowAction, IMessageBox messageBox)
+        public EditMacros_VM(List<EditCommandParameters>? allCommandParameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action closeWindowAction, IMessageBox messageBox)
         {
-            _initData = parameters.InitData;
-            _messageBox = messageBox;
-
-            MacrosName = parameters.MacrosName;
+            if (allCommandParameters != null)
+            {
+                _allCommandParameters.AddRange(allCommandParameters);
+            }            
 
             Command_SaveMacros = ReactiveCommand.Create(() =>
             {
@@ -46,59 +51,87 @@ namespace ViewModels.Macros.MacrosEdit
                     return;
                 }
 
-                if (parameters.ExistingMacrosNames != null)
-                {
-                    var macrosNames = parameters.ExistingMacrosNames;
-
-                    if (parameters.InitData != null)
-                    {
-                        macrosNames = macrosNames.Where(e => e != parameters.MacrosName);
-                    }
-
-                    if (macrosNames.Contains(MacrosName))
-                    {
-                        messageBox.Show("Макрос с таким именем уже существует.", MessageType.Warning);
-                        return;
-                    }
-                }
-
-                if (CurrentModeViewModel is IMacrosValidation validatedMacros)
-                {
-                    string? message = validatedMacros.GetValidationMessage();
-
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        messageBox.Show(message, MessageType.Warning);
-                        return;
-                    }
-                }
-
                 Saved = true;
                 closeWindowAction();
             });
             Command_SaveMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
 
-            CurrentModeViewModel = GetMacrosVM();
+            Command_RunMacros = ReactiveCommand.Create(() => { });
+            Command_RunMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error));
+
+            Command_AddCommand = ReactiveCommand.Create(() =>
+            {
+                var _allCommandNames = CommandItems.Select(e => e.CommandName);
+
+                _allCommandParameters.Add(new EditCommandParameters((CommandItems.Count() + 1).ToString(), null, _allCommandNames));
+
+                CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), openEditCommandWindow, RemoveCommand, messageBox)); 
+            });
+            Command_AddCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
+
+            Command_AddDelay = ReactiveCommand.Create(() => { });
+            Command_AddDelay.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка добавления задержки.\n\n{error.Message}", MessageType.Error));
+
+            InitUI();
+        }
+
+        public void InitUI()
+        {
+
         }
 
         public object GetMacrosContent()
         {
-            if (CurrentModeViewModel is IMacrosContent<MacrosNoProtocolItem> noProtocolInfo)
+            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
+
+            //if (CurrentModeViewModel is IMacrosContent<MacrosCommandNoProtocol> noProtocolInfo)
+            if (currentMode == ApplicationWorkMode.NoProtocol)
             {
-                var noProtocolMacros = noProtocolInfo.GetContent();
+                var content = new MacrosContent<MacrosCommandNoProtocol>();
 
-                noProtocolMacros.Name = MacrosName;
+                content.MacrosName = MacrosName;
+                content.Commands = new List<MacrosCommandNoProtocol>();
 
-                return noProtocolMacros;
+                foreach (var command in CommandItems)
+                {
+                    if (command.ItemData is MacrosCommandNoProtocol itemData)
+                    {
+                        content.Commands.Add(itemData);
+                    }                    
+                }
+
+                //var noProtocolMacros = noProtocolInfo.GetContent();
+
+                //noProtocolMacros.Name = CommandName;
+
+                //return noProtocolMacros;
+
+                return content;
             }
 
-            else if (CurrentModeViewModel is IMacrosContent<MacrosModbusItem> modbusInfo)
+            //else if (CurrentModeViewModel is IMacrosContent<MacrosCommandModbus> modbusInfo)
+            else if (currentMode == ApplicationWorkMode.ModbusClient)
             {
-                var modbusMacros = modbusInfo.GetContent();
+                var content = new MacrosContent<MacrosCommandModbus>();
 
-                modbusMacros.Name = MacrosName;
+                content.MacrosName = MacrosName;
+                content.Commands = new List<MacrosCommandModbus>();
 
-                return modbusMacros;
+                foreach (var command in CommandItems)
+                {
+                    if (command.ItemData is MacrosCommandModbus itemData)
+                    {
+                        content.Commands.Add(itemData);
+                    }
+                }
+
+                //var modbusMacros = modbusInfo.GetContent();
+
+                //modbusMacros.Name = CommandName;
+
+                //return modbusMacros;
+
+                return content;
             }
 
             else
@@ -107,21 +140,14 @@ namespace ViewModels.Macros.MacrosEdit
             }
         }
 
-        private object GetMacrosVM()
+        private void RemoveCommand(Guid selectedId)
         {
-            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
+            var newCollection = CommandItems
+                .Where(e => e.Id != selectedId)
+                .ToList();
 
-            switch (currentMode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    return new NoProtocolMacros_VM(_initData);
-
-                case ApplicationWorkMode.ModbusClient:
-                    return new ModbusMacros_VM(_initData, _messageBox);
-
-                default:
-                    throw new NotImplementedException();
-            }
+            CommandItems.Clear();
+            CommandItems.AddRange(newCollection);
         }
     }
 }

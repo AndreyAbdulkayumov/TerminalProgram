@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 
-namespace ViewModels.Macros.MacrosEdit
+namespace ViewModels.Macros.CommandEdit.Types
 {
-    public class NoProtocolMacros_VM : ReactiveObject, IMacrosContent<MacrosNoProtocolItem>
+    public class NoProtocolCommand_VM : ReactiveObject, IMacrosContent<MacrosCommandNoProtocol>
     {
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
         {
@@ -60,11 +60,11 @@ namespace ViewModels.Macros.MacrosEdit
 
         private bool _isInit;
 
-        public NoProtocolMacros_VM(object? initData)
+        public NoProtocolCommand_VM(object? initData)
         {
             _isInit = false;
 
-            if (initData is MacrosNoProtocolItem data)
+            if (initData is MacrosCommandNoProtocol data)
             {
                 SelectedEncoding = string.IsNullOrEmpty(data.MacrosEncoding) ? AppEncoding.Name_UTF8 : data.MacrosEncoding;
                 MessageString = data.Message;
@@ -80,15 +80,15 @@ namespace ViewModels.Macros.MacrosEdit
                     {
                         MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, AppEncoding.GetEncoding(SelectedEncoding));
                     }
-                    
+
                 });
 
             _isInit = true;
         }
 
-        public MacrosNoProtocolItem GetContent()
+        public MacrosCommandNoProtocol GetContent()
         {
-            return new MacrosNoProtocolItem()
+            return new MacrosCommandNoProtocol()
             {
                 MacrosEncoding = SelectedEncoding,
                 Message = MessageString,

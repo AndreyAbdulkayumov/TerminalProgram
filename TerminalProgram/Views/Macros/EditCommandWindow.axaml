@@ -3,12 +3,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-        x:Class="TerminalProgram.Views.Macros.FullEditMacrosWindow"
-        Title="Редактирование макроса"
-		Width="470" Height="560"
+		xmlns:ViewModels="clr-namespace:ViewModels.Macros.CommandEdit.Types;assembly=ViewModels"
+		xmlns:EditViews="clr-namespace:TerminalProgram.Views.Macros.EditViews;assembly=TerminalProgramBase"
+        x:Class="TerminalProgram.Views.Macros.EditCommandWindow"
+        Title="Редактирование команды"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
+		SizeToContent="WidthAndHeight"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
@@ -24,7 +26,19 @@
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 
 	</Window.Styles>
-	
+
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocolCommand_VM}">
+			<EditViews:NoProtocolMacros/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ModbusCommand_VM}">
+			<EditViews:ModbusMacros/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
+
 	<Border Background="{DynamicResource App_Back_Color_Background}">
 
 		<Grid>
@@ -92,9 +106,9 @@
 									   FontSize="16"
 									   Margin="10,0,0,0"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-
+							
 							<TextBox Classes="InputField"
-									 Text="{Binding MacrosName, Mode=TwoWay}"
+									 Text="{Binding CommandName, Mode=TwoWay}"
 									 Margin="55,0,10,0"
 									 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
 						</Grid>
@@ -104,89 +118,16 @@
 					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
 							Classes="AppField">
 
-						<ScrollViewer>
-
-							<StackPanel Orientation="Vertical" Spacing="20">
-
-								<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
-										  Margin="10"
-										  HorizontalAlignment="Stretch" VerticalAlignment="Top">
-
-									<ItemsControl.ItemsPanel>
-										<ItemsPanelTemplate>
-											<StackPanel Orientation="Vertical" Spacing="20"/>
-										</ItemsPanelTemplate>
-									</ItemsControl.ItemsPanel>
-
-									<ItemsControl.ItemTemplate>
-
-										<DataTemplate>
-
-											<StackPanel Orientation="Horizontal" Spacing="10"
-														HorizontalAlignment="Center">
-
-												<Button Classes="MenuToolButton"
-														ToolTip.Tip="Запустить команду"
-														Command="{Binding Command_RunCommand}">
-
-													<Icons:MaterialIcon Kind="Play"/>
-
-												</Button>
-
-												<TextBox Classes="InputField"
-														 Width="260"
-														 IsReadOnly="True"
-														 Text="{Binding CommandName, Mode=TwoWay}"/>
-
-												<Button Classes="MenuToolButton"
-														ToolTip.Tip="Редактировать команду"
-														Command="{Binding Command_EditCommand}">
-
-													<Icons:MaterialIcon Kind="Cog"/>
-
-												</Button>
-
-												<Button Classes="MenuToolButton"
-														ToolTip.Tip="Удалить команду"
-														Command="{Binding Command_RemoveCommand}">
-
-													<Icons:MaterialIcon Kind="CloseBold"/>
-
-												</Button>
-
-											</StackPanel>
-
-										</DataTemplate>
-
-									</ItemsControl.ItemTemplate>
-
-								</ItemsControl>
-
-								<StackPanel Orientation="Horizontal" Spacing="30"
-										HorizontalAlignment="Center">
-
-									<Button Content="Добавить команду"
-											FontSize="14"
-											Command="{Binding Command_AddCommand}"/>
-
-									<Button Content="Добавить задержку"
-											FontSize="14"
-											Command="{Binding Command_AddDelay}"/>
-
-								</StackPanel>
-
-							</StackPanel>
-							
-						</ScrollViewer>
+						<ContentControl Content="{Binding CurrentModeViewModel}"/>
 
 					</Border>
-
+					
 				</Grid>
-
+				
 			</Border>
 
 		</Grid>
 
 	</Border>
-	
+
 </Window>

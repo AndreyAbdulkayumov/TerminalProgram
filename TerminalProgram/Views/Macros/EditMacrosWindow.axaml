@@ -3,14 +3,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels"
-		xmlns:EditViews="clr-namespace:TerminalProgram.Views.Macros.EditViews;assembly=TerminalProgramBase"
         x:Class="TerminalProgram.Views.Macros.EditMacrosWindow"
         Title="Редактирование макроса"
+		Width="470" Height="550"
 		Background="Transparent"
 		CanResize="False"
 		ShowInTaskbar="False"
-		SizeToContent="WidthAndHeight"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
@@ -26,19 +24,7 @@
 		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
 
 	</Window.Styles>
-
-	<Window.DataTemplates>
-
-		<DataTemplate DataType="{x:Type ViewModels:NoProtocolMacros_VM}">
-			<EditViews:NoProtocolMacros/>
-		</DataTemplate>
-
-		<DataTemplate DataType="{x:Type ViewModels:ModbusMacros_VM}">
-			<EditViews:ModbusMacros/>
-		</DataTemplate>
-
-	</Window.DataTemplates>
-
+	
 	<Border Background="{DynamicResource App_Back_Color_Background}">
 
 		<Grid>
@@ -79,21 +65,33 @@
 					</Grid.RowDefinitions>
 
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="60"/>
+						<ColumnDefinition Width="120"/>
 						<ColumnDefinition Width="1*"/>
 					</Grid.ColumnDefinitions>
 
 					<Border Grid.Row="0" Grid.Column="0"
 							Classes="AppField">
 
-						<Button Classes="MenuToolButton"
-								ToolTip.Tip="Сохранить макрос"
-								Margin="10"
-								Command="{Binding Command_SaveMacros}">
+						<StackPanel Orientation="Horizontal" Spacing="10"
+									Margin="10">
+							
+							<Button Classes="MenuToolButton"
+									ToolTip.Tip="Сохранить макрос"
+									Command="{Binding Command_SaveMacros}">
 
-							<Icons:MaterialIcon Kind="ContentSave"/>
+								<Icons:MaterialIcon Kind="ContentSave"/>
 
-						</Button>
+							</Button>
+
+							<Button Classes="MenuToolButton"
+									ToolTip.Tip="Запустить макрос"
+									Command="{Binding Command_RunMacros}">
+
+								<Icons:MaterialIcon Kind="PlayOutline"/>
+
+							</Button>
+							
+						</StackPanel>
 
 					</Border>
 
@@ -106,7 +104,7 @@
 									   FontSize="16"
 									   Margin="10,0,0,0"
 									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
-							
+
 							<TextBox Classes="InputField"
 									 Text="{Binding MacrosName, Mode=TwoWay}"
 									 Margin="55,0,10,0"
@@ -118,16 +116,89 @@
 					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
 							Classes="AppField">
 
-						<ContentControl Content="{Binding CurrentModeViewModel}"/>
+						<ScrollViewer>
+
+							<StackPanel Orientation="Vertical" Spacing="20"
+										Margin="10">
+
+								<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
+											  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel Orientation="Vertical" Spacing="20"/>
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+
+									<ItemsControl.ItemTemplate>
+
+										<DataTemplate>
+
+											<StackPanel Orientation="Horizontal" Spacing="15"
+														HorizontalAlignment="Center">
+
+												<Button Classes="MenuToolButton"
+														ToolTip.Tip="Запустить команду"
+														Command="{Binding Command_RunCommand}">
+
+													<Icons:MaterialIcon Kind="Play"/>
+
+												</Button>
+
+												<TextBox Classes="InputField"
+														 Width="260"
+														 IsReadOnly="True"
+														 Text="{Binding CommandName, Mode=TwoWay}"/>
+
+												<Button Classes="MenuToolButton"
+														ToolTip.Tip="Редактировать команду"
+														Command="{Binding Command_EditCommand}">
+
+													<Icons:MaterialIcon Kind="Cog"/>
+
+												</Button>
+
+												<Button Classes="MenuToolButton"
+														ToolTip.Tip="Удалить команду"
+														Command="{Binding Command_RemoveCommand}">
+
+													<Icons:MaterialIcon Kind="CloseBold"/>
+
+												</Button>
+
+											</StackPanel>
+
+										</DataTemplate>
+
+									</ItemsControl.ItemTemplate>
+
+								</ItemsControl>
+
+								<StackPanel Orientation="Horizontal" Spacing="30"
+										HorizontalAlignment="Center">
+
+									<Button Content="Добавить команду"
+											FontSize="14"
+											Command="{Binding Command_AddCommand}"/>
+
+									<Button Content="Добавить задержку"
+											FontSize="14"
+											Command="{Binding Command_AddDelay}"/>
+
+								</StackPanel>
+
+							</StackPanel>
+							
+						</ScrollViewer>
 
 					</Border>
-					
+
 				</Grid>
-				
+
 			</Border>
 
 		</Grid>
 
 	</Border>
-
+	
 </Window>

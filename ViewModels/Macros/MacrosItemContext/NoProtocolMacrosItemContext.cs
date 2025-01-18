@@ -1,4 +1,5 @@
-﻿using Core.Models.Settings.FileTypes;
+﻿using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
 using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 using ViewModels.NoProtocol;
@@ -7,9 +8,9 @@ namespace ViewModels.Macros.MacrosItemContext
 {
     internal class NoProtocolMacrosItemContext : IMacrosContext
     {
-        private readonly MacrosNoProtocolItem _content;
+        private readonly MacrosContent<MacrosCommandNoProtocol> _content;
 
-        public NoProtocolMacrosItemContext(MacrosNoProtocolItem content)
+        public NoProtocolMacrosItemContext(MacrosContent<MacrosCommandNoProtocol> content)
         {
             _content = content;
         }
@@ -23,10 +24,18 @@ namespace ViewModels.Macros.MacrosItemContext
                     return;
                 }
 
-                await NoProtocol_VM.Instance.NoProtocol_Send(_content.IsByteString, _content.Message, _content.EnableCR, _content.EnableLF, AppEncoding.GetEncoding(_content.MacrosEncoding));
+                if (_content.Commands == null)
+                {
+                    return;
+                }
+
+                foreach (var command in _content.Commands)
+                {
+                    await NoProtocol_VM.Instance.NoProtocol_Send(command.IsByteString, command.Message, command.EnableCR, command.EnableLF, AppEncoding.GetEncoding(command.MacrosEncoding));
+                }                
             };
 
-            return new MacrosData(_content.Name, action);
+            return new MacrosData(_content.MacrosName, action);
         }
     }
 }

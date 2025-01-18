@@ -3,7 +3,7 @@ using Core.Models.Settings.DataTypes;
 
 namespace Core.Models.Settings.FileTypes
 {
-    public class MacrosModbusItem : IMacrosItem
+    public class MacrosCommandModbus : IMacrosCommand
     {
         public string? Name { get; set; }
         public byte SlaveID { get; set; }
@@ -16,6 +16,6 @@ namespace Core.Models.Settings.FileTypes
 
     public class MacrosModbus
     {
-        public List<MacrosModbusItem>? Items { get; set; }
+        public List<MacrosContent<MacrosCommandModbus>>? Items { get; set; }
     }
 }
