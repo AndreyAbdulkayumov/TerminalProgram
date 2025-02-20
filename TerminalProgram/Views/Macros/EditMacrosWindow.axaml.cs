@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using ViewModels.Macros.DataTypes;
 using ViewModels.Macros.MacrosEdit;
@@ -13,11 +12,11 @@ public partial class EditMacrosWindow : Window
 {
     private readonly EditMacros_VM _viewModel;
 
-    public EditMacrosWindow(List<EditCommandParameters>? allCommandParameters)
+    public EditMacrosWindow(object? macrosParameters)
     {
         InitializeComponent();
 
-        _viewModel = new EditMacros_VM(allCommandParameters, OpenEditCommandWindow, Close, new MessageBox(this, "Макросы"));
+        _viewModel = new EditMacros_VM(macrosParameters, OpenEditCommandWindow, Close, new MessageBox(this, "Макросы"));
 
         DataContext = _viewModel;
     }

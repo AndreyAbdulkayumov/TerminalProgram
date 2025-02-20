@@ -1,4 +1,5 @@
-﻿using MessageBox_Core;
+﻿using Core.Models.Settings.FileTypes;
+using MessageBox_Core;
 using ReactiveUI;
 using System.Reactive;
 using ViewModels.Macros.DataTypes;
@@ -19,7 +20,7 @@ namespace ViewModels.Macros.MacrosEdit
         public ReactiveCommand<Unit, Unit> Command_EditCommand { get; }
         public ReactiveCommand<Unit, Unit> Command_RemoveCommand { get; }
 
-        public object? ItemData { get; private set; }
+        public object? CommandData { get; private set; }
 
         public readonly Guid Id;
 
@@ -27,7 +28,7 @@ namespace ViewModels.Macros.MacrosEdit
         {
             Id = Guid.NewGuid();
 
-            ItemData = parameters.InitData;
+            CommandData = parameters.InitData;
 
             CommandName = parameters.CommandName;
 
@@ -36,7 +37,12 @@ namespace ViewModels.Macros.MacrosEdit
 
             Command_EditCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                ItemData = await openEditCommandWindow(parameters);
+                CommandData = await openEditCommandWindow(parameters);
+
+                if (CommandData is MacrosCommandModbus data)
+                {
+                    CommandName = data.Name;
+                }                
             });
             Command_EditCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
 

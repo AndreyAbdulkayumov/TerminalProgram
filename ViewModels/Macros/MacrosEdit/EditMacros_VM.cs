@@ -36,12 +36,35 @@ namespace ViewModels.Macros.MacrosEdit
 
         private readonly List<EditCommandParameters> _allCommandParameters = new List<EditCommandParameters>();
 
-        public EditMacros_VM(List<EditCommandParameters>? allCommandParameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action closeWindowAction, IMessageBox messageBox)
+        public EditMacros_VM(object? macrosParameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action closeWindowAction, IMessageBox messageBox)
         {
-            if (allCommandParameters != null)
+            if (macrosParameters != null)
             {
-                _allCommandParameters.AddRange(allCommandParameters);
-            }            
+                IEnumerable<EditCommandParameters>? commands;
+
+                if (macrosParameters is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+                {
+                    MacrosName = noProtocolContent.MacrosName;
+                    commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, Array.Empty<string>()));
+                }
+
+                else if (macrosParameters is MacrosContent<MacrosCommandModbus> modbusContent)
+                {
+                    MacrosName = modbusContent.MacrosName;
+                    commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, Array.Empty<string>()));
+                }
+
+                else
+                {
+                    throw new NotImplementedException();
+                }
+
+                if (commands != null)
+                {
+                    _allCommandParameters.AddRange(commands);
+                    CommandItems.AddRange(_allCommandParameters.Select(e => new MacrosCommandItem_VM(e, openEditCommandWindow, RemoveCommand, messageBox)));
+                }
+            }
 
             Command_SaveMacros = ReactiveCommand.Create(() =>
             {
@@ -94,7 +117,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                 foreach (var command in CommandItems)
                 {
-                    if (command.ItemData is MacrosCommandNoProtocol itemData)
+                    if (command.CommandData is MacrosCommandNoProtocol itemData)
                     {
                         content.Commands.Add(itemData);
                     }                    
@@ -117,13 +140,12 @@ namespace ViewModels.Macros.MacrosEdit
                 content.MacrosName = MacrosName;
                 content.Commands = new List<MacrosCommandModbus>();
 
-                foreach (var command in CommandItems)
-                {
-                    if (command.ItemData is MacrosCommandModbus itemData)
-                    {
-                        content.Commands.Add(itemData);
-                    }
-                }
+                content.Commands = CommandItems
+                    .Select(e => new MacrosCommandModbus() 
+                        { 
+                            Name = e.CommandName
+                        })
+                    .ToList();
 
                 //var modbusMacros = modbusInfo.GetContent();
 

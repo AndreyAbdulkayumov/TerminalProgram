@@ -35,19 +35,9 @@ public partial class MacrosWindow : Window
         DataContext = _viewModel;
     }
 
-    private async Task<object?> OpenEditMacrosWindow(List<EditCommandParameters>? allParameters)
+    private async Task<object?> OpenEditMacrosWindow(object? macrosParameters)
     {
-        //var window = new EditMacrosWindow(parameters);
-
-        //await MainWindow.OpenWindowWithDimmer(async () =>
-        //{
-        //    await window.ShowDialog(this);
-        //},
-        //Grid_Workspace);
-
-        //return window.GetData();
-
-        var window = new EditMacrosWindow(allParameters);
+        var window = new EditMacrosWindow(macrosParameters);
 
         await MainWindow.OpenWindowWithDimmer(async () =>
         {
