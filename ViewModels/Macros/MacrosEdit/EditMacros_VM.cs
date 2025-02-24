@@ -94,13 +94,6 @@ namespace ViewModels.Macros.MacrosEdit
 
             Command_AddDelay = ReactiveCommand.Create(() => { });
             Command_AddDelay.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка добавления задержки.\n\n{error.Message}", MessageType.Error));
-
-            InitUI();
-        }
-
-        public void InitUI()
-        {
-
         }
 
         public object GetMacrosContent()

@@ -190,23 +190,6 @@ namespace ViewModels.Macros
         {
             var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
 
-            object? currentMacros;
-
-            switch (currentMode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    currentMacros = _noProtocolMacros;
-                    break;
-
-                case ApplicationWorkMode.ModbusClient:
-                    currentMacros = _modbusMacros;
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-
-            }
-
             var content = await _openEditMacrosWindow(null);
 
             if (content == null)
@@ -214,46 +197,14 @@ namespace ViewModels.Macros
                 return;
             }
 
-            IMacrosContext macrosContext;
+            AddMacrosItem(content);
 
-            if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
-            {
-                macrosContext = new NoProtocolMacrosItemContext(noProtocolContent);
-                (currentMacros as MacrosNoProtocol)?.Items?.Add(noProtocolContent);
-                _settings.SaveMacros(_noProtocolMacros);
-            }
-
-            else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
-            {
-                macrosContext = new ModbusMacrosItemContext(modbusContent);
-                (currentMacros as MacrosModbus)?.Items?.Add(modbusContent);
-                _settings.SaveMacros(_modbusMacros);
-            }
-
-            else
-            {
-                throw new NotImplementedException($"Поддержка режима {currentMode} не реализована.");
-            }
+            SaveMacros(currentMode);
 
             // На случай если режим будет изменен во время создания нового макроса
             if (currentMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
             {
-                if (content is MacrosContent<MacrosCommandNoProtocol>)
-                {
-                    _noProtocolMacros = currentMacros as MacrosNoProtocol;
-                }
-
-                else if (content is MacrosContent<MacrosCommandModbus>)
-                {
-                    _modbusMacros = currentMacros as MacrosModbus;
-                }
-
-                else
-                {
-                    throw new NotImplementedException($"Поддержка режима {currentMode} не реализована.");
-                }
-
-                BuildMacrosItem(macrosContext.CreateContext());
+                BuildMacrosItem(GetMacrosContextFrom(content).CreateContext());
             }
         }
 
@@ -261,17 +212,15 @@ namespace ViewModels.Macros
         {
             var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
 
-            object? currentMacros, initData;
+            object? initData;
 
             switch (currentMode)
             {
                 case ApplicationWorkMode.NoProtocol:
-                    currentMacros = _noProtocolMacros;
                     initData = _noProtocolMacros?.Items?.Find(e => e.MacrosName == name);
                     break;
 
                 case ApplicationWorkMode.ModbusClient:
-                    currentMacros = _modbusMacros;
                     initData = _modbusMacros?.Items?.Find(e => e.MacrosName == name);
                     break;
 
@@ -286,103 +235,31 @@ namespace ViewModels.Macros
                 return;
             }
 
-            IMacrosContext macrosContext;
+            ChangeMacrosItem(name, content);
 
-            if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
-            {
-                macrosContext = new NoProtocolMacrosItemContext(noProtocolContent);
-
-                var item = _noProtocolMacros?.Items?.First(item => item.MacrosName == name);
-
-                if (item != null)
-                {
-                    item.MacrosName = noProtocolContent.MacrosName;
-                    item.Commands = noProtocolContent.Commands;
-
-                    _settings.SaveMacros(_noProtocolMacros);
-                }
-            }
-
-            else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
-            {
-                macrosContext = new ModbusMacrosItemContext(modbusContent);
-
-                var item = _modbusMacros?.Items?.First(item => item.MacrosName == name);
-
-                if (item != null)
-                {
-                    item.MacrosName = modbusContent.MacrosName;
-                    item.Commands = modbusContent.Commands;
-
-                    _settings.SaveMacros(_modbusMacros);
-                }
-            }
-
-            else
-            {
-                throw new NotImplementedException($"Поддержка режима {currentMode} не реализована.");
-            }
+            SaveMacros(currentMode);
 
             // На случай если режим будет изменен во время создания нового макроса
             if (currentMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
             {
-                ChangeMacrosViewItem(name, macrosContext.CreateContext());
-            }
-        }
-
-        private void ChangeMacrosViewItem(string oldName, MacrosData newData)
-        {
-            var viewItem = Items.First(macros => macros.Title == oldName);
-
-            if (viewItem != null)
-            {
-                viewItem.Title = newData.Name;
-                viewItem.ClickAction = newData.Action;
-
-                _allMacrosNames = Items.Select(item => item.Title).ToList();
+                ChangeMacrosViewItem(name, GetMacrosContextFrom(content).CreateContext());
             }
         }
 
         private void DeleteMacros(string name)
         {
-            var itemToRemove = Items.First(item => item.Title == name);
+            var viewItemToRemove = Items.First(item => item.Title == name);
 
-            if (itemToRemove != null)
+            if (viewItemToRemove != null)
             {
-                Items.Remove(itemToRemove);
+                Items.Remove(viewItemToRemove);
             }
 
             _allMacrosNames.Remove(name);
 
-            switch (CommonUI_VM.CurrentApplicationWorkMode)
-            {
-                case ApplicationWorkMode.NoProtocol:
+            DeleteMacrosItem(name);
 
-                    var noProtocolItem = _noProtocolMacros?.Items?.First(macros => macros.MacrosName == name);
-
-                    if (noProtocolItem != null)
-                    {
-                        _noProtocolMacros?.Items?.Remove(noProtocolItem);
-                        _settings.SaveMacros(_noProtocolMacros);
-                    }
-                    
-                    break;
-
-                case ApplicationWorkMode.ModbusClient:
-
-                    var modbusItem = _modbusMacros?.Items?.First(macros => macros.MacrosName == name);
-
-                    if (modbusItem != null)
-                    {
-                        _modbusMacros?.Items?.Remove(modbusItem);
-                        _settings.SaveMacros(_modbusMacros);
-                    }
-
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
+            SaveMacros(CommonUI_VM.CurrentApplicationWorkMode);
         }
 
         private void BuildMacrosItem(MacrosData itemData)
@@ -469,6 +346,130 @@ namespace ViewModels.Macros
                 _settings.CopyFile(macrosFileName, outputFileName);
 
                 _messageBox.Show($"Экспорт прошел успешно!\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
+            }
+        }
+
+        private IMacrosContext GetMacrosContextFrom(object? content)
+        {
+            if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+            {
+                return new NoProtocolMacrosItemContext(noProtocolContent);
+            }
+
+            else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
+            {
+                return new ModbusMacrosItemContext(modbusContent);
+            }
+
+            throw new NotImplementedException($"Поддержка режима не реализована.");
+        }
+
+        private void SaveMacros(ApplicationWorkMode mode)
+        {
+            switch (mode)
+            {
+                case ApplicationWorkMode.NoProtocol:
+                    _settings.SaveMacros(_noProtocolMacros);
+                    break;
+
+                case ApplicationWorkMode.ModbusClient:
+                    _settings.SaveMacros(_modbusMacros);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void AddMacrosItem(object content)
+        {
+            if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+            {
+                _noProtocolMacros?.Items?.Add(noProtocolContent);
+            }
+
+            else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
+            {
+                _modbusMacros?.Items?.Add(modbusContent);
+            }
+
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void DeleteMacrosItem(string name)
+        {
+            switch (CommonUI_VM.CurrentApplicationWorkMode)
+            {
+                case ApplicationWorkMode.NoProtocol:
+
+                    var noProtocolItem = _noProtocolMacros?.Items?.First(macros => macros.MacrosName == name);
+
+                    if (noProtocolItem != null)
+                    {
+                        _noProtocolMacros?.Items?.Remove(noProtocolItem);
+                    }
+
+                    break;
+
+                case ApplicationWorkMode.ModbusClient:
+
+                    var modbusItem = _modbusMacros?.Items?.First(macros => macros.MacrosName == name);
+
+                    if (modbusItem != null)
+                    {
+                        _modbusMacros?.Items?.Remove(modbusItem);
+                    }
+
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private void ChangeMacrosItem(string oldName, object newContent)
+        {
+            if (newContent is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+            {
+                var item = _noProtocolMacros?.Items?.First(item => item.MacrosName == oldName);
+
+                if (item != null)
+                {
+                    item.MacrosName = noProtocolContent.MacrosName;
+                    item.Commands = noProtocolContent.Commands;
+                }
+            }
+
+            else if (newContent is MacrosContent<MacrosCommandModbus> modbusContent)
+            {
+                var item = _modbusMacros?.Items?.First(item => item.MacrosName == oldName);
+
+                if (item != null)
+                {
+                    item.MacrosName = modbusContent.MacrosName;
+                    item.Commands = modbusContent.Commands;
+                }
+            }
+
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private void ChangeMacrosViewItem(string oldName, MacrosData newData)
+        {
+            var viewItem = Items.First(macros => macros.Title == oldName);
+
+            if (viewItem != null)
+            {
+                viewItem.Title = newData.Name;
+                viewItem.ClickAction = newData.Action;
+
+                _allMacrosNames = Items.Select(item => item.Title).ToList();
             }
         }
     }
