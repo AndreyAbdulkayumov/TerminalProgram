@@ -36,6 +36,8 @@ namespace ViewModels.Macros.MacrosEdit
 
         private readonly List<EditCommandParameters> _allCommandParameters = new List<EditCommandParameters>();
 
+        private IEnumerable<string?> _allCommandNames;
+
         public EditMacros_VM(object? macrosParameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action closeWindowAction, IMessageBox messageBox)
         {
             if (macrosParameters != null)
@@ -84,7 +86,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             Command_AddCommand = ReactiveCommand.Create(() =>
             {
-                var _allCommandNames = CommandItems.Select(e => e.CommandName);
+                _allCommandNames = CommandItems.Select(e => e.CommandName);
 
                 _allCommandParameters.Add(new EditCommandParameters((CommandItems.Count() + 1).ToString(), null, _allCommandNames));
 
@@ -98,61 +100,77 @@ namespace ViewModels.Macros.MacrosEdit
 
         public object GetMacrosContent()
         {
-            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
-
-            //if (CurrentModeViewModel is IMacrosContent<MacrosCommandNoProtocol> noProtocolInfo)
-            if (currentMode == ApplicationWorkMode.NoProtocol)
+            switch (CommonUI_VM.CurrentApplicationWorkMode)
             {
-                var content = new MacrosContent<MacrosCommandNoProtocol>();
+                case ApplicationWorkMode.NoProtocol:
+                    return GetNoProtocolMacrosContent();
 
-                content.MacrosName = MacrosName;
-                content.Commands = new List<MacrosCommandNoProtocol>();
+                case ApplicationWorkMode.ModbusClient:
+                    return GetModbusMacrosContent();
 
-                foreach (var command in CommandItems)
+                default:
+                    throw new NotImplementedException();
+            };
+        }
+
+        private MacrosContent<MacrosCommandNoProtocol> GetNoProtocolMacrosContent()
+        {
+            var content = new MacrosContent<MacrosCommandNoProtocol>();
+
+            content.MacrosName = MacrosName;
+            content.Commands = new List<MacrosCommandNoProtocol>();
+
+            content.Commands = CommandItems
+                .Select(e =>
                 {
-                    if (command.CommandData is MacrosCommandNoProtocol itemData)
+                    if (e.CommandData is MacrosCommandNoProtocol data && data.Content != null)
                     {
-                        content.Commands.Add(itemData);
-                    }                    
-                }
+                        return new MacrosCommandNoProtocol()
+                        {
+                            Name = e.CommandName,
+                            Content = data.Content,                            
+                        };
+                    }
 
-                //var noProtocolMacros = noProtocolInfo.GetContent();
+                    return new MacrosCommandNoProtocol()
+                    {
+                        Name = e.CommandName,
+                        Content = null,
+                    };
+                })
+                .ToList();
 
-                //noProtocolMacros.Name = CommandName;
+            return content;
+        }
 
-                //return noProtocolMacros;
+        private MacrosContent<MacrosCommandModbus> GetModbusMacrosContent()
+        {
+            var content = new MacrosContent<MacrosCommandModbus>();
 
-                return content;
-            }
+            content.MacrosName = MacrosName;
+            content.Commands = new List<MacrosCommandModbus>();
 
-            //else if (CurrentModeViewModel is IMacrosContent<MacrosCommandModbus> modbusInfo)
-            else if (currentMode == ApplicationWorkMode.ModbusClient)
-            {
-                var content = new MacrosContent<MacrosCommandModbus>();
+            content.Commands = CommandItems
+                .Select(e =>
+                {
+                    if (e.CommandData is MacrosCommandModbus data && data.Content != null)
+                    {
+                        return new MacrosCommandModbus()
+                        {
+                            Name = e.CommandName,
+                            Content = data.Content,
+                        };
+                    }
 
-                content.MacrosName = MacrosName;
-                content.Commands = new List<MacrosCommandModbus>();
+                    return new MacrosCommandModbus()
+                    {
+                        Name = e.CommandName,
+                        Content = null,
+                    };
+                })
+                .ToList();
 
-                content.Commands = CommandItems
-                    .Select(e => new MacrosCommandModbus() 
-                        { 
-                            Name = e.CommandName
-                        })
-                    .ToList();
-
-                //var modbusMacros = modbusInfo.GetContent();
-
-                //modbusMacros.Name = CommandName;
-
-                //return modbusMacros;
-
-                return content;
-            }
-
-            else
-            {
-                throw new NotImplementedException();
-            }
+            return content;
         }
 
         private void RemoveCommand(Guid selectedId)

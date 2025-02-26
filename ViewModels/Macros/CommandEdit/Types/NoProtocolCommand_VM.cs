@@ -64,13 +64,13 @@ namespace ViewModels.Macros.CommandEdit.Types
         {
             _isInit = false;
 
-            if (initData is MacrosCommandNoProtocol data)
+            if (initData is MacrosCommandNoProtocol data && data.Content != null)
             {
-                SelectedEncoding = string.IsNullOrEmpty(data.MacrosEncoding) ? AppEncoding.Name_UTF8 : data.MacrosEncoding;
-                MessageString = data.Message;
-                IsBytesSend = data.IsByteString;
-                CR_Enable = data.EnableCR;
-                LF_Enable = data.EnableLF;
+                SelectedEncoding = string.IsNullOrEmpty(data.Content.MacrosEncoding) ? AppEncoding.Name_UTF8 : data.Content.MacrosEncoding;
+                MessageString = data.Content.Message;
+                IsBytesSend = data.Content.IsByteString;
+                CR_Enable = data.Content.EnableCR;
+                LF_Enable = data.Content.EnableLF;
             }
 
             this.WhenAnyValue(x => x.IsBytesSend)
@@ -90,11 +90,14 @@ namespace ViewModels.Macros.CommandEdit.Types
         {
             return new MacrosCommandNoProtocol()
             {
-                MacrosEncoding = SelectedEncoding,
-                Message = MessageString,
-                IsByteString = IsBytesSend,
-                EnableCR = CR_Enable,
-                EnableLF = LF_Enable,
+                Content = new NoProtocolCommandInfo()
+                {
+                    MacrosEncoding = SelectedEncoding,
+                    Message = MessageString,
+                    IsByteString = IsBytesSend,
+                    EnableCR = CR_Enable,
+                    EnableLF = LF_Enable,
+                }                
             };
         }
 

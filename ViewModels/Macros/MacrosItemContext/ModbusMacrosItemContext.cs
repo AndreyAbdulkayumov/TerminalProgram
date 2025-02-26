@@ -31,24 +31,27 @@ namespace ViewModels.Macros.MacrosItemContext
 
                 foreach (var command in _content.Commands)
                 {
-                    var modbusFunction = Function.AllFunctions.Single(x => x.Number == command.FunctionNumber);
+                    if (command.Content == null)
+                        continue;
+
+                    var modbusFunction = Function.AllFunctions.Single(x => x.Number == command.Content.FunctionNumber);
 
                     if (modbusFunction != null)
                     {
                         if (modbusFunction is ModbusReadFunction readFunction)
                         {
-                            await ModbusClient_VM.Instance.Modbus_Read(command.SlaveID, command.Address, readFunction, command.NumberOfReadRegisters, command.CheckSum_IsEnable);
+                            await ModbusClient_VM.Instance.Modbus_Read(command.Content.SlaveID, command.Content.Address, readFunction, command.Content.NumberOfReadRegisters, command.Content.CheckSum_IsEnable);
                         }
 
                         else if (modbusFunction is ModbusWriteFunction writeFunction)
                         {
                             await ModbusClient_VM.Instance.Modbus_Write(
-                                command.SlaveID,
-                                command.Address,
+                                command.Content.SlaveID,
+                                command.Content.Address,
                                 writeFunction,
-                                command.WriteInfo?.WriteBuffer,
-                                command.WriteInfo != null ? command.WriteInfo.NumberOfWriteRegisters : 0,
-                                command.CheckSum_IsEnable
+                                command.Content.WriteInfo?.WriteBuffer,
+                                command.Content.WriteInfo != null ? command.Content.WriteInfo.NumberOfWriteRegisters : 0,
+                                command.Content.CheckSum_IsEnable
                                 );
                         }
 

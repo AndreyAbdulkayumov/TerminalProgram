@@ -214,17 +214,17 @@ namespace ViewModels.Macros.CommandEdit.Types
                 WriteFunctions.Add(element.DisplayedName);
             }
 
-            if (initData is MacrosCommandModbus data)
+            if (initData is MacrosCommandModbus data && data.Content != null)
             {
                 // По умолчанию формат числа hex
 
-                SlaveID = data.SlaveID.ToString();
-                CheckSum_IsEnable = data.CheckSum_IsEnable;
-                Address = data.Address.ToString();
+                SlaveID = data.Content.SlaveID.ToString();
+                CheckSum_IsEnable = data.Content.CheckSum_IsEnable;
+                Address = data.Content.Address.ToString();
 
-                NumberOfReadRegisters = data.NumberOfReadRegisters.ToString();
+                NumberOfReadRegisters = data.Content.NumberOfReadRegisters.ToString();
 
-                var selectedFunction = Function.AllFunctions.First(func => func.Number == data.FunctionNumber);
+                var selectedFunction = Function.AllFunctions.First(func => func.Number == data.Content.FunctionNumber);
 
                 if (selectedFunction is ModbusReadFunction)
                 {
@@ -243,11 +243,11 @@ namespace ViewModels.Macros.CommandEdit.Types
 
                     SetWriteFieldVM(selectedFunction.DisplayedName);
 
-                    if (data.WriteInfo != null)
+                    if (data.Content.WriteInfo != null)
                     {
-                        CurrentWriteFieldViewModel?.SetDataFromMacros(data.WriteInfo);
+                        CurrentWriteFieldViewModel?.SetDataFromMacros(data.Content.WriteInfo);
                     }
-                }
+                }              
 
                 return;
             }
@@ -299,12 +299,15 @@ namespace ViewModels.Macros.CommandEdit.Types
 
             return new MacrosCommandModbus()
             {
-                SlaveID = _selectedSlaveID,
-                Address = _selectedAddress,
-                FunctionNumber = functionNumber,
-                WriteInfo = writeData,
-                NumberOfReadRegisters = _selectedNumberOfReadRegisters,
-                CheckSum_IsEnable = CheckSum_IsEnable,
+                Content = new ModbusCommandInfo()
+                {
+                    SlaveID = _selectedSlaveID,
+                    Address = _selectedAddress,
+                    FunctionNumber = functionNumber,
+                    WriteInfo = SelectedFunctionType_Read ? null : writeData,
+                    NumberOfReadRegisters = _selectedNumberOfReadRegisters,
+                    CheckSum_IsEnable = CheckSum_IsEnable,
+                }                
             };
         }
 

@@ -31,7 +31,10 @@ namespace ViewModels.Macros.MacrosItemContext
 
                 foreach (var command in _content.Commands)
                 {
-                    await NoProtocol_VM.Instance.NoProtocol_Send(command.IsByteString, command.Message, command.EnableCR, command.EnableLF, AppEncoding.GetEncoding(command.MacrosEncoding));
+                    if (command.Content == null)
+                        continue;
+                    
+                    await NoProtocol_VM.Instance.NoProtocol_Send(command.Content.IsByteString, command.Content.Message, command.Content.EnableCR, command.Content.EnableLF, AppEncoding.GetEncoding(command.Content.MacrosEncoding));
                 }                
             };
 
