@@ -36,7 +36,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         private readonly List<EditCommandParameters> _allCommandParameters = new List<EditCommandParameters>();
 
-        private IEnumerable<string?> _allCommandNames;
+        private readonly List<string> _allCommandNames = new List<string>();
 
         public EditMacros_VM(object? macrosParameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action closeWindowAction, IMessageBox messageBox)
         {
@@ -47,13 +47,13 @@ namespace ViewModels.Macros.MacrosEdit
                 if (macrosParameters is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
                 {
                     MacrosName = noProtocolContent.MacrosName;
-                    commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, Array.Empty<string>()));
+                    commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
                 }
 
                 else if (macrosParameters is MacrosContent<MacrosCommandModbus> modbusContent)
                 {
                     MacrosName = modbusContent.MacrosName;
-                    commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, Array.Empty<string>()));
+                    commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
                 }
 
                 else
@@ -63,7 +63,9 @@ namespace ViewModels.Macros.MacrosEdit
 
                 if (commands != null)
                 {
+                    _allCommandNames = commands.Select(e => e.CommandName).Where(e => e != null).Cast<string>().ToList();
                     _allCommandParameters.AddRange(commands);
+
                     CommandItems.AddRange(_allCommandParameters.Select(e => new MacrosCommandItem_VM(e, openEditCommandWindow, RemoveCommand, messageBox)));
                 }
             }
@@ -86,9 +88,10 @@ namespace ViewModels.Macros.MacrosEdit
 
             Command_AddCommand = ReactiveCommand.Create(() =>
             {
-                _allCommandNames = CommandItems.Select(e => e.CommandName);
+                string defaultName = (CommandItems.Count() + 1).ToString();
 
-                _allCommandParameters.Add(new EditCommandParameters((CommandItems.Count() + 1).ToString(), null, _allCommandNames));
+                _allCommandNames.Add(defaultName);
+                _allCommandParameters.Add(new EditCommandParameters(defaultName, null, _allCommandNames));
 
                 CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), openEditCommandWindow, RemoveCommand, messageBox)); 
             });
