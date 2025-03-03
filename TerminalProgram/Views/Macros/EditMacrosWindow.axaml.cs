@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ViewModels.Macros.DataTypes;
 using ViewModels.Macros.MacrosEdit;
 
-namespace TerminalProgram.Views.Macros;
+namespace TerminalProgramBase.Views.Macros;
 
 public partial class EditMacrosWindow : Window
 {
@@ -16,7 +16,7 @@ public partial class EditMacrosWindow : Window
     {
         InitializeComponent();
 
-        _viewModel = new EditMacros_VM(macrosParameters, OpenEditCommandWindow, Close, new MessageBox(this, "Макросы"));
+        _viewModel = new EditMacros_VM(macrosParameters, OpenEditCommandWindow, Close, new MessageBox(this));
 
         DataContext = _viewModel;
     }

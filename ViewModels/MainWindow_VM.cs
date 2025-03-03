@@ -1,12 +1,10 @@
-﻿using Core.Clients;
-using Core.Models;
+﻿using Core.Models;
 using Core.Models.Settings;
 using ReactiveUI;
 using MessageBox_Core;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using Core.Models.AppUpdateSystem;
@@ -14,6 +12,7 @@ using Core.Models.Settings.FileTypes;
 using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Clients.DataTypes;
 using ViewModels.Helpers;
+using Services.Interfaces;
 
 namespace ViewModels
 {
@@ -23,7 +22,7 @@ namespace ViewModels
         ModbusClient
     }
 
-    public class CommonUI_VM : ReactiveObject
+    public class MainWindow_VM : ReactiveObject
     {
         public static string? SettingsDocument;
 
@@ -76,6 +75,8 @@ namespace ViewModels
         public ReactiveCommand<Unit, Unit> Command_Closing { get; }
 
         public ReactiveCommand<Unit, Unit> Command_UpdatePresets { get; }
+
+        public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
 
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
@@ -164,50 +165,37 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _led_RX_IsActive, value);
         }
 
-        private readonly object TX_View_Locker = new object();
-        private readonly object RX_View_Locker = new object();
+        private readonly IMessageBoxMainWindow _messageBox;
+        private readonly IOpenChildWindow _openChildWindow;
+        private readonly IUIServices _uiServices;
+
+        private readonly NoProtocol_VM _noProtocol_VM;
+        private readonly ModbusClient_VM _modbusClient_VM;
 
         private readonly ConnectedHost Model;
         private readonly Model_Settings SettingsFile;
         private readonly Model_AppUpdateSystem AppUpdateSystem;
 
-        private readonly IMessageBox Message;
-
-        private readonly Action Set_Dark_Theme, Set_Light_Theme;
-
-        private readonly NoProtocol_VM NoProtocol_VM;
-        private readonly ModbusClient_VM ModbusClient_VM;
-
-        private readonly Version? _appVersion;
+        private readonly object TX_View_Locker = new object();
+        private readonly object RX_View_Locker = new object();
 
         private string? _newAppDownloadLink;
 
-
-        public CommonUI_VM(
-            Version? appVersion,
-            Func<Action, Task> runInUIThread,
-            Func<Task> open_ModbusScanner,
-            IMessageBox messageBox,
-            Action set_Dark_Theme_Handler,
-            Action set_Light_Theme_Handler,
-            Func<string, Task> copyToClipboard
-            )
+        public MainWindow_VM(IUIServices uiServices, IOpenChildWindow openChildWindow, IMessageBoxMainWindow messageBox, 
+            NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM)
         {
+            _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
+            _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+
+            _noProtocol_VM = noProtocol_VM ?? throw new ArgumentNullException(nameof(noProtocol_VM));
+            _modbusClient_VM = modbusClient_VM ?? throw new ArgumentNullException(nameof(modbusClient_VM));
+
             Model = ConnectedHost.Model;
             SettingsFile = Model_Settings.Model;
             AppUpdateSystem = Model_AppUpdateSystem.Model;
 
-            _appVersion = appVersion;
-
-            Message = messageBox;
-
-            Set_Dark_Theme = set_Dark_Theme_Handler;
-            Set_Light_Theme = set_Light_Theme_Handler;
-
             SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
-
-            NoProtocol_VM = new NoProtocol_VM(messageBox);
-            ModbusClient_VM = new ModbusClient_VM(runInUIThread, open_ModbusScanner, messageBox, copyToClipboard);
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -228,8 +216,8 @@ namespace ViewModels
                         {
                             string? encodingName = SettingsFile.Settings.GlobalEncoding;
                             Model.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
-                            NoProtocol_VM.SelectedEncoding = encodingName;
-                        }                        
+                            _noProtocol_VM.SelectedEncoding = encodingName;
+                        }
 
                         ConnectionString = GetConnectionString();
 
@@ -239,7 +227,7 @@ namespace ViewModels
 
                     catch (Exception error)
                     {
-                        Message.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
+                        _messageBox.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
                     }
                 });
 
@@ -249,36 +237,39 @@ namespace ViewModels
             });
 
             Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
-            Command_UpdatePresets.ThrownExceptions.Subscribe(error => Message.Show("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
+            Command_UpdatePresets.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
+
+            Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindow.About());
+            Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка открытия окна \"О программе\".\n\n" + error.Message, MessageType.Error));
 
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
-                CurrentViewModel = NoProtocol_VM;
+                CurrentViewModel = _noProtocol_VM;
                 Model.SetProtocol_NoProtocol();
 
                 SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
                 CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
             });
-            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
+            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
             {
-                CurrentViewModel = ModbusClient_VM;
+                CurrentViewModel = _modbusClient_VM;
                 Model.SetProtocol_Modbus();
 
                 SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
                 CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
             });
-            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
+            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
-            Command_Connect.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
+            Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
-            Command_Disconnect.ThrownExceptions.Subscribe(error => Message.Show(error.Message, MessageType.Error));
+            Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
             Command_UpdateApp = ReactiveCommand.Create(() => AppUpdateSystem.GoToWebPage(_newAppDownloadLink));
-            Command_UpdateApp.ThrownExceptions.Subscribe(error => Message.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
+            Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
 
             Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
             {
@@ -299,15 +290,15 @@ namespace ViewModels
             switch (themeName)
             {
                 case AppTheme.Dark:
-                    Set_Dark_Theme?.Invoke();
+                    _uiServices.Set_Dark_Theme();
                     break;
 
                 case AppTheme.Light:
-                    Set_Light_Theme?.Invoke();
+                    _uiServices.Set_Light_Theme();
                     break;
 
                 default:
-                    Set_Dark_Theme?.Invoke();
+                    _uiServices.Set_Dark_Theme();
                     SettingsFile.AppData.ThemeName = AppTheme.Dark;
                     break;
             }
@@ -318,19 +309,19 @@ namespace ViewModels
             switch (mode)
             {
                 case AppMode.NoProtocol:
-                    CurrentViewModel = NoProtocol_VM;
+                    CurrentViewModel = _noProtocol_VM;
                     Model.SetProtocol_NoProtocol();
                     CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
 
                 case AppMode.ModbusClient:
-                    CurrentViewModel = ModbusClient_VM;
+                    CurrentViewModel = _modbusClient_VM;
                     Model.SetProtocol_Modbus();
                     CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
                     break;
 
                 default:
-                    CurrentViewModel = NoProtocol_VM;
+                    CurrentViewModel = _noProtocol_VM;
                     Model.SetProtocol_NoProtocol();
                     SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
                     CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
@@ -352,11 +343,13 @@ namespace ViewModels
         {
             try
             {
+                var appVersion = _uiServices.GetAppVersion();
+
                 char[] appVersion_Chars = new char[20];
 
-                if (_appVersion != null)
+                if (appVersion != null)
                 {
-                    LastestVersionInfo? info = await AppUpdateSystem.IsUpdateAvailable(_appVersion);
+                    LastestVersionInfo? info = await AppUpdateSystem.IsUpdateAvailable(appVersion);
 
                     if (info != null)
                     {

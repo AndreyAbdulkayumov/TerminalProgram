@@ -8,7 +8,7 @@ using System;
 using System.Reflection;
 using ViewModels;
 
-namespace TerminalProgram.Views
+namespace TerminalProgramBase.Views
 {
     public partial class AboutWindow : Window
     {
@@ -20,7 +20,7 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            Message = new MessageBox(this, "Терминальная программа");
+            Message = new MessageBox(this);
 
             _appVersion = GetAppVersion();
 

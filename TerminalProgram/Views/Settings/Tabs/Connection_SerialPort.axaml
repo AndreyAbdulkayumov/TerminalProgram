@@ -5,7 +5,7 @@
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="400"
-             x:Class="TerminalProgram.Views.Settings.Tabs.Connection_SerialPort">
+             x:Class="TerminalProgramBase.Views.Settings.Tabs.Connection_SerialPort">
 
 	<UserControl.Styles>
 

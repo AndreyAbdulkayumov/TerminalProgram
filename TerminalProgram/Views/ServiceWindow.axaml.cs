@@ -4,7 +4,7 @@ using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 
-namespace TerminalProgram.Views
+namespace TerminalProgramBase.Views
 {
     public partial class ServiceWindow : Window
     {
@@ -25,7 +25,7 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            _messageBox = new MessageBox(this, "Терминальная программа");
+            _messageBox = new MessageBox(this);
 
             _controlForSelect = ControlForSelect.TextBox;
 
@@ -39,7 +39,7 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            _messageBox = new MessageBox(this, "Терминальная программа");
+            _messageBox = new MessageBox(this);
 
             _controlForSelect = ControlForSelect.ComboBox;
 

@@ -2,6 +2,7 @@
 using Core.Models;
 using MessageBox_Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Reactive;
 using System.Reactive.Linq;
 using ViewModels.Helpers;
@@ -54,11 +55,11 @@ namespace ViewModels.NoProtocol
                 
         private readonly ConnectedHost Model;
 
-        private readonly IMessageBox _messageBox;
+        private readonly IMessageBoxMainWindow _messageBox;
 
-        public NoProtocol_Mode_Normal_VM(IMessageBox messageBox)
+        public NoProtocol_Mode_Normal_VM(IMessageBoxMainWindow messageBox)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             Model = ConnectedHost.Model;
 

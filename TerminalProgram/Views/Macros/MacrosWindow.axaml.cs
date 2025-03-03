@@ -4,13 +4,11 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ViewModels.Macros;
-using ViewModels.Macros.DataTypes;
 
-namespace TerminalProgram.Views.Macros;
+namespace TerminalProgramBase.Views.Macros;
 
 public partial class MacrosWindow : Window
 {
@@ -26,7 +24,7 @@ public partial class MacrosWindow : Window
     {
         InitializeComponent();
 
-        _messageBox = new MessageBox(this, "Макросы");
+        _messageBox = new MessageBox(this);
 
         _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow, GetFolderPath, GetFilePath);
 
@@ -37,15 +35,16 @@ public partial class MacrosWindow : Window
 
     private async Task<object?> OpenEditMacrosWindow(object? macrosParameters)
     {
-        var window = new EditMacrosWindow(macrosParameters);
+        //var window = new EditMacrosWindow(macrosParameters);
 
-        await MainWindow.OpenWindowWithDimmer(async () =>
-        {
-            await window.ShowDialog(this);
-        },
-        Grid_Workspace);
+        //await MainWindow.OpenWindowWithDimmer(async () =>
+        //{
+        //    await window.ShowDialog(this);
+        //},
+        //Grid_Workspace);
 
-        return window.GetData();
+        //return window.GetData();
+        throw new System.Exception();
     }
 
     private async Task<string?> GetFolderPath(string WindowTitle)

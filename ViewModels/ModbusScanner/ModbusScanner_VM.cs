@@ -9,7 +9,7 @@ using System.Reactive.Linq;
 using System.Text;
 using ViewModels.Validation;
 
-namespace ViewModels.ModbusClient
+namespace ViewModels.ModbusScanner
 {
     public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
     {

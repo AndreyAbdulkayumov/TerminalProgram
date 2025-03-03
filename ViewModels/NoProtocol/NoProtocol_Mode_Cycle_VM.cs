@@ -5,6 +5,7 @@ using MessageBox_Core;
 using System.Reactive;
 using ViewModels.Helpers;
 using Core.Clients.DataTypes;
+using Services.Interfaces;
 
 namespace ViewModels.NoProtocol
 {
@@ -150,11 +151,11 @@ namespace ViewModels.NoProtocol
 
         private readonly ConnectedHost Model;
 
-        private readonly IMessageBox _messageBox;
+        private readonly IMessageBoxMainWindow _messageBox;
 
-        public NoProtocol_Mode_Cycle_VM(IMessageBox messageBox)
+        public NoProtocol_Mode_Cycle_VM(IMessageBoxMainWindow messageBox)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             Model = ConnectedHost.Model;
 

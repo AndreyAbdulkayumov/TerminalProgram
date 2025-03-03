@@ -9,22 +9,25 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Threading;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
-using TerminalProgram.Views.Settings;
-using TerminalProgram.Views.Macros;
+using TerminalProgramBase.Views.Settings;
+using TerminalProgramBase.Views.Macros;
 using ViewModels;
 using System.Diagnostics;
 using System.IO;
 
 
-namespace TerminalProgram.Views;
+namespace TerminalProgramBase.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly CommonUI_VM ViewModel;
+    public static MainWindow? Instance { get; private set; }
+    public static Grid? Workspace { get; private set; }
+
+    private readonly MainWindow_VM ViewModel;
 
     private readonly IMessageBox Message;
 
-    private static double WorkspaceOpacity_OpenChildWindow = 0.15;
+    //private static double WorkspaceOpacity_OpenChildWindow = 0.15;
 
     private readonly Border? _resizeIcon;
 
@@ -32,85 +35,88 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        Instance = this;
+        Workspace = this.FindControl<Grid>("Grid_Workspace");
+
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
 
-        Message = new MessageBox(this, "Терминальная программа");
+        Message = new MessageBox(this);
 
-        ViewModel = new CommonUI_VM(
-                AboutWindow.GetAppVersion(),
-                RunInUIThread,
-                OpenWindow_ModbusScanner,
-                Message,
-                Set_Dark_Theme,
-                Set_Light_Theme,
-                CopyToClipboard
-                );
+        //ViewModel = new CommonUI_VM(
+        //        AboutWindow.GetAppVersion(),
+        //        RunInUIThread,
+        //        OpenWindow_ModbusScanner,
+        //        Message,
+        //        Set_Dark_Theme,
+        //        Set_Light_Theme,
+        //        CopyToClipboard
+        //        );
 
-        DataContext = ViewModel;
+        //DataContext = ViewModel;
     }
 
-    private async Task RunInUIThread(Action RunnedAction)
-    {
-        await Dispatcher.UIThread.InvokeAsync(RunnedAction);
-    }
+    //private async Task RunInUIThread(Action runnedAction)
+    //{
+    //    await Dispatcher.UIThread.InvokeAsync(runnedAction);
+    //}
 
-    private async Task OpenWindow_ModbusScanner()
-    {
-        await OpenWindowWithDimmer(async () =>
-        {
-            var window = new ModbusScannerWindow();
+    //private async Task OpenWindow_ModbusScanner()
+    //{
+    //    await OpenWindowWithDimmer(async () =>
+    //    {
+    //        var window = new ModbusScannerWindow();
 
-            await window.ShowDialog(this);
-        }, 
-        Grid_Workspace);
-    }
+    //        await window.ShowDialog(this);
+    //    }, 
+    //    Grid_Workspace);
+    //}
 
-    private async Task CopyToClipboard(string Data)
-    {
-        var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
-        var dataObject = new DataObject();
+    //private async Task CopyToClipboard(string data)
+    //{
+    //    var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
+    //    var dataObject = new DataObject();
 
-        dataObject.Set(DataFormats.Text, Data);
+    //    dataObject.Set(DataFormats.Text, data);
 
-        if (clipboard != null)
-        {
-            await clipboard.SetDataObjectAsync(dataObject);
-        }        
-    }
+    //    if (clipboard != null)
+    //    {
+    //        await clipboard.SetDataObjectAsync(dataObject);
+    //    }        
+    //}
 
-    private void Set_Dark_Theme()
-    {
-        if (Application.Current != null)
-        {
-            Application.Current.Resources.MergedDictionaries.Clear();
+    //private void Set_Dark_Theme()
+    //{
+    //    if (Application.Current != null)
+    //    {
+    //        Application.Current.Resources.MergedDictionaries.Clear();
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
-                new Uri("avares://AppDesign/Themes/Dark.axaml"))
-            {
-                Source = new Uri("avares://AppDesign/Themes/Dark.axaml")
-            });
+    //        Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
+    //            new Uri("avares://AppDesign/Themes/Dark.axaml"))
+    //        {
+    //            Source = new Uri("avares://AppDesign/Themes/Dark.axaml")
+    //        });
 
-            Application.Current.RequestedThemeVariant =
-                new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
-        }
-    }
+    //        Application.Current.RequestedThemeVariant =
+    //            new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
+    //    }
+    //}
 
-    private void Set_Light_Theme()
-    {
-        if (Application.Current != null)
-        {
-            Application.Current.Resources.MergedDictionaries.Clear();
+    //private void Set_Light_Theme()
+    //{
+    //    if (Application.Current != null)
+    //    {
+    //        Application.Current.Resources.MergedDictionaries.Clear();
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
-                new Uri("avares://AppDesign/Themes/Light.axaml"))
-            {
-                Source = new Uri("avares://AppDesign/Themes/Light.axaml")
-            });
+    //        Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
+    //            new Uri("avares://AppDesign/Themes/Light.axaml"))
+    //        {
+    //            Source = new Uri("avares://AppDesign/Themes/Light.axaml")
+    //        });
 
-            Application.Current.RequestedThemeVariant =
-                new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
-        }
-    }
+    //        Application.Current.RequestedThemeVariant =
+    //            new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
+    //    }
+    //}
 
     /********************************************************/
     //
@@ -118,23 +124,23 @@ public partial class MainWindow : Window
     //
     /********************************************************/
 
-    private async void Window_Loaded(object? sender, RoutedEventArgs e)
-    {
-        await ViewModel.MainWindowLoadedHandler();
-    }
+    //private async void Window_Loaded(object? sender, RoutedEventArgs e)
+    //{
+    //    await ViewModel.MainWindowLoadedHandler();
+    //}
 
-    private async void Window_Closing(object? sender, WindowClosingEventArgs e)
-    {
-        try
-        {
-            await ViewModel.Command_Closing.Execute();
-        }
+    //private async void Window_Closing(object? sender, WindowClosingEventArgs e)
+    //{
+    //    try
+    //    {
+    //        await ViewModel.Command_Closing.Execute();
+    //    }
         
-        catch (Exception error)
-        {
-            Message.Show("Ошибка закрытия приложения.\n\n" + error.Message, MessageType.Error);
-        }
-    }
+    //    catch (Exception error)
+    //    {
+    //        Message.Show("Ошибка закрытия приложения.\n\n" + error.Message, MessageType.Error);
+    //    }
+    //}
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -176,26 +182,26 @@ public partial class MainWindow : Window
 
     private async void Button_OpenSettings_Click(object? sender, RoutedEventArgs e)
     {
-        await OpenWindowWithDimmer(async () =>
-        {
-            var window = new SettingsWindow(Set_Dark_Theme, Set_Light_Theme);
+        //await OpenWindowWithDimmer(async () =>
+        //{
+        //    //var window = new SettingsWindow(Set_Dark_Theme, Set_Light_Theme);
 
-            await window.ShowDialog(this);
+        //    //await window.ShowDialog(this);
 
-            await ViewModel.Command_UpdatePresets.Execute();
-        },
-        Grid_Workspace);
+        //    //await ViewModel.Command_UpdatePresets.Execute();
+        //},
+        //Grid_Workspace);
     }
 
     private async void Button_About_Click(object? sender, RoutedEventArgs e)
     {
-        await OpenWindowWithDimmer(async () =>
-        {
-            var window = new AboutWindow();
+        //await OpenWindowWithDimmer(async () =>
+        //{
+        //    var window = new AboutWindow();
 
-            await window.ShowDialog(this);
-        },
-        Grid_Workspace);
+        //    await window.ShowDialog(this);
+        //},
+        //Grid_Workspace);
     }
 
     private void Button_UserManual_Click(object? sender, RoutedEventArgs e)
@@ -245,17 +251,17 @@ public partial class MainWindow : Window
     //
     /********************************************************/
 
-    public static async Task OpenWindowWithDimmer(Func<Task> OpenAction, Grid workspace)
-    {
-        await Dispatcher.UIThread.Invoke(async () =>
-        {
-            double workspaceOpacity_Default = workspace.Opacity;
+    //public static async Task OpenWindowWithDimmer(Func<Task> OpenAction, Grid workspace)
+    //{
+    //    await Dispatcher.UIThread.Invoke(async () =>
+    //    {
+    //        double workspaceOpacity_Default = workspace.Opacity;
 
-            workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
+    //        workspace.Opacity = WorkspaceOpacity_OpenChildWindow;
 
-            await OpenAction();
+    //        await OpenAction();
 
-            workspace.Opacity = workspaceOpacity_Default;
-        });
-    }
+    //        workspace.Opacity = workspaceOpacity_Default;
+    //    });
+    //}
 }

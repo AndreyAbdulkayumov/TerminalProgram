@@ -110,7 +110,7 @@ namespace ViewModels.Macros.CommandEdit
 
         private object GetCommandVM()
         {
-            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
+            var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
 
             switch (currentMode)
             {

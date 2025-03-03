@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace TerminalProgram.Views.Settings.Tabs
+namespace TerminalProgramBase.Views.Settings.Tabs
 {
     public partial class Connection : UserControl
     {

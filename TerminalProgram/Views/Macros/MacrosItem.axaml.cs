@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using ViewModels.Macros;
 
-namespace TerminalProgram.Views.Macros;
+namespace TerminalProgramBase.Views.Macros;
 
 public partial class MacrosItem : UserControl
 {
@@ -17,13 +17,13 @@ public partial class MacrosItem : UserControl
         ViewServiceButtons(false);
     }
 
-    private async void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    private void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         var viewModel = DataContext as MacrosViewItem_VM;
 
         if (viewModel != null)
         {
-            await viewModel.MacrosAction();
+            viewModel.MacrosAction();
         }
 
         ViewServiceButtons(true);

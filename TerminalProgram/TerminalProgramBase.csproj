@@ -21,13 +21,15 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.2.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
     <PackageReference Include="System.IO.Ports" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\MessageBox_AvaloniaUI\MessageBox_AvaloniaUI.csproj" />
+    <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 

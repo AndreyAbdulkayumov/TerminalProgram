@@ -3,6 +3,7 @@ using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using MessageBox_Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
@@ -154,7 +155,7 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly IMessageBox _messageBox;
+        private readonly IMessageBoxMainWindow _messageBox;
 
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
@@ -162,13 +163,9 @@ namespace ViewModels.ModbusClient
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
 
-        public ModbusClient_Mode_Normal_VM(
-            IMessageBox messageBox,
-            Func<byte, ushort, ModbusWriteFunction, byte[]?, int, bool, Task> modbus_Write,
-            Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
-            )
+        public ModbusClient_Mode_Normal_VM(IMessageBoxMainWindow messageBox)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             Model = ConnectedHost.Model;
 
@@ -241,7 +238,9 @@ namespace ViewModels.ModbusClient
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
+                MessageBus.Current.SendMessage(
+                    new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+                    );
             });
             Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
@@ -275,9 +274,11 @@ namespace ViewModels.ModbusClient
 
                 ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();                               
+                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
 
-                await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable);
+                MessageBus.Current.SendMessage(
+                    new ModbusWriteMessage(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
+                    );
             });
             Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
 

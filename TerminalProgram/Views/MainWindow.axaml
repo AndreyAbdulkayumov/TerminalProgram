@@ -8,18 +8,15 @@
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
 		mc:Ignorable="d"
 		Width="1300" Height="830"
-        x:Class="TerminalProgram.Views.MainWindow"
-		x:DataType="ViewModels:CommonUI_VM"
+        x:Class="TerminalProgramBase.Views.MainWindow"
+		x:DataType="ViewModels:MainWindow_VM"
         Icon="/Resources/MainLogo.ico"
         Title="Терминальная программа"
 		Background="Transparent"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly"		
-		Loaded="Window_Loaded"
-		Closing="Window_Closing">
-
+		SystemDecorations="BorderOnly">
 	
 	<Window.Styles>
 
@@ -132,7 +129,7 @@
 
 						<Button Classes="MenuToolButton" 
 								ToolTip.Tip="О программе"
-								Click="Button_About_Click">
+								Command="{Binding Command_OpenAboutWindow}">
 							
 							<Icons:MaterialIcon Kind="Info"
 												Foreground="{DynamicResource ToolBar_Icon_About}"/>

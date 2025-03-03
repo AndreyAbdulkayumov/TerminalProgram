@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using System;
 using ViewModels.Macros.CommandEdit.Types;
 
-namespace TerminalProgram.Views.Macros.EditViews;
+namespace TerminalProgramBase.Views.Macros.EditViews;
 
 public partial class NoProtocolMacros : UserControl
 {

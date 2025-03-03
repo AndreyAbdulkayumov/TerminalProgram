@@ -6,7 +6,7 @@
 			 xmlns:Fields="clr-namespace:TerminalProgram.Views.ModbusClient.WriteFields;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
 			 Width="450" Height="380"
-             x:Class="TerminalProgram.Views.Macros.EditViews.ModbusMacros">
+             x:Class="TerminalProgramBase.Views.Macros.EditViews.ModbusMacros">
 
 	<UserControl.Styles>
 

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
 			 Width="660" Height="240"
-             x:Class="TerminalProgram.Views.Macros.EditViews.NoProtocolMacros"
+             x:Class="TerminalProgramBase.Views.Macros.EditViews.NoProtocolMacros"
 			 DataContextChanged="UserControl_DataContextChanged">
 
 	<UserControl.Styles>

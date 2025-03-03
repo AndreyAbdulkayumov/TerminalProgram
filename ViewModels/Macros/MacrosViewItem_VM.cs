@@ -14,14 +14,14 @@ namespace ViewModels.Macros
             set => this.RaiseAndSetIfChanged(ref _title, value);
         }
 
-        public Func<Task> ClickAction;
+        public Action ClickAction;
 
         public ReactiveCommand<Unit, Unit> Command_EditMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_MacrosDelete { get; }
 
         private readonly IMessageBox _messageBox;
 
-        public MacrosViewItem_VM(string title, Func<Task> clickAction, Func<string, Task> editMacros, Action<string> deleteMacrosAction, IMessageBox messageBox)
+        public MacrosViewItem_VM(string title, Action clickAction, Func<string, Task> editMacros, Action<string> deleteMacrosAction, IMessageBox messageBox)
         {
             Title = title;
 
@@ -36,11 +36,11 @@ namespace ViewModels.Macros
             Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления макроса \"{Title}\".\n\n{error.Message}", MessageType.Error));
         }
 
-        public async Task MacrosAction()
+        public void MacrosAction()
         {
             try
             {
-                await ClickAction();
+                ClickAction();
             }
 
             catch (Exception error)

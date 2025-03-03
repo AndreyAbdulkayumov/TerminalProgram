@@ -1,8 +1,7 @@
 ﻿using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
-using ViewModels.Helpers;
+using ReactiveUI;
 using ViewModels.Macros.DataTypes;
-using ViewModels.NoProtocol;
 
 namespace ViewModels.Macros.MacrosItemContext
 {
@@ -17,25 +16,14 @@ namespace ViewModels.Macros.MacrosItemContext
 
         public MacrosData CreateContext()
         {
-            Func<Task> action = async () =>
+            Action action = () =>
             {
-                if (NoProtocol_VM.Instance == null)
-                {
-                    return;
-                }
-
                 if (_content.Commands == null)
                 {
                     return;
                 }
 
-                foreach (var command in _content.Commands)
-                {
-                    if (command.Content == null)
-                        continue;
-                    
-                    await NoProtocol_VM.Instance.NoProtocol_Send(command.Content.IsByteString, command.Content.Message, command.Content.EnableCR, command.Content.EnableLF, AppEncoding.GetEncoding(command.Content.MacrosEncoding));
-                }                
+                MessageBus.Current.SendMessage(_content.Commands);               
             };
 
             return new MacrosData(_content.MacrosName, action);

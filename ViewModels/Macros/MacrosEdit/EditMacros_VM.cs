@@ -103,7 +103,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         public object GetMacrosContent()
         {
-            switch (CommonUI_VM.CurrentApplicationWorkMode)
+            switch (MainWindow_VM.CurrentApplicationWorkMode)
             {
                 case ApplicationWorkMode.NoProtocol:
                     return GetNoProtocolMacrosContent();

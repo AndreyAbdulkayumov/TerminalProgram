@@ -11,13 +11,13 @@ using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
 using Core.Models.Modbus.DataTypes;
 using Core.Clients.DataTypes;
+using Services.Interfaces;
+using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.ModbusClient
 {
     public class ModbusClient_VM : ReactiveObject
     {
-        public static ModbusClient_VM? Instance { get; private set; }
-
         public const string ViewContent_NumberStyle_dec = "(dec)";
         public const string ViewContent_NumberStyle_hex = "(hex)";
 
@@ -148,44 +148,62 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly Func<Action, Task> _runInUIThread;
+        private readonly IUIServices _uiServices;
+        private readonly IOpenChildWindow _openChildWindow;
+        private readonly IMessageBoxMainWindow _messageBox;
 
-        private readonly IMessageBox _messageBox;     
+        private readonly ModbusClient_Mode_Normal_VM _normalMode_VM;
+        private readonly ModbusClient_Mode_Cycle_VM _cycleMode_VM;
 
         private ushort _packageNumber = 0;
 
-        private ModbusFunction? _currentFunction;
+        private ModbusFunction? _currentFunction;        
 
-        private readonly ModbusClient_Mode_Normal_VM Mode_Normal_VM;
-        private readonly ModbusClient_Mode_Cycle_VM Mode_Cycle_VM;
 
-        private readonly Func<string, Task> _copyToClipboard;
-
-        public ModbusClient_VM(
-            Func<Action, Task> runInUIThread,
-            Func<Task> open_ModbusScanner,
-            IMessageBox messageBox,
-            Func<string, Task> copyToClipboard
-            )
+        public ModbusClient_VM(IUIServices uiServices, IOpenChildWindow openChildWindow, IMessageBoxMainWindow messageBox,
+            ModbusClient_Mode_Normal_VM normalMode_VM, ModbusClient_Mode_Cycle_VM cycleMode_VM)
         {
-            _runInUIThread = runInUIThread;
+            _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
+            _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
-            _messageBox = messageBox;
-
-            _copyToClipboard = copyToClipboard;
+            _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
+            _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
 
             Model = ConnectedHost.Model;
 
             Model.DeviceIsConnect += Model_DeviceIsConnect;
             Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Mode_Normal_VM = new ModbusClient_Mode_Normal_VM(messageBox, Modbus_Write, Modbus_Read);
-            Mode_Normal_VM.Subscribe(this);
+            _normalMode_VM = normalMode_VM;
+            _normalMode_VM.Subscribe(this);
 
-            Mode_Cycle_VM = new ModbusClient_Mode_Cycle_VM(messageBox, Modbus_Read);       
-            Mode_Cycle_VM.Subscribe(this);
+            _cycleMode_VM = cycleMode_VM;
+            _cycleMode_VM.Subscribe(this);
 
-            Instance = this;
+            /****************************************************/
+            //
+            // Настройка прослушивания MessageBus
+            //
+            /****************************************************/
+
+            MessageBus.Current.Listen<ModbusReadMessage>()
+                .Subscribe(async message =>
+                {
+                    await Receive_ReadMessage_Handler(message);
+                });
+
+            MessageBus.Current.Listen<ModbusWriteMessage>()
+                .Subscribe(async message =>
+                {
+                    await Receive_WriteMessage_Handler(message);
+                });            
+
+            MessageBus.Current.Listen<List<MacrosCommandModbus>>()
+                .Subscribe(async message =>
+                {
+                    await Receive_ListMessage_Handler(message);
+                });
 
             /****************************************************/
             //
@@ -205,7 +223,7 @@ namespace ViewModels.ModbusClient
                     }
                 }
 
-                await copyToClipboard(Data);
+                await _uiServices.CopyToClipboard(Data);
             });
             Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
@@ -221,11 +239,11 @@ namespace ViewModels.ModbusClient
                     }
                 }
 
-                await copyToClipboard(Data);
+                await _uiServices.CopyToClipboard(Data);
             });
             Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
 
-            Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(open_ModbusScanner);
+            Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(_openChildWindow.ModbusScanner);
 
             Command_ClearData = ReactiveCommand.Create(() =>
             {
@@ -241,10 +259,10 @@ namespace ViewModels.ModbusClient
                 {
                     if (!IsCycleMode)
                     {
-                        Mode_Cycle_VM.StopPolling();
+                        this._cycleMode_VM.StopPolling();
                     }
 
-                    CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
+                    CurrentModeViewModel = IsCycleMode ? this._cycleMode_VM : _normalMode_VM;
                 });
 
             this.WhenAnyValue(x => x.SelectedModbusType)
@@ -278,6 +296,76 @@ namespace ViewModels.ModbusClient
                         _messageBox.Show("Задан неизвестный тип Modbus протокола: " + SelectedModbusType, MessageType.Error);
                     }
                 });
+        }
+
+        private async Task Receive_ReadMessage_Handler(ModbusReadMessage message)
+        {
+            try
+            {
+                await Modbus_Read(message.SlaveID, message.Address, message.Function, message.NumberOfRegisters, message.CheckSum_IsEnable);
+            }
+
+            catch (Exception error)
+            {
+                _messageBox.Show(error.Message, MessageType.Error);
+            }
+        }
+
+        private async Task Receive_WriteMessage_Handler(ModbusWriteMessage message)
+        {
+            try
+            {
+                await Modbus_Write(message.SlaveID, message.Address, message.Function, message.WriteData, message.NumberOfRegisters, message.CheckSum_IsEnable);
+            }
+
+            catch (Exception error)
+            {
+                _messageBox.Show(error.Message, MessageType.Error);
+            }
+        }
+
+        private async Task Receive_ListMessage_Handler(List<MacrosCommandModbus> message)
+        {
+            try
+            {
+                foreach (var command in message)
+                {
+                    if (command.Content == null)
+                        continue;
+
+                    var modbusFunction = Function.AllFunctions.Single(x => x.Number == command.Content.FunctionNumber);
+
+                    if (modbusFunction != null)
+                    {
+                        if (modbusFunction is ModbusReadFunction readFunction)
+                        {
+                            await Modbus_Read(command.Content.SlaveID, command.Content.Address, readFunction, command.Content.NumberOfReadRegisters, command.Content.CheckSum_IsEnable);
+                        }
+
+                        else if (modbusFunction is ModbusWriteFunction writeFunction)
+                        {
+                            await Modbus_Write(
+                                command.Content.SlaveID,
+                                command.Content.Address,
+                                writeFunction,
+                                command.Content.WriteInfo?.WriteBuffer,
+                                command.Content.WriteInfo != null ? command.Content.WriteInfo.NumberOfWriteRegisters : 0,
+                                command.Content.CheckSum_IsEnable
+                                );
+                        }
+
+                        else
+                        {
+                            throw new Exception("Выбранна неизвестная Modbus функция");
+                        }
+                    }
+                }
+            }
+
+            catch (Exception error)
+            {
+                _messageBox.Show(error.Message, MessageType.Error);
+            }
         }
 
         private void SetCheckSumVisiblity()
@@ -364,7 +452,7 @@ namespace ViewModels.ModbusClient
                                 data,
                                 ModbusMessageType);
 
-                AddDataOnView(new ModbusDataDisplayed()
+                await AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = _packageNumber,
                     FuncNumber = readFunction.DisplayedNumber,
@@ -378,7 +466,7 @@ namespace ViewModels.ModbusClient
 
             catch (ModbusException error)
             {
-                ModbusErrorHandler(address, error);
+                await ModbusErrorHandler(address, error);
             }
 
             catch (Exception error)
@@ -387,7 +475,7 @@ namespace ViewModels.ModbusClient
 
                 if (info != null)
                 {
-                    AddDataOnView(null, info.Details);
+                    await AddDataOnView(null, info.Details);
                 }
 
                 throw new Exception(error.Message);
@@ -432,7 +520,7 @@ namespace ViewModels.ModbusClient
                     data,
                     ModbusMessageType);
 
-                AddDataOnView(new ModbusDataDisplayed()
+                await AddDataOnView(new ModbusDataDisplayed()
                 {
                     OperationID = _packageNumber,
                     FuncNumber = writeFunction.DisplayedNumber,
@@ -446,7 +534,7 @@ namespace ViewModels.ModbusClient
 
             catch (ModbusException error)
             {
-                ModbusErrorHandler(address, error);
+                await ModbusErrorHandler(address, error);
             }
 
             catch (Exception error)
@@ -455,16 +543,16 @@ namespace ViewModels.ModbusClient
 
                 if (Info != null)
                 {
-                    AddDataOnView(null, Info.Details);
+                    await AddDataOnView(null, Info.Details);
                 }
 
                 throw new Exception(error.Message);
             }
         }
 
-        private void ModbusErrorHandler(ushort address, ModbusException error)
+        private async Task ModbusErrorHandler(ushort address, ModbusException error)
         {
-            AddDataOnView(new ModbusDataDisplayed()
+            await AddDataOnView(new ModbusDataDisplayed()
             {
                 OperationID = _packageNumber,
                 FuncNumber = _currentFunction?.DisplayedNumber,
@@ -517,17 +605,17 @@ namespace ViewModels.ModbusClient
         //
         /*************************************************************************/
 
-        public void AddDataOnView(ModbusDataDisplayed? data, ModbusActionDetails? details)
+        public async Task AddDataOnView(ModbusDataDisplayed? data, ModbusActionDetails? details)
         {
             if (data != null)
             {
                 AddDataOnTable?.Invoke(this, data);
 
-                _runInUIThread.Invoke(() =>
+                await _uiServices.RunInUIThread(() =>
                 {
                     BinaryRepresentationItems.Clear();
 
-                    var binaryItems = BinaryRepresentation.GetData(data, _messageBox, _copyToClipboard);
+                    var binaryItems = BinaryRepresentation.GetData(data, _messageBox, _uiServices.CopyToClipboard);
 
                     if (binaryItems != null)
                     {
@@ -535,7 +623,7 @@ namespace ViewModels.ModbusClient
                     }                    
                 });
 
-                _runInUIThread.Invoke(() =>
+                await _uiServices.RunInUIThread(() =>
                 {
                     FloatRepresentationItems.Clear();
 
@@ -553,7 +641,7 @@ namespace ViewModels.ModbusClient
                 (string[] Bytes, string LogString) request = ParseData(details.RequestBytes);
                 (string[] Bytes, string LogString) response = ParseData(details.ResponseBytes);
 
-                _runInUIThread.Invoke(() =>
+                await _uiServices.RunInUIThread(() =>
                 {
                     RequestResponseItems.Clear();
                     RequestResponseItems.AddRange(LastRequestRepresentation.GetData(request.Bytes, response.Bytes));

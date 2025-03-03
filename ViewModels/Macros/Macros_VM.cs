@@ -48,6 +48,11 @@ namespace ViewModels.Macros
 
         private readonly Model_Settings _settings;
 
+        public Macros_VM()
+        {
+
+        }
+
         public Macros_VM(
             IMessageBox messageBox, 
             Func<object?, Task<object?>> openEditMacrosWindow,
@@ -70,15 +75,15 @@ namespace ViewModels.Macros
             Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
             Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error));
 
-            CommonUI_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
+            MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
 
             InitUI();
         }
 
         private void InitUI()
         {
-            ModeName = GetModeName(CommonUI_VM.CurrentApplicationWorkMode);
-            UpdateWorkspace(CommonUI_VM.CurrentApplicationWorkMode);
+            ModeName = GetModeName(MainWindow_VM.CurrentApplicationWorkMode);
+            UpdateWorkspace(MainWindow_VM.CurrentApplicationWorkMode);
         }
 
         private string GetValidMacrosFileName()
@@ -188,7 +193,7 @@ namespace ViewModels.Macros
 
         private async Task CreateMacros()
         {
-            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
+            var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
 
             var content = await _openEditMacrosWindow(null);
 
@@ -202,7 +207,7 @@ namespace ViewModels.Macros
             SaveMacros(currentMode);
 
             // На случай если режим будет изменен во время создания нового макроса
-            if (currentMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
+            if (currentMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
             {
                 BuildMacrosItem(GetMacrosContextFrom(content).CreateContext());
             }
@@ -210,7 +215,7 @@ namespace ViewModels.Macros
 
         private async Task EditMacros(string name)
         {
-            var currentMode = CommonUI_VM.CurrentApplicationWorkMode;
+            var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
 
             object? initData;
 
@@ -240,7 +245,7 @@ namespace ViewModels.Macros
             SaveMacros(currentMode);
 
             // На случай если режим будет изменен во время создания нового макроса
-            if (currentMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
+            if (currentMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
             {
                 ChangeMacrosViewItem(name, GetMacrosContextFrom(content).CreateContext());
             }
@@ -259,18 +264,18 @@ namespace ViewModels.Macros
 
             DeleteMacrosItem(name);
 
-            SaveMacros(CommonUI_VM.CurrentApplicationWorkMode);
+            SaveMacros(MainWindow_VM.CurrentApplicationWorkMode);
         }
 
         private void BuildMacrosItem(MacrosData itemData)
         {
-            Items.Add(new MacrosViewItem_VM(itemData.Name, itemData.Action, EditMacros, DeleteMacros, _messageBox));
+            Items.Add(new MacrosViewItem_VM(itemData.Name, itemData.MacrosAction, EditMacros, DeleteMacros, _messageBox));
             _allMacrosNames.Add(itemData.Name);
         }
 
         private async Task ImportMacros()
         {
-            ApplicationWorkMode workMode = CommonUI_VM.CurrentApplicationWorkMode;
+            ApplicationWorkMode workMode = MainWindow_VM.CurrentApplicationWorkMode;
 
             string modeName = GetModeName(workMode);
 
@@ -324,7 +329,7 @@ namespace ViewModels.Macros
                 _settings.CopyFile(macrosFilePath, macrosValidFilePath);
 
                 // На случай если режим будет изменен во время импорта
-                if (workMode.Equals(CommonUI_VM.CurrentApplicationWorkMode))
+                if (workMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
                 {
                     UpdateWorkspace(workMode);
                 }
@@ -401,7 +406,7 @@ namespace ViewModels.Macros
 
         private void DeleteMacrosItem(string name)
         {
-            switch (CommonUI_VM.CurrentApplicationWorkMode)
+            switch (MainWindow_VM.CurrentApplicationWorkMode)
             {
                 case ApplicationWorkMode.NoProtocol:
 
@@ -467,7 +472,7 @@ namespace ViewModels.Macros
             if (viewItem != null)
             {
                 viewItem.Title = newData.Name;
-                viewItem.ClickAction = newData.Action;
+                viewItem.ClickAction = newData.MacrosAction;
 
                 _allMacrosNames = Items.Select(item => item.Title).ToList();
             }

@@ -9,6 +9,8 @@ using ViewModels.Validation;
 using System.Text;
 using Core.Models.Modbus.DataTypes;
 using Core.Clients.DataTypes;
+using ViewModels.ModbusClient.DataTypes;
+using Services.Interfaces;
 
 namespace ViewModels.ModbusClient
 {
@@ -144,7 +146,7 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly IMessageBox _messageBox;
+        private readonly IMessageBoxMainWindow _messageBox;
 
         private NumberStyles _numberViewStyle;
 
@@ -155,19 +157,12 @@ namespace ViewModels.ModbusClient
 
         // Время в мс. взято с запасом.
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
-        private const int TimeForReadHandler = 100;
-
-        private readonly Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read;      
+        private const int TimeForReadHandler = 100; 
 
 
-        public ModbusClient_Mode_Cycle_VM(
-            IMessageBox messageBox,
-            Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
-            )
+        public ModbusClient_Mode_Cycle_VM(IMessageBoxMainWindow messageBox)
         {
-            _messageBox = messageBox;
-
-            Modbus_Read = modbus_Read;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             Model = ConnectedHost.Model;
 
@@ -390,9 +385,11 @@ namespace ViewModels.ModbusClient
             ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
             Model.Modbus.CycleMode_Period = _selectedPeriod;
-            await Model.Modbus.CycleMode_Start(async () =>
+            Model.Modbus.CycleMode_Start(() =>
             {
-                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
+                MessageBus.Current.SendMessage(
+                    new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+                    );
             });
 
             Button_Content = Button_Content_Stop;

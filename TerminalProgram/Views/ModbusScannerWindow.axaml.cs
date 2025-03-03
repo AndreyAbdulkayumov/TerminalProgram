@@ -3,9 +3,9 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
-using ViewModels.ModbusClient;
+using ViewModels.ModbusScanner;
 
-namespace TerminalProgram.Views
+namespace TerminalProgramBase.Views
 {
     public partial class ModbusScannerWindow : Window
     {
@@ -15,7 +15,7 @@ namespace TerminalProgram.Views
         {
             InitializeComponent();
 
-            Message = new MessageBox(this, "Терминальная программа");
+            Message = new MessageBox(this);
 
             DataContext = new ModbusScanner_VM(Message);
         }

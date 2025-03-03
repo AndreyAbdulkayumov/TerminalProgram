@@ -146,7 +146,7 @@ namespace ViewModels.Settings
         {
             UpdateListOfPresets();
 
-            SelectedPreset = Presets.Single(x => x == CommonUI_VM.SettingsDocument);
+            SelectedPreset = Presets.Single(x => x == MainWindow_VM.SettingsDocument);
         }
 
         private void UpdateListOfPresets()
@@ -294,7 +294,7 @@ namespace ViewModels.Settings
 
                 SettingsFile.SavePreset(SelectedPreset, data);
 
-                CommonUI_VM.SettingsDocument = SelectedPreset;
+                MainWindow_VM.SettingsDocument = SelectedPreset;
 
                 if (string.IsNullOrEmpty(Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort))
                 {

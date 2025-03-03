@@ -12,7 +12,7 @@ using Avalonia.Threading;
 using MessageBox_AvaloniaUI;
 
 
-namespace TerminalProgram.Views.Settings
+namespace TerminalProgramBase.Views.Settings
 {
     public partial class SettingsWindow : Window
     {
@@ -29,7 +29,7 @@ namespace TerminalProgram.Views.Settings
 
             WorkspaceOpacity_Default = Border_Workspace.Opacity;
 
-            Message = new MessageBox(this, "Терминальная программа");
+            Message = new MessageBox(this);
 
             ViewModel = new Settings_VM(
                 Message,

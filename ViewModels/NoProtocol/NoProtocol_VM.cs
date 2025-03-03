@@ -7,13 +7,16 @@ using ReactiveUI;
 using MessageBox_Core;
 using ViewModels.Helpers;
 using Core.Clients.DataTypes;
+using Services.Interfaces;
+using System;
+using ViewModels.NoProtocol.DataTypes;
+using Core.Models.Settings.FileTypes;
+using Core.Models.Modbus.DataTypes;
 
 namespace ViewModels.NoProtocol
 {
     public class NoProtocol_VM : ReactiveObject
     {
-        public static NoProtocol_VM? Instance { get; private set; }
-
         private object? _currentModeViewModel;
 
         public object? CurrentModeViewModel
@@ -98,15 +101,18 @@ namespace ViewModels.NoProtocol
 
         private readonly ConnectedHost Model;
 
-        private readonly IMessageBox _messageBox;
+        private readonly IMessageBoxMainWindow _messageBox;
 
-        private readonly NoProtocol_Mode_Normal_VM Mode_Normal_VM;
-        private readonly NoProtocol_Mode_Cycle_VM Mode_Cycle_VM;
+        private readonly NoProtocol_Mode_Normal_VM _normalMode_VM;
+        private readonly NoProtocol_Mode_Cycle_VM _cycleMode_VM;
 
-
-        public NoProtocol_VM(IMessageBox messageBox)
+        public NoProtocol_VM(IMessageBoxMainWindow messageBox,
+            NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+
+            _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
+            _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
 
             Model = ConnectedHost.Model;
 
@@ -116,30 +122,72 @@ namespace ViewModels.NoProtocol
             Model.NoProtocol.Model_DataReceived += NoProtocol_Model_DataReceived;
             Model.NoProtocol.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
 
+            MessageBus.Current.Listen<NoProtocolSendMessage>()
+                .Subscribe(async message =>
+                {
+                    await Receive_SendMessage_Handler(message);
+                });
+
+            MessageBus.Current.Listen<List<MacrosCommandNoProtocol>>()
+                .Subscribe(async message =>
+                {
+                    await Receive_ListMessage_Handler(message);
+                });
+
             Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
-
-            Mode_Normal_VM = new NoProtocol_Mode_Normal_VM(messageBox);
-            Mode_Cycle_VM = new NoProtocol_Mode_Cycle_VM(messageBox);
-
-            Instance = this;
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
                 {
                     if (!IsCycleMode)
                     {
-                        Mode_Cycle_VM.StopPolling();
+                        _cycleMode_VM.StopPolling();
                     }
 
-                    CurrentModeViewModel = IsCycleMode ? Mode_Cycle_VM : Mode_Normal_VM;
+                    CurrentModeViewModel = IsCycleMode ? _cycleMode_VM : _normalMode_VM;
                 });
         }
 
-        public async Task NoProtocol_Send(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)
+        private async Task Receive_SendMessage_Handler(NoProtocolSendMessage message)
         {
-            byte[] buffer = CreateSendBuffer(isBytes, message, enableCR, enableLF, encoding);
+            try
+            {
+                byte[] buffer = CreateSendBuffer(message.IsBytes, message.Message, message.EnableCR, message.EnableLF, message.SelectedEncoding);
 
-            await Model.NoProtocol.SendBytes(buffer);
+                await Model.NoProtocol.SendBytes(buffer);
+            }
+            
+            catch (Exception error)
+            {
+                _messageBox.Show(error.Message, MessageType.Error);
+            }
+        }
+
+        private async Task Receive_ListMessage_Handler(List<MacrosCommandNoProtocol> message)
+        {
+            try
+            {
+                foreach (var command in message)
+                {
+                    if (command.Content == null)
+                        continue;
+
+                    byte[] buffer = CreateSendBuffer(
+                        command.Content.IsByteString, 
+                        command.Content.Message, 
+                        command.Content.EnableCR, 
+                        command.Content.EnableLF,
+                        AppEncoding.GetEncoding(command.Content.MacrosEncoding)
+                        );
+
+                    await Model.NoProtocol.SendBytes(buffer);
+                }
+            }
+
+            catch (Exception error)
+            {
+                _messageBox.Show(error.Message, MessageType.Error);
+            }
         }
 
         public static byte[] CreateSendBuffer(bool isBytes, string? message, bool enableCR, bool enableLF, Encoding encoding)

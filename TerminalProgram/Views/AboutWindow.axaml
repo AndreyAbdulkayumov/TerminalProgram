@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d"
-        x:Class="TerminalProgram.Views.AboutWindow"
+        x:Class="TerminalProgramBase.Views.AboutWindow"
         Title="О программе"
 		Width="400" Height="350"
 		Background="Transparent"

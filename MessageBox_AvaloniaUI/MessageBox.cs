@@ -10,12 +10,11 @@ namespace MessageBox_AvaloniaUI
     {
         private readonly Window Owner;
 
-        private readonly string Title;
+        private const string Title = "Терминальная программа";
 
-        public MessageBox(Window owner, string title)
+        public MessageBox(Window owner)
         {
             Owner = owner;
-            Title = title;
         }
 
         public void Show(string message, MessageType type)

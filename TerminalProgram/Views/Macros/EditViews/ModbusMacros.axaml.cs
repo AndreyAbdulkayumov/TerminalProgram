@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace TerminalProgram.Views.Macros.EditViews;
+namespace TerminalProgramBase.Views.Macros.EditViews;
 
 public partial class ModbusMacros : UserControl
 {

@@ -5,7 +5,7 @@ using MessageBox_AvaloniaUI;
 using ViewModels.Macros.CommandEdit;
 using ViewModels.Macros.DataTypes;
 
-namespace TerminalProgram.Views.Macros;
+namespace TerminalProgramBase.Views.Macros;
 
 public partial class EditCommandWindow : Window
 {
@@ -18,7 +18,7 @@ public partial class EditCommandWindow : Window
         _viewModel = new EditCommand_VM(
             parameters,
             Close, 
-            new MessageBox(this, "Команды макросов")
+            new MessageBox(this)
             );
 
         DataContext = _viewModel;

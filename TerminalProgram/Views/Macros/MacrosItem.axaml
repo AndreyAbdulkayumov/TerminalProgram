@@ -5,7 +5,7 @@
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              mc:Ignorable="d" 
 			 d:DesignWidth="100" d:DesignHeight="100"
-             x:Class="TerminalProgram.Views.Macros.MacrosItem">
+             x:Class="TerminalProgramBase.Views.Macros.MacrosItem">
 
 	<Border Background="{DynamicResource Button_Color_Enabled_Background}"
 			CornerRadius="6"

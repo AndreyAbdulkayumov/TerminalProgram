@@ -3,12 +3,12 @@
     public class MacrosData
     {
         public readonly string Name;
-        public readonly Func<Task> Action;
+        public readonly Action MacrosAction;
 
-        public MacrosData(string name, Func<Task> action)
+        public MacrosData(string name, Action macrosAction)
         {
             Name = name;
-            Action = action;
+            MacrosAction = macrosAction;
         }
     }
 }
