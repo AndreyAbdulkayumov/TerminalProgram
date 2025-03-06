@@ -24,7 +24,6 @@
 
 	</Window.Styles>
 	
-
 	<Border>
 
 		<Grid>
@@ -71,11 +70,6 @@
 							 Width="180"
 							 HorizontalAlignment="Center" VerticalAlignment="Top"/>
 					
-					<ComboBox x:Name="ComboBox_SelectFileName"
-							  Margin="0,60,0,0"
-							  Width="180"
-							  HorizontalAlignment="Center" VerticalAlignment="Top"/>
-
 					<Button x:Name="Button_Select" Content="Выбрать"
 							Margin="0,110,0,0"
 							Width="80"

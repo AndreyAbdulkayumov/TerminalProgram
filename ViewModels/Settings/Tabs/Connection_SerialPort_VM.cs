@@ -8,6 +8,7 @@ using System.Reactive.Linq;
 using ViewModels.Validation;
 using System.Globalization;
 using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs
 {
@@ -174,10 +175,8 @@ namespace ViewModels.Settings.Tabs
         private readonly Model_Settings SettingsFile;
 
 
-        public Connection_SerialPort_VM(Settings_VM main_VM, IMessageBox messageBox)
+        public Connection_SerialPort_VM(IMessageBoxSettings messageBox)
         {
-            main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
-
             _messageBox = messageBox;
 
             SettingsFile = Model_Settings.Model;
@@ -207,7 +206,7 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
+        public void SettingsFileChanged()
         {
             try
             {

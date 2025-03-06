@@ -148,8 +148,8 @@ namespace ViewModels.ModbusClient
 
         private readonly ConnectedHost Model;
 
-        private readonly IUIServices _uiServices;
-        private readonly IOpenChildWindow _openChildWindow;
+        private readonly IUIService _uiServices;
+        private readonly IOpenChildWindowService _openChildWindow;
         private readonly IMessageBoxMainWindow _messageBox;
 
         private readonly ModbusClient_Mode_Normal_VM _normalMode_VM;
@@ -160,7 +160,7 @@ namespace ViewModels.ModbusClient
         private ModbusFunction? _currentFunction;        
 
 
-        public ModbusClient_VM(IUIServices uiServices, IOpenChildWindow openChildWindow, IMessageBoxMainWindow messageBox,
+        public ModbusClient_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox,
             ModbusClient_Mode_Normal_VM normalMode_VM, ModbusClient_Mode_Cycle_VM cycleMode_VM)
         {
             _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));

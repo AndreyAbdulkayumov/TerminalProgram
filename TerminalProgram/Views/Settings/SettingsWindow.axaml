@@ -16,9 +16,7 @@
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="None"
-		Loaded="Window_Loaded"
-		KeyDown="Window_KeyDown">
+		SystemDecorations="None">
 
 	<Window.Styles>
 

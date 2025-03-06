@@ -1,6 +1,6 @@
 ﻿namespace Services.Interfaces
 {
-    public interface IUIServices
+    public interface IUIService
     {
         Task RunInUIThread(Action runnedAction);
         Task CopyToClipboard(string data);

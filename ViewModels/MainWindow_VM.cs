@@ -13,6 +13,7 @@ using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Clients.DataTypes;
 using ViewModels.Helpers;
 using Services.Interfaces;
+using ViewModels.Settings.DataTypes;
 
 namespace ViewModels
 {
@@ -72,12 +73,10 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedPreset, value);
         }
 
-        public ReactiveCommand<Unit, Unit> Command_Closing { get; }
-
-        public ReactiveCommand<Unit, Unit> Command_UpdatePresets { get; }
-
+        public ReactiveCommand<Unit, Unit> Command_OpenSettingsWindow { get; }
         public ReactiveCommand<Unit, Unit> Command_OpenAboutWindow { get; }
-
+        public ReactiveCommand<Unit, Unit> Command_OpenUserManual { get; }
+        
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
 
@@ -165,9 +164,10 @@ namespace ViewModels
             set => this.RaiseAndSetIfChanged(ref _led_RX_IsActive, value);
         }
 
+        private readonly IUIService _uiServices;
+        private readonly IOpenChildWindowService _openChildWindow;
+        private readonly IFileSystemService _fileSystemService;
         private readonly IMessageBoxMainWindow _messageBox;
-        private readonly IOpenChildWindow _openChildWindow;
-        private readonly IUIServices _uiServices;
 
         private readonly NoProtocol_VM _noProtocol_VM;
         private readonly ModbusClient_VM _modbusClient_VM;
@@ -181,11 +181,12 @@ namespace ViewModels
 
         private string? _newAppDownloadLink;
 
-        public MainWindow_VM(IUIServices uiServices, IOpenChildWindow openChildWindow, IMessageBoxMainWindow messageBox, 
+        public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox, 
             NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM)
         {
             _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
             _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
+            _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             _noProtocol_VM = noProtocol_VM ?? throw new ArgumentNullException(nameof(noProtocol_VM));
@@ -202,6 +203,12 @@ namespace ViewModels
 
             _connectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
             _connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+
+            MessageBus.Current.Listen<PresetUpdateTriggerMessage>()
+                .Subscribe(_ =>
+                {
+                    UpdateListOfPresets();
+                });
 
             this.WhenAnyValue(x => x.SelectedPreset)
                 .WhereNotNull()
@@ -231,16 +238,14 @@ namespace ViewModels
                     }
                 });
 
-            Command_Closing = ReactiveCommand.Create(() =>
-            {
-                SettingsFile.SaveAppInfo(SettingsFile.AppData);
-            });
-
-            Command_UpdatePresets = ReactiveCommand.Create(UpdateListOfPresets);
-            Command_UpdatePresets.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка обновления списка пресетов.\n\n" + error.Message, MessageType.Error));
+            Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindow.Settings());
+            Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error));
 
             Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindow.About());
-            Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка открытия окна \"О программе\".\n\n" + error.Message, MessageType.Error));
+            Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"О программе\".\n\n{error.Message}", MessageType.Error));
+
+            Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
+            Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error));
 
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
@@ -329,14 +334,19 @@ namespace ViewModels
             }
         }
 
-        public async Task MainWindowLoadedHandler()
+        public async Task MainWindowLoaded()
         {
-            await Command_UpdatePresets.Execute();
+            UpdateListOfPresets();
 
             if (SettingsFile.AppData.CheckUpdateAfterStart)
             {
                 await CheckAppUpdate();
             }
+        }
+
+        public void WindowClosing()
+        {
+            SettingsFile.SaveAppInfo(SettingsFile.AppData);
         }
 
         private async Task CheckAppUpdate()

@@ -10,7 +10,7 @@ using Services.Interfaces;
 
 namespace TerminalProgramBase.Services
 {
-    public class UIServices : IUIServices
+    public class UIService : IUIService
     {
         public async Task RunInUIThread(Action runnedAction)
         {

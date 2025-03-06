@@ -4,6 +4,7 @@ using MessageBox_Core;
 using ViewModels.Validation;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs
 {
@@ -38,13 +39,11 @@ namespace ViewModels.Settings.Tabs
         private readonly IMessageBox _messageBox;
 
 
-        public Connection_Ethernet_VM(Settings_VM main_VM, IMessageBox messageBox)
+        public Connection_Ethernet_VM(IMessageBoxSettings messageBox)
         {
-            main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
-
             _messageBox = messageBox;
 
-            SettingsFile = Model_Settings.Model;
+            SettingsFile = Model_Settings.Model;            
         }
 
         public string GetFieldViewName(string fieldName)
@@ -62,7 +61,7 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
+        public void SettingsFileChanged()
         {
             try
             {

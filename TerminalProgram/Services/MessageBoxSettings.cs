@@ -1,27 +1,23 @@
 ﻿using MessageBox_AvaloniaUI;
 using MessageBox_Core;
-using System.Threading.Tasks;
-using TerminalProgramBase.Views;
 using Services.Interfaces;
+using System.Threading.Tasks;
+using TerminalProgramBase.Views.Settings;
 
 namespace TerminalProgramBase.Services
 {
-    public class MessageBoxMainWindow : IMessageBoxMainWindow
+    public class MessageBoxSettings : IMessageBoxSettings
     {
-        public MessageBoxMainWindow()
-        {
-
-        }
         public void Show(string message, MessageType type)
         {
-            var messageBox = new MessageBox(MainWindow.Instance);
+            var messageBox = new MessageBox(SettingsWindow.Instance);
 
             messageBox.Show(message, type);
         }
 
         public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type)
         {
-            var messageBox = new MessageBox(MainWindow.Instance);
+            var messageBox = new MessageBox(SettingsWindow.Instance);
 
             return await messageBox.ShowYesNoDialog(message, type);
         }

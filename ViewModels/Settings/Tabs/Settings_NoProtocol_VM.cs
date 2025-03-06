@@ -4,7 +4,7 @@ using ViewModels.Helpers;
 
 namespace ViewModels.Settings.Tabs
 {
-    public class NoProtocol_VM : ReactiveObject
+    public class Settings_NoProtocol_VM : ReactiveObject
     {
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
         {
@@ -24,7 +24,7 @@ namespace ViewModels.Settings.Tabs
             set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
         }
 
-        public NoProtocol_VM()
+        public Settings_NoProtocol_VM()
         {
 
         }

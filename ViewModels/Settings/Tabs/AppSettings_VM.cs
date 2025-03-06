@@ -2,6 +2,7 @@
 using Core.Models.Settings.FileTypes;
 using MessageBox_Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Reactive;
 
 namespace ViewModels.Settings.Tabs
@@ -25,26 +26,35 @@ namespace ViewModels.Settings.Tabs
 
         private readonly Model_Settings SettingsFile;
 
+        private readonly IUIService _uiServices;
+        private readonly IMessageBoxSettings _messageBox;
 
-        public AppSettings_VM(Action set_Dark_Theme_Handler, Action set_Light_Theme_Handler, IMessageBox messageBox)
+        public AppSettings_VM(IUIService uiServices, IMessageBoxSettings messageBox)
         {
+            _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+
             SettingsFile = Model_Settings.Model;
 
-            Select_Dark_Theme = ReactiveCommand.Create(() =>
-            {
-                set_Dark_Theme_Handler();
+            Select_Dark_Theme = ReactiveCommand.Create(SetDarkTheme);
+            Select_Dark_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
 
-                SettingsFile.AppData.ThemeName = AppTheme.Dark;
-            });
-            Select_Dark_Theme.ThrownExceptions.Subscribe(error => messageBox.Show("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
+            Select_Light_Theme = ReactiveCommand.Create(SetLightTheme);
+            Select_Light_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show("Не удалось корректно переключиться на светлую тему.\n\n" + error.Message, MessageType.Error));
+        }
 
-            Select_Light_Theme = ReactiveCommand.Create(() =>
-            {
-                set_Light_Theme_Handler();
+        private void SetDarkTheme()
+        {
+            _uiServices.Set_Dark_Theme();
 
-                SettingsFile.AppData.ThemeName = AppTheme.Light;
-            });
-            Select_Light_Theme.ThrownExceptions.Subscribe(error => messageBox.Show("Не удалось корректно переключиться на светлую тему.\n\n" + error.Message, MessageType.Error));
+            SettingsFile.AppData.ThemeName = AppTheme.Dark;
+        }
+
+        private void SetLightTheme()
+        {
+            _uiServices.Set_Light_Theme();
+
+            SettingsFile.AppData.ThemeName = AppTheme.Light;
         }
     }
 }
