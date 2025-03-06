@@ -68,7 +68,7 @@ namespace TerminalProgramBase.Services
             switch (e.Key)
             {
                 case Key.Enter:
-                    _settingsVM?.Command_File_Save.Execute();
+                    _settingsVM?.Enter_KeyDownHandler();
                     break;
 
                 case Key.Escape:

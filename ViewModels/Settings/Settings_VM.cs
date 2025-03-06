@@ -133,6 +133,11 @@ namespace ViewModels.Settings
             MessageBus.Current.SendMessage(new PresetUpdateTriggerMessage());
         }
 
+        public void Enter_KeyDownHandler()
+        {
+            File_Save_Handler();
+        }
+
         private void UpdateListOfPresets()
         {
             string[] fileNames = SettingsFile.FindFilesOfPresets();
