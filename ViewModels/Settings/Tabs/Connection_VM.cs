@@ -1,6 +1,6 @@
-﻿using Core.Models.Settings.FileTypes;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Reactive.Linq;
+using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.Settings.Tabs
 {

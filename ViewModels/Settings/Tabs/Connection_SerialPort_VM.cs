@@ -1,13 +1,13 @@
-﻿using Core.Models.Settings;
-using ReactiveUI;
+﻿using ReactiveUI;
 using MessageBox_Core;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Reactive;
 using System.Reactive.Linq;
-using ViewModels.Validation;
 using System.Globalization;
+using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
+using ViewModels.Validation;
 using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs

@@ -1,6 +1,6 @@
-﻿using Core.Models.Settings.DataTypes;
+﻿using ReactiveUI;
+using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
-using ReactiveUI;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosItemContext

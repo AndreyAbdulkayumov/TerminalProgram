@@ -1,7 +1,7 @@
-﻿using Core.Models.Settings.DataTypes;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using Core.Models.Settings.DataTypes;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;

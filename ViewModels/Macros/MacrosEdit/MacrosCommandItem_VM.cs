@@ -1,7 +1,7 @@
-﻿using Core.Models.Settings.DataTypes;
-using MessageBox_Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Reactive;
+using MessageBox_Core;
+using Core.Models.Settings.DataTypes;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit

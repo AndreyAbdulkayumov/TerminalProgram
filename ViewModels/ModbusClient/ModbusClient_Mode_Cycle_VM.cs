@@ -1,15 +1,15 @@
-﻿using Core.Models;
-using ReactiveUI;
+﻿using ReactiveUI;
+using System.Text;
 using System.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive.Linq;
 using MessageBox_Core;
 using ViewModels.Validation;
-using System.Text;
+using ViewModels.ModbusClient.MessageBusTypes;
+using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Clients.DataTypes;
-using ViewModels.ModbusClient.DataTypes;
 using Services.Interfaces;
 
 namespace ViewModels.ModbusClient

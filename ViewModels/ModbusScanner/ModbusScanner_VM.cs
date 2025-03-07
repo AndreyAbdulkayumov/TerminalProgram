@@ -1,12 +1,12 @@
-﻿using Core.Models;
-using Core.Models.Modbus.DataTypes;
-using Core.Models.Modbus.Message;
-using MessageBox_Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using MessageBox_Core;
+using Core.Models;
+using Core.Models.Modbus.DataTypes;
+using Core.Models.Modbus.Message;
 using ViewModels.Validation;
 
 namespace ViewModels.ModbusScanner

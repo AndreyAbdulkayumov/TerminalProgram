@@ -1,17 +1,15 @@
-﻿using System.Reactive;
+﻿using ReactiveUI;
+using System.Reactive;
 using System.Text;
+using MessageBox_Core;
 using Core.Clients;
 using Core.Models;
 using Core.Models.NoProtocol.DataTypes;
-using ReactiveUI;
-using MessageBox_Core;
-using ViewModels.Helpers;
-using Core.Clients.DataTypes;
-using Services.Interfaces;
-using System;
-using ViewModels.NoProtocol.DataTypes;
 using Core.Models.Settings.FileTypes;
-using Core.Models.Modbus.DataTypes;
+using Core.Clients.DataTypes;
+using ViewModels.NoProtocol.DataTypes;
+using ViewModels.Helpers;
+using Services.Interfaces;
 
 namespace ViewModels.NoProtocol
 {

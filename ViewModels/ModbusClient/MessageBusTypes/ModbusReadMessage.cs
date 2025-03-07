@@ -1,11 +1,11 @@
 ﻿using Core.Models.Modbus.DataTypes;
 
-namespace ViewModels.ModbusClient.DataTypes
+namespace ViewModels.ModbusClient.MessageBusTypes
 {
     public class ModbusReadMessage
     {
         public readonly byte SlaveID;
-        public readonly UInt16 Address;
+        public readonly ushort Address;
         public readonly ModbusReadFunction Function;
         public readonly int NumberOfRegisters;
         public readonly bool CheckSum_IsEnable;

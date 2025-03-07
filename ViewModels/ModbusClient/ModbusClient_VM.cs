@@ -1,18 +1,19 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Linq;
 using ReactiveUI;
+using Core.Clients;
 using Core.Models;
 using Core.Models.Modbus.Message;
-using System.Reactive.Linq;
-using Core.Clients;
+using Core.Models.Settings.FileTypes;
+using Core.Models.Modbus.DataTypes;
+using Core.Clients.DataTypes;
 using MessageBox_Core;
 using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
-using Core.Models.Modbus.DataTypes;
-using Core.Clients.DataTypes;
+using ViewModels.ModbusClient.MessageBusTypes;
 using Services.Interfaces;
-using Core.Models.Settings.FileTypes;
 
 namespace ViewModels.ModbusClient
 {

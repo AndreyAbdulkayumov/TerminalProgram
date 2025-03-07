@@ -1,10 +1,10 @@
-﻿using Core.Models;
-using Core.Models.NoProtocol.DataTypes;
-using ReactiveUI;
-using MessageBox_Core;
+﻿using ReactiveUI;
 using System.Reactive;
-using ViewModels.Helpers;
+using MessageBox_Core;
+using Core.Models;
+using Core.Models.NoProtocol.DataTypes;
 using Core.Clients.DataTypes;
+using ViewModels.Helpers;
 using Services.Interfaces;
 
 namespace ViewModels.NoProtocol

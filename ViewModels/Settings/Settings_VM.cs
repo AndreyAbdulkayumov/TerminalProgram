@@ -1,16 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Text;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
 using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox_Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
-using System.Text;
-using Core.Models.Settings.FileTypes;
 using ViewModels.Helpers.FloatNumber;
+using ViewModels.Settings.MessageBusTypes;
 using Services.Interfaces;
-using ViewModels.Settings.DataTypes;
 
 namespace ViewModels.Settings
 {

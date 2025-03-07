@@ -1,11 +1,11 @@
-﻿using Core.Models.Settings;
-using Core.Models.Settings.DataTypes;
-using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
+using MessageBox_Core;
+using Core.Models.Settings;
+using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using ViewModels.Macros.MacrosItemContext;
 

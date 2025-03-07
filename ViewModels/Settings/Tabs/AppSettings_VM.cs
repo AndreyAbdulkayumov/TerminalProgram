@@ -1,9 +1,9 @@
-﻿using Core.Models.Settings;
-using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
-using ReactiveUI;
-using Services.Interfaces;
+﻿using ReactiveUI;
 using System.Reactive;
+using MessageBox_Core;
+using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
+using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs
 {

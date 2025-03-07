@@ -1,4 +1,4 @@
-﻿namespace ViewModels.Settings.DataTypes
+﻿namespace ViewModels.Settings.MessageBusTypes
 {
     public class PresetUpdateTriggerMessage
     {

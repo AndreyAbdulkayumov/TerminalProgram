@@ -1,10 +1,10 @@
-﻿using Core.Models.Settings;
-using Core.Models.Settings.DataTypes;
-using Core.Models.Settings.FileTypes;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
+using Core.Models.Settings;
+using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;

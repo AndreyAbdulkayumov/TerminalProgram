@@ -1,6 +1,6 @@
-﻿using Core.Models.Settings.FileTypes;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Collections.ObjectModel;
+using Core.Models.Settings.FileTypes;
 using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 

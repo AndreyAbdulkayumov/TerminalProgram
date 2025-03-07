@@ -1,11 +1,11 @@
 ﻿using Core.Models.Modbus.DataTypes;
 
-namespace ViewModels.ModbusClient.DataTypes
+namespace ViewModels.ModbusClient.MessageBusTypes
 {
     public class ModbusWriteMessage
     {
         public readonly byte SlaveID;
-        public readonly UInt16 Address;
+        public readonly ushort Address;
         public readonly ModbusWriteFunction Function;
         public readonly byte[]? WriteData;
         public readonly int NumberOfRegisters;

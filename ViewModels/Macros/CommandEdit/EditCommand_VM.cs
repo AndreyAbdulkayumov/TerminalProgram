@@ -1,7 +1,7 @@
-﻿using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Reactive;
+using MessageBox_Core;
+using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using ViewModels.Macros.CommandEdit.Types;
 

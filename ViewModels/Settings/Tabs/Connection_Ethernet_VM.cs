@@ -1,9 +1,9 @@
-﻿using Core.Models.Settings;
-using ReactiveUI;
-using MessageBox_Core;
-using ViewModels.Validation;
-using System.Text.RegularExpressions;
+﻿using ReactiveUI;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using MessageBox_Core;
+using Core.Models.Settings;
+using ViewModels.Validation;
 using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs

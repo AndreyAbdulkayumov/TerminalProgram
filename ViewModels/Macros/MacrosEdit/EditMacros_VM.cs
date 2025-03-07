@@ -1,10 +1,10 @@
-﻿using Core.Models.Settings.DataTypes;
-using Core.Models.Settings.FileTypes;
-using DynamicData;
-using MessageBox_Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using DynamicData;
+using MessageBox_Core;
+using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit

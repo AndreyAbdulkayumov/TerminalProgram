@@ -1,19 +1,19 @@
-﻿using Core.Models;
-using Core.Models.Settings;
-using ReactiveUI;
+﻿using ReactiveUI;
 using MessageBox_Core;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
+using ViewModels.Helpers;
+using ViewModels.Settings.MessageBusTypes;
+using Core.Models;
+using Core.Models.Settings;
 using Core.Models.AppUpdateSystem;
 using Core.Models.Settings.FileTypes;
 using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Clients.DataTypes;
-using ViewModels.Helpers;
 using Services.Interfaces;
-using ViewModels.Settings.DataTypes;
 
 namespace ViewModels
 {
