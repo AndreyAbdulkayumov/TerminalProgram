@@ -8,7 +8,10 @@ using Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 using TerminalProgramBase.Views;
+using TerminalProgramBase.Views.Macros;
 using TerminalProgramBase.Views.Settings;
+using ViewModels.Macros;
+using ViewModels.Macros.MacrosEdit;
 using ViewModels.Settings;
 
 namespace TerminalProgramBase.Services
@@ -16,8 +19,12 @@ namespace TerminalProgramBase.Services
     public class OpenChildWindowService : IOpenChildWindowService
     {
         private Settings_VM? _settingsVM;
+        private Macros_VM? _macrosVM;
+        private EditMacros_VM? _editMacrosVM;
 
         private const double WorkspaceOpacity_OpenChildWindow = 0.15;
+
+        private static bool _macrosWindowIsOpen = false;
 
         private readonly IServiceProvider _serviceProvider;
 
@@ -79,10 +86,7 @@ namespace TerminalProgramBase.Services
 
         public async Task<string?> UserInput()
         {
-            var window = new ServiceWindow()
-            {
-                //DataContext = _serviceProvider.GetService<>
-            };
+            var window = new ServiceWindow();
 
             await OpenWindowWithDimmer(window, SettingsWindow.Instance, SettingsWindow.Workspace);
 
@@ -96,7 +100,78 @@ namespace TerminalProgramBase.Services
 
         public async Task ModbusScanner()
         {
-            await OpenWindowWithDimmer(new ModbusScannerWindow(), MainWindow.Instance, MainWindow.Workspace);
+            var window = new ModbusScannerWindow();
+
+            await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
+        }
+
+        public void Macros()
+        {
+            try
+            {
+                if (_macrosWindowIsOpen)
+                {
+                    return;
+                }
+
+                if (MainWindow.Instance == null)
+                {
+                    throw new Exception("Не задан владелец окна.");
+                }
+
+                _macrosWindowIsOpen = true;
+
+                _macrosVM = _serviceProvider.GetService<Macros_VM>();
+
+                if (_macrosVM == null)
+                {
+                    return;
+                }
+
+                var window = new MacrosWindow()
+                {
+                    DataContext = _macrosVM
+                };
+
+                window.Closed += (object? sender, EventArgs e) =>
+                {
+                    _macrosWindowIsOpen = false;
+                };
+
+                window.Show(MainWindow.Instance);
+            }
+
+            catch (Exception error)
+            {
+                _macrosWindowIsOpen = false;
+
+                throw new Exception(error.Message);
+            }                                   
+        }
+
+        public async Task<object?> EditMacros(object? parameters)
+        {
+            _editMacrosVM = _serviceProvider.GetService<EditMacros_VM>();
+
+            if (_editMacrosVM == null)
+            {
+                return null;
+            }
+
+            // Если макрос уже существует заполняем его данными
+            if (parameters != null)
+            {
+                _editMacrosVM.SetParameters(parameters);
+            }            
+
+            var window = new EditMacrosWindow()
+            {
+                DataContext = _editMacrosVM
+            };
+
+            await OpenWindowWithDimmer(window, MacrosWindow.Instance, MacrosWindow.Workspace);
+
+            return _editMacrosVM.Saved ? _editMacrosVM.GetMacrosContent() : null;
         }
 
         private async Task OpenWindowWithDimmer(Window window, Window? owner, Visual? workspace)

@@ -1,19 +1,20 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using TerminalProgramBase.Views;
 using TerminalProgramBase.Services;
 using ViewModels;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using ViewModels.Macros;
-using Services.Interfaces;
 using ViewModels.Settings;
 using ViewModels.Settings.Tabs;
+using Services.Interfaces;
+using ViewModels.Macros.MacrosEdit;
 
 namespace TerminalProgramBase;
 
@@ -58,9 +59,12 @@ public partial class App : Application
             .AddTransient<Settings_NoProtocol_VM>()
             // Окно макросов
             .AddTransient<Macros_VM>()
+            // Компоненты окна макросов
+            .AddTransient<EditMacros_VM>()
             // MessageBox с разными владельцами
             .AddSingleton<IMessageBoxMainWindow, MessageBoxMainWindow>()
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()
+            .AddSingleton<IMessageBoxMacros, MessageBoxMacros>()
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()

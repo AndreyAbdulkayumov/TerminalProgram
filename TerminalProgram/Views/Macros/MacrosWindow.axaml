@@ -12,8 +12,7 @@
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly"
-		Closing="Window_Closing">
+		SystemDecorations="BorderOnly">
 
 	<Window.Styles>
 

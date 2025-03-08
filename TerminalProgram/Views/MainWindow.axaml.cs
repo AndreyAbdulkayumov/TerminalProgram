@@ -1,11 +1,6 @@
-﻿using System;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using MessageBox_Core;
-using TerminalProgramBase.Views.Macros;
-using System.Diagnostics;
-using System.IO;
 
 namespace TerminalProgramBase.Views;
 
@@ -56,16 +51,5 @@ public partial class MainWindow : Window
         Cursor = new(StandardCursorType.BottomRightCorner);
         BeginResizeDrag(WindowEdge.SouthEast, e);
         Cursor = new(StandardCursorType.Arrow);
-    }
-
-    /********************************************************/
-    //
-    //  Обработчики кнопок
-    //
-    /********************************************************/
-
-    private void Button_Macros_Click(object? sender, RoutedEventArgs e)
-    {
-        MacrosWindow.ShowWindow(this);
     }
 }

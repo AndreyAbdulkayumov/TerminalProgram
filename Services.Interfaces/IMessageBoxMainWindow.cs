@@ -3,7 +3,6 @@
 namespace Services.Interfaces
 {
     public interface IMessageBoxMainWindow : IMessageBox
-    {
-        
+    {        
     }
 }

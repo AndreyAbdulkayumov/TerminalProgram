@@ -1,22 +1,13 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
-using MessageBox_AvaloniaUI;
-using MessageBox_Core;
-using System.Linq;
-using System.Threading.Tasks;
-using ViewModels.Macros;
 
 namespace TerminalProgramBase.Views.Macros;
 
 public partial class MacrosWindow : Window
 {
-    private static bool _isOpen = false;
-
-    private readonly IMessageBox _messageBox;
-
-    private readonly Macros_VM _viewModel;
+    public static MacrosWindow? Instance { get; private set; }
+    public static Grid? Workspace { get; private set; }
 
     private readonly Border? _resizeIcon;
 
@@ -24,95 +15,10 @@ public partial class MacrosWindow : Window
     {
         InitializeComponent();
 
-        _messageBox = new MessageBox(this);
-
-        _viewModel = new Macros_VM(_messageBox, OpenEditMacrosWindow, GetFolderPath, GetFilePath);
+        Instance = this;
+        Workspace = this.FindControl<Grid>("Grid_Workspace");
 
         _resizeIcon = this.FindControl<Border>("Border_ResizeIcon");
-
-        DataContext = _viewModel;
-    }
-
-    private async Task<object?> OpenEditMacrosWindow(object? macrosParameters)
-    {
-        //var window = new EditMacrosWindow(macrosParameters);
-
-        //await MainWindow.OpenWindowWithDimmer(async () =>
-        //{
-        //    await window.ShowDialog(this);
-        //},
-        //Grid_Workspace);
-
-        //return window.GetData();
-        throw new System.Exception();
-    }
-
-    private async Task<string?> GetFolderPath(string WindowTitle)
-    {
-        // Get top level from the current control. Alternatively, you can use Window reference instead.
-        TopLevel? topLevel = TopLevel.GetTopLevel(this);
-
-        if (topLevel != null)
-        {
-            var folder = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-            {
-                Title = WindowTitle,
-                AllowMultiple = false
-            });
-
-            if (folder != null && folder.Count > 0)
-            {
-                return folder.First().TryGetLocalPath();
-            }
-        }
-
-        return null;
-    }
-
-    private async Task<string?> GetFilePath(string WindowTitle)
-    {
-        // Get top level from the current control. Alternatively, you can use Window reference instead.
-        TopLevel? topLevel = TopLevel.GetTopLevel(this);
-
-        if (topLevel != null)
-        {
-            // Start async operation to open the dialog.
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                Title = WindowTitle,
-                FileTypeFilter = [new FilePickerFileType("‘айл макросов") { Patterns = ["*.json"] }],
-                AllowMultiple = false
-            });
-
-            if (files.Count >= 1)
-            {
-                return files.First().TryGetLocalPath();
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// »спользовать дл€ открыти€ окна в единственном экземпл€ре.
-    /// </summary>
-    public static void ShowWindow(Window owner)
-    {
-        if (_isOpen)
-        {
-            return;
-        }
-
-        var window = new MacrosWindow();
-
-        window.Show(owner);
-
-        _isOpen = true;
-    }
-
-    private void Window_Closing(object? sender, Avalonia.Controls.WindowClosingEventArgs e)
-    {
-        _isOpen = false;
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

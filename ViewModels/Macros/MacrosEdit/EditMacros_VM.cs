@@ -6,6 +6,7 @@ using MessageBox_Core;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
+using Services.Interfaces;
 
 namespace ViewModels.Macros.MacrosEdit
 {
@@ -38,53 +39,28 @@ namespace ViewModels.Macros.MacrosEdit
 
         private readonly List<string> _allCommandNames = new List<string>();
 
-        public EditMacros_VM(object? macrosParameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action closeWindowAction, IMessageBox messageBox)
+        private readonly IMessageBox _messageBox;
+
+        public EditMacros_VM(IMessageBoxMacros messageBox)
         {
-            if (macrosParameters != null)
-            {
-                IEnumerable<EditCommandParameters>? commands;
-
-                if (macrosParameters is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
-                {
-                    MacrosName = noProtocolContent.MacrosName;
-                    commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
-                }
-
-                else if (macrosParameters is MacrosContent<MacrosCommandModbus> modbusContent)
-                {
-                    MacrosName = modbusContent.MacrosName;
-                    commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
-                }
-
-                else
-                {
-                    throw new NotImplementedException();
-                }
-
-                if (commands != null)
-                {
-                    _allCommandNames = commands.Select(e => e.CommandName).Where(e => e != null).Cast<string>().ToList();
-                    _allCommandParameters.AddRange(commands);
-
-                    CommandItems.AddRange(_allCommandParameters.Select(e => new MacrosCommandItem_VM(e, openEditCommandWindow, RemoveCommand, messageBox)));
-                }
-            }
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             Command_SaveMacros = ReactiveCommand.Create(() =>
             {
                 if (string.IsNullOrWhiteSpace(MacrosName))
                 {
-                    messageBox.Show("Задайте имя макроса.", MessageType.Warning);
+                    _messageBox.Show("Задайте имя макроса.", MessageType.Warning);
                     return;
                 }
 
                 Saved = true;
-                closeWindowAction();
+
+                _messageBox.Show("Настройки макроса сохранены!", MessageType.Information);
             });
-            Command_SaveMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
+            Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
 
             Command_RunMacros = ReactiveCommand.Create(() => { });
-            Command_RunMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error));
+            Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error));
 
             Command_AddCommand = ReactiveCommand.Create(() =>
             {
@@ -93,12 +69,42 @@ namespace ViewModels.Macros.MacrosEdit
                 _allCommandNames.Add(defaultName);
                 _allCommandParameters.Add(new EditCommandParameters(defaultName, null, _allCommandNames));
 
-                CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), openEditCommandWindow, RemoveCommand, messageBox)); 
+                //CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), openEditCommandWindow, RemoveCommand, messageBox));
             });
-            Command_AddCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
+            Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
 
             Command_AddDelay = ReactiveCommand.Create(() => { });
-            Command_AddDelay.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка добавления задержки.\n\n{error.Message}", MessageType.Error));
+            Command_AddDelay.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления задержки.\n\n{error.Message}", MessageType.Error));
+        }
+
+        public void SetParameters(object? macrosParameters)
+        {
+            IEnumerable<EditCommandParameters>? commands;
+
+            if (macrosParameters is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+            {
+                MacrosName = noProtocolContent.MacrosName;
+                commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
+            }
+
+            else if (macrosParameters is MacrosContent<MacrosCommandModbus> modbusContent)
+            {
+                MacrosName = modbusContent.MacrosName;
+                commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
+            }
+
+            else
+            {
+                throw new NotImplementedException();
+            }
+
+            if (commands != null)
+            {
+                //_allCommandNames = commands.Select(e => e.CommandName).Where(e => e != null).Cast<string>().ToList();
+                //_allCommandParameters.AddRange(commands);
+
+                //CommandItems.AddRange(_allCommandParameters.Select(e => new MacrosCommandItem_VM(e, openEditCommandWindow, RemoveCommand, messageBox)));
+            }
         }
 
         public object GetMacrosContent()

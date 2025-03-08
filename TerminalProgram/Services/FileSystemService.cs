@@ -1,21 +1,19 @@
-﻿using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
-using MessageBox_Core;
-using Services.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using TerminalProgramBase.Views;
+using Services.Interfaces;
 
 namespace TerminalProgramBase.Services
 {
     public class FileSystemService : IFileSystemService
     {
-        public async Task<string?> Get_FilePath(string windowTitle, string pickerFileTypeName, IReadOnlyList<string> patterns)
+        public async Task<string?> GetFilePath(string windowTitle, string pickerFileTypeName, IReadOnlyList<string> patterns)
         {
             // Get top level from the current control. Alternatively, you can use Window reference instead.
             TopLevel? topLevel = TopLevel.GetTopLevel(MainWindow.Instance);
@@ -33,6 +31,28 @@ namespace TerminalProgramBase.Services
                 if (files.Count >= 1)
                 {
                     return files.First().Path.AbsolutePath;
+                }
+            }
+
+            return null;
+        }
+
+        public async Task<string?> GetFolderPath(string windowTitle)
+        {
+            // Get top level from the current control. Alternatively, you can use Window reference instead.
+            TopLevel? topLevel = TopLevel.GetTopLevel(MainWindow.Instance);
+
+            if (topLevel != null)
+            {
+                var folder = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                {
+                    Title = windowTitle,
+                    AllowMultiple = false
+                });
+
+                if (folder != null && folder.Count > 0)
+                {
+                    return folder.First().TryGetLocalPath();
                 }
             }
 

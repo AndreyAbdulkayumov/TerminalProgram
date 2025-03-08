@@ -8,6 +8,7 @@ using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using ViewModels.Macros.MacrosItemContext;
+using Services.Interfaces;
 
 namespace ViewModels.Macros
 {
@@ -41,28 +42,17 @@ namespace ViewModels.Macros
 
         private List<string> _allMacrosNames = new List<string>();
 
+        private readonly IOpenChildWindowService _openChildWindowService;
+        private readonly IFileSystemService _fileSystemService;
         private readonly IMessageBox _messageBox;
-        private readonly Func<object?, Task<object?>> _openEditMacrosWindow;
-        private readonly Func<string, Task<string?>> _getFolderPath;
-        private readonly Func<string, Task<string?>> _getFilePath;
 
         private readonly Model_Settings _settings;
 
-        public Macros_VM()
+        public Macros_VM(IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMacros messageBox)
         {
-
-        }
-
-        public Macros_VM(
-            IMessageBox messageBox, 
-            Func<object?, Task<object?>> openEditMacrosWindow,
-            Func<string, Task<string?>> getFolderPath_Handler,
-            Func<string, Task<string?>> getFilePath_Handler)
-        {
-            _messageBox = messageBox;
-            _openEditMacrosWindow = openEditMacrosWindow;
-            _getFolderPath = getFolderPath_Handler;
-            _getFilePath = getFilePath_Handler;
+            _openChildWindowService = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
+            _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
             _settings = Model_Settings.Model;
 
@@ -195,7 +185,7 @@ namespace ViewModels.Macros
         {
             var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
 
-            var content = await _openEditMacrosWindow(null);
+            var content = await _openChildWindowService.EditMacros(null);
 
             if (content == null)
             {
@@ -233,7 +223,7 @@ namespace ViewModels.Macros
                     throw new NotImplementedException();
             }
 
-            object? content = await _openEditMacrosWindow(initData);
+            object? content = _openChildWindowService.EditMacros(initData);
 
             if (content == null)
             {
@@ -288,7 +278,7 @@ namespace ViewModels.Macros
                 return;
             }
 
-            string? macrosFilePath = await _getFilePath($"Выбор файла для импорта макросов режима \"{modeName}\".");
+            string? macrosFilePath = await _fileSystemService.GetFilePath($"Выбор файла для импорта макросов режима \"{modeName}\".", "Файл макросов", ["*.json"]);
 
             if (macrosFilePath != null)
             {
@@ -340,7 +330,7 @@ namespace ViewModels.Macros
 
         private async Task ExportMacros()
         {
-            string? outputFilePath = await _getFolderPath("Выбор папки для экспорта файла макросов.");
+            string? outputFilePath = await _fileSystemService.GetFolderPath("Выбор папки для экспорта файла макросов.");
 
             if (outputFilePath != null)
             {

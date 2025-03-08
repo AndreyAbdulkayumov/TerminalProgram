@@ -1,29 +1,14 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using MessageBox_AvaloniaUI;
-using System.Threading.Tasks;
-using ViewModels.Macros.DataTypes;
-using ViewModels.Macros.MacrosEdit;
 
 namespace TerminalProgramBase.Views.Macros;
 
 public partial class EditMacrosWindow : Window
 {
-    private readonly EditMacros_VM _viewModel;
-
-    public EditMacrosWindow(object? macrosParameters)
+    public EditMacrosWindow()
     {
         InitializeComponent();
-
-        _viewModel = new EditMacros_VM(macrosParameters, OpenEditCommandWindow, Close, new MessageBox(this));
-
-        DataContext = _viewModel;
-    }
-
-    public object? GetData()
-    {
-        return _viewModel.Saved ? _viewModel.GetMacrosContent() : null;
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -34,14 +19,5 @@ public partial class EditMacrosWindow : Window
     private void Button_Close_Click(object? sender, RoutedEventArgs e)
     {
         Close();
-    }
-
-    private async Task<object?> OpenEditCommandWindow(EditCommandParameters parameters)
-    {
-        var window = new EditCommandWindow(parameters);
-
-        await window.ShowDialog(this);
-
-        return window.GetData();
     }
 }

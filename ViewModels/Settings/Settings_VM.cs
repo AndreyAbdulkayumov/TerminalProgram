@@ -168,7 +168,7 @@ namespace ViewModels.Settings
         {
             try
             {
-                string? filePath = await _fileSystemService.Get_FilePath("Добавление уже существующего файла настроек", "Файл настроек", ["*.json"]);
+                string? filePath = await _fileSystemService.GetFilePath("Добавление уже существующего файла настроек", "Файл настроек", ["*.json"]);
 
                 if (string.IsNullOrEmpty(filePath))
                 {

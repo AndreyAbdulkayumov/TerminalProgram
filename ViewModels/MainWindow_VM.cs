@@ -79,6 +79,7 @@ namespace ViewModels
         
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_NoProtocol { get; }
         public ReactiveCommand<Unit, Unit> Command_ProtocolMode_Modbus { get; }
+        public ReactiveCommand<Unit, Unit> Command_OpenMacrosWindow { get; }
 
         public ReactiveCommand<Unit, Unit> Command_Connect { get; }
         public ReactiveCommand<Unit, Unit> Command_Disconnect { get; }
@@ -165,7 +166,7 @@ namespace ViewModels
         }
 
         private readonly IUIService _uiServices;
-        private readonly IOpenChildWindowService _openChildWindow;
+        private readonly IOpenChildWindowService _openChildWindowService;
         private readonly IFileSystemService _fileSystemService;
         private readonly IMessageBoxMainWindow _messageBox;
 
@@ -181,11 +182,11 @@ namespace ViewModels
 
         private string? _newAppDownloadLink;
 
-        public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox, 
+        public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox, 
             NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM)
         {
             _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
-            _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
+            _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
             _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
@@ -238,10 +239,10 @@ namespace ViewModels
                     }
                 });
 
-            Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindow.Settings());
+            Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.Settings());
             Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error));
 
-            Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindow.About());
+            Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.About());
             Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"О программе\".\n\n{error.Message}", MessageType.Error));
 
             Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
@@ -266,6 +267,9 @@ namespace ViewModels
                 CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
             });
             Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+
+            Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
+            Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка окна макросов.\n\n{error.Message}", MessageType.Error));
 
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
             Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));

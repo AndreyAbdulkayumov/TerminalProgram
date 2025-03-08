@@ -2,7 +2,7 @@
 
 namespace Services.Interfaces
 {
-    public interface IMessageBoxSettings : IMessageBox
+    public interface IMessageBoxMacros : IMessageBox
     {
     }
 }
