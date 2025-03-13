@@ -32,7 +32,7 @@ namespace ViewModels.Macros.CommandEdit
         private readonly object? _initData;
         private readonly IMessageBox _messageBox;
 
-        public EditCommand_VM(EditCommandParameters parameters, Action closeWindowAction, IMessageBox messageBox)
+        public EditCommand_VM(EditCommandParameters parameters, IMessageBox messageBox)
         {
             _initData = parameters.InitData;
             _messageBox = messageBox;
@@ -75,7 +75,6 @@ namespace ViewModels.Macros.CommandEdit
                 }
 
                 Saved = true;
-                closeWindowAction();
             });
             Command_SaveMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
 

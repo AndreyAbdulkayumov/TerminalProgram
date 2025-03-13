@@ -16,6 +16,14 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _commandName, value);
         }
 
+        private bool _isEdit;
+
+        public bool IsEdit
+        {
+            get => _isEdit;
+            set => this.RaiseAndSetIfChanged(ref _isEdit, value);
+        }
+
         public ReactiveCommand<Unit, Unit> Command_RunCommand { get; }
         public ReactiveCommand<Unit, Unit> Command_EditCommand { get; }
         public ReactiveCommand<Unit, Unit> Command_RemoveCommand { get; }
@@ -26,7 +34,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         private EditCommandParameters _parameters;
 
-        public MacrosCommandItem_VM(EditCommandParameters parameters, Func<EditCommandParameters, Task<object?>> openEditCommandWindow, Action<Guid> removeItemHandler, IMessageBox messageBox)
+        public MacrosCommandItem_VM(EditCommandParameters parameters, Action<Guid> editCommandHandler, Action<Guid> removeItemHandler, IMessageBox messageBox)
         {
             Id = Guid.NewGuid();
 
@@ -46,7 +54,11 @@ namespace ViewModels.Macros.MacrosEdit
                     _parameters = new EditCommandParameters(_parameters.CommandName, CommandData, _parameters.ExistingCommandNames);
                 }
 
-                CommandData = await openEditCommandWindow(_parameters);
+                IsEdit = true;
+
+                //CommandData = await openEditCommandWindow(_parameters);
+
+                editCommandHandler(Id);
 
                 if (CommandData is IMacrosCommand data)
                 {

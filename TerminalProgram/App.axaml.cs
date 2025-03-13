@@ -15,6 +15,7 @@ using ViewModels.Settings;
 using ViewModels.Settings.Tabs;
 using Services.Interfaces;
 using ViewModels.Macros.MacrosEdit;
+using ViewModels.Macros.CommandEdit;
 
 namespace TerminalProgramBase;
 
@@ -65,6 +66,7 @@ public partial class App : Application
             .AddSingleton<IMessageBoxMainWindow, MessageBoxMainWindow>()
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()
             .AddSingleton<IMessageBoxMacros, MessageBoxMacros>()
+            .AddSingleton<IMessageBoxEditMacros, MessageBoxEditMacros>()
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()

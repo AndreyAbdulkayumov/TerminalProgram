@@ -16,6 +16,14 @@ namespace ViewModels.Macros.CommandEdit.Types
 {
     public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IMacrosContent<MacrosCommandModbus>, IMacrosValidation
     {
+        private string? _commandName = string.Empty;
+
+        public string? CommandName
+        {
+            get => _commandName;
+            set => this.RaiseAndSetIfChanged(ref _commandName, value);
+        }
+
         private string? _slaveID;
 
         public string? SlaveID

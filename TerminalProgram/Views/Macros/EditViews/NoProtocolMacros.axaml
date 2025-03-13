@@ -2,8 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d"
-			 Width="660" Height="240"
              x:Class="TerminalProgramBase.Views.Macros.EditViews.NoProtocolMacros"
 			 DataContextChanged="UserControl_DataContextChanged">
 
@@ -22,7 +20,7 @@
 		<Grid.RowDefinitions>
 			<RowDefinition Height="60"/>
 			<RowDefinition Height="1*"/>
-			<RowDefinition Height="60"/>
+			<RowDefinition Height="70"/>
 		</Grid.RowDefinitions>
 
 		<StackPanel Grid.Row="0"
@@ -55,7 +53,7 @@
 
 		<Grid Grid.Row="2">
 
-			<StackPanel Orientation="Horizontal" Spacing="15"
+			<StackPanel Orientation="Vertical" Spacing="10"
 						Margin="20,0,0,0"
 						HorizontalAlignment="Left">
 
@@ -64,17 +62,22 @@
 					       FontSize="14"
 						   VerticalAlignment="Center"/>
 
-				<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
-						  Foreground="{DynamicResource App_Color_Text}"
-						  FontSize="14"
-						  IsChecked="{Binding CR_Enable, Mode=TwoWay}"/>
+				<StackPanel Orientation="Horizontal" Spacing="20">
 
-				<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
-						  Foreground="{DynamicResource App_Color_Text}"
-						  FontSize="14"
-						  IsChecked="{Binding LF_Enable, Mode=TwoWay}"/>
+					<CheckBox Content="CR ( &#8216;\r &#8217;, 0x0D)"
+							  Foreground="{DynamicResource App_Color_Text}"
+							  FontSize="14"
+							  IsChecked="{Binding CR_Enable, Mode=TwoWay}"/>
 
+					<CheckBox Content="LF ( &#8216;\n	&#8216;, 0x0A)"
+							  Foreground="{DynamicResource App_Color_Text}"
+							  FontSize="14"
+							  IsChecked="{Binding LF_Enable, Mode=TwoWay}"/>
+
+				</StackPanel>
+				
 			</StackPanel>
+			
 
 		</Grid>
 

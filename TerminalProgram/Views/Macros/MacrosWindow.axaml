@@ -5,7 +5,7 @@
 		xmlns:local="clr-namespace:TerminalProgramBase.Views.Macros;assembly=TerminalProgramBase"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
-		Width="1000" Height="600"
+		Width="1000" Height="620"
         x:Class="TerminalProgramBase.Views.Macros.MacrosWindow"
 		Title="Макросы"
 		Background="Transparent"

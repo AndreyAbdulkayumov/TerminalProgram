@@ -6,9 +6,13 @@ namespace TerminalProgramBase.Views.Macros;
 
 public partial class EditMacrosWindow : Window
 {
+    public static EditMacrosWindow? Instance { get; private set; }
+
     public EditMacrosWindow()
     {
         InitializeComponent();
+
+        Instance = this;
     }
 
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)

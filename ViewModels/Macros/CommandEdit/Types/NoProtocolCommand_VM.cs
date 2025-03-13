@@ -8,6 +8,14 @@ namespace ViewModels.Macros.CommandEdit.Types
 {
     public class NoProtocolCommand_VM : ReactiveObject, IMacrosContent<MacrosCommandNoProtocol>
     {
+        private string? _commandName = string.Empty;
+
+        public string? CommandName
+        {
+            get => _commandName;
+            set => this.RaiseAndSetIfChanged(ref _commandName, value);
+        }
+
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
         {
             AppEncoding.Name_ASCII, AppEncoding.Name_UTF8, AppEncoding.Name_UTF32, AppEncoding.Name_Unicode

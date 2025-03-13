@@ -21,9 +21,9 @@
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.2" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,9 +49,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Views\Macros\EditCommandWindow.axaml.cs">
-      <DependentUpon>EditCommandWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\Macros\EditMacrosWindow.axaml.cs">
       <DependentUpon>EditMacrosWindow.axaml</DependentUpon>

@@ -7,6 +7,7 @@ using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using Services.Interfaces;
+using ViewModels.Macros.CommandEdit;
 
 namespace ViewModels.Macros.MacrosEdit
 {
@@ -28,6 +29,26 @@ namespace ViewModels.Macros.MacrosEdit
             set => this.RaiseAndSetIfChanged(ref _commandItems, value);
         }
 
+        private bool _isEdit;
+
+        public bool IsEdit
+        {
+            get => _isEdit;
+            set => this.RaiseAndSetIfChanged(ref _isEdit, value);
+        }
+
+        private object? _editCommandViewModel;
+
+        public object? EditCommandViewModel
+        {
+            get => _editCommandViewModel;
+            set => this.RaiseAndSetIfChanged(ref _editCommandViewModel, value);
+        }
+
+        public string EmptyCommandMessage => "Выберите команду для редактирования";
+
+        private List<EditCommand_VM> _allEditCommandVM = new List<EditCommand_VM>();
+
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_RunMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_AddCommand { get; }
@@ -41,7 +62,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         private readonly IMessageBox _messageBox;
 
-        public EditMacros_VM(IMessageBoxMacros messageBox)
+        public EditMacros_VM(IMessageBoxEditMacros messageBox)
         {
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
 
@@ -66,15 +87,25 @@ namespace ViewModels.Macros.MacrosEdit
             {
                 string defaultName = (CommandItems.Count() + 1).ToString();
 
-                _allCommandNames.Add(defaultName);
-                _allCommandParameters.Add(new EditCommandParameters(defaultName, null, _allCommandNames));
+                var commandParameters = new EditCommandParameters(defaultName, null, _allCommandNames);
 
-                //CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), openEditCommandWindow, RemoveCommand, messageBox));
+                _allCommandNames.Add(defaultName);
+                _allCommandParameters.Add(commandParameters);
+
+                CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), EditCommand, RemoveCommand, messageBox));
+
+                _allEditCommandVM.Add(new EditCommand_VM(commandParameters, messageBox));
             });
             Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
 
             Command_AddDelay = ReactiveCommand.Create(() => { });
             Command_AddDelay.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления задержки.\n\n{error.Message}", MessageType.Error));
+
+            this.WhenAnyValue(x => x.EditCommandViewModel)
+                .Subscribe(x =>
+                {
+                    IsEdit = x != null ? true : false;
+                });
         }
 
         public void SetParameters(object? macrosParameters)
@@ -180,6 +211,11 @@ namespace ViewModels.Macros.MacrosEdit
                 .ToList();
 
             return content;
+        }
+
+        private void EditCommand(Guid selectedId)
+        {
+            EditCommandViewModel = _allEditCommandVM.Last();
         }
 
         private void RemoveCommand(Guid selectedId)
