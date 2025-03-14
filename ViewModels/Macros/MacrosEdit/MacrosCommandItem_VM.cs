@@ -34,9 +34,9 @@ namespace ViewModels.Macros.MacrosEdit
 
         private EditCommandParameters _parameters;
 
-        public MacrosCommandItem_VM(EditCommandParameters parameters, Action<Guid> editCommandHandler, Action<Guid> removeItemHandler, IMessageBox messageBox)
+        public MacrosCommandItem_VM(Guid id, EditCommandParameters parameters, Action<Guid> editCommandHandler, Action<Guid> removeItemHandler, IMessageBox messageBox)
         {
-            Id = Guid.NewGuid();
+            Id = id;
 
             CommandData = parameters.InitData;
 
@@ -53,8 +53,6 @@ namespace ViewModels.Macros.MacrosEdit
                 {
                     _parameters = new EditCommandParameters(_parameters.CommandName, CommandData, _parameters.ExistingCommandNames);
                 }
-
-                IsEdit = true;
 
                 //CommandData = await openEditCommandWindow(_parameters);
 

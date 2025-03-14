@@ -92,9 +92,10 @@ namespace ViewModels.Macros.MacrosEdit
                 _allCommandNames.Add(defaultName);
                 _allCommandParameters.Add(commandParameters);
 
-                CommandItems.Add(new MacrosCommandItem_VM(_allCommandParameters.Last(), EditCommand, RemoveCommand, messageBox));
+                var itemGuid = Guid.NewGuid();
 
-                _allEditCommandVM.Add(new EditCommand_VM(commandParameters, messageBox));
+                CommandItems.Add(new MacrosCommandItem_VM(itemGuid, _allCommandParameters.Last(), EditCommand, RemoveCommand, _messageBox));
+                _allEditCommandVM.Add(new EditCommand_VM(itemGuid, commandParameters, _messageBox));
             });
             Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
 
@@ -131,10 +132,19 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (commands != null)
             {
-                //_allCommandNames = commands.Select(e => e.CommandName).Where(e => e != null).Cast<string>().ToList();
-                //_allCommandParameters.AddRange(commands);
+                foreach (var commandParameters in commands)
+                {
+                    var itemGuid = Guid.NewGuid();
 
-                //CommandItems.AddRange(_allCommandParameters.Select(e => new MacrosCommandItem_VM(e, openEditCommandWindow, RemoveCommand, messageBox)));
+                    CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, EditCommand, RemoveCommand, _messageBox));
+                    _allEditCommandVM.Add(new EditCommand_VM(itemGuid, commandParameters, _messageBox));
+                }
+
+                _allCommandNames.Clear();
+                _allCommandNames.AddRange(commands.Select(e => e.CommandName).Where(e => e != null).Cast<string>());
+
+                _allCommandParameters.Clear();
+                _allCommandParameters.AddRange(commands);
             }
         }
 
@@ -215,17 +225,37 @@ namespace ViewModels.Macros.MacrosEdit
 
         private void EditCommand(Guid selectedId)
         {
-            EditCommandViewModel = _allEditCommandVM.Last();
+            var commandItem = CommandItems.First(e => e.Id == selectedId);
+            var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
+
+            if (commandItem.IsEdit)
+            {
+                commandItem.IsEdit = false;
+                EditCommandViewModel = null;
+                return;
+            }
+
+            foreach (var item in CommandItems)
+            {
+                item.IsEdit = false;
+            }
+
+            commandItem.IsEdit = true;
+            EditCommandViewModel = commandVM;
         }
 
         private void RemoveCommand(Guid selectedId)
         {
-            var newCollection = CommandItems
-                .Where(e => e.Id != selectedId)
-                .ToList();
+            var commandItem = CommandItems.First(e => e.Id == selectedId);
+            var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
 
-            CommandItems.Clear();
-            CommandItems.AddRange(newCollection);
+            if (commandItem.IsEdit)
+            {
+                EditCommandViewModel = null;
+            }
+
+            CommandItems.Remove(commandItem);
+            _allEditCommandVM.Remove(commandVM);
         }
     }
 }

@@ -223,7 +223,7 @@ namespace ViewModels.Macros
                     throw new NotImplementedException();
             }
 
-            object? content = _openChildWindowService.EditMacros(initData);
+            object? content = await _openChildWindowService.EditMacros(initData);
 
             if (content == null)
             {

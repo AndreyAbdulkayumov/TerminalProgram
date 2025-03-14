@@ -27,13 +27,17 @@ namespace ViewModels.Macros.CommandEdit
 
         public bool Saved { get; private set; } = false;
 
+        public readonly Guid Id;
+
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
 
         private readonly object? _initData;
         private readonly IMessageBox _messageBox;
 
-        public EditCommand_VM(EditCommandParameters parameters, IMessageBox messageBox)
+        public EditCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox)
         {
+            Id = id;
+
             _initData = parameters.InitData;
             _messageBox = messageBox;
 
