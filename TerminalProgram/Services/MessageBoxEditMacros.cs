@@ -2,7 +2,7 @@
 using MessageBox_AvaloniaUI;
 using MessageBox_Core;
 using Services.Interfaces;
-using TerminalProgramBase.Views.Macros;
+using TerminalProgramBase.Views.Macros.EditMacros;
 
 namespace TerminalProgramBase.Services
 {

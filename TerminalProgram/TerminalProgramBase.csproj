@@ -50,7 +50,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\Macros\EditMacrosWindow.axaml.cs">
+    <Compile Update="Views\Macros\EditMacros\EditCommandView.axaml.cs">
+      <DependentUpon>EditCommandView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditCommandViews\ModbusCommand.axaml.cs">
+      <DependentUpon>ModbusCommand.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditCommandViews\NoProtocolCommand.axaml.cs">
+      <DependentUpon>NoProtocolCommand.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditMacrosWindow.axaml.cs">
       <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">

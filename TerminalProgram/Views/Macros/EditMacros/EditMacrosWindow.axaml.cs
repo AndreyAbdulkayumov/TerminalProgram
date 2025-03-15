@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 
-namespace TerminalProgramBase.Views.Macros;
+namespace TerminalProgramBase.Views.Macros.EditMacros;
 
 public partial class EditMacrosWindow : Window
 {

@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using TerminalProgramBase.Views;
 using TerminalProgramBase.Views.Macros;
+using TerminalProgramBase.Views.Macros.EditMacros;
 using TerminalProgramBase.Views.Settings;
 using ViewModels.Macros;
 using ViewModels.Macros.MacrosEdit;

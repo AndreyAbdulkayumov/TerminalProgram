@@ -1,10 +1,10 @@
 using Avalonia.Controls;
 
-namespace TerminalProgramBase.Views.Macros.EditViews;
+namespace TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;
 
-public partial class ModbusMacros : UserControl
+public partial class ModbusCommand : UserControl
 {
-    public ModbusMacros()
+    public ModbusCommand()
     {
         InitializeComponent();
     }

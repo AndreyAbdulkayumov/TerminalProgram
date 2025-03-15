@@ -2,15 +2,15 @@ using Avalonia.Controls;
 using System;
 using ViewModels.Macros.CommandEdit.Types;
 
-namespace TerminalProgramBase.Views.Macros.EditViews;
+namespace TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;
 
-public partial class NoProtocolMacros : UserControl
+public partial class NoProtocolCommand : UserControl
 {
     private readonly TextBox? _inputField_TX;
 
     private Func<string>? GetValidatedInput;
 
-    public NoProtocolMacros()
+    public NoProtocolCommand()
     {
         InitializeComponent();
 

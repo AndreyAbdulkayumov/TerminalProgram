@@ -4,10 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.CommandEdit.Types;assembly=ViewModels"
-			 xmlns:EditViews="clr-namespace:TerminalProgramBase.Views.Macros.EditViews;assembly=TerminalProgramBase"
+			 xmlns:EditViews="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
 			 d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="TerminalProgramBase.Views.Macros.EditCommand_View">
+             x:Class="TerminalProgramBase.Views.Macros.EditMacros.EditCommandView">
 
 	<UserControl.Styles>
 
@@ -23,11 +23,11 @@
 	<UserControl.DataTemplates>
 
 		<DataTemplate DataType="{x:Type ViewModels:NoProtocolCommand_VM}">
-			<EditViews:NoProtocolMacros/>
+			<EditViews:NoProtocolCommand/>
 		</DataTemplate>
 
 		<DataTemplate DataType="{x:Type ViewModels:ModbusCommand_VM}">
-			<EditViews:ModbusMacros/>
+			<EditViews:ModbusCommand/>
 		</DataTemplate>
 
 	</UserControl.DataTemplates>
