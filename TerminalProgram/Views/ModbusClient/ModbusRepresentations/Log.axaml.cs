@@ -9,7 +9,7 @@ namespace TerminalProgram.Views.ModbusClient.ModbusRepresentations
             InitializeComponent();
         }
 
-        private void TextBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+        private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
         {
             var logText = sender as TextBox;
 

@@ -9,7 +9,7 @@ namespace TerminalProgram.Views.ModbusClient.TransmitMode
             InitializeComponent();
         }
 
-        private void UppercaseTextBox_TextChanged(object sender, Avalonia.Controls.TextChangedEventArgs e)
+        private void UppercaseTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             TextBox? textBox = sender as TextBox;
 

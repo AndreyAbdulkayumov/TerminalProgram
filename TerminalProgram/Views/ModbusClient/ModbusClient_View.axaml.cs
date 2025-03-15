@@ -1,8 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
 using DynamicData;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ViewModels.ModbusClient;
@@ -53,7 +55,7 @@ namespace TerminalProgram.Views.ModbusClient
             }            
         }
 
-        private void Current_ActualThemeVariantChanged(object? sender, System.EventArgs e)
+        private void Current_ActualThemeVariantChanged(object? sender, EventArgs e)
         {
             if (_itemsControl == null || _dataInDataGrid.Count == 0)
             {
@@ -81,7 +83,7 @@ namespace TerminalProgram.Views.ModbusClient
             _dataInDataGrid.AddRange(items);
         }
 
-        private void Border_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+        private void Border_PointerPressed(object? sender, PointerPressedEventArgs e)
         {
             Border? border = sender as Border;
 

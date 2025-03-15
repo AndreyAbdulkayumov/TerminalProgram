@@ -17,7 +17,7 @@ public partial class NoProtocolMacros : UserControl
         _inputField_TX = this.FindControl<TextBox>("TextBox_TX");
     }
 
-    private void TextBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+    private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
     {
         if (_inputField_TX != null && GetValidatedInput != null)
         {
@@ -25,7 +25,7 @@ public partial class NoProtocolMacros : UserControl
         }
     }
 
-    private void UserControl_DataContextChanged(object? sender, System.EventArgs e)
+    private void UserControl_DataContextChanged(object? sender, EventArgs e)
     {
         var normalMode_VM = DataContext as NoProtocolCommand_VM;
 

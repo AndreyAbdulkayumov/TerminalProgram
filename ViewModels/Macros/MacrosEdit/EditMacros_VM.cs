@@ -228,10 +228,13 @@ namespace ViewModels.Macros.MacrosEdit
             var commandItem = CommandItems.First(e => e.Id == selectedId);
             var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
 
+            // Перед каждой сменой VM нужно обнулять ссылку, иначе будет некорректное поведение RadioButton,
+            // а также, возможно, и других элементов с типом привязки TwoWay.
+            EditCommandViewModel = null;
+
             if (commandItem.IsEdit)
             {
                 commandItem.IsEdit = false;
-                EditCommandViewModel = null;
                 return;
             }
 
@@ -239,7 +242,7 @@ namespace ViewModels.Macros.MacrosEdit
             {
                 item.IsEdit = false;
             }
-
+            
             commandItem.IsEdit = true;
             EditCommandViewModel = commandVM;
         }
