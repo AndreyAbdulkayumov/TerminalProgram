@@ -4,13 +4,11 @@
     {
         public readonly string? CommandName;
         public readonly object? InitData;
-        public readonly IEnumerable<string?>? ExistingCommandNames;
 
-        public EditCommandParameters(string? commandName, object? initData, IEnumerable<string?>? existingCommandNames)
+        public EditCommandParameters(string? commandName, object? initData)
         {
             CommandName = commandName;
             InitData = initData;
-            ExistingCommandNames = existingCommandNames;
         }
     }
 }

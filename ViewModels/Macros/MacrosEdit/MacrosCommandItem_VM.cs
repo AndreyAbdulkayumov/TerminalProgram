@@ -32,9 +32,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         public readonly Guid Id;
 
-        private EditCommandParameters _parameters;
-
-        public MacrosCommandItem_VM(Guid id, EditCommandParameters parameters, Action<Guid> editCommandHandler, Action<Guid> removeItemHandler, IMessageBox messageBox)
+        public MacrosCommandItem_VM(Guid id, EditCommandParameters parameters, Action<Guid> runCommandHandler, Action<Guid> editCommandHandler, Action<Guid> removeItemHandler, IMessageBox messageBox)
         {
             Id = id;
 
@@ -42,20 +40,11 @@ namespace ViewModels.Macros.MacrosEdit
 
             CommandName = parameters.CommandName;
 
-            _parameters = parameters;
-
-            Command_RunCommand = ReactiveCommand.Create(() => { });
+            Command_RunCommand = ReactiveCommand.Create(() => runCommandHandler(id));
             Command_RunCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка запуска команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
 
-            Command_EditCommand = ReactiveCommand.CreateFromTask(async () =>
+            Command_EditCommand = ReactiveCommand.Create(() =>
             {
-                if (CommandData != null)
-                {
-                    _parameters = new EditCommandParameters(_parameters.CommandName, CommandData, _parameters.ExistingCommandNames);
-                }
-
-                //CommandData = await openEditCommandWindow(_parameters);
-
                 editCommandHandler(Id);
 
                 if (CommandData is IMacrosCommand data)

@@ -1,13 +1,16 @@
 ﻿using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
-using DynamicData;
 using MessageBox_Core;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using Services.Interfaces;
 using ViewModels.Macros.CommandEdit;
+using Core.Models.Modbus.DataTypes;
+using ViewModels.Helpers;
+using ViewModels.ModbusClient.MessageBusTypes;
+using ViewModels.NoProtocol.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit
 {
@@ -47,8 +50,6 @@ namespace ViewModels.Macros.MacrosEdit
 
         public string EmptyCommandMessage => "Выберите команду для редактирования";
 
-        private List<EditCommand_VM> _allEditCommandVM = new List<EditCommand_VM>();
-
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_RunMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_AddCommand { get; }
@@ -56,11 +57,11 @@ namespace ViewModels.Macros.MacrosEdit
 
         public bool Saved { get; private set; } = false;
 
-        private readonly List<EditCommandParameters> _allCommandParameters = new List<EditCommandParameters>();
-
-        private readonly List<string> _allCommandNames = new List<string>();
-
+        
         private readonly IMessageBox _messageBox;
+
+        private List<EditCommand_VM> _allEditCommandVM = new List<EditCommand_VM>();       
+
 
         public EditMacros_VM(IMessageBoxEditMacros messageBox)
         {
@@ -80,21 +81,18 @@ namespace ViewModels.Macros.MacrosEdit
             });
             Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
 
-            Command_RunMacros = ReactiveCommand.Create(() => { });
+            Command_RunMacros = ReactiveCommand.Create(RunMacros);
             Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error));
 
             Command_AddCommand = ReactiveCommand.Create(() =>
             {
                 string defaultName = (CommandItems.Count() + 1).ToString();
 
-                var commandParameters = new EditCommandParameters(defaultName, null, _allCommandNames);
-
-                _allCommandNames.Add(defaultName);
-                _allCommandParameters.Add(commandParameters);
+                var commandParameters = new EditCommandParameters(defaultName, null);
 
                 var itemGuid = Guid.NewGuid();
 
-                CommandItems.Add(new MacrosCommandItem_VM(itemGuid, _allCommandParameters.Last(), EditCommand, RemoveCommand, _messageBox));
+                CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
                 _allEditCommandVM.Add(new EditCommand_VM(itemGuid, commandParameters, _messageBox));
             });
             Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
@@ -116,13 +114,13 @@ namespace ViewModels.Macros.MacrosEdit
             if (macrosParameters is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
             {
                 MacrosName = noProtocolContent.MacrosName;
-                commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
+                commands = noProtocolContent.Commands?.Select(e => new EditCommandParameters(e.Name, e));
             }
 
             else if (macrosParameters is MacrosContent<MacrosCommandModbus> modbusContent)
             {
                 MacrosName = modbusContent.MacrosName;
-                commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e, _allCommandNames));
+                commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e));
             }
 
             else
@@ -136,15 +134,9 @@ namespace ViewModels.Macros.MacrosEdit
                 {
                     var itemGuid = Guid.NewGuid();
 
-                    CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, EditCommand, RemoveCommand, _messageBox));
+                    CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
                     _allEditCommandVM.Add(new EditCommand_VM(itemGuid, commandParameters, _messageBox));
                 }
-
-                _allCommandNames.Clear();
-                _allCommandNames.AddRange(commands.Select(e => e.CommandName).Where(e => e != null).Cast<string>());
-
-                _allCommandParameters.Clear();
-                _allCommandParameters.AddRange(commands);
             }
         }
 
@@ -162,6 +154,41 @@ namespace ViewModels.Macros.MacrosEdit
                     throw new NotImplementedException();
             };
         }
+        
+        private void RunMacros()
+        {
+            bool validationErrorIsExist = false;
+
+            foreach(var command in _allEditCommandVM)
+            {
+                if (command.IsValidationErrorExist())
+                {
+                    validationErrorIsExist = true;
+                    break;
+                }
+            }
+
+            if (validationErrorIsExist)
+            {
+                return;
+            }
+
+            switch (MainWindow_VM.CurrentApplicationWorkMode)
+            {
+                case ApplicationWorkMode.NoProtocol:
+                    var noProtocolContent = GetNoProtocolMacrosContent();
+                    MessageBus.Current.SendMessage(noProtocolContent.Commands);
+                    break;
+
+                case ApplicationWorkMode.ModbusClient:
+                    var modbusContent = GetModbusMacrosContent();
+                    MessageBus.Current.SendMessage(modbusContent.Commands);
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         private MacrosContent<MacrosCommandNoProtocol> GetNoProtocolMacrosContent()
         {
@@ -170,16 +197,14 @@ namespace ViewModels.Macros.MacrosEdit
             content.MacrosName = MacrosName;
             content.Commands = new List<MacrosCommandNoProtocol>();
 
-            content.Commands = CommandItems
+            content.Commands = _allEditCommandVM
                 .Select(e =>
                 {
-                    if (e.CommandData is MacrosCommandNoProtocol data && data.Content != null)
+                    object content = e.GetCommandContent();
+
+                    if (content is MacrosCommandNoProtocol data && data.Content != null)
                     {
-                        return new MacrosCommandNoProtocol()
-                        {
-                            Name = e.CommandName,
-                            Content = data.Content,                            
-                        };
+                        return data;
                     }
 
                     return new MacrosCommandNoProtocol()
@@ -200,16 +225,14 @@ namespace ViewModels.Macros.MacrosEdit
             content.MacrosName = MacrosName;
             content.Commands = new List<MacrosCommandModbus>();
 
-            content.Commands = CommandItems
+            content.Commands = _allEditCommandVM
                 .Select(e =>
                 {
-                    if (e.CommandData is MacrosCommandModbus data && data.Content != null)
+                    object content = e.GetCommandContent();
+
+                    if (content is MacrosCommandModbus data && data.Content != null)
                     {
-                        return new MacrosCommandModbus()
-                        {
-                            Name = e.CommandName,
-                            Content = data.Content,
-                        };
+                        return data;
                     }
 
                     return new MacrosCommandModbus()
@@ -259,6 +282,60 @@ namespace ViewModels.Macros.MacrosEdit
 
             CommandItems.Remove(commandItem);
             _allEditCommandVM.Remove(commandVM);
+        }
+
+        private void RunCommand(Guid selectedId)
+        {
+            var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
+
+            if (commandVM.IsValidationErrorExist())
+            {
+                return;
+            }
+
+            object content = commandVM.GetCommandContent();
+
+            if (content is MacrosCommandNoProtocol noProtocolData && noProtocolData.Content != null)
+            {
+                RunNoProtocolCommand(noProtocolData.Content);
+            }
+
+            else if (content is MacrosCommandModbus modbusData && modbusData.Content != null)
+            {
+                RunModbusCommand(modbusData.Content);
+            }
+        }
+
+        private void RunNoProtocolCommand(NoProtocolCommandInfo content)
+        {
+            MessageBus.Current.SendMessage(
+                new NoProtocolSendMessage(content.IsByteString, content.Message, content.EnableCR, content.EnableLF, AppEncoding.GetEncoding(content.MacrosEncoding))
+                );
+        }
+
+        private void RunModbusCommand(ModbusCommandInfo content)
+        {
+            var selectedFunction = Function.AllFunctions.First(func => func.Number == content.FunctionNumber);
+
+            if (selectedFunction is ModbusReadFunction readFunction)
+            {
+                MessageBus.Current.SendMessage(
+                    new ModbusReadMessage(content.SlaveID, content.Address, readFunction, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
+                    );
+
+                return;
+            }
+
+            else if (selectedFunction is ModbusWriteFunction writeFunction)
+            {
+                MessageBus.Current.SendMessage(
+                    new ModbusWriteMessage(content.SlaveID, content.Address, writeFunction, content.WriteInfo?.WriteBuffer, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
+                    );
+
+                return;
+            }
+
+            throw new Exception($"Задан неизвестный тип функции Modbus.\nКод: {content.FunctionNumber}");
         }
     }
 }
