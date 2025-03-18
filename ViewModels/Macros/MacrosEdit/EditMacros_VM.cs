@@ -6,7 +6,7 @@ using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using Services.Interfaces;
-using ViewModels.Macros.CommandEdit;
+using ViewModels.Macros.MacrosEdit.CommandEdit;
 using Core.Models.Modbus.DataTypes;
 using ViewModels.Helpers;
 using ViewModels.ModbusClient.MessageBusTypes;
@@ -60,7 +60,7 @@ namespace ViewModels.Macros.MacrosEdit
         
         private readonly IMessageBox _messageBox;
 
-        private List<EditCommand_VM> _allEditCommandVM = new List<EditCommand_VM>();       
+        private readonly List<ICommandContent> _allEditCommandVM = new List<ICommandContent>();    
 
 
         public EditMacros_VM(IMessageBoxEditMacros messageBox)
@@ -93,7 +93,7 @@ namespace ViewModels.Macros.MacrosEdit
                 var itemGuid = Guid.NewGuid();
 
                 CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
-                _allEditCommandVM.Add(new EditCommand_VM(itemGuid, commandParameters, _messageBox));
+                _allEditCommandVM.Add(CreateCommandVM(itemGuid, commandParameters));
             });
             Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
 
@@ -106,7 +106,7 @@ namespace ViewModels.Macros.MacrosEdit
                     IsEdit = x != null ? true : false;
                 });
         }
-
+        
         public void SetParameters(object? macrosParameters)
         {
             IEnumerable<EditCommandParameters>? commands;
@@ -135,7 +135,7 @@ namespace ViewModels.Macros.MacrosEdit
                     var itemGuid = Guid.NewGuid();
 
                     CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
-                    _allEditCommandVM.Add(new EditCommand_VM(itemGuid, commandParameters, _messageBox));
+                    _allEditCommandVM.Add(CreateCommandVM(itemGuid, commandParameters));
                 }
             }
         }
@@ -154,17 +154,41 @@ namespace ViewModels.Macros.MacrosEdit
                     throw new NotImplementedException();
             };
         }
-        
+
+        private ICommandContent CreateCommandVM(Guid id, EditCommandParameters? parameters)
+        {
+            var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
+
+            switch (currentMode)
+            {
+                case ApplicationWorkMode.NoProtocol:
+                    return new NoProtocolCommand_VM(id, parameters?.InitData);
+
+                case ApplicationWorkMode.ModbusClient:
+                    return new ModbusCommand_VM(id, parameters?.InitData, _messageBox);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         private void RunMacros()
         {
             bool validationErrorIsExist = false;
 
             foreach(var command in _allEditCommandVM)
             {
-                if (command.IsValidationErrorExist())
+                if (command is IMacrosValidation validatedCommand)
                 {
-                    validationErrorIsExist = true;
-                    break;
+                    string? validationMessage = validatedCommand.GetValidationMessage();
+                    
+                    if (validationMessage != null)
+                    {
+                        _messageBox.Show($"Ошибка в команде \"{command.Name}\".\n\n{validationMessage}", MessageType.Error);
+
+                        validationErrorIsExist = true;
+                        break;
+                    }                    
                 }
             }
 
@@ -200,7 +224,7 @@ namespace ViewModels.Macros.MacrosEdit
             content.Commands = _allEditCommandVM
                 .Select(e =>
                 {
-                    object content = e.GetCommandContent();
+                    object content = e.GetContent();
 
                     if (content is MacrosCommandNoProtocol data && data.Content != null)
                     {
@@ -209,7 +233,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                     return new MacrosCommandNoProtocol()
                     {
-                        Name = e.CommandName,
+                        Name = e.Name,
                         Content = null,
                     };
                 })
@@ -228,7 +252,7 @@ namespace ViewModels.Macros.MacrosEdit
             content.Commands = _allEditCommandVM
                 .Select(e =>
                 {
-                    object content = e.GetCommandContent();
+                    object content = e.GetContent();
 
                     if (content is MacrosCommandModbus data && data.Content != null)
                     {
@@ -237,7 +261,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                     return new MacrosCommandModbus()
                     {
-                        Name = e.CommandName,
+                        Name = e.Name,
                         Content = null,
                     };
                 })
@@ -288,12 +312,12 @@ namespace ViewModels.Macros.MacrosEdit
         {
             var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
 
-            if (commandVM.IsValidationErrorExist())
+            if (commandVM is IMacrosValidation validatedCommand && validatedCommand.GetValidationMessage() != null)
             {
                 return;
             }
 
-            object content = commandVM.GetCommandContent();
+            object content = commandVM.GetContent();
 
             if (content is MacrosCommandNoProtocol noProtocolData && noProtocolData.Content != null)
             {

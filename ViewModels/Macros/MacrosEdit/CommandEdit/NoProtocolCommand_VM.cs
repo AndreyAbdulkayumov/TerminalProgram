@@ -4,16 +4,20 @@ using Core.Models.Settings.FileTypes;
 using ViewModels.Helpers;
 using ViewModels.Macros.DataTypes;
 
-namespace ViewModels.Macros.CommandEdit.Types
+namespace ViewModels.Macros.MacrosEdit.CommandEdit
 {
-    public class NoProtocolCommand_VM : ReactiveObject, IMacrosContent<MacrosCommandNoProtocol>
+    public class NoProtocolCommand_VM : ReactiveObject, ICommandContent
     {
-        private string? _commandName = string.Empty;
+        private readonly Guid _id;
 
-        public string? CommandName
+        public Guid Id => _id;
+
+        private string? _name = string.Empty;
+
+        public string? Name
         {
-            get => _commandName;
-            set => this.RaiseAndSetIfChanged(ref _commandName, value);
+            get => _name;
+            set => this.RaiseAndSetIfChanged(ref _name, value);
         }
 
         private readonly ObservableCollection<string> _typeOfEncoding = new ObservableCollection<string>()
@@ -68,12 +72,15 @@ namespace ViewModels.Macros.CommandEdit.Types
 
         private bool _isInit;
 
-        public NoProtocolCommand_VM(object? initData)
+        public NoProtocolCommand_VM(Guid id, object? initData)
         {
+            _id = id;
+
             _isInit = false;
 
             if (initData is MacrosCommandNoProtocol data && data.Content != null)
             {
+                Name = data.Name;
                 SelectedEncoding = string.IsNullOrEmpty(data.Content.MacrosEncoding) ? AppEncoding.Name_UTF8 : data.Content.MacrosEncoding;
                 MessageString = data.Content.Message;
                 IsBytesSend = data.Content.IsByteString;
@@ -94,10 +101,11 @@ namespace ViewModels.Macros.CommandEdit.Types
             _isInit = true;
         }
 
-        public MacrosCommandNoProtocol GetContent()
+        public object GetContent()
         {
             return new MacrosCommandNoProtocol()
             {
+                Name = Name,
                 Content = new NoProtocolCommandInfo()
                 {
                     MacrosEncoding = SelectedEncoding,

@@ -15,7 +15,6 @@ using ViewModels.Settings;
 using ViewModels.Settings.Tabs;
 using Services.Interfaces;
 using ViewModels.Macros.MacrosEdit;
-using ViewModels.Macros.CommandEdit;
 
 namespace TerminalProgramBase;
 

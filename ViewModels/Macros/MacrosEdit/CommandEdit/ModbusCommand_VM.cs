@@ -12,16 +12,20 @@ using ViewModels.ModbusClient.WriteFields;
 using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
 
-namespace ViewModels.Macros.CommandEdit.Types
+namespace ViewModels.Macros.MacrosEdit.CommandEdit
 {
-    public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IMacrosContent<MacrosCommandModbus>, IMacrosValidation
+    public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, ICommandContent, IMacrosValidation
     {
-        private string? _commandName = string.Empty;
+        private readonly Guid _id;
 
-        public string? CommandName
+        public Guid Id => _id;
+
+        private string? _name = string.Empty;
+
+        public string? Name
         {
-            get => _commandName;
-            set => this.RaiseAndSetIfChanged(ref _commandName, value);
+            get => _name;
+            set => this.RaiseAndSetIfChanged(ref _name, value);
         }
 
         private string? _slaveID;
@@ -159,8 +163,10 @@ namespace ViewModels.Macros.CommandEdit.Types
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        public ModbusCommand_VM(object? initData, IMessageBox messageBox)
+        public ModbusCommand_VM(Guid id, object? initData, IMessageBox messageBox)
         {
+            _id = id;
+
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
             WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
@@ -224,6 +230,8 @@ namespace ViewModels.Macros.CommandEdit.Types
 
             if (initData is MacrosCommandModbus data && data.Content != null)
             {
+                Name = data.Name;
+
                 // По умолчанию формат числа hex
 
                 SlaveID = data.Content.SlaveID.ToString();
@@ -297,7 +305,7 @@ namespace ViewModels.Macros.CommandEdit.Types
             throw new Exception($"Выбрана неизвестная функция записи \"{displayedName}\"");
         }
 
-        public MacrosCommandModbus GetContent()
+        public object GetContent()
         {
             var selectedFunction = SelectedFunctionType_Read ? SelectedReadFunction : SelectedWriteFunction;
 
@@ -307,6 +315,7 @@ namespace ViewModels.Macros.CommandEdit.Types
 
             return new MacrosCommandModbus()
             {
+                Name = Name,
                 Content = new ModbusCommandInfo()
                 {
                     SlaveID = _selectedSlaveID,

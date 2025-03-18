@@ -50,9 +50,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\Macros\EditMacros\EditCommandView.axaml.cs">
-      <DependentUpon>EditCommandView.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\Macros\EditMacros\EditCommandViews\ModbusCommand.axaml.cs">
       <DependentUpon>ModbusCommand.axaml</DependentUpon>
     </Compile>

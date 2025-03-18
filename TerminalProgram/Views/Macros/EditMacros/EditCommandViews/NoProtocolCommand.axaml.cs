@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using System;
-using ViewModels.Macros.CommandEdit.Types;
+using ViewModels.Macros.MacrosEdit.CommandEdit;
 
 namespace TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;
 
