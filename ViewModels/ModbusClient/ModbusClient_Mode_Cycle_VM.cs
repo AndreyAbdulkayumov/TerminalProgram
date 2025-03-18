@@ -422,7 +422,7 @@ namespace ViewModels.ModbusClient
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 

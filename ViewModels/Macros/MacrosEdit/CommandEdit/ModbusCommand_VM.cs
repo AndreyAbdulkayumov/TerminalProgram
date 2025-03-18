@@ -330,17 +330,31 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
 
         public string? GetValidationMessage()
         {
+            List<string?> validationMessages = new List<string?>();
+
             if (string.IsNullOrWhiteSpace(SlaveID))
             {
-                return "Не задан SlaveID.";
+                validationMessages.Add("Не задан SlaveID.");
             }
 
             if (string.IsNullOrWhiteSpace(Address))
             {
-                return "Не задан Адрес.";
+                validationMessages.Add("Не задан Адрес.");
             }
 
-            return SelectedFunctionType_Write ? CheckWriteFields() : CheckReadFields();
+            string? writeReadMessages = SelectedFunctionType_Write? CheckWriteFields() : CheckReadFields();
+
+            if (!string.IsNullOrEmpty(writeReadMessages))
+            {
+                validationMessages.Add(writeReadMessages);
+            }
+            
+            if (validationMessages.Any())
+            {
+                return string.Join("\n\n", validationMessages);
+            }
+
+            return null;
         }
 
         private string? CheckWriteFields()
@@ -371,7 +385,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 
@@ -406,7 +420,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 

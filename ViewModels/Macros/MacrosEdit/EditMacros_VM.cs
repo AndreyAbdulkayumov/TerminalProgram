@@ -174,26 +174,24 @@ namespace ViewModels.Macros.MacrosEdit
 
         private void RunMacros()
         {
-            bool validationErrorIsExist = false;
+            List<string> validationMessages = new List<string>();
 
             foreach(var command in _allEditCommandVM)
             {
                 if (command is IMacrosValidation validatedCommand)
                 {
-                    string? validationMessage = validatedCommand.GetValidationMessage();
+                    string? message = validatedCommand.GetValidationMessage();
                     
-                    if (validationMessage != null)
+                    if (!string.IsNullOrEmpty(message))
                     {
-                        _messageBox.Show($"Ошибка в команде \"{command.Name}\".\n\n{validationMessage}", MessageType.Error);
-
-                        validationErrorIsExist = true;
-                        break;
+                        validationMessages.Add($"Ошибка в команде \"{command.Name}\".\n\n{message}");
                     }                    
                 }
             }
 
-            if (validationErrorIsExist)
+            if (validationMessages.Any())
             {
+                _messageBox.Show(string.Join("\n\n---------------------------\n\n", validationMessages), MessageType.Error);
                 return;
             }
 
@@ -312,9 +310,15 @@ namespace ViewModels.Macros.MacrosEdit
         {
             var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
 
-            if (commandVM is IMacrosValidation validatedCommand && validatedCommand.GetValidationMessage() != null)
+            if (commandVM is IMacrosValidation validatedCommand)
             {
-                return;
+                string? validationMessage = validatedCommand.GetValidationMessage();
+
+                if (validationMessage != null)
+                {
+                    _messageBox.Show($"Ошибка в команде \"{commandVM.Name}\".\n\n{validationMessage}", MessageType.Error);
+                    return;
+                }                
             }
 
             object content = commandVM.GetContent();
