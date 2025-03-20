@@ -72,15 +72,16 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
 
         private bool _isInit;
 
-        public NoProtocolCommand_VM(Guid id, object? initData)
+        public NoProtocolCommand_VM(Guid id, EditCommandParameters parameters)
         {
-            _id = id;
-
             _isInit = false;
 
-            if (initData is MacrosCommandNoProtocol data && data.Content != null)
+            _id = id;
+
+            Name = parameters.CommandName;
+
+            if (parameters.InitData is MacrosCommandNoProtocol data && data.Content != null)
             {
-                Name = data.Name;
                 SelectedEncoding = string.IsNullOrEmpty(data.Content.MacrosEncoding) ? AppEncoding.Name_UTF8 : data.Content.MacrosEncoding;
                 MessageString = data.Content.Message;
                 IsBytesSend = data.Content.IsByteString;
@@ -95,7 +96,6 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
                     {
                         MessageString = StringByteConverter.GetMessageString(MessageString, IsBytes, AppEncoding.GetEncoding(SelectedEncoding));
                     }
-
                 });
 
             _isInit = true;

@@ -57,7 +57,9 @@ namespace ViewModels.Macros.MacrosEdit
 
         public bool Saved { get; private set; } = false;
 
-        
+        private const string _validationMessageSeparator = "\n\n---------------------------\n\n";
+
+
         private readonly IMessageBox _messageBox;
 
         private readonly List<ICommandContent> _allEditCommandVM = new List<ICommandContent>();    
@@ -72,6 +74,14 @@ namespace ViewModels.Macros.MacrosEdit
                 if (string.IsNullOrWhiteSpace(MacrosName))
                 {
                     _messageBox.Show("Задайте имя макроса.", MessageType.Warning);
+                    return;
+                }
+
+                string? validationMessages = GetMacrosValidationMessage();
+
+                if (!string.IsNullOrEmpty(validationMessages))
+                {
+                    _messageBox.Show($"Исправьте ошибки в макросе.{_validationMessageSeparator}{validationMessages}", MessageType.Error);
                     return;
                 }
 
@@ -155,17 +165,17 @@ namespace ViewModels.Macros.MacrosEdit
             };
         }
 
-        private ICommandContent CreateCommandVM(Guid id, EditCommandParameters? parameters)
+        private ICommandContent CreateCommandVM(Guid id, EditCommandParameters parameters)
         {
             var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
 
             switch (currentMode)
             {
                 case ApplicationWorkMode.NoProtocol:
-                    return new NoProtocolCommand_VM(id, parameters?.InitData);
+                    return new NoProtocolCommand_VM(id, parameters);
 
                 case ApplicationWorkMode.ModbusClient:
-                    return new ModbusCommand_VM(id, parameters?.InitData, _messageBox);
+                    return new ModbusCommand_VM(id, parameters, _messageBox);
 
                 default:
                     throw new NotImplementedException();
@@ -174,24 +184,11 @@ namespace ViewModels.Macros.MacrosEdit
 
         private void RunMacros()
         {
-            List<string> validationMessages = new List<string>();
+            string? validationMessages = GetMacrosValidationMessage();
 
-            foreach(var command in _allEditCommandVM)
+            if (!string.IsNullOrEmpty(validationMessages))
             {
-                if (command is IMacrosValidation validatedCommand)
-                {
-                    string? message = validatedCommand.GetValidationMessage();
-                    
-                    if (!string.IsNullOrEmpty(message))
-                    {
-                        validationMessages.Add($"Ошибка в команде \"{command.Name}\".\n\n{message}");
-                    }                    
-                }
-            }
-
-            if (validationMessages.Any())
-            {
-                _messageBox.Show(string.Join("\n\n---------------------------\n\n", validationMessages), MessageType.Error);
+                _messageBox.Show(validationMessages, MessageType.Error);
                 return;
             }
 
@@ -277,17 +274,24 @@ namespace ViewModels.Macros.MacrosEdit
             // а также, возможно, и других элементов с типом привязки TwoWay.
             EditCommandViewModel = null;
 
-            if (commandItem.IsEdit)
-            {
-                commandItem.IsEdit = false;
-                return;
-            }
+            bool currentItemIsEdit = commandItem.IsEdit;
 
+            // Снимаем выделение у всех команд.
             foreach (var item in CommandItems)
             {
+                if (item.IsEdit)
+                {
+                    item.CommandName = _allEditCommandVM.First(e => e.Id == item.Id).Name;
+                }
+
                 item.IsEdit = false;
             }
             
+            if (currentItemIsEdit)
+            {
+                return;
+            }
+
             commandItem.IsEdit = true;
             EditCommandViewModel = commandVM;
         }
@@ -310,15 +314,12 @@ namespace ViewModels.Macros.MacrosEdit
         {
             var commandVM = _allEditCommandVM.First(e => e.Id == selectedId);
 
-            if (commandVM is IMacrosValidation validatedCommand)
-            {
-                string? validationMessage = validatedCommand.GetValidationMessage();
+            string? validationMessage =  GetCommandValidationMessage(commandVM);
 
-                if (validationMessage != null)
-                {
-                    _messageBox.Show($"Ошибка в команде \"{commandVM.Name}\".\n\n{validationMessage}", MessageType.Error);
-                    return;
-                }                
+            if (!string.IsNullOrEmpty(validationMessage))
+            {
+                _messageBox.Show(validationMessage, MessageType.Error);
+                return;
             }
 
             object content = commandVM.GetContent();
@@ -364,6 +365,43 @@ namespace ViewModels.Macros.MacrosEdit
             }
 
             throw new Exception($"Задан неизвестный тип функции Modbus.\nКод: {content.FunctionNumber}");
+        }
+
+        private string? GetMacrosValidationMessage()
+        {
+            List<string> validationMessages = new List<string>();
+
+            foreach (var command in _allEditCommandVM)
+            {
+                string? message = GetCommandValidationMessage(command);
+
+                if (!string.IsNullOrEmpty(message))
+                {
+                    validationMessages.Add(message);
+                }
+            }
+
+            if (validationMessages.Any())
+            {
+                return string.Join(_validationMessageSeparator, validationMessages);
+            }
+
+            return null;
+        }
+
+        private string? GetCommandValidationMessage(ICommandContent command)
+        {
+            if (command is IMacrosValidation validatedCommand)
+            {
+                string? message = validatedCommand.GetValidationMessage();
+
+                if (!string.IsNullOrEmpty(message))
+                {
+                    return $"Ошибка в команде \"{command.Name}\".\n\n{message}";
+                }
+            }
+
+            return null;
         }
     }
 }

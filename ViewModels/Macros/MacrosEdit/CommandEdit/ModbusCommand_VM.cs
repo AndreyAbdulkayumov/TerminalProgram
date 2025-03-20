@@ -163,7 +163,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        public ModbusCommand_VM(Guid id, object? initData, IMessageBox messageBox)
+        public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox)
         {
             _id = id;
 
@@ -172,7 +172,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM();
 
-            InitUI(initData);
+            InitUI(parameters);
 
             /****************************************************/
             //
@@ -214,7 +214,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
                 });
         }
 
-        private void InitUI(object? initData)
+        private void InitUI(EditCommandParameters parameters)
         {
             SelectedNumberFormat_Hex = true;
 
@@ -228,10 +228,10 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
                 WriteFunctions.Add(element.DisplayedName);
             }
 
-            if (initData is MacrosCommandModbus data && data.Content != null)
-            {
-                Name = data.Name;
+            Name = parameters.CommandName;
 
+            if (parameters.InitData is MacrosCommandModbus data && data.Content != null)
+            {
                 // По умолчанию формат числа hex
 
                 SlaveID = data.Content.SlaveID.ToString();
@@ -263,7 +263,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
                     {
                         CurrentWriteFieldViewModel?.SetDataFromMacros(data.Content.WriteInfo);
                     }
-                }              
+                }
 
                 return;
             }

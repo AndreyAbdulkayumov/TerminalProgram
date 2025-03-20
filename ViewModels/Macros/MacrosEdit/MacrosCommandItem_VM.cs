@@ -1,7 +1,6 @@
 ﻿using ReactiveUI;
 using System.Reactive;
 using MessageBox_Core;
-using Core.Models.Settings.DataTypes;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit
@@ -28,30 +27,18 @@ namespace ViewModels.Macros.MacrosEdit
         public ReactiveCommand<Unit, Unit> Command_EditCommand { get; }
         public ReactiveCommand<Unit, Unit> Command_RemoveCommand { get; }
 
-        public object? CommandData { get; private set; }
-
         public readonly Guid Id;
 
         public MacrosCommandItem_VM(Guid id, EditCommandParameters parameters, Action<Guid> runCommandHandler, Action<Guid> editCommandHandler, Action<Guid> removeItemHandler, IMessageBox messageBox)
         {
             Id = id;
 
-            CommandData = parameters.InitData;
-
             CommandName = parameters.CommandName;
 
             Command_RunCommand = ReactiveCommand.Create(() => runCommandHandler(id));
             Command_RunCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка запуска команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
 
-            Command_EditCommand = ReactiveCommand.Create(() =>
-            {
-                editCommandHandler(Id);
-
-                if (CommandData is IMacrosCommand data)
-                {
-                    CommandName = data.Name;
-                }
-            });
+            Command_EditCommand = ReactiveCommand.Create(() => editCommandHandler(Id));
             Command_EditCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
 
             Command_RemoveCommand = ReactiveCommand.CreateFromTask(async () => 
