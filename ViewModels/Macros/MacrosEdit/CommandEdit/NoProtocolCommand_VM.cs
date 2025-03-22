@@ -6,7 +6,7 @@ using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit
 {
-    public class NoProtocolCommand_VM : ReactiveObject, ICommandContent
+    public class NoProtocolCommand_VM : ReactiveObject, ICommandContent, IMacrosValidation
     {
         private readonly Guid _id;
 
@@ -130,6 +130,16 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
             }
 
             return MessageString;
+        }
+
+        public string? GetValidationMessage()
+        {
+            if (string.IsNullOrEmpty(MessageString))
+            {
+                return "Введите данные для отправки.";
+            }
+
+            return null;
         }
     }
 }
