@@ -15,6 +15,12 @@ using ViewModels.Settings;
 using ViewModels.Settings.Tabs;
 using Services.Interfaces;
 using ViewModels.Macros.MacrosEdit;
+using Core.Models;
+using Core.Models.Settings;
+using Core.Models.NoProtocol;
+using Core.Models.Modbus;
+using Core.Models.AppUpdateSystem;
+using ViewModels.ModbusScanner;
 
 namespace TerminalProgramBase;
 
@@ -26,19 +32,26 @@ public partial class App : Application
     /// 
     /// Правила создания сервисов
     /// 
-    /// 1. Главное окно и все его ViewModel создаются как Singleton.
-    /// 2. Дочерние окна и все их элементы создаются как Transient. 
-    /// 3. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService через _serviceProvider.GetService<T>().
+    /// 1. Все модели создаются как Singleton.
+    /// 2. Главное окно и все его ViewModel создаются как Singleton.
+    /// 3. Дочерние окна и все их элементы создаются как Transient. 
+    /// 4. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService через _serviceProvider.GetService<T>().
     /// 
-    /// 2 и 3 правила нужны для того, чтобы экземпляры ViewModel дочерних окон уничтожались после закрытия окна.
+    /// 3 и 4 правила нужны для того, чтобы экземпляры ViewModel дочерних окон уничтожались после закрытия окна.
     /// При каждом открытии нового окна создаются новые экземпляры ViewModel.
     /// 
-    /// 4. Вспомогательные сервисы и сервисы MessageBox создаются как Singleton, чтобы не создавалось куча ненужных экземпляров.
+    /// 5. Вспомогательные сервисы и сервисы MessageBox создаются как Singleton, чтобы не создавалось куча ненужных экземпляров.
     /// 
     /// </summary>
     public App()
     {
         var serviceCollection = new ServiceCollection()
+            // Модели
+            .AddSingleton<ConnectedHost>()
+            .AddSingleton<Model_NoProtocol>()
+            .AddSingleton<Model_Modbus>()
+            .AddSingleton<Model_Settings>()
+            .AddSingleton<Model_AppUpdateSystem>()
             // Главное окно
             .AddSingleton<MainWindow_VM>()
             // Компоненты главного окна
@@ -57,6 +70,10 @@ public partial class App : Application
             .AddTransient<Connection_VM>()
             .AddTransient<Modbus_VM>()
             .AddTransient<Settings_NoProtocol_VM>()
+            // Окно "О программе"
+            .AddTransient<AboutApp_VM>()
+            // Окно Modbus сканнера
+            .AddTransient<ModbusScanner_VM>()
             // Окно макросов
             .AddTransient<Macros_VM>()
             // Компоненты окна макросов
@@ -66,6 +83,8 @@ public partial class App : Application
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()
             .AddSingleton<IMessageBoxMacros, MessageBoxMacros>()
             .AddSingleton<IMessageBoxEditMacros, MessageBoxEditMacros>()
+            .AddSingleton<IMessageBoxModbusScanner, MessageBoxModbusScanner>()
+            .AddSingleton<IMessageBoxAboutApp, MessageBoxAboutApp>()
             // Вспомогательные сервисы
             .AddSingleton<IUIService, UIService>()
             .AddSingleton<IFileSystemService, FileSystemService>()

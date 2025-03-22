@@ -1,54 +1,19 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using MessageBox_AvaloniaUI;
-using MessageBox_Core;
-using System;
-using System.Reflection;
-using ViewModels;
 
 namespace TerminalProgramBase.Views
 {
     public partial class AboutWindow : Window
     {
-        private readonly Version? _appVersion;
-
-        private readonly IMessageBox Message;
+        public static AboutWindow? Instance { get; private set; }
 
         public AboutWindow()
         {
             InitializeComponent();
 
-            Message = new MessageBox(this);
-
-            _appVersion = GetAppVersion();
-
-            TextBlock_App_Version.Text = _appVersion?.ToString();
-
-            char[] GUIVersion_Chars = new char[20];
-
-            if (typeof(AvaloniaObject).Assembly.GetName().Version?.TryFormat(GUIVersion_Chars, 3, out int numberOfChars) == true)
-            {
-                TextBlock_GUI_Version.Text = new string(GUIVersion_Chars, 0, numberOfChars);
-            }
-
-            TextBlock_Runtime_Version.Text = Environment.Version.ToString();
-
-            DataContext = new AboutApp_VM(Message, _appVersion);
-        }
-
-        public static Version? GetAppVersion()
-        {
-            char[] appVersion_Chars = new char[20];
-
-            if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(appVersion_Chars, 3, out int numberOfChars) == true)
-            {
-                return new Version(new string(appVersion_Chars, 0, numberOfChars));
-            }
-
-            return null;
-        }
+            Instance = this;
+        }        
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
         {

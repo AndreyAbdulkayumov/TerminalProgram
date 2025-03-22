@@ -14,6 +14,7 @@ using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
 using ViewModels.ModbusClient.MessageBusTypes;
 using Services.Interfaces;
+using Core.Models.Modbus;
 
 namespace ViewModels.ModbusClient
 {
@@ -146,13 +147,13 @@ namespace ViewModels.ModbusClient
         #endregion
 
         public static ModbusMessage? ModbusMessageType { get; private set; }
-
-        private readonly ConnectedHost Model;
+               
 
         private readonly IUIService _uiServices;
         private readonly IOpenChildWindowService _openChildWindow;
         private readonly IMessageBoxMainWindow _messageBox;
-
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_Modbus _modbusModel;
         private readonly ModbusClient_Mode_Normal_VM _normalMode_VM;
         private readonly ModbusClient_Mode_Cycle_VM _cycleMode_VM;
 
@@ -162,19 +163,19 @@ namespace ViewModels.ModbusClient
 
 
         public ModbusClient_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox,
+            ConnectedHost connectedHostModel, Model_Modbus modbusModel,
             ModbusClient_Mode_Normal_VM normalMode_VM, ModbusClient_Mode_Cycle_VM cycleMode_VM)
         {
             _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
             _openChildWindow = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
             _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
             _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
 
-            Model = ConnectedHost.Model;
-
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             _normalMode_VM = normalMode_VM;
             _normalMode_VM.Subscribe(this);
@@ -270,7 +271,7 @@ namespace ViewModels.ModbusClient
                 .WhereNotNull()
                 .Subscribe(x =>
                 {
-                    if (Model.HostIsConnect)
+                    if (_connectedHostModel.HostIsConnect)
                     {
                         SetCheckSumVisiblity();
 
@@ -371,7 +372,7 @@ namespace ViewModels.ModbusClient
 
         private void SetCheckSumVisiblity()
         {
-            bool isVisible = !Model.HostIsConnect || SelectedModbusType != Modbus_TCP_Name;
+            bool isVisible = !_connectedHostModel.HostIsConnect || SelectedModbusType != Modbus_TCP_Name;
 
             CheckSum_VisibilityChanged?.Invoke(this, isVisible);
         }
@@ -420,14 +421,9 @@ namespace ViewModels.ModbusClient
         {
             try
             {
-                if (Model.HostIsConnect == false)
+                if (_connectedHostModel.HostIsConnect == false)
                 {
                     throw new Exception("Modbus клиент отключен.");
-                }
-
-                if (Model.Modbus == null)
-                {
-                    throw new Exception("Не инициализирован Modbus клиент.");
                 }
 
                 if (ModbusMessageType == null)
@@ -448,7 +444,7 @@ namespace ViewModels.ModbusClient
                     numberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
-                ModbusOperationResult? result = await Model.Modbus.ReadRegister(
+                ModbusOperationResult? result = await _modbusModel.ReadRegister(
                                 readFunction,
                                 data,
                                 ModbusMessageType);
@@ -487,14 +483,9 @@ namespace ViewModels.ModbusClient
         {
             try
             {
-                if (Model.HostIsConnect == false)
+                if (_connectedHostModel.HostIsConnect == false)
                 {
                     throw new Exception("Modbus клиент отключен.");
-                }
-
-                if (Model.Modbus == null)
-                {
-                    throw new Exception("Не инициализирован Modbus клиент.");
                 }
 
                 if (ModbusMessageType == null)
@@ -516,7 +507,7 @@ namespace ViewModels.ModbusClient
                     numberOfRegisters,
                     ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
 
-                ModbusOperationResult result = await Model.Modbus.WriteRegister(
+                ModbusOperationResult result = await _modbusModel.WriteRegister(
                     writeFunction,
                     data,
                     ModbusMessageType);

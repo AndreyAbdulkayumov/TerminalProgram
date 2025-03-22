@@ -16,25 +16,23 @@ namespace ViewModels.Settings.Tabs
 
         public bool CheckAppUpdateAfterStart
         {
-            get => SettingsFile.AppData.CheckUpdateAfterStart;
+            get => _settingsModel.AppData.CheckUpdateAfterStart;
             set
             {
-                SettingsFile.AppData.CheckUpdateAfterStart = value;
+                _settingsModel.AppData.CheckUpdateAfterStart = value;
                 this.RaiseAndSetIfChanged(ref _checkAppUpdateAfterStart, value);                
             }
         }
 
-        private readonly Model_Settings SettingsFile;
-
         private readonly IUIService _uiServices;
         private readonly IMessageBoxSettings _messageBox;
+        private readonly Model_Settings _settingsModel;
 
-        public AppSettings_VM(IUIService uiServices, IMessageBoxSettings messageBox)
+        public AppSettings_VM(IUIService uiServices, IMessageBoxSettings messageBox, Model_Settings settingsModel)
         {
             _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-
-            SettingsFile = Model_Settings.Model;
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             Select_Dark_Theme = ReactiveCommand.Create(SetDarkTheme);
             Select_Dark_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
@@ -47,14 +45,14 @@ namespace ViewModels.Settings.Tabs
         {
             _uiServices.Set_Dark_Theme();
 
-            SettingsFile.AppData.ThemeName = AppTheme.Dark;
+            _settingsModel.AppData.ThemeName = AppTheme.Dark;
         }
 
         private void SetLightTheme()
         {
             _uiServices.Set_Light_Theme();
 
-            SettingsFile.AppData.ThemeName = AppTheme.Light;
+            _settingsModel.AppData.ThemeName = AppTheme.Light;
         }
     }
 }

@@ -2,48 +2,86 @@
 using Core.Models.AppUpdateSystem.DataTypes;
 using MessageBox_Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Reactive;
 
 namespace ViewModels
 {
     public class AboutApp_VM : ReactiveObject
     {
+        private const string _defaultVersionValue = "0.0.0";
+
+        private Version? _appVersionFull { get; set; }
+
+        private string? _appVersion = _defaultVersionValue;
+
+        public string? AppVersion
+        {
+            get => _appVersion;
+            set => this.RaiseAndSetIfChanged(ref _appVersion, value);
+        }
+
+        private string? _avaloniaVersion = _defaultVersionValue;
+
+        public string? AvaloniaVersion
+        {
+            get => _avaloniaVersion;
+            set => this.RaiseAndSetIfChanged(ref _avaloniaVersion, value);
+        }
+
+        private string? _runtimeVersion = _defaultVersionValue;
+
+        public string? RuntimeVersion
+        {
+            get => _runtimeVersion;
+            set => this.RaiseAndSetIfChanged(ref _runtimeVersion, value);
+        }
+
         public ReactiveCommand<Unit, Unit>? Command_CheckUpdate { get; }
         public ReactiveCommand<Unit, Unit> Command_MakeDonate { get; }
 
         private readonly IMessageBox _messageBox;
+        private readonly IUIService _uiService;
+        private readonly Model_AppUpdateSystem _appUpdateSystemModel;
 
-        private readonly Model_AppUpdateSystem _model;
-
-        public AboutApp_VM(IMessageBox messageBox, Version? appVersion)
+        public AboutApp_VM(IMessageBoxAboutApp messageBox, IUIService uiService,
+            Model_AppUpdateSystem appUpdateSystemModel)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
+            _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
 
-            _model = Model_AppUpdateSystem.Model;
+            Command_CheckUpdate = ReactiveCommand.CreateFromTask(async () => await CheckUpdate());
+            Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка проверки обновлений:\n\n{error.Message}", MessageType.Error));
 
-            if (appVersion != null)
-            {
-                Command_CheckUpdate = ReactiveCommand.CreateFromTask(async () => await CheckUpdate(appVersion));
-                Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка проверки обновлений:\n\n{error.Message}", MessageType.Error));
-            }            
-
-            Command_MakeDonate = ReactiveCommand.Create(_model.GoToDonatePage);
+            Command_MakeDonate = ReactiveCommand.Create(_appUpdateSystemModel.GoToDonatePage);
             Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка :(\n\n{error.Message}", MessageType.Error));
+
+            _appVersionFull = _uiService.GetAppVersion();
+
+            _appVersion = _appVersionFull?.ToString();
+            _avaloniaVersion = _uiService.GetAvaloniaVersionString();
+            _runtimeVersion = _uiService.GetRuntimeVersion().ToString();
         }
 
-        private async Task CheckUpdate(Version appVersion)
+        private async Task CheckUpdate()
         {
-            LastestVersionInfo? info = await _model.IsUpdateAvailable(appVersion);
+            if (_appVersionFull == null)
+            {
+                return;
+            }
+
+            LastestVersionInfo? info = await _appUpdateSystemModel.IsUpdateAvailable(_appVersionFull);
 
             if (info != null)
             {
                 if (!string.IsNullOrEmpty(info.Version))
                 {
-                    string downloadLink = _model.GetDownloadLink(info);
+                    string downloadLink = _appUpdateSystemModel.GetDownloadLink(info);
 
                     if (await _messageBox.ShowYesNoDialog($"Доступна новая версия приложения - {info.Version}\nПерейти на страницу скачивания?", MessageType.Information) == MessageBoxResult.Yes)
                     {
-                        _model.GoToWebPage(downloadLink);
+                        _appUpdateSystemModel.GoToWebPage(downloadLink);
                     }
                     return;
                 }

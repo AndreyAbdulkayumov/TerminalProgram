@@ -11,6 +11,7 @@ using Core.Models.Modbus.DataTypes;
 using ViewModels.Helpers;
 using ViewModels.ModbusClient.MessageBusTypes;
 using ViewModels.NoProtocol.DataTypes;
+using Core.Models.Settings;
 
 namespace ViewModels.Macros.MacrosEdit
 {
@@ -58,15 +59,16 @@ namespace ViewModels.Macros.MacrosEdit
 
         private const string _validationMessageSeparator = "\n\n---------------------------\n\n";
 
+        private readonly List<ICommandContent> _allEditCommandVM = new List<ICommandContent>();
 
         private readonly IMessageBox _messageBox;
+        private readonly Model_Settings _settingsModel;
 
-        private readonly List<ICommandContent> _allEditCommandVM = new List<ICommandContent>();    
 
-
-        public EditMacros_VM(IMessageBoxEditMacros messageBox)
+        public EditMacros_VM(IMessageBoxEditMacros messageBox, Model_Settings settingsModel)
         {
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             Command_SaveMacros = ReactiveCommand.Create(() =>
             {
@@ -171,7 +173,7 @@ namespace ViewModels.Macros.MacrosEdit
                     return new NoProtocolCommand_VM(id, parameters);
 
                 case ApplicationWorkMode.ModbusClient:
-                    return new ModbusCommand_VM(id, parameters, _messageBox);
+                    return new ModbusCommand_VM(id, parameters, _messageBox, _settingsModel);
 
                 default:
                     throw new NotImplementedException();

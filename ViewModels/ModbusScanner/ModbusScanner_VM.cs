@@ -8,6 +8,8 @@ using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 using ViewModels.Validation;
+using Core.Models.Modbus;
+using Services.Interfaces;
 
 namespace ViewModels.ModbusScanner
 {
@@ -118,21 +120,22 @@ namespace ViewModels.ModbusScanner
         public ReactiveCommand<Unit, Unit> Command_Start_Stop_Search { get; }
 
         private readonly IMessageBox _messageBox;
-
-        private readonly ConnectedHost Model;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_Modbus _modbusModel;
 
         private Task? _searchTask;
         private CancellationTokenSource? _searchCancel;
 
         private uint _pauseBetweenRequests_ForWork;
 
-        public ModbusScanner_VM(IMessageBox messageBox)
+        public ModbusScanner_VM(IMessageBoxModbusScanner messageBox,
+            ConnectedHost connectedHostModel, Model_Modbus modbusModel)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
 
-            Model = ConnectedHost.Model;
-
-            DeviceReadTimeout += Model.Host_ReadTimeout.ToString() + " мс.";
+            DeviceReadTimeout += _connectedHostModel.Host_ReadTimeout.ToString() + " мс.";
 
             Command_Start_Stop_Search = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -151,7 +154,7 @@ namespace ViewModels.ModbusScanner
             PauseBetweenRequests = "100";
         }
 
-        public async Task Close_EventHandler()
+        public async Task WindowClosed()
         {
             if (SearchInProcess && _searchTask != null)
             {
@@ -261,7 +264,7 @@ namespace ViewModels.ModbusScanner
 
                         CurrentSlaveID = i + " (0x" + i.ToString("X2") + ")";
 
-                        result = await Model.Modbus.ReadRegister(readFunction, data, modbusMessageType);
+                        result = await _modbusModel.ReadRegister(readFunction, data, modbusMessageType);
 
                         SlavesAddresses += "Slave ID:\n" +
                             "dec:   " + i + "\n" +

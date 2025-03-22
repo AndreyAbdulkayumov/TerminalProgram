@@ -10,6 +10,7 @@ using Core.Clients.DataTypes;
 using ViewModels.NoProtocol.DataTypes;
 using ViewModels.Helpers;
 using Services.Interfaces;
+using Core.Models.NoProtocol;
 
 namespace ViewModels.NoProtocol
 {
@@ -97,28 +98,27 @@ namespace ViewModels.NoProtocol
         private const string BytesSeparator = " ";
         private const string ElementSeparatorInCycleMode = "  ";
 
-        private readonly ConnectedHost Model;
-
         private readonly IMessageBoxMainWindow _messageBox;
-
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_NoProtocol _noProtocolModel;
         private readonly NoProtocol_Mode_Normal_VM _normalMode_VM;
         private readonly NoProtocol_Mode_Cycle_VM _cycleMode_VM;
 
         public NoProtocol_VM(IMessageBoxMainWindow messageBox,
+            ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel,
             NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM)
         {
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _noProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
             _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
-            _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));
+            _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));            
 
-            Model = ConnectedHost.Model;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
-
-            Model.NoProtocol.Model_DataReceived += NoProtocol_Model_DataReceived;
-            Model.NoProtocol.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
+            _noProtocolModel.Model_DataReceived += NoProtocol_Model_DataReceived;
+            _noProtocolModel.Model_ErrorInReadThread += NoProtocol_Model_ErrorInReadThread;
 
             MessageBus.Current.Listen<NoProtocolSendMessage>()
                 .Subscribe(async message =>
@@ -152,7 +152,7 @@ namespace ViewModels.NoProtocol
             {
                 byte[] buffer = CreateSendBuffer(message.IsBytes, message.Message, message.EnableCR, message.EnableLF, message.SelectedEncoding);
 
-                await Model.NoProtocol.SendBytes(buffer);
+                await _noProtocolModel.SendBytes(buffer);
             }
             
             catch (Exception error)
@@ -178,7 +178,7 @@ namespace ViewModels.NoProtocol
                         AppEncoding.GetEncoding(command.Content.MacrosEncoding)
                         );
 
-                    await Model.NoProtocol.SendBytes(buffer);
+                    await _noProtocolModel.SendBytes(buffer);
                 }
             }
 

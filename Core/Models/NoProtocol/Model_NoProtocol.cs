@@ -38,16 +38,13 @@ namespace Core.Models.NoProtocol
         private int _timeIndex;
 
 
-        public Model_NoProtocol(ConnectedHost host)
+        public Model_NoProtocol()
         {
-            host.DeviceIsConnect += Host_DeviceIsConnect;
-            host.DeviceIsDisconnected += Host_DeviceIsDisconnected;
-
             CycleModeTimer = new System.Timers.Timer(IntervalDefault);
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
         
-        private void Host_DeviceIsConnect(object? sender, IConnection? e)
+        public void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
             if (e != null && e.IsConnected)
             {
@@ -58,7 +55,7 @@ namespace Core.Models.NoProtocol
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
+        public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _client = null;
         }

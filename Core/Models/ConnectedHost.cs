@@ -38,16 +38,9 @@ namespace Core.Models
         public event EventHandler<IConnection?>? DeviceIsConnect;
         public event EventHandler<IConnection?>? DeviceIsDisconnected;
 
-        // Реализация паттерна "Одиночка"
-        private static ConnectedHost? _model;
-
-        public static ConnectedHost Model
-        {
-            get => _model ?? (_model = new ConnectedHost());
-        }
-
-        public readonly Model_NoProtocol NoProtocol;
-        public readonly Model_Modbus Modbus;
+        private readonly Model_NoProtocol NoProtocolModel;
+        private readonly Model_Modbus ModbusModel;
+        private readonly Model_Settings SettingsModel;
 
         public IConnection? Client { get; private set; }
 
@@ -57,10 +50,17 @@ namespace Core.Models
         public static Encoding GlobalEncoding { get; private set; } = Encoding.Default;
 
 
-        public ConnectedHost()
+        public ConnectedHost(Model_NoProtocol noProtocolModel, Model_Modbus modbusModel, Model_Settings settingsModel)
         {
-            NoProtocol = new Model_NoProtocol(this);
-            Modbus = new Model_Modbus(this);
+            NoProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
+            ModbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
+            SettingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel)); 
+
+            DeviceIsConnect += NoProtocolModel.Host_DeviceIsConnect;
+            DeviceIsDisconnected += NoProtocolModel.Host_DeviceIsDisconnected;
+
+            DeviceIsConnect += ModbusModel.Host_DeviceIsConnect;
+            DeviceIsDisconnected += ModbusModel.Host_DeviceIsDisconnected;
 
             SetProtocol_NoProtocol();
 
@@ -74,7 +74,7 @@ namespace Core.Models
 
         public void SetProtocol_Modbus()
         {
-            SelectedProtocol = new ProtocolMode_Modbus(Client, Model_Settings.Model.Settings);
+            SelectedProtocol = new ProtocolMode_Modbus(Client, SettingsModel.Settings);
         }
 
         public void SetGlobalEncoding(Encoding globalEncoding)
@@ -110,7 +110,7 @@ namespace Core.Models
 
             var modbusProtocol = SelectedProtocol as ProtocolMode_Modbus;
 
-            modbusProtocol?.UpdateTimeouts(Model_Settings.Model.Settings);
+            modbusProtocol?.UpdateTimeouts(SettingsModel.Settings);
 
             SelectedProtocol.InitMode(Client);
 

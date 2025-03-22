@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using TerminalProgramBase.Views;
 using Services.Interfaces;
+using System.Reflection;
 
 namespace TerminalProgramBase.Services
 {
@@ -28,11 +29,6 @@ namespace TerminalProgramBase.Services
             {
                 await clipboard.SetDataObjectAsync(dataObject);
             }
-        }
-
-        public Version? GetAppVersion()
-        {
-            return AboutWindow.GetAppVersion();
         }
 
         public void Set_Dark_Theme()
@@ -67,6 +63,35 @@ namespace TerminalProgramBase.Services
                 Application.Current.RequestedThemeVariant =
                     new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
             }
+        }
+
+        public Version? GetAppVersion()
+        {
+            char[] appVersion_Chars = new char[20];
+
+            if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(appVersion_Chars, 3, out int numberOfChars) == true)
+            {
+                return new Version(new string(appVersion_Chars, 0, numberOfChars));
+            }
+
+            return null;
+        }
+
+        public string? GetAvaloniaVersionString()
+        {
+            char[] GUIVersion_Chars = new char[20];
+
+            if (typeof(AvaloniaObject).Assembly.GetName().Version?.TryFormat(GUIVersion_Chars, 3, out int numberOfChars) == true)
+            {
+                return new string(GUIVersion_Chars, 0, numberOfChars);
+            }
+
+            return null;
+        }
+
+        public Version GetRuntimeVersion()
+        {
+            return Environment.Version;
         }
     }
 }

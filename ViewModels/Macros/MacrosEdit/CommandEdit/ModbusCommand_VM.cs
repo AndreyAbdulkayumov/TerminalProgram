@@ -11,6 +11,7 @@ using ViewModels.ModbusClient;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
+using Core.Models.Settings;
 
 namespace ViewModels.Macros.MacrosEdit.CommandEdit
 {
@@ -163,12 +164,12 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
-        public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox)
+        public ModbusCommand_VM(Guid id, EditCommandParameters parameters, IMessageBox messageBox, Model_Settings settingsModel)
         {
             _id = id;
 
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true);
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(true, settingsModel);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM();
 

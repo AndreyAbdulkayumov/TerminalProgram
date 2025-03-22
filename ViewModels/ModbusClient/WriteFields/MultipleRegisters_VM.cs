@@ -65,11 +65,11 @@ namespace ViewModels.ModbusClient.WriteFields
 
         private List<int> _floatStartByteIndices = new List<int>();
 
-        private readonly Model_Settings SettingsFile;
+        private readonly Model_Settings _settingsModel;
 
-        public MultipleRegisters_VM(bool floatFormatChangeIsEnabled)
+        public MultipleRegisters_VM(bool floatFormatChangeIsEnabled, Model_Settings settingsModel)
         {
-            SettingsFile = Model_Settings.Model;
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             FloatFormatChangeIsEnabled = floatFormatChangeIsEnabled;
 
@@ -104,7 +104,7 @@ namespace ViewModels.ModbusClient.WriteFields
 
         public WriteData GetData()
         {
-            return PrepareData(SettingsFile.Settings?.FloatNumberFormat);
+            return PrepareData(_settingsModel.Settings?.FloatNumberFormat);
         }
 
         private WriteData PrepareData(string? floatFormatName)

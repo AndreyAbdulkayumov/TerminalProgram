@@ -1,23 +1,18 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using MessageBox_AvaloniaUI;
-using MessageBox_Core;
-using ViewModels.ModbusScanner;
 
 namespace TerminalProgramBase.Views
 {
     public partial class ModbusScannerWindow : Window
     {
-        private readonly IMessageBox Message;
+        public static ModbusScannerWindow? Instance { get; private set; }
 
         public ModbusScannerWindow()
         {
             InitializeComponent();
 
-            Message = new MessageBox(this);
-
-            DataContext = new ModbusScanner_VM(Message);
+            Instance = this;
         }
 
         private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
@@ -25,15 +20,8 @@ namespace TerminalProgramBase.Views
             BeginMoveDrag(e);
         }
 
-        private async void Button_Close_Click(object? sender, RoutedEventArgs e)
+        private void Button_Close_Click(object? sender, RoutedEventArgs e)
         {
-            var context = DataContext as ModbusScanner_VM;
-
-            if (context != null)
-            {
-                await context.Close_EventHandler();
-            }
-                
             Close();
         }
     }

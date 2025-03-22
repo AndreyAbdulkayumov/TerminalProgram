@@ -7,5 +7,7 @@
         void Set_Dark_Theme();
         void Set_Light_Theme();
         Version? GetAppVersion();
+        string? GetAvaloniaVersionString();
+        Version GetRuntimeVersion();
     }
 }

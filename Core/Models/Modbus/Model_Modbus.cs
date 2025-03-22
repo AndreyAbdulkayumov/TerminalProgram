@@ -23,16 +23,13 @@ namespace Core.Models.Modbus
 
         private Action? _readRegisterInCycleMode;
 
-        public Model_Modbus(ConnectedHost host)
+        public Model_Modbus()
         {
-            host.DeviceIsConnect += Host_DeviceIsConnect;
-            host.DeviceIsDisconnected += Host_DeviceIsDisconnected;
-
             CycleModeTimer = new System.Timers.Timer(IntervalDefault);
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
 
-        private void Host_DeviceIsConnect(object? sender, IConnection? e)
+        public void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
             if (e != null && e.IsConnected)
             {
@@ -40,7 +37,7 @@ namespace Core.Models.Modbus
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
+        public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _device = null;
         }

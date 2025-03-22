@@ -11,8 +11,10 @@ using TerminalProgramBase.Views;
 using TerminalProgramBase.Views.Macros;
 using TerminalProgramBase.Views.Macros.EditMacros;
 using TerminalProgramBase.Views.Settings;
+using ViewModels;
 using ViewModels.Macros;
 using ViewModels.Macros.MacrosEdit;
+using ViewModels.ModbusScanner;
 using ViewModels.Settings;
 
 namespace TerminalProgramBase.Services
@@ -20,8 +22,10 @@ namespace TerminalProgramBase.Services
     public class OpenChildWindowService : IOpenChildWindowService
     {
         private Settings_VM? _settingsVM;
+        private AboutApp_VM? _aboutAppVM;
         private Macros_VM? _macrosVM;
         private EditMacros_VM? _editMacrosVM;
+        private ModbusScanner_VM? _modbusScannerVM;
 
         private const double WorkspaceOpacity_OpenChildWindow = 0.15;
 
@@ -31,7 +35,7 @@ namespace TerminalProgramBase.Services
 
         public OpenChildWindowService(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         }
 
         public async Task Settings()
@@ -96,14 +100,38 @@ namespace TerminalProgramBase.Services
 
         public async Task About()
         {
-            await OpenWindowWithDimmer(new AboutWindow(), MainWindow.Instance, MainWindow.Workspace);
-        }
+            _aboutAppVM = _serviceProvider.GetService<AboutApp_VM>();
+
+            if (_aboutAppVM == null)
+            {
+                return;
+            }
+
+            var window = new AboutWindow()
+            {
+                DataContext = _aboutAppVM
+            };
+
+            await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
+        }        
 
         public async Task ModbusScanner()
         {
-            var window = new ModbusScannerWindow();
+            _modbusScannerVM = _serviceProvider.GetService<ModbusScanner_VM>();
+
+            if (_modbusScannerVM == null)
+            {
+                return;
+            }
+
+            var window = new ModbusScannerWindow()
+            {
+                DataContext = _modbusScannerVM
+            };
 
             await OpenWindowWithDimmer(window, MainWindow.Instance, MainWindow.Workspace);
+
+            await _modbusScannerVM.WindowClosed();
         }
 
         public void Macros()

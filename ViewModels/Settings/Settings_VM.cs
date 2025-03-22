@@ -69,21 +69,20 @@ namespace ViewModels.Settings
         private readonly IOpenChildWindowService _openChildWindowService;
         private readonly IMessageBoxSettings _messageBox;
 
-        private readonly Model_Settings SettingsFile;
+        private readonly Model_Settings _settingsModel;
 
-        public Settings_VM(Connection_VM connectionVM, Settings_NoProtocol_VM settingsNoProtocolVM, Modbus_VM modbusVM, AppSettings_VM appSettingsVM,
-            IFileSystemService fileSystemService, IOpenChildWindowService openChildWindowService, IMessageBoxSettings messageBox)
+        public Settings_VM(IFileSystemService fileSystemService, IOpenChildWindowService openChildWindowService, IMessageBoxSettings messageBox,
+            Model_Settings settingsModel,
+            Connection_VM connectionVM, Settings_NoProtocol_VM settingsNoProtocolVM, Modbus_VM modbusVM, AppSettings_VM appSettingsVM)
         {
-            _tab_Connection_VM = connectionVM ?? throw new ArgumentNullException(nameof(connectionVM));
-            _tab_NoProtocol_VM = settingsNoProtocolVM ?? throw new ArgumentNullException(nameof(settingsNoProtocolVM));
-            _tab_Modbus_VM = modbusVM ?? throw new ArgumentNullException(nameof(modbusVM));
-            _tab_AppSettings_VM = appSettingsVM ?? throw new ArgumentNullException(nameof(appSettingsVM));
-
             _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-
-            SettingsFile = Model_Settings.Model;
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+            _tab_Connection_VM = connectionVM ?? throw new ArgumentNullException(nameof(connectionVM));
+            _tab_NoProtocol_VM = settingsNoProtocolVM ?? throw new ArgumentNullException(nameof(settingsNoProtocolVM));
+            _tab_Modbus_VM = modbusVM ?? throw new ArgumentNullException(nameof(modbusVM));
+            _tab_AppSettings_VM = appSettingsVM ?? throw new ArgumentNullException(nameof(appSettingsVM));          
 
             Command_File_AddNew = ReactiveCommand.CreateFromTask(File_CreateNew_Handler);
             Command_File_AddExisting = ReactiveCommand.CreateFromTask(File_AddExisting_Handler);
@@ -98,7 +97,7 @@ namespace ViewModels.Settings
 
         private void UpdateUI(string fileName)
         {
-            DeviceData settings = SettingsFile.ReadPreset(fileName);
+            DeviceData settings = _settingsModel.ReadPreset(fileName);
 
             Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? DeviceData.GlobalEncoding_Default;
 
@@ -140,7 +139,7 @@ namespace ViewModels.Settings
 
         private void UpdateListOfPresets()
         {
-            string[] fileNames = SettingsFile.FindFilesOfPresets();
+            string[] fileNames = _settingsModel.FindFilesOfPresets();
 
             Presets.Clear();
 
@@ -156,7 +155,7 @@ namespace ViewModels.Settings
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                SettingsFile.SavePreset(fileName, DeviceData.GetDefault());
+                _settingsModel.SavePreset(fileName, DeviceData.GetDefault());
 
                 UpdateListOfPresets();
 
@@ -175,7 +174,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                string fileName = SettingsFile.CopyInPresetFolderFrom(filePath);
+                string fileName = _settingsModel.CopyInPresetFolderFrom(filePath);
 
                 UpdateListOfPresets();
 
@@ -205,7 +204,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                SettingsFile.DeletePreset(SelectedPreset);
+                _settingsModel.DeletePreset(SelectedPreset);
 
                 UpdateListOfPresets();
 
@@ -271,7 +270,7 @@ namespace ViewModels.Settings
                     FloatNumberFormat = floatFormat,                    
                 };
 
-                SettingsFile.SavePreset(SelectedPreset, data);
+                _settingsModel.SavePreset(SelectedPreset, data);
 
                 MainWindow_VM.SettingsDocument = SelectedPreset;
 

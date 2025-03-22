@@ -34,16 +34,14 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private readonly Model_Settings SettingsFile;
-
         private readonly IMessageBox _messageBox;
+        private readonly Model_Settings _settingsModel;
 
 
-        public Connection_Ethernet_VM(IMessageBoxSettings messageBox)
+        public Connection_Ethernet_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel)
         {
-            _messageBox = messageBox;
-
-            SettingsFile = Model_Settings.Model;            
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));            
         }
 
         public string GetFieldViewName(string fieldName)
@@ -65,12 +63,12 @@ namespace ViewModels.Settings.Tabs
         {
             try
             {
-                if (SettingsFile.Settings == null)
+                if (_settingsModel.Settings == null)
                 {
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                if (SettingsFile.Settings.Connection_IP == null)
+                if (_settingsModel.Settings.Connection_IP == null)
                 {
                     IP_Address = null;
                     Port = null;
@@ -78,8 +76,8 @@ namespace ViewModels.Settings.Tabs
                     return;
                 }
 
-                IP_Address = SettingsFile.Settings.Connection_IP.IP_Address;
-                Port = SettingsFile.Settings.Connection_IP.Port;
+                IP_Address = _settingsModel.Settings.Connection_IP.IP_Address;
+                Port = _settingsModel.Settings.Connection_IP.Port;
             }
 
             catch (Exception error)

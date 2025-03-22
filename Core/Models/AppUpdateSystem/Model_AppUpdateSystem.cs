@@ -6,13 +6,6 @@ namespace Core.Models.AppUpdateSystem
 {
     public class Model_AppUpdateSystem
     {
-        private static Model_AppUpdateSystem? _model;
-
-        public static Model_AppUpdateSystem Model
-        {
-            get => _model ?? (_model = new Model_AppUpdateSystem());
-        }
-
         private const string UrlLastestVersion = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/lastestVersion.json";
 
         private const string UrlDonate = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html";

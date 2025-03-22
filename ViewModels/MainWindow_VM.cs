@@ -169,13 +169,11 @@ namespace ViewModels
         private readonly IOpenChildWindowService _openChildWindowService;
         private readonly IFileSystemService _fileSystemService;
         private readonly IMessageBoxMainWindow _messageBox;
-
         private readonly NoProtocol_VM _noProtocol_VM;
         private readonly ModbusClient_VM _modbusClient_VM;
-
-        private readonly ConnectedHost Model;
-        private readonly Model_Settings SettingsFile;
-        private readonly Model_AppUpdateSystem AppUpdateSystem;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_Settings _settingsModel;
+        private readonly Model_AppUpdateSystem _appUpdateSystemModel;
 
         private readonly object TX_View_Locker = new object();
         private readonly object RX_View_Locker = new object();
@@ -183,24 +181,23 @@ namespace ViewModels
         private string? _newAppDownloadLink;
 
         public MainWindow_VM(IUIService uiServices, IOpenChildWindowService openChildWindowService, IFileSystemService fileSystemService, IMessageBoxMainWindow messageBox, 
-            NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM)
+            NoProtocol_VM noProtocol_VM, ModbusClient_VM modbusClient_VM,
+            ConnectedHost connectedHostModel, Model_Settings settingsModel, Model_AppUpdateSystem appUpdateSystemModel)
         {
             _uiServices = uiServices ?? throw new ArgumentNullException(nameof(uiServices));
             _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
             _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-
             _noProtocol_VM = noProtocol_VM ?? throw new ArgumentNullException(nameof(noProtocol_VM));
             _modbusClient_VM = modbusClient_VM ?? throw new ArgumentNullException(nameof(modbusClient_VM));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+            _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
 
-            Model = ConnectedHost.Model;
-            SettingsFile = Model_Settings.Model;
-            AppUpdateSystem = Model_AppUpdateSystem.Model;
+            SettingsDocument = _settingsModel.AppData.SelectedPresetFileName;
 
-            SettingsDocument = SettingsFile.AppData.SelectedPresetFileName;
-
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             _connectionTimer = new System.Timers.Timer(ConnectionTimer_Interval_ms);
             _connectionTimer.Elapsed += ConnectionTimer_Elapsed;
@@ -218,19 +215,19 @@ namespace ViewModels
                 {
                     try
                     {
-                        SettingsFile.ReadPreset(PresetName);
+                        _settingsModel.ReadPreset(PresetName);
 
-                        if (SettingsFile.Settings != null)
+                        if (_settingsModel.Settings != null)
                         {
-                            string? encodingName = SettingsFile.Settings.GlobalEncoding;
-                            Model.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
+                            string? encodingName = _settingsModel.Settings.GlobalEncoding;
+                            _connectedHostModel.SetGlobalEncoding(AppEncoding.GetEncoding(encodingName));
                             _noProtocol_VM.SelectedEncoding = encodingName;
                         }
 
                         ConnectionString = GetConnectionString();
 
                         SettingsDocument = PresetName;
-                        SettingsFile.AppData.SelectedPresetFileName = PresetName;
+                        _settingsModel.AppData.SelectedPresetFileName = PresetName;
                     }
 
                     catch (Exception error)
@@ -251,9 +248,9 @@ namespace ViewModels
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
                 CurrentViewModel = _noProtocol_VM;
-                Model.SetProtocol_NoProtocol();
+                _connectedHostModel.SetProtocol_NoProtocol();
 
-                SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
                 CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
             });
             Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
@@ -261,9 +258,9 @@ namespace ViewModels
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
             {
                 CurrentViewModel = _modbusClient_VM;
-                Model.SetProtocol_Modbus();
+                _connectedHostModel.SetProtocol_Modbus();
 
-                SettingsFile.AppData.SelectedMode = AppMode.ModbusClient;
+                _settingsModel.AppData.SelectedMode = AppMode.ModbusClient;
                 CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
             });
             Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
@@ -274,24 +271,24 @@ namespace ViewModels
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
             Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
-            Command_Disconnect = ReactiveCommand.CreateFromTask(Model.Disconnect);
+            Command_Disconnect = ReactiveCommand.CreateFromTask(_connectedHostModel.Disconnect);
             Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
-            Command_UpdateApp = ReactiveCommand.Create(() => AppUpdateSystem.GoToWebPage(_newAppDownloadLink));
+            Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));
             Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
 
             Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
             {
-                SettingsFile.AppData.SkippedAppVersion = NewAppVersion;
+                _settingsModel.AppData.SkippedAppVersion = NewAppVersion;
                 UpdateMessageIsVisible = false;
             });
             Command_SkipNewAppVersion.ThrownExceptions.Subscribe();
 
             // Действия после запуска приложения
 
-            SetAppTheme(SettingsFile.AppData.ThemeName);
+            SetAppTheme(_settingsModel.AppData.ThemeName);
 
-            SetAppMode(SettingsFile.AppData.SelectedMode);
+            SetAppMode(_settingsModel.AppData.SelectedMode);
         }
 
         private void SetAppTheme(AppTheme themeName)
@@ -308,7 +305,7 @@ namespace ViewModels
 
                 default:
                     _uiServices.Set_Dark_Theme();
-                    SettingsFile.AppData.ThemeName = AppTheme.Dark;
+                    _settingsModel.AppData.ThemeName = AppTheme.Dark;
                     break;
             }
         }
@@ -319,20 +316,20 @@ namespace ViewModels
             {
                 case AppMode.NoProtocol:
                     CurrentViewModel = _noProtocol_VM;
-                    Model.SetProtocol_NoProtocol();
+                    _connectedHostModel.SetProtocol_NoProtocol();
                     CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
 
                 case AppMode.ModbusClient:
                     CurrentViewModel = _modbusClient_VM;
-                    Model.SetProtocol_Modbus();
+                    _connectedHostModel.SetProtocol_Modbus();
                     CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
                     break;
 
                 default:
                     CurrentViewModel = _noProtocol_VM;
-                    Model.SetProtocol_NoProtocol();
-                    SettingsFile.AppData.SelectedMode = AppMode.NoProtocol;
+                    _connectedHostModel.SetProtocol_NoProtocol();
+                    _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
                     CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
                     break;
             }
@@ -342,7 +339,7 @@ namespace ViewModels
         {
             UpdateListOfPresets();
 
-            if (SettingsFile.AppData.CheckUpdateAfterStart)
+            if (_settingsModel.AppData.CheckUpdateAfterStart)
             {
                 await CheckAppUpdate();
             }
@@ -350,7 +347,7 @@ namespace ViewModels
 
         public void WindowClosing()
         {
-            SettingsFile.SaveAppInfo(SettingsFile.AppData);
+            _settingsModel.SaveAppInfo(_settingsModel.AppData);
         }
 
         private async Task CheckAppUpdate()
@@ -363,13 +360,13 @@ namespace ViewModels
 
                 if (appVersion != null)
                 {
-                    LastestVersionInfo? info = await AppUpdateSystem.IsUpdateAvailable(appVersion);
+                    LastestVersionInfo? info = await _appUpdateSystemModel.IsUpdateAvailable(appVersion);
 
                     if (info != null)
                     {
-                        string downloadLink = AppUpdateSystem.GetDownloadLink(info);
+                        string downloadLink = _appUpdateSystemModel.GetDownloadLink(info);
 
-                        if (!string.IsNullOrEmpty(info.Version) && SettingsFile.AppData.SkippedAppVersion != info.Version)
+                        if (!string.IsNullOrEmpty(info.Version) && _settingsModel.AppData.SkippedAppVersion != info.Version)
                         {
                             NewAppVersion = info.Version;
                             _newAppDownloadLink = downloadLink;
@@ -390,12 +387,12 @@ namespace ViewModels
 
         private string GetConnectionString()
         {
-            if (SettingsFile.Settings == null)
+            if (_settingsModel.Settings == null)
             {
                 throw new Exception("Настройки не инициализированы.");
             }
 
-            DeviceData settings = (DeviceData)SettingsFile.Settings.Clone();
+            DeviceData settings = (DeviceData)_settingsModel.Settings.Clone();
 
             string separator = " : ";
 
@@ -477,10 +474,10 @@ namespace ViewModels
 
         private void Model_DeviceIsConnect(object? sender, IConnection? e)
         {
-            if (Model.Client != null)
+            if (_connectedHostModel.Client != null)
             {
-                Model.Client.Notifications.TX_Notification += Notifications_TX_Notification;
-                Model.Client.Notifications.RX_Notification += Notifications_RX_Notification;
+                _connectedHostModel.Client.Notifications.TX_Notification += Notifications_TX_Notification;
+                _connectedHostModel.Client.Notifications.RX_Notification += Notifications_RX_Notification;
 
                 // Использовать для демонстрации работы уведомлений приема и передачи.
                 //Task.Run(Model.Client.Notifications.DemoVisualization);
@@ -522,10 +519,10 @@ namespace ViewModels
         {
             _connectionTimer.Stop();
 
-            if (Model.Client != null)
+            if (_connectedHostModel.Client != null)
             {
-                Model.Client.Notifications.TX_Notification -= Notifications_TX_Notification;
-                Model.Client.Notifications.RX_Notification -= Notifications_RX_Notification;
+                _connectedHostModel.Client.Notifications.TX_Notification -= Notifications_TX_Notification;
+                _connectedHostModel.Client.Notifications.RX_Notification -= Notifications_RX_Notification;
             }
 
             UI_IsConnectedState = false;
@@ -537,7 +534,7 @@ namespace ViewModels
 
         private void UpdateListOfPresets()
         {
-            string[] fileNames = SettingsFile.FindFilesOfPresets();
+            string[] fileNames = _settingsModel.FindFilesOfPresets();
 
             Presets.Clear();
 
@@ -559,12 +556,12 @@ namespace ViewModels
 
         private void Connect_Handler()
         {
-            if (SettingsFile.Settings == null)
+            if (_settingsModel.Settings == null)
             {
                 throw new Exception("Настройки не инициализированы.");
             }
 
-            DeviceData settings = (DeviceData)SettingsFile.Settings.Clone();
+            DeviceData settings = (DeviceData)_settingsModel.Settings.Clone();
 
             ConnectionInfo info;
 
@@ -598,7 +595,7 @@ namespace ViewModels
                     throw new Exception("В файле настроек задан неизвестный интерфейс связи.");
             }
 
-            Model.Connect(info);
+            _connectedHostModel.Connect(info);
         }
     }
 }

@@ -9,13 +9,6 @@ namespace Core.Models.Settings
 
         public AppInfo AppData { get; private set; }
 
-        private static Model_Settings? _model;
-
-        public static Model_Settings Model
-        {
-            get => _model ?? (_model = new Model_Settings());
-        }
-
         /// <summary>
         /// Путь к папке с файлами настроек
         /// </summary>

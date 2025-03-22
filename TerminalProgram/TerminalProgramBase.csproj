@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\MessageBox_AvaloniaUI\MessageBox_AvaloniaUI.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />

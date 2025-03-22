@@ -1,6 +1,7 @@
 ﻿using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
+using Core.Models.Settings;
 using MessageBox_Core;
 using ReactiveUI;
 using Services.Interfaces;
@@ -154,27 +155,26 @@ namespace ViewModels.ModbusClient
         private ushort _selectedAddress = 0;
         private ushort _selectedNumberOfRegisters = 1;
 
-        private readonly ConnectedHost Model;
-
-        private readonly IMessageBoxMainWindow _messageBox;
-
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
+        private readonly IMessageBoxMainWindow _messageBox;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_Settings _settingsModel;
 
-        public ModbusClient_Mode_Normal_VM(IMessageBoxMainWindow messageBox)
+        public ModbusClient_Mode_Normal_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel)
         {
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
-            Model = ConnectedHost.Model;
-
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false);
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false, _settingsModel);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM(); 
 

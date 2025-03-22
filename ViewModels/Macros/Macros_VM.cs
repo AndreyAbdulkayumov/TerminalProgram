@@ -44,16 +44,15 @@ namespace ViewModels.Macros
         private readonly IOpenChildWindowService _openChildWindowService;
         private readonly IFileSystemService _fileSystemService;
         private readonly IMessageBox _messageBox;
+        private readonly Model_Settings _settingsModel;
 
-        private readonly Model_Settings _settings;
-
-        public Macros_VM(IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMacros messageBox)
+        public Macros_VM(IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMacros messageBox,
+            Model_Settings settingsModel)
         {
             _openChildWindowService = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
             _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-
-            _settings = Model_Settings.Model;
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
             Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error));
@@ -79,12 +78,12 @@ namespace ViewModels.Macros
         {
             if (_noProtocolMacros != null)
             {
-                return _settings.FilePath_Macros_NoProtocol;
+                return _settingsModel.FilePath_Macros_NoProtocol;
             }
 
             else if (_modbusMacros != null)
             {
-                return _settings.FilePath_Macros_Modbus;
+                return _settingsModel.FilePath_Macros_Modbus;
             }
 
             throw new Exception("Не выбран режим.");
@@ -138,7 +137,7 @@ namespace ViewModels.Macros
 
         private MacrosNoProtocol BuildNoProtocolMacros()
         {
-            MacrosNoProtocol macros = _settings.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
+            MacrosNoProtocol macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
 
             if (macros.Items == null)
             {
@@ -160,7 +159,7 @@ namespace ViewModels.Macros
 
         private MacrosModbus BuildModbusMacros()
         {
-            MacrosModbus macros = _settings.ReadOrCreateDefaultMacros<MacrosModbus>();
+            MacrosModbus macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosModbus>();
 
             if (macros.Items == null)
             {
@@ -296,11 +295,11 @@ namespace ViewModels.Macros
                     switch (workMode)
                     {
                         case ApplicationWorkMode.NoProtocol:
-                            var macrosNoProtocol = _settings.ReadMacros<MacrosNoProtocol>(macrosFilePath);
+                            var macrosNoProtocol = _settingsModel.ReadMacros<MacrosNoProtocol>(macrosFilePath);
                             break;
 
                         case ApplicationWorkMode.ModbusClient:
-                            var macrosModbus = _settings.ReadMacros<MacrosModbus>(macrosFilePath);
+                            var macrosModbus = _settingsModel.ReadMacros<MacrosModbus>(macrosFilePath);
                             break;
 
                         default:
@@ -313,9 +312,9 @@ namespace ViewModels.Macros
                     throw new Exception($"Ошибка чтения файла.\n\n{error.Message}");
                 }
 
-                _settings.DeleteFile(macrosValidFilePath);
+                _settingsModel.DeleteFile(macrosValidFilePath);
 
-                _settings.CopyFile(macrosFilePath, macrosValidFilePath);
+                _settingsModel.CopyFile(macrosFilePath, macrosValidFilePath);
 
                 // На случай если режим будет изменен во время импорта
                 if (workMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
@@ -337,7 +336,7 @@ namespace ViewModels.Macros
 
                 string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
 
-                _settings.CopyFile(macrosFileName, outputFileName);
+                _settingsModel.CopyFile(macrosFileName, outputFileName);
 
                 _messageBox.Show($"Экспорт прошел успешно!\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
             }
@@ -363,11 +362,11 @@ namespace ViewModels.Macros
             switch (mode)
             {
                 case ApplicationWorkMode.NoProtocol:
-                    _settings.SaveMacros(_noProtocolMacros);
+                    _settingsModel.SaveMacros(_noProtocolMacros);
                     break;
 
                 case ApplicationWorkMode.ModbusClient:
-                    _settings.SaveMacros(_modbusMacros);
+                    _settingsModel.SaveMacros(_modbusMacros);
                     break;
 
                 default:
