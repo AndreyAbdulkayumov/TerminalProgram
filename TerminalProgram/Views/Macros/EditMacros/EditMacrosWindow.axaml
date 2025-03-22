@@ -161,18 +161,10 @@
 
 									</ItemsControl>
 
-									<StackPanel Orientation="Horizontal" Spacing="30"
-											HorizontalAlignment="Center">
-
-										<Button Content="Добавить команду"
-												FontSize="14"
-												Command="{Binding Command_AddCommand}"/>
-
-										<Button Content="Добавить задержку"
-												FontSize="14"
-												Command="{Binding Command_AddDelay}"/>
-
-									</StackPanel>
+									<Button Content="Добавить команду"
+											FontSize="14"
+											HorizontalAlignment="Center"
+											Command="{Binding Command_AddCommand}"/>
 
 								</StackPanel>
 

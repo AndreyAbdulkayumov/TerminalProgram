@@ -53,7 +53,6 @@ namespace ViewModels.Macros.MacrosEdit
         public ReactiveCommand<Unit, Unit> Command_SaveMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_RunMacros { get; }
         public ReactiveCommand<Unit, Unit> Command_AddCommand { get; }
-        public ReactiveCommand<Unit, Unit> Command_AddDelay { get; }
 
         public bool Saved { get; private set; } = false;
 
@@ -106,9 +105,6 @@ namespace ViewModels.Macros.MacrosEdit
                 _allEditCommandVM.Add(CreateCommandVM(itemGuid, commandParameters));
             });
             Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
-
-            Command_AddDelay = ReactiveCommand.Create(() => { });
-            Command_AddDelay.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления задержки.\n\n{error.Message}", MessageType.Error));
 
             this.WhenAnyValue(x => x.EditCommandViewModel)
                 .Subscribe(x =>
