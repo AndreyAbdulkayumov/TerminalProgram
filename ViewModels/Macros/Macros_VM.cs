@@ -7,7 +7,6 @@ using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
-using ViewModels.Macros.MacrosItemContext;
 using Services.Interfaces;
 
 namespace ViewModels.Macros
@@ -151,7 +150,7 @@ namespace ViewModels.Macros
 
             foreach (var element in macros.Items)
             {
-                IMacrosContext _macrosContext = new NoProtocolMacrosItemContext(element);
+                IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandNoProtocol>(element);
 
                 BuildMacrosItem(_macrosContext.CreateContext());
             }
@@ -173,7 +172,7 @@ namespace ViewModels.Macros
 
             foreach (var element in macros.Items)
             {
-                IMacrosContext _macrosContext = new ModbusMacrosItemContext(element);
+                IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandModbus>(element);
 
                 BuildMacrosItem(_macrosContext.CreateContext());
             }
@@ -257,7 +256,7 @@ namespace ViewModels.Macros
             SaveMacros(MainWindow_VM.CurrentApplicationWorkMode);
         }
 
-        private void BuildMacrosItem(MacrosData itemData)
+        private void BuildMacrosItem(MacrosViewItemData itemData)
         {
             Items.Add(new MacrosViewItem_VM(itemData.Name, itemData.MacrosAction, EditMacros, DeleteMacros, _messageBox));
             _allMacrosNames.Add(itemData.Name);
@@ -348,12 +347,12 @@ namespace ViewModels.Macros
         {
             if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
             {
-                return new NoProtocolMacrosItemContext(noProtocolContent);
+                return new ViewItemContext<MacrosCommandNoProtocol>(noProtocolContent);
             }
 
             else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
             {
-                return new ModbusMacrosItemContext(modbusContent);
+                return new ViewItemContext<MacrosCommandModbus>(modbusContent);
             }
 
             throw new NotImplementedException($"Поддержка режима не реализована.");
@@ -455,7 +454,7 @@ namespace ViewModels.Macros
             }
         }
 
-        private void ChangeMacrosViewItem(string oldName, MacrosData newData)
+        private void ChangeMacrosViewItem(string oldName, MacrosViewItemData newData)
         {
             var viewItem = Items.First(macros => macros.Title == oldName);
 
