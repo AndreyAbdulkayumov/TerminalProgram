@@ -1,9 +1,10 @@
-﻿using Core.Models.Settings;
-using ReactiveUI;
-using MessageBox_Core;
-using ViewModels.Validation;
-using System.Text.RegularExpressions;
+﻿using ReactiveUI;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using MessageBox_Core;
+using Core.Models.Settings;
+using ViewModels.Validation;
+using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs
 {
@@ -33,18 +34,14 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private readonly Model_Settings SettingsFile;
-
         private readonly IMessageBox _messageBox;
+        private readonly Model_Settings _settingsModel;
 
 
-        public Connection_Ethernet_VM(Settings_VM main_VM, IMessageBox messageBox)
+        public Connection_Ethernet_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel)
         {
-            main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
-
-            _messageBox = messageBox;
-
-            SettingsFile = Model_Settings.Model;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));            
         }
 
         public string GetFieldViewName(string fieldName)
@@ -62,16 +59,16 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
+        public void SettingsFileChanged()
         {
             try
             {
-                if (SettingsFile.Settings == null)
+                if (_settingsModel.Settings == null)
                 {
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                if (SettingsFile.Settings.Connection_IP == null)
+                if (_settingsModel.Settings.Connection_IP == null)
                 {
                     IP_Address = null;
                     Port = null;
@@ -79,8 +76,8 @@ namespace ViewModels.Settings.Tabs
                     return;
                 }
 
-                IP_Address = SettingsFile.Settings.Connection_IP.IP_Address;
-                Port = SettingsFile.Settings.Connection_IP.Port;
+                IP_Address = _settingsModel.Settings.Connection_IP.IP_Address;
+                Port = _settingsModel.Settings.Connection_IP.Port;
             }
 
             catch (Exception error)

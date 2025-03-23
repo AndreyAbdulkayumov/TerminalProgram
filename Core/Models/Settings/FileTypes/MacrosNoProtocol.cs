@@ -2,18 +2,23 @@
 
 namespace Core.Models.Settings.FileTypes
 {
-    public class MacrosNoProtocolItem : IMacrosItem
+    public class NoProtocolCommandInfo
     {
-        public string? Name { get; set; }
         public string? MacrosEncoding { get; set; }
-        public string? Message { get; set; }        
+        public string? Message { get; set; }
         public bool EnableCR { get; set; }
         public bool EnableLF { get; set; }
         public bool IsByteString { get; set; }
     }
 
+    public class MacrosCommandNoProtocol : IMacrosCommand
+    {
+        public string? Name { get; set; }
+        public NoProtocolCommandInfo? Content { get; set; }
+    }
+
     public class MacrosNoProtocol
     {
-        public List<MacrosNoProtocolItem>? Items { get; set; }
+        public List<MacrosContent<MacrosCommandNoProtocol>>? Items { get; set; }
     }
 }

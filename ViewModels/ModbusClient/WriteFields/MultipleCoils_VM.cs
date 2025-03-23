@@ -1,8 +1,8 @@
-﻿using Core.Models.Settings.DataTypes;
+﻿using ReactiveUI;
 using DynamicData;
-using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using Core.Models.Settings.DataTypes;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataItems;
 using ViewModels.ModbusClient.WriteFields.DataTypes;

@@ -15,19 +15,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.3" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.3" />
+    <PackageReference Include="Avalonia" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.3" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.1.10" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.0" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.5" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+    <PackageReference Include="System.IO.Ports" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\MessageBox_AvaloniaUI\MessageBox_AvaloniaUI.csproj" />
+    <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 
@@ -48,7 +51,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\Macros\EditMacrosWindow.axaml.cs">
+    <Compile Update="Views\Macros\EditMacros\EditCommandViews\ModbusCommand.axaml.cs">
+      <DependentUpon>ModbusCommand.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditCommandViews\NoProtocolCommand.axaml.cs">
+      <DependentUpon>NoProtocolCommand.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditMacrosWindow.axaml.cs">
       <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">

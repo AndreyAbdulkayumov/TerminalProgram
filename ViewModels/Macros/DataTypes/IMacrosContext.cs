@@ -2,6 +2,6 @@
 {
     internal interface IMacrosContext
     {
-        MacrosData CreateContext();
+        MacrosViewItemData CreateContext();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Core.Models.Settings.FileTypes;
+﻿using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
 
 namespace Core.Models.Settings
 {
@@ -7,13 +8,6 @@ namespace Core.Models.Settings
         public DeviceData? Settings { get; private set; }
 
         public AppInfo AppData { get; private set; }
-
-        private static Model_Settings? _model;
-
-        public static Model_Settings Model
-        {
-            get => _model ?? (_model = new Model_Settings());
-        }
 
         /// <summary>
         /// Путь к папке с файлами настроек
@@ -276,13 +270,19 @@ namespace Core.Models.Settings
             if (typeof(T) == typeof(MacrosModbus))
             {
                 fileName = FileName_Macros_Modbus;
-                defaultMacrosValue = new MacrosModbus();
+                defaultMacrosValue = new MacrosModbus()
+                {
+                    Items = new List<MacrosContent<MacrosCommandModbus>>()
+                };
             }
 
             else if (typeof(T) == typeof(MacrosNoProtocol))
             {
                 fileName = FileName_Macros_NoProtocol;
-                defaultMacrosValue = new MacrosNoProtocol();
+                defaultMacrosValue = new MacrosNoProtocol()
+                {
+                    Items = new List<MacrosContent<MacrosCommandNoProtocol>>()
+                };
             }
 
             else

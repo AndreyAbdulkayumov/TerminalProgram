@@ -1,10 +1,12 @@
-﻿using Core.Models;
-using Core.Models.NoProtocol.DataTypes;
-using ReactiveUI;
-using MessageBox_Core;
+﻿using ReactiveUI;
 using System.Reactive;
-using ViewModels.Helpers;
+using MessageBox_Core;
+using Core.Models;
+using Core.Models.NoProtocol.DataTypes;
 using Core.Clients.DataTypes;
+using ViewModels.Helpers;
+using Services.Interfaces;
+using Core.Models.NoProtocol;
 
 namespace ViewModels.NoProtocol
 {
@@ -148,20 +150,20 @@ namespace ViewModels.NoProtocol
 
         #endregion
 
-        private readonly ConnectedHost Model;
+        private readonly IMessageBoxMainWindow _messageBox;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_NoProtocol _noProtocolModel;        
 
-        private readonly IMessageBox _messageBox;
-
-        public NoProtocol_Mode_Cycle_VM(IMessageBox messageBox)
+        public NoProtocol_Mode_Cycle_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _noProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
 
-            Model = ConnectedHost.Model;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
-
-            Model.NoProtocol.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
+            _noProtocolModel.Model_ErrorInCycleMode += NoProtocol_Model_ErrorInCycleMode;
 
             Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -178,7 +180,7 @@ namespace ViewModels.NoProtocol
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
-                    Message_Content = StringByteConverter.GetMessageString(Message_Content, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
+                    Message_Content = StringByteConverter.GetMessageString(Message_Content, IsBytes, _noProtocolModel.HostEncoding);
                 });
         }
 
@@ -211,13 +213,13 @@ namespace ViewModels.NoProtocol
 
         public void SourceWindowClosingAction()
         {
-            Model.NoProtocol.CycleMode_Stop();
-            Model.NoProtocol.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
+            _noProtocolModel.CycleMode_Stop();
+            _noProtocolModel.Model_ErrorInCycleMode -= NoProtocol_Model_ErrorInCycleMode;
         }
 
         public void StopPolling()
         {
-            Model.NoProtocol.CycleMode_Stop();
+            _noProtocolModel.CycleMode_Stop();
 
             Button_Content = Button_Content_Start;
             IsStart = false;
@@ -225,9 +227,9 @@ namespace ViewModels.NoProtocol
 
         private async Task StartPolling()
         {
-            byte[] buffer = NoProtocol_VM.CreateSendBuffer(_isBytesSend, Message_Content, Message_CR, Message_LF, ConnectedHost.Model.NoProtocol.HostEncoding);
+            byte[] buffer = NoProtocol_VM.CreateSendBuffer(_isBytesSend, Message_Content, Message_CR, Message_LF, _noProtocolModel.HostEncoding);
 
-            Model.NoProtocol.CycleMode_Period = Message_Period_ms;
+            _noProtocolModel.CycleMode_Period = Message_Period_ms;
 
             var info = new CycleModeParameters(
                 messageBytes: buffer,
@@ -240,7 +242,7 @@ namespace ViewModels.NoProtocol
                 response_NextLine_Enable: Response_NextLine
                 );
 
-            await Model.NoProtocol.CycleMode_Start(info);
+            await _noProtocolModel.CycleMode_Start(info);
 
             Button_Content = Button_Content_Stop;
             IsStart = true;

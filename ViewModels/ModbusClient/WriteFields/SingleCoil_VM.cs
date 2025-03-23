@@ -1,5 +1,5 @@
-﻿using Core.Models.Settings.DataTypes;
-using ReactiveUI;
+﻿using ReactiveUI;
+using Core.Models.Settings.DataTypes;
 using ViewModels.ModbusClient.DataTypes;
 using ViewModels.ModbusClient.WriteFields.DataTypes;
 

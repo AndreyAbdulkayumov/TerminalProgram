@@ -1,21 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Text;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
 using Core.Models.Settings;
+using Core.Models.Settings.FileTypes;
 using MessageBox_Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
-using System.Text;
-using Core.Models.Settings.FileTypes;
 using ViewModels.Helpers.FloatNumber;
+using ViewModels.Settings.MessageBusTypes;
+using Services.Interfaces;
 
 namespace ViewModels.Settings
 {
     public class Settings_VM : ReactiveObject
     {
-        public event EventHandler<EventArgs>? _settingsFileChanged;
-
         private ObservableCollection<string> _presets = new ObservableCollection<string>();
 
         public ObservableCollection<string> Presets
@@ -39,9 +39,9 @@ namespace ViewModels.Settings
             get => _tab_Connection_VM;
         }
 
-        private readonly NoProtocol_VM _tab_NoProtocol_VM;
+        private readonly Settings_NoProtocol_VM _tab_NoProtocol_VM;
 
-        public NoProtocol_VM Tab_NoProtocol_VM
+        public Settings_NoProtocol_VM Tab_NoProtocol_VM
         {
             get => _tab_NoProtocol_VM;
         }
@@ -60,51 +60,29 @@ namespace ViewModels.Settings
             get => _tab_AppSettings_VM;
         }
 
-        private readonly ReactiveObject[] _allTabs;
-
-        public ReactiveCommand<Unit, Unit> Command_Loaded { get; }
-
         public ReactiveCommand<Unit, Unit> Command_File_AddNew { get; }
         public ReactiveCommand<Unit, Unit> Command_File_AddExisting { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Delete { get; }
         public ReactiveCommand<Unit, Unit> Command_File_Save { get; }
 
-        private readonly IMessageBox _messageBox;
+        private readonly IFileSystemService _fileSystemService;
+        private readonly IOpenChildWindowService _openChildWindowService;
+        private readonly IMessageBoxSettings _messageBox;
 
-        private readonly Func<string, Task<string?>> Get_FilePath;
-        private readonly Func<Task<string?>> Get_NewFileName;
+        private readonly Model_Settings _settingsModel;
 
-        private readonly Model_Settings SettingsFile;
-
-
-        public Settings_VM(
-            IMessageBox messageBox,
-            Func<string, Task<string?>> get_FilePath_Handler,
-            Func<Task<string?>> get_NewFileName_Handler,
-            Action set_Dark_Theme_Handler,
-            Action set_Light_Theme_Handler
-            )
+        public Settings_VM(IFileSystemService fileSystemService, IOpenChildWindowService openChildWindowService, IMessageBoxSettings messageBox,
+            Model_Settings settingsModel,
+            Connection_VM connectionVM, Settings_NoProtocol_VM settingsNoProtocolVM, Modbus_VM modbusVM, AppSettings_VM appSettingsVM)
         {
-            _messageBox = messageBox;
-            Get_FilePath = get_FilePath_Handler;
-            Get_NewFileName = get_NewFileName_Handler;
-
-            SettingsFile = Model_Settings.Model;
-
-            _tab_Connection_VM = new Connection_VM(this, messageBox);
-            _tab_NoProtocol_VM = new NoProtocol_VM();
-            _tab_Modbus_VM = new Modbus_VM();
-            _tab_AppSettings_VM = new AppSettings_VM(set_Dark_Theme_Handler, set_Light_Theme_Handler, messageBox);
-
-            _allTabs = [
-                Tab_Connection_VM.Connection_SerialPort_VM,
-                Tab_Connection_VM.Connection_Ethernet_VM,
-                Tab_NoProtocol_VM,
-                Tab_Modbus_VM,
-                Tab_AppSettings_VM
-            ];
-
-            Command_Loaded = ReactiveCommand.Create(Loaded_EventHandler);
+            _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+            _openChildWindowService = openChildWindowService ?? throw new ArgumentNullException(nameof(openChildWindowService));
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+            _tab_Connection_VM = connectionVM ?? throw new ArgumentNullException(nameof(connectionVM));
+            _tab_NoProtocol_VM = settingsNoProtocolVM ?? throw new ArgumentNullException(nameof(settingsNoProtocolVM));
+            _tab_Modbus_VM = modbusVM ?? throw new ArgumentNullException(nameof(modbusVM));
+            _tab_AppSettings_VM = appSettingsVM ?? throw new ArgumentNullException(nameof(appSettingsVM));          
 
             Command_File_AddNew = ReactiveCommand.CreateFromTask(File_CreateNew_Handler);
             Command_File_AddExisting = ReactiveCommand.CreateFromTask(File_AddExisting_Handler);
@@ -119,7 +97,7 @@ namespace ViewModels.Settings
 
         private void UpdateUI(string fileName)
         {
-            DeviceData settings = SettingsFile.ReadPreset(fileName);
+            DeviceData settings = _settingsModel.ReadPreset(fileName);
 
             Tab_NoProtocol_VM.SelectedEncoding = settings.GlobalEncoding ?? DeviceData.GlobalEncoding_Default;
 
@@ -139,19 +117,29 @@ namespace ViewModels.Settings
                     break;
             }
 
-            _settingsFileChanged?.Invoke(this, new EventArgs());
+            Tab_Connection_VM.SettingsFileChanged();
         }
 
-        private void Loaded_EventHandler()
+        public void WindowLoaded()
         {
             UpdateListOfPresets();
 
-            SelectedPreset = Presets.Single(x => x == CommonUI_VM.SettingsDocument);
+            SelectedPreset = Presets.Single(x => x == MainWindow_VM.SettingsDocument);
+        }
+
+        public void WindowClosed()
+        {
+            MessageBus.Current.SendMessage(new PresetUpdateTriggerMessage());
+        }
+
+        public void Enter_KeyDownHandler()
+        {
+            File_Save_Handler();
         }
 
         private void UpdateListOfPresets()
         {
-            string[] fileNames = SettingsFile.FindFilesOfPresets();
+            string[] fileNames = _settingsModel.FindFilesOfPresets();
 
             Presets.Clear();
 
@@ -163,11 +151,11 @@ namespace ViewModels.Settings
 
         private async Task File_CreateNew_Handler()
         {
-            string? fileName = await Get_NewFileName();
+            string? fileName = await _openChildWindowService.UserInput();
 
             if (!string.IsNullOrEmpty(fileName))
             {
-                SettingsFile.SavePreset(fileName, DeviceData.GetDefault());
+                _settingsModel.SavePreset(fileName, DeviceData.GetDefault());
 
                 UpdateListOfPresets();
 
@@ -179,14 +167,14 @@ namespace ViewModels.Settings
         {
             try
             {
-                string? filePath = await Get_FilePath.Invoke("Добавление уже существующего файла настроек");
+                string? filePath = await _fileSystemService.GetFilePath("Добавление уже существующего файла настроек", "Файл настроек", ["*.json"]);
 
                 if (string.IsNullOrEmpty(filePath))
                 {
                     return;
                 }
 
-                string fileName = SettingsFile.CopyInPresetFolderFrom(filePath);
+                string fileName = _settingsModel.CopyInPresetFolderFrom(filePath);
 
                 UpdateListOfPresets();
 
@@ -216,7 +204,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                SettingsFile.DeletePreset(SelectedPreset);
+                _settingsModel.DeletePreset(SelectedPreset);
 
                 UpdateListOfPresets();
 
@@ -233,9 +221,7 @@ namespace ViewModels.Settings
         {
             try
             {
-                string connectionType = Tab_Connection_VM.Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
-
-                string? validationMessage = CheckTabFields(connectionType);
+                string? validationMessage = CheckTabFields();
 
                 if (!string.IsNullOrEmpty(validationMessage))
                 {
@@ -264,26 +250,18 @@ namespace ViewModels.Settings
                         break;
                 }
 
+                var connectionType = Tab_Connection_VM.Selected_SerialPort ? DeviceData.ConnectionName_SerialPort : DeviceData.ConnectionName_Ethernet;
+
+                var SerialPortSettings = _tab_Connection_VM.GetSerialPortClientSettings();
+                var IpSettings = _tab_Connection_VM.GetIpClientSettings();
+
                 var data = new DeviceData()
                 {
                     TypeOfConnection = connectionType,
 
-                    Connection_SerialPort = new SerialPort_Info()
-                    {
-                        Port = Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort,
-                        BaudRate = Tab_Connection_VM.Connection_SerialPort_VM.Selected_BaudRate,
-                        BaudRate_IsCustom = Tab_Connection_VM.Connection_SerialPort_VM.BaudRate_IsCustom,
-                        BaudRate_Custom = Tab_Connection_VM.Connection_SerialPort_VM.Custom_BaudRate_Value,
-                        Parity = Tab_Connection_VM.Connection_SerialPort_VM.Selected_Parity,
-                        DataBits = Tab_Connection_VM.Connection_SerialPort_VM.Selected_DataBits,
-                        StopBits = Tab_Connection_VM.Connection_SerialPort_VM.Selected_StopBits
-                    },
+                    Connection_SerialPort = SerialPortSettings,
 
-                    Connection_IP = new IP_Info()
-                    {
-                        IP_Address = Tab_Connection_VM.Connection_Ethernet_VM.IP_Address,
-                        Port = Tab_Connection_VM.Connection_Ethernet_VM.Port
-                    },
+                    Connection_IP = IpSettings,
 
                     GlobalEncoding = Tab_NoProtocol_VM.SelectedEncoding,
 
@@ -292,16 +270,11 @@ namespace ViewModels.Settings
                     FloatNumberFormat = floatFormat,                    
                 };
 
-                SettingsFile.SavePreset(SelectedPreset, data);
+                _settingsModel.SavePreset(SelectedPreset, data);
 
-                CommonUI_VM.SettingsDocument = SelectedPreset;
+                MainWindow_VM.SettingsDocument = SelectedPreset;
 
-                if (string.IsNullOrEmpty(Tab_Connection_VM.Connection_SerialPort_VM.Selected_SerialPort))
-                {
-                    Tab_Connection_VM.Connection_SerialPort_VM.Message_PortNotFound_IsVisible = true;
-                }
-
-                _tab_Connection_VM.Connection_SerialPort_VM.ReScan_SerialPorts(data.Connection_SerialPort);
+                _tab_Connection_VM.PresetSaveHandler(data.Connection_SerialPort);
 
                 _messageBox.Show("Настройки успешно сохранены!", MessageType.Information);
             }
@@ -312,11 +285,16 @@ namespace ViewModels.Settings
             }
         }
 
-        private string? CheckTabFields(string connectionType)
+        private string? CheckTabFields()
         {
             StringBuilder message = new StringBuilder();
 
-            IEnumerable<ReactiveObject> neededTabs = GetNeededTabs(connectionType);
+            IEnumerable<ReactiveObject> neededTabs = [
+                Tab_Connection_VM.GetActiveTab(),
+                Tab_NoProtocol_VM,
+                Tab_Modbus_VM,
+                Tab_AppSettings_VM
+            ];
 
             foreach (var tab in neededTabs)
             {
@@ -333,26 +311,11 @@ namespace ViewModels.Settings
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 
             return null;
-        }
-
-        private IEnumerable<ReactiveObject> GetNeededTabs(string connectionType)
-        {
-            switch (connectionType)
-            {
-                case DeviceData.ConnectionName_SerialPort:
-                    return _allTabs.Where(tab => tab is not Connection_Ethernet_VM);
-
-                case DeviceData.ConnectionName_Ethernet:
-                    return _allTabs.Where(tab => tab is not Connection_SerialPort_VM);
-
-                default:
-                    return _allTabs;
-            }
         }
     }
 }

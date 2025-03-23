@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d"
-        x:Class="TerminalProgram.Views.AboutWindow"
+        x:Class="TerminalProgramBase.Views.AboutWindow"
         Title="О программе"
 		Width="400" Height="350"
 		Background="Transparent"
@@ -74,7 +74,7 @@
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
 				<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
-						   x:Name="TextBlock_App_Version" Text="0.0.0"
+						   Text="{Binding AppVersion, Mode=OneWay}"
 						   Foreground="{DynamicResource App_Color_Text}"
 						   FontSize="16"
 						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -109,7 +109,7 @@
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-						<TextBlock x:Name="TextBlock_Runtime_Version" Text="0.0.0"
+						<TextBlock Text="{Binding RuntimeVersion, Mode=OneWay}"
 								   Margin="200,0,0,0"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="16"
@@ -125,7 +125,7 @@
 								   FontSize="16"
 								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
-						<TextBlock x:Name="TextBlock_GUI_Version" Text="0.0.0"
+						<TextBlock Text="{Binding AvaloniaVersion, Mode=OneWay}"
 								   Margin="200,0,0,0"
 								   Foreground="{DynamicResource App_Color_Text}"
 								   FontSize="16"

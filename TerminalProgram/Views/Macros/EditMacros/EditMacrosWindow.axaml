@@ -1,0 +1,199 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros;assembly=TerminalProgramBase"
+		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels"
+		xmlns:EditCommandViews="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;assembly=TerminalProgramBase"
+        xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        x:Class="TerminalProgramBase.Views.Macros.EditMacros.EditMacrosWindow"
+        Title="Редактирование макроса"
+		Width="960" Height="550"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
+	</Window.Styles>
+
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocolCommand_VM}">
+			<EditCommandViews:NoProtocolCommand/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ModbusCommand_VM}">
+			<EditCommandViews:ModbusCommand/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
+	
+	<Border Background="{DynamicResource App_Back_Color_Background}">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Border x:Name="Border_Workspace" Grid.Row="1">
+
+				<Grid>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="80"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="120"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
+
+					<Border Grid.Row="0" Grid.Column="0"
+							Classes="AppField">
+
+						<StackPanel Orientation="Horizontal" Spacing="10"
+									Margin="10">
+							
+							<Button Classes="MenuToolButton"
+									ToolTip.Tip="Сохранить макрос"
+									Command="{Binding Command_SaveMacros}">
+
+								<Icons:MaterialIcon Kind="ContentSave"/>
+
+							</Button>
+
+							<Button Classes="MenuToolButton"
+									ToolTip.Tip="Запустить макрос"
+									Command="{Binding Command_RunMacros}">
+
+								<Icons:MaterialIcon Kind="PlayOutline"/>
+
+							</Button>
+							
+						</StackPanel>
+
+					</Border>
+
+					<Border Grid.Row="0" Grid.Column="1"
+							Classes="AppField">
+
+						<Grid>
+
+							<TextBlock Text="Имя"
+									   FontSize="16"
+									   Margin="10,0,0,0"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<TextBox Classes="InputField"
+									 Text="{Binding MacrosName, Mode=TwoWay}"
+									 Margin="55,0,10,0"
+									 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+						</Grid>
+
+					</Border>
+
+					<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="1*"/>
+						</Grid.ColumnDefinitions>
+
+						<Border Grid.Column="0" Classes="AppField">
+
+							<ScrollViewer>
+
+								<StackPanel Orientation="Vertical" Spacing="20"
+											Margin="10">
+
+									<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
+												  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Orientation="Vertical" Spacing="5"/>
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+
+										<ItemsControl.ItemTemplate>
+
+											<DataTemplate>
+												<local:CommandItem/>
+											</DataTemplate>
+
+										</ItemsControl.ItemTemplate>
+
+									</ItemsControl>
+
+									<Button Content="Добавить команду"
+											FontSize="14"
+											HorizontalAlignment="Center"
+											Command="{Binding Command_AddCommand}"/>
+
+								</StackPanel>
+
+							</ScrollViewer>
+
+						</Border>						
+
+						<Border Grid.Column="1" Classes="AppField">
+
+							<Grid>
+								
+								<ContentControl Content="{Binding EditCommandViewModel}"/>
+								
+								<TextBlock Text="{Binding EmptyCommandMessage, Mode=OneTime}"
+										   IsVisible="{Binding !IsEdit, Mode=OneWay}"
+										   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+							</Grid>
+							
+						</Border>
+
+					</Grid>
+
+				</Grid>
+
+			</Border>
+
+		</Grid>
+
+	</Border>
+	
+</Window>

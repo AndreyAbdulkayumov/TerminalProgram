@@ -3,10 +3,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-		xmlns:Tabs="clr-namespace:TerminalProgram.Views.Settings.Tabs;assembly=TerminalProgramBase"
+		xmlns:Tabs="clr-namespace:TerminalProgramBase.Views.Settings.Tabs;assembly=TerminalProgramBase"
 		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
         mc:Ignorable="d"
-        x:Class="TerminalProgram.Views.Settings.SettingsWindow"
+        x:Class="TerminalProgramBase.Views.Settings.SettingsWindow"
 		x:DataType="ViewModels:Settings_VM"
         Title="Настройки"
 		Width="540" Height="530"
@@ -16,9 +16,7 @@
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="None"
-		Loaded="Window_Loaded"
-		KeyDown="Window_KeyDown">
+		SystemDecorations="None">
 
 	<Window.Styles>
 

@@ -2,18 +2,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:local="clr-namespace:TerminalProgram.Views.Macros;assembly=TerminalProgramBase"
+		xmlns:local="clr-namespace:TerminalProgramBase.Views.Macros;assembly=TerminalProgramBase"
 		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
-		Width="1000" Height="600"
-        x:Class="TerminalProgram.Views.Macros.MacrosWindow"
+		Width="1000" Height="620"
+        x:Class="TerminalProgramBase.Views.Macros.MacrosWindow"
 		Title="Макросы"
 		Background="Transparent"
 		WindowStartupLocation="CenterOwner"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly"
-		Closing="Window_Closing">
+		SystemDecorations="BorderOnly">
 
 	<Window.Styles>
 

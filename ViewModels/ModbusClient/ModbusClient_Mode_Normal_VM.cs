@@ -1,14 +1,17 @@
 ﻿using Core.Clients.DataTypes;
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
+using Core.Models.Settings;
 using MessageBox_Core;
 using ReactiveUI;
+using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using ViewModels.ModbusClient.DataTypes;
+using ViewModels.ModbusClient.MessageBusTypes;
 using ViewModels.ModbusClient.WriteFields;
 using ViewModels.ModbusClient.WriteFields.DataTypes;
 using ViewModels.Validation;
@@ -152,31 +155,26 @@ namespace ViewModels.ModbusClient
         private ushort _selectedAddress = 0;
         private ushort _selectedNumberOfRegisters = 1;
 
-        private readonly ConnectedHost Model;
-
-        private readonly IMessageBox _messageBox;
-
         private readonly IWriteField_VM WriteField_MultipleCoils_VM;
         private readonly IWriteField_VM WriteField_MultipleRegisters_VM;
         private readonly IWriteField_VM WriteField_SingleCoil_VM;
         private readonly IWriteField_VM WriteField_SingleRegister_VM;
 
+        private readonly IMessageBoxMainWindow _messageBox;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_Settings _settingsModel;
 
-        public ModbusClient_Mode_Normal_VM(
-            IMessageBox messageBox,
-            Func<byte, ushort, ModbusWriteFunction, byte[]?, int, bool, Task> modbus_Write,
-            Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
-            )
+        public ModbusClient_Mode_Normal_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Settings settingsModel)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
-            Model = ConnectedHost.Model;
-
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             WriteField_MultipleCoils_VM = new MultipleCoils_VM();
-            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false);
+            WriteField_MultipleRegisters_VM = new MultipleRegisters_VM(false, _settingsModel);
             WriteField_SingleCoil_VM = new SingleCoil_VM();
             WriteField_SingleRegister_VM = new SingleRegister_VM(); 
 
@@ -211,7 +209,7 @@ namespace ViewModels.ModbusClient
             //
             /****************************************************/
 
-            Command_Read = ReactiveCommand.CreateFromTask(async () =>
+            Command_Read = ReactiveCommand.Create(() =>
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
@@ -241,11 +239,13 @@ namespace ViewModels.ModbusClient
 
                 ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-                await modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
+                MessageBus.Current.SendMessage(
+                    new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+                    );
             });
             Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
-            Command_Write = ReactiveCommand.CreateFromTask(async () =>
+            Command_Write = ReactiveCommand.Create(() =>
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
@@ -275,9 +275,11 @@ namespace ViewModels.ModbusClient
 
                 ModbusWriteFunction writeFunction = Function.AllWriteFunctions.Single(x => x.DisplayedName == SelectedWriteFunction);
 
-                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();                               
+                WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
 
-                await modbus_Write(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable);
+                MessageBus.Current.SendMessage(
+                    new ModbusWriteMessage(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
+                    );
             });
             Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
 
@@ -392,7 +394,7 @@ namespace ViewModels.ModbusClient
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 
@@ -417,7 +419,7 @@ namespace ViewModels.ModbusClient
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 

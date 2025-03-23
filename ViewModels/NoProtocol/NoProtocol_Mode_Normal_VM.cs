@@ -1,10 +1,12 @@
-﻿using Core.Clients.DataTypes;
-using Core.Models;
-using MessageBox_Core;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
+using MessageBox_Core;
+using Core.Clients.DataTypes;
+using Core.Models;
 using ViewModels.Helpers;
+using Services.Interfaces;
+using Core.Models.NoProtocol;
 
 namespace ViewModels.NoProtocol
 {
@@ -51,32 +53,33 @@ namespace ViewModels.NoProtocol
         }
 
         public ReactiveCommand<Unit, Unit> Command_Send { get; }
-                
-        private readonly ConnectedHost Model;
 
-        private readonly IMessageBox _messageBox;
+        private readonly IMessageBoxMainWindow _messageBox;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_NoProtocol _noProtocolModel;
+               
 
-        public NoProtocol_Mode_Normal_VM(IMessageBox messageBox)
+        public NoProtocol_Mode_Normal_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _noProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
 
-            Model = ConnectedHost.Model;
-
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
             Command_Send = ReactiveCommand.CreateFromTask(async () =>
             {
-                byte[] buffer = NoProtocol_VM.CreateSendBuffer(IsBytesSend, TX_String, CR_Enable, LF_Enable, ConnectedHost.Model.NoProtocol.HostEncoding);
+                byte[] buffer = NoProtocol_VM.CreateSendBuffer(IsBytesSend, TX_String, CR_Enable, LF_Enable, _noProtocolModel.HostEncoding);
 
-                await Model.NoProtocol.SendBytes(buffer);
+                await _noProtocolModel.SendBytes(buffer);
             });
             Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
 
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
                 {
-                    TX_String = StringByteConverter.GetMessageString(TX_String, IsBytes, ConnectedHost.Model.NoProtocol.HostEncoding);
+                    TX_String = StringByteConverter.GetMessageString(TX_String, IsBytes, _noProtocolModel.HostEncoding);
                 });
         }
 

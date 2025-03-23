@@ -1,14 +1,17 @@
-﻿using Core.Models;
-using ReactiveUI;
+﻿using ReactiveUI;
+using System.Text;
 using System.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive.Linq;
 using MessageBox_Core;
 using ViewModels.Validation;
-using System.Text;
+using ViewModels.ModbusClient.MessageBusTypes;
+using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Clients.DataTypes;
+using Services.Interfaces;
+using Core.Models.Modbus;
 
 namespace ViewModels.ModbusClient
 {
@@ -142,10 +145,6 @@ namespace ViewModels.ModbusClient
 
         private bool _isStart = false;
 
-        private readonly ConnectedHost Model;
-
-        private readonly IMessageBox _messageBox;
-
         private NumberStyles _numberViewStyle;
 
         private byte _selectedSlaveID = 0;
@@ -157,26 +156,22 @@ namespace ViewModels.ModbusClient
         // Это время нужно для совместимости с методом Receive() из класса SerialPortClient
         private const int TimeForReadHandler = 100;
 
-        private readonly Func<byte, ushort, ModbusReadFunction, int, bool, Task> Modbus_Read;      
+        private readonly IMessageBoxMainWindow _messageBox;
+        private readonly ConnectedHost _connectedHostModel;
+        private readonly Model_Modbus _modbusModel;
 
-
-        public ModbusClient_Mode_Cycle_VM(
-            IMessageBox messageBox,
-            Func<byte, ushort, ModbusReadFunction, int, bool, Task> modbus_Read
-            )
+        public ModbusClient_Mode_Cycle_VM(IMessageBoxMainWindow messageBox, ConnectedHost connectedHostModel, Model_Modbus modbusModel)
         {
-            _messageBox = messageBox;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
+            _modbusModel = modbusModel ?? throw new ArgumentNullException(nameof(modbusModel));
 
-            Modbus_Read = modbus_Read;
+            _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
+            _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
 
-            Model = ConnectedHost.Model;
+            _modbusModel.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Model.DeviceIsConnect += Model_DeviceIsConnect;
-            Model.DeviceIsDisconnected += Model_DeviceIsDisconnected;
-
-            Model.Modbus.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
-
-            Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
+            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
                 if (_isStart)
                 {
@@ -184,7 +179,7 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                await StartPolling();
+                StartPolling();
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
@@ -263,8 +258,8 @@ namespace ViewModels.ModbusClient
 
         public void SourceWindowClosingAction()
         {
-            Model.Modbus.CycleMode_Stop();
-            Model.Modbus.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
+            _modbusModel.CycleMode_Stop();
+            _modbusModel.Model_ErrorInCycleMode -= Modbus_Model_ErrorInCycleMode;
         }
 
         private void Model_DeviceIsConnect(object? sender, IConnection? e)
@@ -350,7 +345,7 @@ namespace ViewModels.ModbusClient
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
-        private async Task StartPolling()
+        private void StartPolling()
         {
             if (string.IsNullOrEmpty(SlaveID))
             {
@@ -378,21 +373,23 @@ namespace ViewModels.ModbusClient
                 return;
             }
 
-            if (_selectedPeriod < Model.Host_ReadTimeout + TimeForReadHandler)
+            if (_selectedPeriod < _connectedHostModel.Host_ReadTimeout + TimeForReadHandler)
             {
                 _messageBox.Show("Значение периода опроса не может быть меньше суммы таймаута чтения и " +
-                    TimeForReadHandler + " мс. (" + Model.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
-                    "Таймаут чтения: " + Model.Host_ReadTimeout + " мс.", MessageType.Warning);
+                    TimeForReadHandler + " мс. (" + _connectedHostModel.Host_ReadTimeout + " мс. + " + TimeForReadHandler + "мс.)\n" +
+                    "Таймаут чтения: " + _connectedHostModel.Host_ReadTimeout + " мс.", MessageType.Warning);
 
                 return;
             }
 
             ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
-            Model.Modbus.CycleMode_Period = _selectedPeriod;
-            await Model.Modbus.CycleMode_Start(async () =>
+            _modbusModel.CycleMode_Period = _selectedPeriod;
+            _modbusModel.CycleMode_Start(() =>
             {
-                await Modbus_Read(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable);
+                MessageBus.Current.SendMessage(
+                    new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+                    );
             });
 
             Button_Content = Button_Content_Stop;
@@ -401,7 +398,7 @@ namespace ViewModels.ModbusClient
 
         public void StopPolling()
         {
-            Model.Modbus.CycleMode_Stop();
+            _modbusModel.CycleMode_Stop();
 
             Button_Content = Button_Content_Start;
             _isStart = false;
@@ -425,7 +422,7 @@ namespace ViewModels.ModbusClient
 
             if (message.Length > 0)
             {
-                message.Insert(0, "Ошибки валидации\n\n");
+                message.Insert(0, "Ошибки валидации:\n\n");
                 return message.ToString().TrimEnd('\r', '\n');
             }
 

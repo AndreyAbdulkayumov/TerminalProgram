@@ -1,13 +1,14 @@
-﻿using Core.Models.Settings;
-using ReactiveUI;
+﻿using ReactiveUI;
 using MessageBox_Core;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Reactive;
 using System.Reactive.Linq;
-using ViewModels.Validation;
 using System.Globalization;
+using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
+using ViewModels.Validation;
+using Services.Interfaces;
 
 namespace ViewModels.Settings.Tabs
 {
@@ -170,26 +171,22 @@ namespace ViewModels.Settings.Tabs
         public ReactiveCommand<Unit, Unit> Command_ReScan_SerialPorts { get; }
 
         private readonly IMessageBox _messageBox;
+        private readonly Model_Settings _settingsModel;
 
-        private readonly Model_Settings SettingsFile;
 
-
-        public Connection_SerialPort_VM(Settings_VM main_VM, IMessageBox messageBox)
+        public Connection_SerialPort_VM(IMessageBoxSettings messageBox, Model_Settings settingsModel)
         {
-            main_VM._settingsFileChanged += Main_VM_SettingsFileChanged;
-
-            _messageBox = messageBox;
-
-            SettingsFile = Model_Settings.Model;
+            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             Command_ReScan_SerialPorts = ReactiveCommand.Create(() =>
             {
-                if (SettingsFile.Settings == null)
+                if (_settingsModel.Settings == null)
                 {
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                ReScan_SerialPorts(SettingsFile.Settings.Connection_SerialPort);
+                ReScan_SerialPorts(_settingsModel.Settings.Connection_SerialPort);
             });
 
             Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
@@ -207,18 +204,18 @@ namespace ViewModels.Settings.Tabs
             }
         }
 
-        private void Main_VM_SettingsFileChanged(object? sender, EventArgs e)
+        public void SettingsFileChanged()
         {
             try
             {
-                if (SettingsFile.Settings == null)
+                if (_settingsModel.Settings == null)
                 {
                     throw new Exception("Не инициализирован файл настроек.");
                 }
 
-                ReScan_SerialPorts(SettingsFile.Settings.Connection_SerialPort);
+                ReScan_SerialPorts(_settingsModel.Settings.Connection_SerialPort);
 
-                if (SettingsFile.Settings.Connection_SerialPort == null)
+                if (_settingsModel.Settings.Connection_SerialPort == null)
                 {
                     Selected_SerialPort = null;
                     Message_PortNotFound = "Порт не задан";
@@ -239,15 +236,15 @@ namespace ViewModels.Settings.Tabs
                     return;
                 }
 
-                Selected_BaudRate = SettingsFile.Settings.Connection_SerialPort.BaudRate;
-                BaudRate_IsCustom = SettingsFile.Settings.Connection_SerialPort.BaudRate_IsCustom;
-                Custom_BaudRate_Value = SettingsFile.Settings.Connection_SerialPort.BaudRate_Custom;
+                Selected_BaudRate = _settingsModel.Settings.Connection_SerialPort.BaudRate;
+                BaudRate_IsCustom = _settingsModel.Settings.Connection_SerialPort.BaudRate_IsCustom;
+                Custom_BaudRate_Value = _settingsModel.Settings.Connection_SerialPort.BaudRate_Custom;
 
-                Selected_Parity = SettingsFile.Settings.Connection_SerialPort.Parity;
+                Selected_Parity = _settingsModel.Settings.Connection_SerialPort.Parity;
 
-                Selected_DataBits = SettingsFile.Settings.Connection_SerialPort.DataBits;
+                Selected_DataBits = _settingsModel.Settings.Connection_SerialPort.DataBits;
 
-                Selected_StopBits = SettingsFile.Settings.Connection_SerialPort.StopBits;
+                Selected_StopBits = _settingsModel.Settings.Connection_SerialPort.StopBits;
             }
 
             catch (Exception error)

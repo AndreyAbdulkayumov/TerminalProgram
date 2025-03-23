@@ -21,18 +21,15 @@ namespace Core.Models.Modbus
         private readonly System.Timers.Timer CycleModeTimer;
         private const double IntervalDefault = 100;
 
-        private Func<Task>? _readRegisterInCycleMode;
+        private Action? _readRegisterInCycleMode;
 
-        public Model_Modbus(ConnectedHost host)
+        public Model_Modbus()
         {
-            host.DeviceIsConnect += Host_DeviceIsConnect;
-            host.DeviceIsDisconnected += Host_DeviceIsDisconnected;
-
             CycleModeTimer = new System.Timers.Timer(IntervalDefault);
             CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
         }
 
-        private void Host_DeviceIsConnect(object? sender, IConnection? e)
+        public void Host_DeviceIsConnect(object? sender, IConnection? e)
         {
             if (e != null && e.IsConnected)
             {
@@ -40,7 +37,7 @@ namespace Core.Models.Modbus
             }
         }
 
-        private void Host_DeviceIsDisconnected(object? sender, IConnection? e)
+        public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
         {
             _device = null;
         }
@@ -248,11 +245,11 @@ namespace Core.Models.Modbus
             return Result;
         }
 
-        public async Task CycleMode_Start(Func<Task> readRegister_Handler)
+        public void CycleMode_Start(Action readRegister_Handler)
         {
             _readRegisterInCycleMode = readRegister_Handler;
 
-            await _readRegisterInCycleMode.Invoke();
+            _readRegisterInCycleMode.Invoke();
 
             CycleModeTimer.Start();
         }
@@ -262,13 +259,13 @@ namespace Core.Models.Modbus
             CycleModeTimer.Stop();
         }
 
-        private async void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             try
             {
                 if (_readRegisterInCycleMode != null)
                 {
-                    await _readRegisterInCycleMode.Invoke(); 
+                    _readRegisterInCycleMode.Invoke(); 
                 }                
             }
 
