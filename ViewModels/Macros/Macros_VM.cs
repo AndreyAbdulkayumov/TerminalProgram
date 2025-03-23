@@ -268,9 +268,8 @@ namespace ViewModels.Macros
             string modeName = GetModeName(workMode);
 
             if (await _messageBox.ShowYesNoDialog(
-                "Внимание!!!\n\n" +
-                $"При импорте файла макросов для режима \"{modeName}\" старые макросы будут удалены без возможности восстановления.\n\n" +
-                "Продолжить?",
+                $"Внимание!!!\n\n" +
+                $"При импорте файла макросов для режима \"{modeName}\" старые макросы будут удалены без возможности восстановления. Продолжить?",
                 MessageType.Warning) != MessageBoxResult.Yes)
             {
                 return;
