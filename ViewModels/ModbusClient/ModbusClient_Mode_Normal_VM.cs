@@ -209,7 +209,7 @@ namespace ViewModels.ModbusClient
             //
             /****************************************************/
 
-            Command_Read = ReactiveCommand.CreateFromTask(async () =>
+            Command_Read = ReactiveCommand.Create(() =>
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {
@@ -245,7 +245,7 @@ namespace ViewModels.ModbusClient
             });
             Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
 
-            Command_Write = ReactiveCommand.CreateFromTask(async () =>
+            Command_Write = ReactiveCommand.Create(() =>
             {
                 if (string.IsNullOrEmpty(SlaveID))
                 {

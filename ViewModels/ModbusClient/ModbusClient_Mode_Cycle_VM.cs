@@ -171,7 +171,7 @@ namespace ViewModels.ModbusClient
 
             _modbusModel.Model_ErrorInCycleMode += Modbus_Model_ErrorInCycleMode;
 
-            Command_Start_Stop_Polling = ReactiveCommand.CreateFromTask(async () =>
+            Command_Start_Stop_Polling = ReactiveCommand.Create(() =>
             {
                 if (_isStart)
                 {
@@ -179,7 +179,7 @@ namespace ViewModels.ModbusClient
                     return;
                 }
 
-                await StartPolling();
+                StartPolling();
             });
             Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
 
@@ -345,7 +345,7 @@ namespace ViewModels.ModbusClient
             ChangeNumberStyleInErrors(nameof(Address), NumberStyles.Number);
         }
 
-        private async Task StartPolling()
+        private void StartPolling()
         {
             if (string.IsNullOrEmpty(SlaveID))
             {
