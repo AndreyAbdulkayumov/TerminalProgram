@@ -36,9 +36,17 @@
 			<Setter Property="BorderBrush" Value="{DynamicResource TextInputField_Color_BorderBrush_Error}"/>
 			<Setter Property="CornerRadius" Value="4"/>
 		</Style>
+		
+		<!-- Watermark -->
+		
+		<Style Selector="^ DataValidationErrors ContentPresenter TextBlock">
+			<Setter Property="Foreground" Value="Silver"/>
+		</Style>
+		
+		<!-- Error messages -->
 
-		<Style Selector="^ DataValidationErrors TextBlock">
-			<Setter Property="Foreground" Value="{DynamicResource TextInputField_Color_ValidationMessage}"/>			
+		<Style Selector="^ DataValidationErrors ContentControl TextBlock">
+			<Setter Property="Foreground" Value="{DynamicResource TextInputField_Color_ValidationMessage}"/>
 			<Setter Property="FontSize" Value="14"/>
 			<Setter Property="HorizontalAlignment" Value="Center"/>
 		</Style>

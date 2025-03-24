@@ -7,7 +7,7 @@
 	
 	<Grid>
 
-		<Border Background="#587C8D"
+		<Border Background="{DynamicResource Macros_Edit_CommandItem_Selected}"
 				CornerRadius="6"
 				IsVisible="{Binding IsEdit, Mode=OneWay}"/>
 
