@@ -1,3 +1,6 @@
+## *Помощь проекту*
+Автор будет благодарен за любую поддержку. Реквизиты указаны по [ссылке](https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html).
+
 ## *Статьи на Хабр*
 
 [Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 3](https://habr.com/ru/articles/871788/)
@@ -5,6 +8,10 @@
 [Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 2](https://habr.com/ru/articles/854824/)
 
 [Терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 1](https://habr.com/ru/articles/795387/)
+
+## *История версий*
+
+Ссылки на скачивание любой публичной версии приложения вы можете найти на [этой странице](https://andreyabdulkayumov.github.io/TerminalProgram_Website/downloads.html).
 
 ## *Терминальная программа*
 Начиная с версии 3.0.0 в проекте используется Avalonia UI, в более ранних версиях WPF.
