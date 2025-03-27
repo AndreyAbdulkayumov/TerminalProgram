@@ -65,7 +65,7 @@ namespace Core.Tests.Modbus
                 PackageNumber:     0,
                 SlaveID:           13,
                 Address:           96,
-                WriteData:         0x0056
+                WriteData:         0xFF00
                 );
         }
 
@@ -84,20 +84,18 @@ namespace Core.Tests.Modbus
         [Fact]
         public void Test_Func_0F()
         {
-            CheckMultiplyWriteFunction(
-                SelectedFunction:  Function.ForceMultipleCoils,
-                PackageNumber:     0,
-                SlaveID:           32,
-                Address:           73,
-                WriteData:         new UInt16[] { 0x0000, 0xFF00, 0xFF00 }
+            CheckMultiplyWriteCoilsFunction(
+                packageNumber:     0,
+                slaveID:           32,
+                address:           73,
+                bitArray:          new int[] { 0, 0, 1, 1, 1, 0, 1 }
                 );
         }
 
         [Fact]
         public void Test_Func_16()
         {
-            CheckMultiplyWriteFunction(
-                SelectedFunction:  Function.PresetMultipleRegisters,
+            CheckMultiplyWriteRegistersFunction(
                 PackageNumber:     0,
                 SlaveID:           18,
                 Address:           63,
@@ -191,9 +189,56 @@ namespace Core.Tests.Modbus
             Assert.Equal(BytesArray_Expected, BytesArray_Actual);
         }
 
-        private void CheckMultiplyWriteFunction(ModbusWriteFunction SelectedFunction, UInt16 PackageNumber,
-            byte SlaveID, UInt16 Address, UInt16[] WriteData)
+        private void CheckMultiplyWriteCoilsFunction(UInt16 packageNumber, byte slaveID, UInt16 address, int[] bitArray)
         {
+            ModbusWriteFunction selectedFunction = Function.ForceMultipleCoils;
+
+            (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
+
+            MessageData data = new WriteTypeMessage(
+                slaveID,
+                address,
+                writeBytes,
+                numberOfCoils,
+                false
+                );
+
+            byte[] bytesArray_Actual = Message.CreateMessage(selectedFunction, data);
+
+            byte[] bytesArray_Expected = new byte[13 + writeBytes.Length];
+
+            // PDU - 6 байт + байт SlaveID + байты данных
+            byte[] slaveID_PDU_Size_Bytes = BitConverter.GetBytes((UInt16)(7 + writeBytes.Length));
+
+            byte[] packageNumberArray = BitConverter.GetBytes(packageNumber);
+            byte[] addressBytes = ModbusField.Get_Address(address);
+            byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)numberOfCoils);            
+
+            bytesArray_Expected[0] = packageNumberArray[1];
+            bytesArray_Expected[1] = packageNumberArray[0];
+            // Modbus ID
+            bytesArray_Expected[2] = 0;
+            bytesArray_Expected[3] = 0;
+            // Количество байт далее (байт SlaveID + байты PDU)
+            bytesArray_Expected[4] = slaveID_PDU_Size_Bytes[1];
+            bytesArray_Expected[5] = slaveID_PDU_Size_Bytes[0];
+            bytesArray_Expected[6] = slaveID;
+            bytesArray_Expected[7] = selectedFunction.Number;
+            bytesArray_Expected[8] = addressBytes[1];
+            bytesArray_Expected[9] = addressBytes[0];
+            bytesArray_Expected[10] = numberOfRegisters[1];
+            bytesArray_Expected[11] = numberOfRegisters[0];
+            bytesArray_Expected[12] = (byte)writeBytes.Length;
+
+            Array.Copy(writeBytes, 0, bytesArray_Expected, 13, writeBytes.Length);
+
+            Assert.Equal(bytesArray_Expected, bytesArray_Actual);
+        }
+
+        private void CheckMultiplyWriteRegistersFunction(UInt16 PackageNumber, byte SlaveID, UInt16 Address, UInt16[] WriteData)
+        {
+            ModbusWriteFunction selectedFunction = Function.PresetMultipleRegisters;
+
             byte[] bytes = WriteData.SelectMany(BitConverter.GetBytes).ToArray();
 
             MessageData Data = new WriteTypeMessage(
@@ -204,7 +249,7 @@ namespace Core.Tests.Modbus
                 false
                 );
 
-            byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
+            byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data);
 
             byte[] PackageNumberArray = BitConverter.GetBytes(PackageNumber);
             byte[] AddressBytes = ModbusField.Get_Address(Address);
@@ -230,7 +275,7 @@ namespace Core.Tests.Modbus
             BytesArray_Expected[4] = SlaveID_PDU_Size_Bytes[1];
             BytesArray_Expected[5] = SlaveID_PDU_Size_Bytes[0];
             BytesArray_Expected[6] = SlaveID;
-            BytesArray_Expected[7] = SelectedFunction.Number;
+            BytesArray_Expected[7] = selectedFunction.Number;
             BytesArray_Expected[8] = AddressBytes[1];
             BytesArray_Expected[9] = AddressBytes[0];
             BytesArray_Expected[10] = NumberOfRegisters[1];

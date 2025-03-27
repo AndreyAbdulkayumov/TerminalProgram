@@ -47,5 +47,30 @@
 
             return ListBytes.ToArray();
         }
+
+        public static (byte[], int) Get_WriteDataFromMultipleCoils(int[] bitArray)
+        {
+            List<byte> result = new List<byte>();
+
+            byte temp = 0;
+
+            for (int i = 0; i < bitArray.Length; i++)
+            {
+                temp |= (byte)(bitArray[i] << (i % 8));
+
+                if ((i + 1) % 8 == 0)
+                {
+                    result.Add(temp);
+                    temp = 0;
+                }
+            }
+
+            if (result.Count == 0 || temp != 0)
+            {
+                result.Add(temp);
+            }
+
+            return (result.ToArray(), bitArray.Length);
+        }
     }
 }

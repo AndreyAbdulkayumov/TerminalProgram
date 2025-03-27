@@ -83,20 +83,18 @@ namespace Core.Tests.Modbus
         [Fact]
         public void Test_Func_0F()
         {
-            CheckMultiplyWriteFunction(
-                SelectedFunction: Function.ForceMultipleCoils,
-                SlaveID: 86,
-                Address: 23,
-                WriteData: new UInt16[] { 0x0000, 0x0000, 0xFF00 },
-                CheckSum_IsEnable: true
+            CheckMultiplyWriteCoilsFunction(
+                slaveID:           86,
+                address:           23,
+                bitArray:          new int[] { 1, 0, 1, 1, 1, 1, 0, 0, 1 },
+                checkSum_IsEnable: true
                 );
         }
 
         [Fact]
         public void Test_Func_16()
         {
-            CheckMultiplyWriteFunction(
-                SelectedFunction:  Function.PresetMultipleRegisters,
+            CheckMultiplyWriteRegistersFunction(
                 SlaveID:           156,
                 Address:           86,
                 WriteData:         new UInt16[] { 0x00FF, 0x4521, 0x8500, 0x0058, 0xDAF8 },
@@ -179,9 +177,46 @@ namespace Core.Tests.Modbus
             Assert.Equal(BytesArray_Expected, BytesArray_Actual);
         }
 
-        private void CheckMultiplyWriteFunction(ModbusWriteFunction SelectedFunction,
-            byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable)
+        private void CheckMultiplyWriteCoilsFunction(byte slaveID, UInt16 address, int[] bitArray, bool checkSum_IsEnable)
         {
+            ModbusWriteFunction selectedFunction = Function.ForceMultipleCoils;
+
+            (byte[] writeBytes, int numberOfCoils) = ModbusField.Get_WriteDataFromMultipleCoils(bitArray);
+
+            MessageData data = new WriteTypeMessage(
+                slaveID,
+                address,
+                writeBytes,
+                numberOfCoils,
+                checkSum_IsEnable
+                );
+
+            byte[] bytesArray_Actual = Message.CreateMessage(selectedFunction, data);
+
+            byte[] addressBytes = ModbusField.Get_Address(address);
+            byte[] numberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)numberOfCoils);
+
+            byte[] dataBytes = new byte[7 + writeBytes.Length];
+
+            dataBytes[0] = slaveID;
+            dataBytes[1] = selectedFunction.Number;
+            dataBytes[2] = addressBytes[1];
+            dataBytes[3] = addressBytes[0];
+            dataBytes[4] = numberOfRegisters[1];
+            dataBytes[5] = numberOfRegisters[0];
+            dataBytes[6] = (byte)writeBytes.Length;
+
+            Array.Copy(writeBytes, 0, dataBytes, 7, writeBytes.Length);
+
+            byte[] bytesArray_Expected = Create_ASCII_Package(dataBytes, checkSum_IsEnable);
+
+            Assert.Equal(bytesArray_Expected, bytesArray_Actual);
+        }
+
+        private void CheckMultiplyWriteRegistersFunction(byte SlaveID, UInt16 Address, UInt16[] WriteData, bool CheckSum_IsEnable)
+        {
+            ModbusWriteFunction selectedFunction = Function.PresetMultipleRegisters;
+
             byte[] bytes = WriteData.SelectMany(BitConverter.GetBytes).ToArray();
 
             MessageData Data = new WriteTypeMessage(
@@ -192,7 +227,7 @@ namespace Core.Tests.Modbus
                 CheckSum_IsEnable
                 );
 
-            byte[] BytesArray_Actual = Message.CreateMessage(SelectedFunction, Data);
+            byte[] BytesArray_Actual = Message.CreateMessage(selectedFunction, Data);
 
             byte[] AddressBytes = ModbusField.Get_Address(Address);
             byte[] NumberOfRegisters = ModbusField.Get_NumberOfRegisters((UInt16)WriteData.Length);
@@ -207,7 +242,7 @@ namespace Core.Tests.Modbus
             byte[] DataBytes = new byte[7 + WriteDataBytes.Length];
 
             DataBytes[0] = SlaveID;
-            DataBytes[1] = SelectedFunction.Number;
+            DataBytes[1] = selectedFunction.Number;
             DataBytes[2] = AddressBytes[1];
             DataBytes[3] = AddressBytes[0];
             DataBytes[4] = NumberOfRegisters[1];
