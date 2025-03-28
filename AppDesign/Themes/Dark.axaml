@@ -128,6 +128,6 @@
 	
 	<!-- Macros -->
 
-	<SolidColorBrush x:Key="Macros_Edit_CommandItem_Selected" Color="#587C8D"/>
+	<SolidColorBrush x:Key="Macros_Edit_CommandItem_Selected" Color="#355E87"/>
 	
 </ResourceDictionary>
