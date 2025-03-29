@@ -192,6 +192,14 @@ namespace ViewModels.ModbusScanner
             _searchTask = Task.Run(() => SearchDevices(_searchCancel.Token));
         }
 
+        private void ViewSlaveAddress(int slaveId)
+        {
+            SlavesAddresses +=
+                "Slave ID:\n" +
+                "dec:   " + slaveId + "\n" +
+                "hex:   " + slaveId.ToString("X2") + "\n\n";
+        }
+
         private string? CheckFields()
         {
             if (!HasErrors)
@@ -266,9 +274,7 @@ namespace ViewModels.ModbusScanner
 
                         result = await _modbusModel.ReadRegister(readFunction, data, modbusMessageType);
 
-                        SlavesAddresses += "Slave ID:\n" +
-                            "dec:   " + i + "\n" +
-                            "hex:   " + i.ToString("X2") + "\n\n";
+                        ViewSlaveAddress(i);
                     }
 
                     catch (TimeoutException)
@@ -278,9 +284,7 @@ namespace ViewModels.ModbusScanner
 
                     catch (ModbusException)
                     {
-                        SlavesAddresses += "Slave ID:\n" +
-                            "dec:   " + i + "\n" +
-                            "hex:   " + i.ToString("X2") + "\n\n";
+                        ViewSlaveAddress(i);
                     }
 
                     finally

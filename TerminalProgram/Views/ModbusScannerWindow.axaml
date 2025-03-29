@@ -103,9 +103,8 @@
 						<TextBlock Text="PDU поискового запроса"/>
 
 						<TextBox Classes="InputField"
-								 Text="{Binding PDU_SearchRequest, Mode=TwoWay}"
-								 Watermark="{Binding PDU_SearchRequest_Default, Mode=OneTime}"
-								 IsEnabled="{Binding !SearchInProcess, Mode=OneWay}"
+								 Text="{Binding PDU_SearchRequest_Default, Mode=OneTime}"
+								 IsReadOnly="True"
 								 Height="32" Width="215"
 								 Padding="10,0,10,0"
 								 HorizontalAlignment="Left" VerticalAlignment="Top"
