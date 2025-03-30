@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.6" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
     <PackageReference Include="System.IO.Ports" Version="9.0.3" />
   </ItemGroup>
