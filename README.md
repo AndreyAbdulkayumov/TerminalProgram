@@ -10,6 +10,8 @@
 
 ## *Статьи на Хабр*
 
+[Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 4](https://habr.com/ru/articles/895692/)
+
 [Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 3](https://habr.com/ru/articles/871788/)
 
 [Кроссплатформенный терминал Modbus TCP / RTU / ASCII с открытым исходным кодом: Часть 2](https://habr.com/ru/articles/854824/)
