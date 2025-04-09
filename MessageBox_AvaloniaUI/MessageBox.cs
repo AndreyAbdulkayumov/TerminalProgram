@@ -17,21 +17,21 @@ namespace MessageBox_AvaloniaUI
             Owner = owner;
         }
 
-        public void Show(string message, MessageType type)
+        public void Show(string message, MessageType messageType)
         {
             Dispatcher.UIThread.Invoke(async () =>
             {
-                var window = new MessageBoxView(message, Title, MessageBoxToolType.Default);
+                var window = new MessageBoxView(message, Title, messageType, MessageBoxToolType.Default);
 
                 await CallMessageBox(window);
             });
         }
 
-        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type)
+        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType messageType)
         {
             return await Dispatcher.UIThread.Invoke(async () => 
             {
-                var window = new MessageBoxView(message, Title, MessageBoxToolType.YesNo);
+                var window = new MessageBoxView(message, Title, messageType, MessageBoxToolType.YesNo);
 
                 await CallMessageBox(window);
 

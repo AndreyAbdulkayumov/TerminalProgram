@@ -1,0 +1,32 @@
+﻿using Avalonia.Data.Converters;
+using MessageBox_Core;
+using System;
+using System.Globalization;
+
+namespace MessageBox_AvaloniaUI.Converters;
+
+public class MessageTypeToVisibilityConverter : IValueConverter
+{
+    public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is MessageType messageType && parameter is string param)
+        {
+            var enumValue = param switch
+            {
+                "Information" => MessageType.Information,
+                "Warning" => MessageType.Warning,
+                "Error" => MessageType.Error,
+                _ => throw new ArgumentException("Недопустимый параметр"),
+            };
+
+            return messageType == enumValue ? true : false;
+        }
+
+        throw new ArgumentException("Недопустимые входные данные");
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}
