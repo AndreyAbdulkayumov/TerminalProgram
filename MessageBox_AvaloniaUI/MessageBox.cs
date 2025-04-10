@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using MessageBox_AvaloniaUI.ViewModels;
 using MessageBox_AvaloniaUI.Views;
 using MessageBox_Core;
 

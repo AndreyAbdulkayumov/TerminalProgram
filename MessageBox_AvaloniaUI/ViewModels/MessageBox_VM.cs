@@ -1,14 +1,30 @@
-﻿using MessageBox_AvaloniaUI.Views;
-using MessageBox_Core;
+﻿using MessageBox_Core;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Reactive;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace MessageBox_AvaloniaUI.ViewModels
 {
+    public enum MessageBoxToolType
+    {
+        Default,
+        YesNo
+    }
+
+    public class ButtonContent
+    {
+        public string Content { get; set; }
+
+        public ButtonContent(string Content)
+        {
+            this.Content = Content;
+        }
+    }
+
     public class MessageBox_VM : ReactiveObject
     {
         private string? _title;
@@ -49,14 +65,13 @@ namespace MessageBox_AvaloniaUI.ViewModels
             set => this.RaiseAndSetIfChanged(ref _errorReportIsVisible, value);
         }
 
-
         public ReactiveCommand<Unit, Unit>? Command_ViewError { get; set; }
         public ReactiveCommand<Unit, Unit>? Command_CopyErrorToClipboard { get; set; }
         public ReactiveCommand<Unit, Unit>? Command_CopyErrorToFile { get; set; }
 
         private readonly string? _appVersion;
 
-        public MessageBox_VM(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+        public MessageBox_VM(Func<string, Task> copyToClipboard, string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
         {
             Content = message;
             Title = title;
@@ -79,9 +94,9 @@ namespace MessageBox_AvaloniaUI.ViewModels
                 });
                 Command_ViewError.ThrownExceptions.Subscribe(error => { });
 
-                Command_CopyErrorToClipboard = ReactiveCommand.Create(() =>
+                Command_CopyErrorToClipboard = ReactiveCommand.CreateFromTask(async () =>
                 {
-
+                    await copyToClipboard(report);
                 });
                 Command_CopyErrorToClipboard.ThrownExceptions.Subscribe(error => { });
 

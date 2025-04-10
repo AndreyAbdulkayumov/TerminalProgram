@@ -554,8 +554,42 @@ namespace ViewModels
             Led_RX_IsActive = false;
         }
 
+
+#warning Удалить отладочный код
+
+        void Method1()
+        {
+            try
+            {
+                Method2();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Основное исключение", ex);
+            }
+        }
+
+        void Method2()
+        {
+            try
+            {
+                Method3();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Второе исключение", ex);
+            }
+        }
+
+        void Method3()
+        {
+            throw new Exception("Первое исключение");
+        }
+
         private void Connect_Handler()
         {
+            Method1();
+
             if (_settingsModel.Settings == null)
             {
                 throw new Exception("Настройки не инициализированы.");

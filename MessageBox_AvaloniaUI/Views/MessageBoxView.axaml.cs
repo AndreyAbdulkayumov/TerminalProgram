@@ -4,25 +4,10 @@ using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI.ViewModels;
 using MessageBox_Core;
 using System;
+using System.Threading.Tasks;
 
 namespace MessageBox_AvaloniaUI.Views
 {
-    public enum MessageBoxToolType
-    {
-        Default,
-        YesNo
-    }
-
-    public class ButtonContent
-    {
-        public string Content { get; set; }
-
-        public ButtonContent(string Content)
-        {
-            this.Content = Content;
-        }
-    }
-
     public partial class MessageBoxView : Window
     {
         public MessageBoxResult Result { get; private set; } = MessageBoxResult.Default;
@@ -31,7 +16,20 @@ namespace MessageBox_AvaloniaUI.Views
         {
             InitializeComponent();
 
-            DataContext = new MessageBox_VM(message, title, messageType, toolType, appVersion, error);
+            DataContext = new MessageBox_VM(CopyToClipboard, message, title, messageType, toolType, appVersion, error);
+        }
+
+        private async Task CopyToClipboard(string data)
+        {
+            var clipboard = TopLevel.GetTopLevel(this)?.Clipboard;
+            var dataObject = new DataObject();
+
+            dataObject.Set(DataFormats.Text, data);
+
+            if (clipboard != null)
+            {
+                await clipboard.SetDataObjectAsync(dataObject);
+            }
         }
 
         private void Button_Click(object? sender, RoutedEventArgs e)
