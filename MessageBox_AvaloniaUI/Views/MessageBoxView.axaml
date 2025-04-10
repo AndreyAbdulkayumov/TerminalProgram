@@ -117,33 +117,58 @@
 			
 			<Border Grid.Row="2"
 				    Background="{DynamicResource WindowChrome_Color}">
-				
-				<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
 
-					<ItemsControl.ItemsPanel>
-						<ItemsPanelTemplate>
-							<StackPanel Orientation="Horizontal"
-										HorizontalAlignment="Right"
-										Margin="10,0,10,0"/>
-						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
+				<Grid>
 
-					<ItemsControl.ItemTemplate>
-
-						<DataTemplate>
-
-							<Button Content="{Binding Content, Mode=OneWay}"
-									Width="60" Height="26"
-									FontSize="12"
-									Margin="10,0,10,0"
-									HorizontalAlignment="Right" VerticalAlignment="Center"
-									Click="Button_Click"/>
-								
-						</DataTemplate>
-							
-					</ItemsControl.ItemTemplate>
+					<Menu IsVisible="{Binding ErrorReportIsVisible, Mode=OneWay}"
+						  Height="26"
+						  FontSize="12"
+						  Margin="10,0,0,0"
+						  HorizontalAlignment="Left" VerticalAlignment="Center">
 						
-				</ItemsControl>
+						<MenuItem Header="Отчет об ошибке">
+
+							<MenuItem Header="Посмотреть"
+									  Command="{Binding Command_ViewError}"/>
+							
+							<MenuItem Header="Копировать в буфер обмена"
+									  Command="{Binding Command_CopyErrorToClipboard}"/>
+							
+							<MenuItem Header="Копировать в файл"
+									  Command="{Binding Command_CopyErrorToFile}"/>
+						
+						</MenuItem>
+						
+					</Menu>
+
+					<ItemsControl ItemsSource="{Binding Buttons, Mode=OneWay}">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal"
+											HorizontalAlignment="Right"
+											Margin="10,0,10,0"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+
+							<DataTemplate>
+
+								<Button Content="{Binding Content, Mode=OneWay}"
+										Width="60" Height="26"
+										FontSize="12"
+										Margin="10,0,10,0"
+										HorizontalAlignment="Right" VerticalAlignment="Center"
+										Click="Button_Click"/>
+
+							</DataTemplate>
+
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
+					
+				</Grid>
 				
 			</Border>
 		

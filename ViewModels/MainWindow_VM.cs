@@ -232,18 +232,18 @@ namespace ViewModels
 
                     catch (Exception error)
                     {
-                        _messageBox.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error);
+                        _messageBox.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error, error);
                     }
                 });
 
             Command_OpenSettingsWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.Settings());
-            Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error));
+            Command_OpenSettingsWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"Настройки\".\n\n{error.Message}", MessageType.Error, error));
 
             Command_OpenAboutWindow = ReactiveCommand.CreateFromTask(async () => await _openChildWindowService.About());
-            Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"О программе\".\n\n{error.Message}", MessageType.Error));
+            Command_OpenAboutWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка работы окна \"О программе\".\n\n{error.Message}", MessageType.Error, error));
 
             Command_OpenUserManual = ReactiveCommand.Create(_fileSystemService.OpenUserManual);
-            Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error));
+            Command_OpenUserManual.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия руководства пользователя.\n\n{error.Message}", MessageType.Error, error));
 
             Command_ProtocolMode_NoProtocol = ReactiveCommand.Create(() =>
             {
@@ -253,7 +253,7 @@ namespace ViewModels
                 _settingsModel.AppData.SelectedMode = AppMode.NoProtocol;
                 CurrentApplicationWorkMode = ApplicationWorkMode.NoProtocol;
             });
-            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_ProtocolMode_NoProtocol.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             Command_ProtocolMode_Modbus = ReactiveCommand.Create(() =>
             {
@@ -263,19 +263,19 @@ namespace ViewModels
                 _settingsModel.AppData.SelectedMode = AppMode.ModbusClient;
                 CurrentApplicationWorkMode = ApplicationWorkMode.ModbusClient;
             });
-            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_ProtocolMode_Modbus.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             Command_OpenMacrosWindow = ReactiveCommand.Create(_openChildWindowService.Macros);
-            Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка окна макросов.\n\n{error.Message}", MessageType.Error));
+            Command_OpenMacrosWindow.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка открытия окна макросов.\n\n{error.Message}", MessageType.Error, error));
 
             Command_Connect = ReactiveCommand.Create(Connect_Handler);
-            Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_Connect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             Command_Disconnect = ReactiveCommand.CreateFromTask(_connectedHostModel.Disconnect);
-            Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_Disconnect.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             Command_UpdateApp = ReactiveCommand.Create(() => _appUpdateSystemModel.GoToWebPage(_newAppDownloadLink));
-            Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error));
+            Command_UpdateApp.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка перехода по ссылке скачивания приложения:\n\n{error.Message}", MessageType.Error, error));
 
             Command_SkipNewAppVersion = ReactiveCommand.Create(() =>
             {

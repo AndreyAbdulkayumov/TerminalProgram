@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using MessageBox_AvaloniaUI.ViewModels;
 using MessageBox_Core;
+using System;
 
 namespace MessageBox_AvaloniaUI.Views
 {
@@ -26,11 +27,11 @@ namespace MessageBox_AvaloniaUI.Views
     {
         public MessageBoxResult Result { get; private set; } = MessageBoxResult.Default;
 
-        public MessageBoxView(string message, string title, MessageType messageType, MessageBoxToolType toolType)
+        public MessageBoxView(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
         {
             InitializeComponent();
 
-            DataContext = new MessageBox_VM(message, title, messageType, toolType); ;
+            DataContext = new MessageBox_VM(message, title, messageType, toolType, appVersion, error);
         }
 
         private void Button_Click(object? sender, RoutedEventArgs e)
