@@ -125,19 +125,36 @@
 						  FontSize="12"
 						  Margin="10,0,0,0"
 						  HorizontalAlignment="Left" VerticalAlignment="Center">
-						
-						<MenuItem Header="Отчет об ошибке">
+
+						<MenuItem Header="Отчет об ошибке"
+								  Background="{DynamicResource Button_Color_Enabled_Background}"
+								  Foreground="{DynamicResource Button_Color_Enabled_Foreground}"
+								  CornerRadius="4">
 
 							<MenuItem Header="Посмотреть"
+									  Foreground="Black"
 									  Command="{Binding Command_ViewError}"/>
 							
 							<MenuItem Header="Копировать в буфер обмена"
+									  Foreground="Black"
 									  Command="{Binding Command_CopyErrorToClipboard}"/>
 							
 							<MenuItem Header="Копировать в файл"
+									  Foreground="Black"
 									  Command="{Binding Command_CopyErrorToFile}"/>
 						
 						</MenuItem>
+
+						<!-- Да, это неправильно, но шо поделать -->
+						<Menu.Resources>
+
+							<SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="WhiteSmoke"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="#D1EAF3"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="Black"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="#D1EAF3"/>
+							<SolidColorBrush x:Key="MenuFlyoutItemForegroundPressed" Color="Black"/>
+							
+						</Menu.Resources>
 						
 					</Menu>
 
