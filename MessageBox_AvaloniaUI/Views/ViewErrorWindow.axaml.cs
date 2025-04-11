@@ -13,6 +13,15 @@ public partial class ViewErrorWindow : Window
         TextBlock_ErrorReport.Text = errorReport;
     }
 
+    private void Window_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape ||
+            e.Key == Key.Enter)
+        {
+            Close();
+        }
+    }
+
     private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         BeginMoveDrag(e);

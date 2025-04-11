@@ -71,7 +71,8 @@ namespace MessageBox_AvaloniaUI.ViewModels
 
         private readonly string? _appVersion;
 
-        public MessageBox_VM(Action<string> openErrorReport, Func<string, Task> copyToClipboard, string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+        public MessageBox_VM(Action<string> openErrorReport, Func<string, Task> copyToClipboard, Func<string, Task<string?>> getFolderPath,
+            string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
         {
             Content = message;
             Title = title;
@@ -100,9 +101,16 @@ namespace MessageBox_AvaloniaUI.ViewModels
                 });
                 Command_CopyErrorToClipboard.ThrownExceptions.Subscribe(error => { });
 
-                Command_CopyErrorToFile = ReactiveCommand.Create(() =>
+                Command_CopyErrorToFile = ReactiveCommand.CreateFromTask(async () =>
                 {
-                    string fileName = $"D:\\Отчет об ошибке {reportDate:yyyyMMdd_HHmmss}.txt";
+                    string? folderPath = await getFolderPath("Выбор папки для сохранения файла отчета об ошибке.");
+                    
+                    if (folderPath == null)
+                    {
+                        return;
+                    }
+
+                    string fileName = Path.Combine(folderPath, $"Отчет об ошибке {reportDate: yyyyMMdd_HHmmss}.txt");
 
                     File.WriteAllText(fileName, report);
                 });

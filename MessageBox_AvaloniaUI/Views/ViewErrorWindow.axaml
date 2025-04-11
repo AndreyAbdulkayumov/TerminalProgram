@@ -11,7 +11,8 @@
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="None"
-		Background="Transparent">
+		Background="Transparent"
+		KeyDown="Window_KeyDown">
 
 	<Window.Styles>
 
@@ -65,8 +66,7 @@
 
 				</ScrollViewer>
 
-				<Border x:Name="Border_ResizeIcon"
-						Background="Transparent"
+				<Border Background="Transparent"
 						Width="20" Height="20"
 						HorizontalAlignment="Right" VerticalAlignment="Bottom"
 						PointerPressed="ResizeIcon_PointerPressed">

@@ -1,9 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using MessageBox_AvaloniaUI.ViewModels;
 using MessageBox_Core;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MessageBox_AvaloniaUI.Views
@@ -16,7 +18,9 @@ namespace MessageBox_AvaloniaUI.Views
         {
             InitializeComponent();
 
-            DataContext = new MessageBox_VM(OpenErrorReport, CopyToClipboard, message, title, messageType, toolType, appVersion, error);
+            DataContext = new MessageBox_VM(
+                OpenErrorReport, CopyToClipboard, GetFolderPath, 
+                message, title, messageType, toolType, appVersion, error);
         }
 
         private void OpenErrorReport(string errorReport)
@@ -37,6 +41,28 @@ namespace MessageBox_AvaloniaUI.Views
             {
                 await clipboard.SetDataObjectAsync(dataObject);
             }
+        }
+
+        public async Task<string?> GetFolderPath(string windowTitle)
+        {
+            // Get top level from the current control. Alternatively, you can use Window reference instead.
+            TopLevel? topLevel = TopLevel.GetTopLevel(this);
+
+            if (topLevel != null)
+            {
+                var folder = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+                {
+                    Title = windowTitle,
+                    AllowMultiple = false
+                });
+
+                if (folder != null && folder.Count > 0)
+                {
+                    return folder.First().TryGetLocalPath();
+                }
+            }
+
+            return null;
         }
 
         private void Button_Click(object? sender, RoutedEventArgs e)
