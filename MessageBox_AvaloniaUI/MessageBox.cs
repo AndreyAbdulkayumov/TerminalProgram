@@ -26,7 +26,7 @@ namespace MessageBox_AvaloniaUI
         {
             Dispatcher.UIThread.Invoke(async () =>
             {
-                var window = new MessageBoxView(message, Title, messageType, MessageBoxToolType.Default, _appVersion, error);
+                var window = new MessageBoxWindow(message, Title, messageType, MessageBoxToolType.Default, _appVersion, error);
 
                 await CallMessageBox(window);
             });
@@ -36,7 +36,7 @@ namespace MessageBox_AvaloniaUI
         {
             return await Dispatcher.UIThread.Invoke(async () => 
             {
-                var window = new MessageBoxView(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, error);
+                var window = new MessageBoxWindow(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, error);
 
                 await CallMessageBox(window);
 

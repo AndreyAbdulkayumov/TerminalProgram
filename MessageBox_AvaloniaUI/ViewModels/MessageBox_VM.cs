@@ -71,7 +71,7 @@ namespace MessageBox_AvaloniaUI.ViewModels
 
         private readonly string? _appVersion;
 
-        public MessageBox_VM(Func<string, Task> copyToClipboard, string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+        public MessageBox_VM(Action<string> openErrorReport, Func<string, Task> copyToClipboard, string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
         {
             Content = message;
             Title = title;
@@ -90,7 +90,7 @@ namespace MessageBox_AvaloniaUI.ViewModels
 
                 Command_ViewError = ReactiveCommand.Create(() =>
                 {
-
+                    openErrorReport(report);
                 });
                 Command_ViewError.ThrownExceptions.Subscribe(error => { });
 

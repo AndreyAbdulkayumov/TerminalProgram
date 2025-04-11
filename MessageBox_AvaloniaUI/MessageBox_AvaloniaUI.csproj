@@ -19,4 +19,10 @@
     <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
     <ProjectReference Include="..\MessageBox_Core\MessageBox_Core.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\MessageBoxWindow.axaml.cs">
+      <DependentUpon>MessageBoxWindow.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

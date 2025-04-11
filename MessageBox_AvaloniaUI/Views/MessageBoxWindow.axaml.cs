@@ -8,15 +8,22 @@ using System.Threading.Tasks;
 
 namespace MessageBox_AvaloniaUI.Views
 {
-    public partial class MessageBoxView : Window
+    public partial class MessageBoxWindow : Window
     {
         public MessageBoxResult Result { get; private set; } = MessageBoxResult.Default;
 
-        public MessageBoxView(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+        public MessageBoxWindow(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
         {
             InitializeComponent();
 
-            DataContext = new MessageBox_VM(CopyToClipboard, message, title, messageType, toolType, appVersion, error);
+            DataContext = new MessageBox_VM(OpenErrorReport, CopyToClipboard, message, title, messageType, toolType, appVersion, error);
+        }
+
+        private void OpenErrorReport(string errorReport)
+        {
+            var window = new ViewErrorWindow(errorReport);
+
+            window.Show(this);
         }
 
         private async Task CopyToClipboard(string data)
