@@ -82,7 +82,7 @@ namespace ViewModels.Settings.Tabs
 
             catch (Exception error)
             {
-                _messageBox.Show("Ошибка обновления значений на странице Ethernet.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show($"Ошибка обновления значений на странице Ethernet.\n\n{error.Message}", MessageType.Error, error);
             }
         }
 

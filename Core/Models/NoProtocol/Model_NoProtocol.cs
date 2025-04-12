@@ -13,8 +13,8 @@ namespace Core.Models.NoProtocol
         }
 
         public event EventHandler<NoProtocolDataReceivedEventArgs>? Model_DataReceived;
-        public event EventHandler<string>? Model_ErrorInReadThread;
-        public event EventHandler<string>? Model_ErrorInCycleMode;
+        public event EventHandler<Exception>? Model_ErrorInReadThread;
+        public event EventHandler<Exception>? Model_ErrorInCycleMode;
 
         public Encoding HostEncoding => ConnectedHost.GlobalEncoding;
 
@@ -87,7 +87,7 @@ namespace Core.Models.NoProtocol
             Model_DataReceived?.Invoke(this, new NoProtocolDataReceivedEventArgs(e));
         }
 
-        private void Client_ErrorInReadThread(object? sender, string e)
+        private void Client_ErrorInReadThread(object? sender, Exception e)
         {
             CycleMode_Stop();
 
@@ -204,8 +204,7 @@ namespace Core.Models.NoProtocol
             {
                 CycleMode_Stop();
 
-                Model_ErrorInCycleMode?.Invoke(this, "Ошибка отправки команды в цикличном опросе.\n\n" + error.Message +
-                    "\n\nОпрос остановлен.");
+                Model_ErrorInCycleMode?.Invoke(this, error);
             }                        
         }
     }

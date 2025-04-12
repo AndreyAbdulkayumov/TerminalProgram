@@ -227,7 +227,7 @@ namespace ViewModels.ModbusClient
 
                 await _uiServices.CopyToClipboard(Data);
             });
-            Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования запроса в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Request.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования запроса в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
 
             Command_Copy_Response = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -243,7 +243,7 @@ namespace ViewModels.ModbusClient
 
                 await _uiServices.CopyToClipboard(Data);
             });
-            Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка копирования ответа в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_Response.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка копирования ответа в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
 
             Command_Open_ModbusScanner = ReactiveCommand.CreateFromTask(_openChildWindow.ModbusScanner);
 
@@ -254,7 +254,7 @@ namespace ViewModels.ModbusClient
                 RequestResponseItems.Clear();
                 LogData = string.Empty;
             });
-            Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка очистки данных.\n\n" + error.Message, MessageType.Error));
+            Command_ClearData.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка очистки данных.\n\n{error.Message}", MessageType.Error, error));
 
             this.WhenAnyValue(x => x.IsCycleMode)
                 .Subscribe(_ =>
@@ -295,7 +295,7 @@ namespace ViewModels.ModbusClient
                             return;
                         }
 
-                        _messageBox.Show("Задан неизвестный тип Modbus протокола: " + SelectedModbusType, MessageType.Error);
+                        _messageBox.Show($"Задан неизвестный тип Modbus протокола: {SelectedModbusType}", MessageType.Warning);
                     }
                 });
         }
@@ -309,7 +309,7 @@ namespace ViewModels.ModbusClient
 
             catch (Exception error)
             {
-                _messageBox.Show(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error, error);
             }
         }
 
@@ -322,7 +322,7 @@ namespace ViewModels.ModbusClient
 
             catch (Exception error)
             {
-                _messageBox.Show(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error, error);
             }
         }
 
@@ -366,7 +366,7 @@ namespace ViewModels.ModbusClient
 
             catch (Exception error)
             {
-                _messageBox.Show(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error, error);
             }
         }
 
@@ -395,7 +395,7 @@ namespace ViewModels.ModbusClient
 
             else
             {
-                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Error);
+                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Warning);
                 return;
             }
 

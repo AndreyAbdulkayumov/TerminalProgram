@@ -148,7 +148,7 @@ namespace ViewModels.ModbusScanner
 
                 StartPolling();
             });
-            Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_Start_Stop_Search.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             // Значения по умолчанию
             PauseBetweenRequests = "100";
@@ -308,7 +308,7 @@ namespace ViewModels.ModbusScanner
 
             catch (Exception error)
             {
-                _messageBox.Show(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error, error);
             }
 
             finally

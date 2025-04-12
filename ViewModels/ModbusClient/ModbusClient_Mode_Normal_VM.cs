@@ -243,7 +243,7 @@ namespace ViewModels.ModbusClient
                     new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
                     );
             });
-            Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке чтения: \n\n" + error.Message, MessageType.Error));
+            Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке чтения: \n\n{error.Message}", MessageType.Error, error));
 
             Command_Write = ReactiveCommand.Create(() =>
             {
@@ -281,7 +281,7 @@ namespace ViewModels.ModbusClient
                     new ModbusWriteMessage(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
                     );
             });
-            Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show("Возникла ошибка при попытке записи:\n\n" + error.Message, MessageType.Error));
+            Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке записи:\n\n{error.Message}", MessageType.Error, error));
 
             this.WhenAnyValue(x => x.SelectedNumberFormat_Hex, x => x.SelectedNumberFormat_Dec)
                 .Subscribe(values =>
@@ -308,7 +308,7 @@ namespace ViewModels.ModbusClient
 
                     catch (Exception error)
                     {
-                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error);
+                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                     }
                 });
 

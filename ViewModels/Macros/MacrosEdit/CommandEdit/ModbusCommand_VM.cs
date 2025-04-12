@@ -210,7 +210,7 @@ namespace ViewModels.Macros.MacrosEdit.CommandEdit
 
                     catch (Exception error)
                     {
-                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error);
+                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                     }
                 });
         }

@@ -232,7 +232,7 @@ namespace ViewModels
 
                     catch (Exception error)
                     {
-                        _messageBox.Show("Ошибка выбора пресета.\n\n" + error.Message, MessageType.Error, error);
+                        _messageBox.Show($"Ошибка выбора пресета.\n\n{error.Message}", MessageType.Error, error);
                     }
                 });
 

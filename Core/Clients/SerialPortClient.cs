@@ -7,7 +7,7 @@ namespace Core.Clients
     public class SerialPortClient : IConnection
     {
         public event EventHandler<byte[]>? DataReceived;
-        public event EventHandler<string>? ErrorInReadThread;
+        public event EventHandler<Exception>? ErrorInReadThread;
 
         public bool IsConnected
         {
@@ -439,8 +439,7 @@ namespace Core.Clients
 
             catch (Exception error)
             {
-                ErrorInReadThread?.Invoke(this, "Возникла ошибка при асинхронном чтении у SerialPort клиента.\n\n" +
-                    "Прием данных прекращен.\n\n" + error.Message);
+                ErrorInReadThread?.Invoke(this, error);
             }
         }
     }

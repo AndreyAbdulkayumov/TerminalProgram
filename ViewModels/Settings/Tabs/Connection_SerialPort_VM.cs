@@ -189,7 +189,7 @@ namespace ViewModels.Settings.Tabs
                 ReScan_SerialPorts(_settingsModel.Settings.Connection_SerialPort);
             });
 
-            Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_ReScan_SerialPorts.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
         }
 
         public string GetFieldViewName(string fieldName)
@@ -249,7 +249,7 @@ namespace ViewModels.Settings.Tabs
 
             catch (Exception error)
             {
-                _messageBox.Show("Ошибка обновления значений на странице SerialPort.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show($"Ошибка обновления значений на странице SerialPort.\n\n{error.Message}", MessageType.Error, error);
             }
         }
 

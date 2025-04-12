@@ -74,7 +74,7 @@ namespace ViewModels.NoProtocol
 
                 await _noProtocolModel.SendBytes(buffer);
             });
-            Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show("Ошибка отправки данных.\n\n" + error.Message, MessageType.Error));
+            Command_Send.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка отправки данных.\n\n{error.Message}", MessageType.Error, error));
 
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
