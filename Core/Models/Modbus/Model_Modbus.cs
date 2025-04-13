@@ -12,7 +12,7 @@ namespace Core.Models.Modbus
             set => CycleModeTimer.Interval = value;
         }
 
-        public event EventHandler<string>? Model_ErrorInCycleMode;
+        public event EventHandler<Exception>? Model_ErrorInCycleMode;
 
         private static bool IsBusy = false;       
 
@@ -273,8 +273,7 @@ namespace Core.Models.Modbus
             {
                 CycleMode_Stop();
 
-                Model_ErrorInCycleMode?.Invoke(this, "Ошибка отправки команды в цикличном опросе.\n\n" + error.Message +
-                    "\n\nОпрос остановлен.");
+                Model_ErrorInCycleMode?.Invoke(this, error);
             }
         }
     }

@@ -55,13 +55,13 @@ namespace ViewModels.Macros
             _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
-            Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error));
+            Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error, error));
 
             Command_Export = ReactiveCommand.CreateFromTask(ExportMacros);
-            Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error));
+            Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error, error));
 
             Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
-            Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error));
+            Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error, error));
 
             MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
 

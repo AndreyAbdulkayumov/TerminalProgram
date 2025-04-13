@@ -28,7 +28,7 @@ namespace ViewModels.ModbusClient.DataTypes
 
                 await copyToClipboard(Data);
             });
-            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n" + error.Message, MessageType.Error));
+            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
         }
     }
 

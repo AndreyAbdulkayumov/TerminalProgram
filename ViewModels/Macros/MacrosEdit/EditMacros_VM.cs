@@ -82,7 +82,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                 if (!string.IsNullOrEmpty(validationMessages))
                 {
-                    _messageBox.Show($"Исправьте ошибки в макросе.{_validationMessageSeparator}{validationMessages}", MessageType.Error);
+                    _messageBox.Show($"Исправьте ошибки в макросе.{_validationMessageSeparator}{validationMessages}", MessageType.Warning);
                     return;
                 }
 
@@ -90,10 +90,10 @@ namespace ViewModels.Macros.MacrosEdit
 
                 _messageBox.Show("Настройки макроса сохранены!", MessageType.Information);
             });
-            Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error));
+            Command_SaveMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка сохранения макроса.\n\n{error.Message}", MessageType.Error, error));
 
             Command_RunMacros = ReactiveCommand.Create(RunMacros);
-            Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error));
+            Command_RunMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка запуска макроса.\n\n{error.Message}", MessageType.Error, error));
 
             Command_AddCommand = ReactiveCommand.Create(() =>
             {
@@ -106,7 +106,7 @@ namespace ViewModels.Macros.MacrosEdit
                 CommandItems.Add(new MacrosCommandItem_VM(itemGuid, commandParameters, RunCommand, EditCommand, RemoveCommand, _messageBox));
                 _allEditCommandVM.Add(CreateCommandVM(itemGuid, commandParameters));
             });
-            Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error));
+            Command_AddCommand.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка добавления команды.\n\n{error.Message}", MessageType.Error, error));
 
             this.WhenAnyValue(x => x.EditCommandViewModel)
                 .Subscribe(x =>
@@ -186,7 +186,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (!string.IsNullOrEmpty(validationMessages))
             {
-                _messageBox.Show(validationMessages, MessageType.Error);
+                _messageBox.Show(validationMessages, MessageType.Warning);
                 return;
             }
 
@@ -316,7 +316,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
-                _messageBox.Show(validationMessage, MessageType.Error);
+                _messageBox.Show(validationMessage, MessageType.Warning);
                 return;
             }
 

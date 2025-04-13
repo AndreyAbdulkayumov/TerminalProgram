@@ -35,10 +35,10 @@ namespace ViewModels.Settings.Tabs
             _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
 
             Select_Dark_Theme = ReactiveCommand.Create(SetDarkTheme);
-            Select_Dark_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show("Не удалось корректно переключиться на темную тему.\n\n" + error.Message, MessageType.Error));
+            Select_Dark_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show($"Не удалось корректно переключиться на темную тему.\n\n{error.Message}", MessageType.Error, error));
 
             Select_Light_Theme = ReactiveCommand.Create(SetLightTheme);
-            Select_Light_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show("Не удалось корректно переключиться на светлую тему.\n\n" + error.Message, MessageType.Error));
+            Select_Light_Theme.ThrownExceptions.Subscribe(error => _messageBox.Show($"Не удалось корректно переключиться на светлую тему.\n\n{error.Message}", MessageType.Error, error));
         }
 
         private void SetDarkTheme()

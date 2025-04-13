@@ -1,6 +1,12 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+	<!-- MessageBox Icons Color -->
+
+	<SolidColorBrush x:Key="MessageBox_Icon_Color_Infomation" Color="#6AACED"/>
+	<SolidColorBrush x:Key="MessageBox_Icon_Color_Warning" Color="#E6D412"/>
+	<SolidColorBrush x:Key="MessageBox_Icon_Color_Error" Color="IndianRed"/>
+	
 	<!-- Main App Colors -->
 
 	<SolidColorBrush x:Key="App_Color_Text" Color="#CCBC57"/>

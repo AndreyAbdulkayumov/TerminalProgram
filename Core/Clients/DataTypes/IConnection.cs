@@ -11,7 +11,7 @@
         /// Событие ошибки в потоке чтения (асинхронный режим). 
         /// После появления события чтение заканчивается.
         /// </summary>
-        event EventHandler<string> ErrorInReadThread;
+        event EventHandler<Exception> ErrorInReadThread;
 
         /// <summary>
         /// Возращает значение указывающее на то, подключен ли сейчас клиент к какому либо хосту или нетю

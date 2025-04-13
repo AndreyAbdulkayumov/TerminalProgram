@@ -157,7 +157,7 @@ namespace ViewModels.NoProtocol
             
             catch (Exception error)
             {
-                _messageBox.Show(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error, error);
             }
         }
 
@@ -184,7 +184,7 @@ namespace ViewModels.NoProtocol
 
             catch (Exception error)
             {
-                _messageBox.Show(error.Message, MessageType.Error);
+                _messageBox.Show(error.Message, MessageType.Error, error);
             }
         }
 
@@ -228,7 +228,7 @@ namespace ViewModels.NoProtocol
 
             else
             {
-                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Error);
+                _messageBox.Show("Задан неизвестный тип подключения.", MessageType.Warning);
                 return;
             }
 
@@ -277,9 +277,9 @@ namespace ViewModels.NoProtocol
             RX_String = RX.ToString();
         }
 
-        private void NoProtocol_Model_ErrorInReadThread(object? sender, string e)
+        private void NoProtocol_Model_ErrorInReadThread(object? sender, Exception e)
         {
-            _messageBox.Show(e, MessageType.Error);
+            _messageBox.Show($"Возникла ошибка при асинхронном чтении.\n\nПрием данных прекращен.\n\n{e.Message}", MessageType.Error, e);
         }
     }
 }

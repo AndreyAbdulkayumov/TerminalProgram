@@ -181,7 +181,7 @@ namespace ViewModels.ModbusClient
 
                 StartPolling();
             });
-            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             foreach (ModbusReadFunction element in Function.AllReadFunctions)
             {
@@ -220,7 +220,7 @@ namespace ViewModels.ModbusClient
 
                     catch (Exception error)
                     {
-                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error);
+                        messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                     }
                 });
         }
@@ -274,11 +274,11 @@ namespace ViewModels.ModbusClient
             StopPolling();
         }
 
-        private void Modbus_Model_ErrorInCycleMode(object? sender, string e)
+        private void Modbus_Model_ErrorInCycleMode(object? sender, Exception e)
         {
             StopPolling();
 
-            _messageBox.Show(e, MessageType.Error);
+            _messageBox.Show($"Ошибка отправки команды в цикличном опросе.\n\n{e.Message}\n\nОпрос остановлен.", MessageType.Error, e);
         }
 
         private void SelectNumberFormat_Hex()

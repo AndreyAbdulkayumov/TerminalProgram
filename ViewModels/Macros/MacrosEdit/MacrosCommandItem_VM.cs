@@ -36,10 +36,10 @@ namespace ViewModels.Macros.MacrosEdit
             CommandName = parameters.CommandName;
 
             Command_RunCommand = ReactiveCommand.Create(() => runCommandHandler(id));
-            Command_RunCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка запуска команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
+            Command_RunCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка запуска команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error, error));
 
             Command_EditCommand = ReactiveCommand.Create(() => editCommandHandler(Id));
-            Command_EditCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
+            Command_EditCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error, error));
 
             Command_RemoveCommand = ReactiveCommand.CreateFromTask(async () => 
             { 
@@ -48,7 +48,7 @@ namespace ViewModels.Macros.MacrosEdit
                     removeItemHandler(Id);
                 }
             });
-            Command_RemoveCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error));
+            Command_RemoveCommand.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления команды \"{CommandName}\".\n\n{error.Message}", MessageType.Error, error));
         }
     }
 }

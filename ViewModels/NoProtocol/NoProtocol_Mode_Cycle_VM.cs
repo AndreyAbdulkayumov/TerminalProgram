@@ -175,7 +175,7 @@ namespace ViewModels.NoProtocol
 
                 await StartPolling();
             });
-            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error));
+            Command_Start_Stop_Polling.ThrownExceptions.Subscribe(error => _messageBox.Show(error.Message, MessageType.Error, error));
 
             this.WhenAnyValue(x => x.IsBytesSend)
                 .Subscribe(IsBytes =>
@@ -206,9 +206,9 @@ namespace ViewModels.NoProtocol
             StopPolling();
         }
 
-        private void NoProtocol_Model_ErrorInCycleMode(object? sender, string e)
+        private void NoProtocol_Model_ErrorInCycleMode(object? sender, Exception e)
         {
-            _messageBox.Show(e, MessageType.Error);
+            _messageBox.Show($"Ошибка отправки команды в цикличном опросе.\n\n{e.Message}\n\nОпрос остановлен.", MessageType.Error, e);
         }
 
         public void SourceWindowClosingAction()

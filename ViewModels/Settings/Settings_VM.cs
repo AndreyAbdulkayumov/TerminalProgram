@@ -183,7 +183,7 @@ namespace ViewModels.Settings
             
             catch (Exception error)
             {
-                _messageBox.Show("Ошибка при добавлении уже существующего файла.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show($"Ошибка при добавлении уже существующего файла.\n\n{error.Message}", MessageType.Error, error);
             }
         }
 
@@ -197,7 +197,7 @@ namespace ViewModels.Settings
                     return;
                 }
 
-                MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog("Вы действительно желайте удалить файл " + SelectedPreset + "?", MessageType.Warning);
+                MessageBoxResult dialogResult = await _messageBox.ShowYesNoDialog($"Вы действительно желайте удалить файл {SelectedPreset}?", MessageType.Warning);
 
                 if (dialogResult != MessageBoxResult.Yes)
                 {
@@ -213,7 +213,7 @@ namespace ViewModels.Settings
 
             catch (Exception error)
             {
-                _messageBox.Show("Ошибка удаления файла настроек.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show($"Ошибка удаления файла настроек.\n\n{error.Message}", MessageType.Error, error);
             }
         }
 
@@ -281,7 +281,7 @@ namespace ViewModels.Settings
 
             catch (Exception error)
             {
-                _messageBox.Show("Ошибка сохранения файла настроек.\n\n" + error.Message, MessageType.Error);
+                _messageBox.Show($"Ошибка сохранения файла настроек.\n\n{error.Message}", MessageType.Error, error);
             }
         }
 

@@ -51,11 +51,11 @@ namespace ViewModels
             _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
             _appUpdateSystemModel = appUpdateSystemModel ?? throw new ArgumentNullException(nameof(appUpdateSystemModel));
 
-            Command_CheckUpdate = ReactiveCommand.CreateFromTask(async () => await CheckUpdate());
-            Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка проверки обновлений:\n\n{error.Message}", MessageType.Error));
+            Command_CheckUpdate = ReactiveCommand.CreateFromTask(CheckUpdate);
+            Command_CheckUpdate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка проверки обновлений:\n\n{error.Message}", MessageType.Error, error));
 
             Command_MakeDonate = ReactiveCommand.Create(_appUpdateSystemModel.GoToDonatePage);
-            Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка :(\n\n{error.Message}", MessageType.Error));
+            Command_MakeDonate.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка :(\n\n{error.Message}", MessageType.Error, error));
 
             _appVersionFull = _uiService.GetAppVersion();
 

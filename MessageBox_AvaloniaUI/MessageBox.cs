@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using MessageBox_AvaloniaUI.ViewModels;
 using MessageBox_AvaloniaUI.Views;
 using MessageBox_Core;
 
@@ -12,26 +14,29 @@ namespace MessageBox_AvaloniaUI
 
         private const string Title = "Терминальная программа";
 
-        public MessageBox(Window owner)
+        private readonly string? _appVersion;
+
+        public MessageBox(Window owner, string? appVersion)
         {
             Owner = owner;
+            _appVersion = appVersion;
         }
 
-        public void Show(string message, MessageType type)
+        public void Show(string message, MessageType messageType, Exception? error = null)
         {
             Dispatcher.UIThread.Invoke(async () =>
             {
-                var window = new MessageBoxView(message, Title, MessageBoxToolType.Default);
+                var window = new MessageBoxWindow(message, Title, messageType, MessageBoxToolType.Default, _appVersion, error);
 
                 await CallMessageBox(window);
             });
         }
 
-        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type)
+        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType messageType, Exception? error = null)
         {
             return await Dispatcher.UIThread.Invoke(async () => 
             {
-                var window = new MessageBoxView(message, Title, MessageBoxToolType.YesNo);
+                var window = new MessageBoxWindow(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, error);
 
                 await CallMessageBox(window);
 
