@@ -376,23 +376,20 @@ namespace Core.Clients
             }
         }
 
-        private async Task AsyncThread_Read(Stream currentStream, CancellationToken readCancel)
+        private async Task AsyncThread_Read(Stream? currentStream, CancellationToken readCancel)
         {
             try
             {
+                if (currentStream == null) 
+                    throw new InvalidOperationException("Поток чтения не инициализирован.");
+
                 byte[] bufferRX = new byte[65536];
 
                 int numberOfReceiveBytes;
 
                 Task<int> readResult;
 
-                Task waitCancel = Task.Run(async () =>
-                {
-                    while (readCancel.IsCancellationRequested == false)
-                    {
-                        await Task.Delay(50, readCancel);
-                    }
-                });
+                var waitCancel = Task.Delay(Timeout.Infinite, readCancel);
 
                 Task completedTask;
 
@@ -400,34 +397,27 @@ namespace Core.Clients
                 {
                     readCancel.ThrowIfCancellationRequested();
 
-                    if (currentStream != null)
-                    {
-                        /// Метод асинхронного чтения у объекта класса Stream, 
-                        /// который содержится в объекте класса SerialPort,
-                        /// почему то не обрабатывает событие отмены у токена отмены.
-                        /// Возможно это происходит из - за того что внутри метода происходят 
-                        /// неуправляемые вызовы никоуровневого API.
-                        /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
+                    /// Метод асинхронного чтения у объекта класса Stream, 
+                    /// который содержится в объекте класса SerialPort,
+                    /// почему то не обрабатывает событие отмены у токена отмены.
+                    /// Возможно это происходит из - за того что внутри метода происходят 
+                    /// неуправляемые вызовы никоуровневого API.
+                    /// Поэтому для отслеживания состояния токена отмены была создана задача WaitCancel.
 
-                        readResult = currentStream.ReadAsync(bufferRX, 0, bufferRX.Length, readCancel);
+                    readResult = currentStream.ReadAsync(bufferRX, 0, bufferRX.Length, readCancel);
 
-                        completedTask = await Task.WhenAny(readResult, waitCancel).ConfigureAwait(false);
+                    completedTask = await Task.WhenAny(readResult, waitCancel).ConfigureAwait(false);
 
-                        if (completedTask == waitCancel)
-                        {
-                            throw new OperationCanceledException();
-                        }
+                    if (completedTask == waitCancel)
+                        throw new OperationCanceledException();
 
-                        readCancel.ThrowIfCancellationRequested();
+                    numberOfReceiveBytes = readResult.Result;
 
-                        numberOfReceiveBytes = readResult.Result;
+                    DataReceived?.Invoke(this, bufferRX.Take(numberOfReceiveBytes).ToArray());
 
-                        DataReceived?.Invoke(this, bufferRX.Take(numberOfReceiveBytes).ToArray());
+                    Notifications.ReceiveEvent();
 
-                        Notifications.ReceiveEvent();
-
-                        Array.Clear(bufferRX, 0, numberOfReceiveBytes);
-                    }
+                    Array.Clear(bufferRX, 0, numberOfReceiveBytes);
                 }
             }
 
