@@ -82,7 +82,7 @@ namespace ViewModels.Macros.MacrosEdit
 
                 if (!string.IsNullOrEmpty(validationMessages))
                 {
-                    _messageBox.Show($"Исправьте ошибки в макросе.{_validationMessageSeparator}{validationMessages}", MessageType.Warning);
+                    _messageBox.Show($"Исправьте ошибки в макросе.{_validationMessageSeparator}{validationMessages}", MessageType.Error);
                     return;
                 }
 
@@ -186,7 +186,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (!string.IsNullOrEmpty(validationMessages))
             {
-                _messageBox.Show(validationMessages, MessageType.Warning);
+                _messageBox.Show(validationMessages, MessageType.Error);
                 return;
             }
 
@@ -316,7 +316,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (!string.IsNullOrEmpty(validationMessage))
             {
-                _messageBox.Show(validationMessage, MessageType.Warning);
+                _messageBox.Show(validationMessage, MessageType.Error);
                 return;
             }
 
