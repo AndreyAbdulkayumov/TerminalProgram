@@ -194,12 +194,12 @@ namespace ViewModels.Macros.MacrosEdit
             {
                 case ApplicationWorkMode.NoProtocol:
                     var noProtocolContent = GetNoProtocolMacrosContent();
-                    MessageBus.Current.SendMessage(noProtocolContent.Commands);
+                    MessageBus.Current.SendMessage(noProtocolContent);
                     break;
 
                 case ApplicationWorkMode.ModbusClient:
                     var modbusContent = GetModbusMacrosContent();
-                    MessageBus.Current.SendMessage(modbusContent.Commands);
+                    MessageBus.Current.SendMessage(modbusContent);
                     break;
 
                 default:

@@ -11,6 +11,7 @@ using ViewModels.NoProtocol.DataTypes;
 using ViewModels.Helpers;
 using Services.Interfaces;
 using Core.Models.NoProtocol;
+using Core.Models.Settings.DataTypes;
 
 namespace ViewModels.NoProtocol
 {
@@ -126,10 +127,10 @@ namespace ViewModels.NoProtocol
                     await Receive_SendMessage_Handler(message);
                 });
 
-            MessageBus.Current.Listen<List<MacrosCommandNoProtocol>>()
-                .Subscribe(async message =>
+            MessageBus.Current.Listen<MacrosContent<MacrosCommandNoProtocol>>()
+                .Subscribe(async macros =>
                 {
-                    await Receive_ListMessage_Handler(message);
+                    await Receive_ListMessage_Handler(macros);
                 });
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
@@ -161,30 +162,57 @@ namespace ViewModels.NoProtocol
             }
         }
 
-        private async Task Receive_ListMessage_Handler(List<MacrosCommandNoProtocol> message)
+        private async Task Receive_ListMessage_Handler(MacrosContent<MacrosCommandNoProtocol> macros)
         {
-            try
+            if (!_connectedHostModel.HostIsConnect)
             {
-                foreach (var command in message)
+                _messageBox.Show("Клиент отключен.", MessageType.Error);
+                return;
+            }
+
+            if (macros.Commands == null || macros.Commands.Count == 0)
+            {
+                _messageBox.Show($"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+                return;
+            }
+
+            var errorMessages = new List<string>();
+
+            MacrosCommandNoProtocol? currentCommand = null;
+
+            string messageSeparator = "\n\n---------------------------\n\n";
+
+            foreach (var command in macros.Commands)
+            {
+                try
                 {
                     if (command.Content == null)
                         continue;
 
+                    currentCommand = command;
+
                     byte[] buffer = CreateSendBuffer(
-                        command.Content.IsByteString, 
-                        command.Content.Message, 
-                        command.Content.EnableCR, 
+                        command.Content.IsByteString,
+                        command.Content.Message,
+                        command.Content.EnableCR,
                         command.Content.EnableLF,
                         AppEncoding.GetEncoding(command.Content.MacrosEncoding)
                         );
 
                     await _noProtocolModel.SendBytes(buffer);
                 }
+
+                catch (Exception error)
+                {
+                    errorMessages.Add($"Ошибка в команде \"{currentCommand?.Name}\".\n\n{error.Message}");
+                }
             }
 
-            catch (Exception error)
+            if (errorMessages.Any())
             {
-                _messageBox.Show(error.Message, MessageType.Error, error);
+                errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
+
+                _messageBox.Show(string.Join(messageSeparator, errorMessages), MessageType.Error);
             }
         }
 

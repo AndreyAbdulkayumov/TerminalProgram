@@ -15,6 +15,7 @@ using ViewModels.ModbusClient.ModbusRepresentations;
 using ViewModels.ModbusClient.MessageBusTypes;
 using Services.Interfaces;
 using Core.Models.Modbus;
+using Core.Models.Settings.DataTypes;
 
 namespace ViewModels.ModbusClient
 {
@@ -159,7 +160,7 @@ namespace ViewModels.ModbusClient
 
         private ushort _packageNumber = 0;
 
-        private ModbusFunction? _currentFunction;        
+        private ModbusFunction? _currentFunction;
 
 
         public ModbusClient_VM(IUIService uiServices, IOpenChildWindowService openChildWindow, IMessageBoxMainWindow messageBox,
@@ -201,10 +202,10 @@ namespace ViewModels.ModbusClient
                     await Receive_WriteMessage_Handler(message);
                 });            
 
-            MessageBus.Current.Listen<List<MacrosCommandModbus>>()
-                .Subscribe(async message =>
+            MessageBus.Current.Listen<MacrosContent<MacrosCommandModbus>>()
+                .Subscribe(async macros =>
                 {
-                    await Receive_ListMessage_Handler(message);
+                    await Receive_ListMessage_Handler(macros);
                 });
 
             /****************************************************/
@@ -326,47 +327,84 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private async Task Receive_ListMessage_Handler(List<MacrosCommandModbus> message)
+        private async Task Receive_ListMessage_Handler(MacrosContent<MacrosCommandModbus> macros)
         {
-            try
+            if (!_connectedHostModel.HostIsConnect)
             {
-                foreach (var command in message)
+                _messageBox.Show("Клиент отключен.", MessageType.Error);
+                return;
+            }
+
+            if (macros.Commands == null || macros.Commands.Count == 0)
+            {
+                _messageBox.Show($"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+                return;
+            }
+
+            var errorMessages = new List<string>();
+
+            MacrosCommandModbus? currentCommand = null;
+
+            string messageSeparator = "\n\n---------------------------\n\n";
+
+            foreach (var command in macros.Commands)
+            {
+                try
                 {
                     if (command.Content == null)
                         continue;
 
+                    currentCommand = command;
+
                     var modbusFunction = Function.AllFunctions.Single(x => x.Number == command.Content.FunctionNumber);
 
-                    if (modbusFunction != null)
+                    if (modbusFunction == null)
+                        continue;
+
+                    if (modbusFunction is ModbusReadFunction readFunction)
                     {
-                        if (modbusFunction is ModbusReadFunction readFunction)
-                        {
-                            await Modbus_Read(command.Content.SlaveID, command.Content.Address, readFunction, command.Content.NumberOfReadRegisters, command.Content.CheckSum_IsEnable);
-                        }
-
-                        else if (modbusFunction is ModbusWriteFunction writeFunction)
-                        {
-                            await Modbus_Write(
-                                command.Content.SlaveID,
-                                command.Content.Address,
-                                writeFunction,
-                                command.Content.WriteInfo?.WriteBuffer,
-                                command.Content.WriteInfo != null ? command.Content.WriteInfo.NumberOfWriteRegisters : 0,
-                                command.Content.CheckSum_IsEnable
-                                );
-                        }
-
-                        else
-                        {
-                            throw new Exception("Выбранна неизвестная Modbus функция");
-                        }
+                        await ReadAction(command.Content.SlaveID, command.Content.Address, readFunction, command.Content.NumberOfReadRegisters, command.Content.CheckSum_IsEnable);
                     }
+
+                    else if (modbusFunction is ModbusWriteFunction writeFunction)
+                    {
+                        await WriteAction(
+                            command.Content.SlaveID,
+                            command.Content.Address,
+                            writeFunction,
+                            command.Content.WriteInfo?.WriteBuffer,
+                            command.Content.WriteInfo != null ? command.Content.WriteInfo.NumberOfWriteRegisters : 0,
+                            command.Content.CheckSum_IsEnable
+                            );
+                    }
+
+                    else
+                    {
+                        throw new Exception("Выбранна неизвестная Modbus функция");
+                    }
+                }
+
+                catch (ModbusException error)
+                {
+                    if (currentCommand == null || currentCommand.Content == null)
+                        continue;
+
+                    var exceptionMessage = await ModbusErrorHandler(currentCommand.Content.Address, error);
+
+                    errorMessages.Add($"Ошибка в команде \"{currentCommand.Name}\".\n\n{exceptionMessage}");
+                }
+
+                catch (Exception error)
+                {
+                    errorMessages.Add($"Ошибка в команде \"{currentCommand?.Name}\".\n\n{error.Message}");
                 }
             }
 
-            catch (Exception error)
+            if (errorMessages.Any())
             {
-                _messageBox.Show(error.Message, MessageType.Error, error);
+                errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
+
+                _messageBox.Show(string.Join(messageSeparator, errorMessages), MessageType.Error);
             }
         }
 
@@ -421,49 +459,14 @@ namespace ViewModels.ModbusClient
         {
             try
             {
-                if (_connectedHostModel.HostIsConnect == false)
-                {
-                    throw new Exception("Modbus клиент отключен.");
-                }
-
-                if (ModbusMessageType == null)
-                {
-                    throw new Exception("Не задан тип протокола Modbus.");
-                }
-
-                if (numberOfRegisters < 1)
-                {
-                    throw new Exception("Сколько, сколько регистров вы хотите прочитать? :)");
-                }
-
-                _currentFunction = readFunction;
-
-                MessageData data = new ReadTypeMessage(
-                    slaveID,
-                    address,
-                    numberOfRegisters,
-                    ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
-
-                ModbusOperationResult? result = await _modbusModel.ReadRegister(
-                                readFunction,
-                                data,
-                                ModbusMessageType);
-
-                await AddDataOnView(new ModbusDataDisplayed()
-                {
-                    OperationID = _packageNumber,
-                    FuncNumber = readFunction.DisplayedNumber,
-                    Address = address,
-                    ViewAddress = CreateViewAddress(address, result.ReadedData == null ? 0 : numberOfRegisters),
-                    Data = result.ReadedData,
-                    ViewData = CreateViewData(result.ReadedData, readFunction, numberOfRegisters)
-                },
-                result.Details);
+                await ReadAction(slaveID, address, readFunction, numberOfRegisters, checkSum_Enable);
             }
 
             catch (ModbusException error)
             {
-                await ModbusErrorHandler(address, error);
+                var message = await ModbusErrorHandler(address, error);
+
+                _messageBox.Show(message, MessageType.Error);
             }
 
             catch (Exception error)
@@ -483,50 +486,14 @@ namespace ViewModels.ModbusClient
         {
             try
             {
-                if (_connectedHostModel.HostIsConnect == false)
-                {
-                    throw new Exception("Modbus клиент отключен.");
-                }
-
-                if (ModbusMessageType == null)
-                {
-                    throw new Exception("Не задан тип протокола Modbus.");
-                }
-
-                if (modbusWriteData == null || modbusWriteData.Length == 0)
-                {
-                    throw new Exception("Укажите данные для записи.");
-                }
-
-                _currentFunction = writeFunction;
-
-                MessageData data = new WriteTypeMessage(
-                    slaveID,
-                    address,
-                    modbusWriteData,
-                    numberOfRegisters,
-                    ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
-
-                ModbusOperationResult result = await _modbusModel.WriteRegister(
-                    writeFunction,
-                    data,
-                    ModbusMessageType);
-
-                await AddDataOnView(new ModbusDataDisplayed()
-                {
-                    OperationID = _packageNumber,
-                    FuncNumber = writeFunction.DisplayedNumber,
-                    Address = address,
-                    ViewAddress = CreateViewAddress(address, numberOfRegisters),
-                    Data = modbusWriteData,
-                    ViewData = CreateViewData(modbusWriteData, writeFunction, numberOfRegisters)
-                },
-                result.Details);
+                await WriteAction(slaveID, address, writeFunction, modbusWriteData, numberOfRegisters, checkSum_Enable);
             }
 
             catch (ModbusException error)
             {
-                await ModbusErrorHandler(address, error);
+                var message = await ModbusErrorHandler(address, error);
+
+                _messageBox.Show(message, MessageType.Error);
             }
 
             catch (Exception error)
@@ -542,7 +509,92 @@ namespace ViewModels.ModbusClient
             }
         }
 
-        private async Task ModbusErrorHandler(ushort address, ModbusException error)
+        private async Task ReadAction(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
+        {
+            if (_connectedHostModel.HostIsConnect == false)
+            {
+                throw new Exception("Клиент отключен.");
+            }
+
+            if (ModbusMessageType == null)
+            {
+                throw new Exception("Не задан тип протокола Modbus.");
+            }
+
+            if (numberOfRegisters < 1)
+            {
+                throw new Exception("Сколько, сколько регистров вы хотите прочитать? :)");
+            }
+
+            _currentFunction = readFunction;
+
+            MessageData data = new ReadTypeMessage(
+                slaveID,
+                address,
+                numberOfRegisters,
+                ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
+
+            ModbusOperationResult? result = await _modbusModel.ReadRegister(
+                            readFunction,
+                            data,
+                            ModbusMessageType);
+
+            await AddDataOnView(new ModbusDataDisplayed()
+            {
+                OperationID = _packageNumber,
+                FuncNumber = readFunction.DisplayedNumber,
+                Address = address,
+                ViewAddress = CreateViewAddress(address, result.ReadedData == null ? 0 : numberOfRegisters),
+                Data = result.ReadedData,
+                ViewData = CreateViewData(result.ReadedData, readFunction, numberOfRegisters)
+            },
+            result.Details);
+        }
+
+        private async Task WriteAction(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[]? modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
+        {
+            if (_connectedHostModel.HostIsConnect == false)
+            {
+                throw new Exception("Клиент отключен.");
+            }
+
+            if (ModbusMessageType == null)
+            {
+                throw new Exception("Не задан тип протокола Modbus.");
+            }
+
+            if (modbusWriteData == null || modbusWriteData.Length == 0)
+            {
+                throw new Exception("Укажите данные для записи.");
+            }
+
+            _currentFunction = writeFunction;
+
+            MessageData data = new WriteTypeMessage(
+                slaveID,
+                address,
+                modbusWriteData,
+                numberOfRegisters,
+                ModbusMessageType is ModbusTCP_Message ? false : checkSum_Enable);
+
+            ModbusOperationResult result = await _modbusModel.WriteRegister(
+                writeFunction,
+                data,
+                ModbusMessageType);
+
+            await AddDataOnView(new ModbusDataDisplayed()
+            {
+                OperationID = _packageNumber,
+                FuncNumber = writeFunction.DisplayedNumber,
+                Address = address,
+                ViewAddress = CreateViewAddress(address, numberOfRegisters),
+                Data = modbusWriteData,
+                ViewData = CreateViewData(modbusWriteData, writeFunction, numberOfRegisters)
+            },
+            result.Details);
+        }
+
+        private async Task<string> ModbusErrorHandler(ushort address, ModbusException error)
         {
             await AddDataOnView(new ModbusDataDisplayed()
             {
@@ -564,13 +616,12 @@ namespace ViewModels.ModbusClient
                     "\nFalse - это 0x0000";
             }
 
-            _messageBox.Show(
+            return
                 "Ошибка Modbus.\n\n" +
                 $"Код функции: {error.FunctionCode.ToString()}\n" +
                 $"Код ошибки: {error.ErrorCode.ToString()}\n\n" +
                 error.Message +
-                addition,
-                MessageType.Warning);
+                addition;
         }
 
         private (string[], string) ParseData(byte[]? data)

@@ -2,7 +2,7 @@
 
 namespace ViewModels.Validation
 {
-    internal static class StringValue
+    public static class StringValue
     {
         public static bool IsValidNumber(string stringNumber, NumberStyles style, out byte number)
         {

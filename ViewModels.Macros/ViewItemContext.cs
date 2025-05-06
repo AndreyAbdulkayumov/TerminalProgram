@@ -22,7 +22,7 @@ namespace ViewModels.Macros
                     return;
                 }
 
-                MessageBus.Current.SendMessage(_content.Commands);
+                MessageBus.Current.SendMessage(_content);
             };
 
             return new MacrosViewItemData(_content.MacrosName ?? string.Empty, action);
