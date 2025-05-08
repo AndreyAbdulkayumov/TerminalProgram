@@ -58,6 +58,7 @@ public partial class App : Application
             .AddSingleton<NoProtocol_VM>()
             .AddSingleton<NoProtocol_Mode_Normal_VM>()
             .AddSingleton<NoProtocol_Mode_Cycle_VM>()
+            .AddSingleton<NoProtocol_Mode_Files_VM>()
             .AddSingleton<ModbusClient_VM>()
             .AddSingleton<ModbusClient_Mode_Normal_VM>()
             .AddSingleton<ModbusClient_Mode_Cycle_VM>()

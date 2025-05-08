@@ -12,6 +12,7 @@ using ViewModels.Helpers;
 using Services.Interfaces;
 using Core.Models.NoProtocol;
 using Core.Models.Settings.DataTypes;
+using System.Collections.ObjectModel;
 
 namespace ViewModels.NoProtocol
 {
@@ -35,12 +36,26 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref ui_IsEnable, value);
         }
 
-        private bool _isCycleMode = false;
+        private const string SendMode_Normal = "Одиночная";
+        private const string SendMode_Cycle = "Цикличная";
+        private const string SendMode_Files = "Файлы";
 
-        public bool IsCycleMode
+        private string _selectedSendMode = SendMode_Normal;
+
+        public string SelectedSendMode
         {
-            get => _isCycleMode;
-            set => this.RaiseAndSetIfChanged(ref _isCycleMode, value);
+            get => _selectedSendMode;
+            set => this.RaiseAndSetIfChanged(ref _selectedSendMode, value);
+        }
+
+        private ObservableCollection<string> _allSendModes = new ObservableCollection<string>()
+        {
+            SendMode_Normal, SendMode_Cycle, SendMode_Files
+        };
+
+        public ObservableCollection<string> AllSendModes
+        {
+            get => _allSendModes;
         }
 
         private const string InterfaceType_Default = "не определен";
@@ -104,16 +119,18 @@ namespace ViewModels.NoProtocol
         private readonly Model_NoProtocol _noProtocolModel;
         private readonly NoProtocol_Mode_Normal_VM _normalMode_VM;
         private readonly NoProtocol_Mode_Cycle_VM _cycleMode_VM;
+        private readonly NoProtocol_Mode_Files_VM _filesMode_VM;
 
         public NoProtocol_VM(IMessageBoxMainWindow messageBox,
             ConnectedHost connectedHostModel, Model_NoProtocol noProtocolModel,
-            NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM)
+            NoProtocol_Mode_Normal_VM normalMode_VM, NoProtocol_Mode_Cycle_VM cycleMode_VM, NoProtocol_Mode_Files_VM filesMode_VM)
         {
             _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
             _connectedHostModel = connectedHostModel ?? throw new ArgumentNullException(nameof(connectedHostModel));
             _noProtocolModel = noProtocolModel ?? throw new ArgumentNullException(nameof(noProtocolModel));
             _normalMode_VM = normalMode_VM ?? throw new ArgumentNullException(nameof(normalMode_VM));
-            _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));            
+            _cycleMode_VM = cycleMode_VM ?? throw new ArgumentNullException(nameof(cycleMode_VM));   
+            _filesMode_VM = filesMode_VM ?? throw new ArgumentNullException(nameof(filesMode_VM));
 
             _connectedHostModel.DeviceIsConnect += Model_DeviceIsConnect;
             _connectedHostModel.DeviceIsDisconnected += Model_DeviceIsDisconnected;
@@ -135,15 +152,28 @@ namespace ViewModels.NoProtocol
 
             Command_ClearRX = ReactiveCommand.Create(() => { RX?.Clear(); RX_String = string.Empty; });
 
-            this.WhenAnyValue(x => x.IsCycleMode)
+            this.WhenAnyValue(x => x.SelectedSendMode)
                 .Subscribe(_ =>
                 {
-                    if (!IsCycleMode)
+                    if (SelectedSendMode != SendMode_Cycle)
                     {
                         _cycleMode_VM.StopPolling();
                     }
 
-                    CurrentModeViewModel = IsCycleMode ? _cycleMode_VM : _normalMode_VM;
+                    switch (SelectedSendMode)
+                    {
+                        case SendMode_Normal:
+                            CurrentModeViewModel = _normalMode_VM;
+                            break;
+
+                        case SendMode_Cycle:
+                            CurrentModeViewModel = _cycleMode_VM;
+                            break;
+
+                        case SendMode_Files:
+                            CurrentModeViewModel = _filesMode_VM;
+                            break;
+                    }
                 });
         }
 

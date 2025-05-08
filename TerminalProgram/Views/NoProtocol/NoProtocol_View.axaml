@@ -28,6 +28,10 @@
 			<ModeViews:Cycle/>
 		</DataTemplate>
 
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol_Mode_Files_VM}">
+			<ModeViews:Files/>
+		</DataTemplate>
+
 	</UserControl.DataTemplates>
 	
 	<Grid>
@@ -67,15 +71,23 @@
 						   FontSize="16"
 						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
 
-			</StackPanel>	
-			
-			 
-			<ToggleSwitch Margin="0,0,20,0"
-						  OffContent="Цикличный опрос"
-						  OnContent="Цикличный опрос"
-						  IsChecked="{Binding IsCycleMode, Mode=TwoWay}"
-						  HorizontalAlignment="Right" VerticalAlignment="Center"/>
-			
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="0,0,20,0"
+					    HorizontalAlignment="Right" VerticalAlignment="Center">
+
+				<TextBlock Text="Тип отправки:"
+						   FontSize="16"
+                           Foreground="{DynamicResource App_Color_Text}"
+						   VerticalAlignment="Center"/>
+				
+				<ComboBox Height="32" Width="160"
+						  ItemsSource="{Binding AllSendModes, Mode=OneWay}"
+					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}"/>
+				
+			</StackPanel>
+
 		</Grid>
 
 		<ContentControl Grid.Row="1"
