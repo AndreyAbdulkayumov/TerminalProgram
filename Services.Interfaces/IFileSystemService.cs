@@ -2,7 +2,7 @@
 {
     public interface IFileSystemService
     {
-        Task<string?> GetFilePath(string windowTitle, string pickerFileType, IReadOnlyList<string> patterns);
+        Task<string?> GetFilePath(string windowTitle, string pickerFileType, IReadOnlyList<string>? patterns);
         Task<string?> GetFolderPath(string windowTitle);
         void OpenUserManual();
     }

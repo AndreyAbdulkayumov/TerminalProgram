@@ -13,20 +13,26 @@ namespace TerminalProgramBase.Services
 {
     public class FileSystemService : IFileSystemService
     {
-        public async Task<string?> GetFilePath(string windowTitle, string pickerFileTypeName, IReadOnlyList<string> patterns)
+        public async Task<string?> GetFilePath(string windowTitle, string pickerFileTypeName, IReadOnlyList<string>? patterns)
         {
             // Get top level from the current control. Alternatively, you can use Window reference instead.
             TopLevel? topLevel = TopLevel.GetTopLevel(MainWindow.Instance);
 
             if (topLevel != null)
             {
-                // Start async operation to open the dialog.
-                var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+                var options = new FilePickerOpenOptions
                 {
                     Title = windowTitle,
-                    FileTypeFilter = [new FilePickerFileType(pickerFileTypeName) { Patterns = patterns }],
                     AllowMultiple = false
-                });
+                };
+
+                if (patterns != null)
+                {
+                    options.FileTypeFilter = [new FilePickerFileType(pickerFileTypeName) { Patterns = patterns }];
+                }
+
+                // Start async operation to open the dialog.
+                var files = await topLevel.StorageProvider.OpenFilePickerAsync(options);
 
                 if (files.Count >= 1)
                 {

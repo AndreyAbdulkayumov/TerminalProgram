@@ -78,6 +78,14 @@ namespace ViewModels.NoProtocol
             set => this.RaiseAndSetIfChanged(ref _selectedEncoding, value);
         }
 
+        private bool _encodingIsVisible = true;
+
+        public bool EncodingIsVisible
+        {
+            get => _encodingIsVisible;
+            set => this.RaiseAndSetIfChanged(ref _encodingIsVisible, value);
+        }
+
         private string _rx_String = string.Empty;
 
         public string RX_String
@@ -159,6 +167,8 @@ namespace ViewModels.NoProtocol
                     {
                         _cycleMode_VM.StopPolling();
                     }
+
+                    EncodingIsVisible = SelectedSendMode != SendMode_Files;
 
                     switch (SelectedSendMode)
                     {

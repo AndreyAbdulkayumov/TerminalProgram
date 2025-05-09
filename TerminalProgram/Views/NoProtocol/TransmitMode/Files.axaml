@@ -3,13 +3,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" 
-			 d:DesignWidth="600" d:DesignHeight="200"
+			 d:DesignWidth="1000" d:DesignHeight="200"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="TerminalProgram.Views.NoProtocol.TransmitMode.Files">
 
 	<UserControl.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
 
 	</UserControl.Styles>
@@ -19,12 +20,18 @@
 			CornerRadius="4"
 			Margin="10">
 
-		<ScrollViewer>
+		<Grid>
 
-			<StackPanel Orientation="Vertical" Spacing="20"
-						Margin="10">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="1*"/>
+				<ColumnDefinition Width="20"/>
+				<ColumnDefinition Width="360"/>
+			</Grid.ColumnDefinitions>
+
+			<ScrollViewer Grid.Column="0">
 
 				<ItemsControl ItemsSource="{Binding Files, Mode=TwoWay}"
+							  Margin="10"
 							  HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
 					<ItemsControl.ItemsPanel>
@@ -47,11 +54,19 @@
 
 								</Button>
 
-								<TextBlock Text="{Binding FileName, Mode=OneWay}"
-										   MinWidth="100"/>
+								<SelectableTextBlock Text="{Binding FileName, Mode=OneWay}"
+													 Foreground="{DynamicResource WindowChrome_Color_Title}"
+													 SelectionBrush="#0099BC"
+													 FontSize="17"
+													 MinWidth="100"
+													 HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
 
-								<TextBlock Text="{Binding FileExtension, Mode=OneWay}"
-										   MinWidth="100"/>
+								<SelectableTextBlock Text="{Binding FileExtension, Mode=OneWay}"
+													 Foreground="{DynamicResource WindowChrome_Color_Title}"
+													 SelectionBrush="#0099BC"
+													 FontSize="17"
+													 MinWidth="100"
+													 VerticalAlignment="Center"/>
 
 								<Button Classes="MenuToolButton"
 										ToolTip.Tip="Удалить файл"
@@ -69,14 +84,32 @@
 
 				</ItemsControl>
 
-				<Button Content="Добавить файл"
-						FontSize="14"
-						HorizontalAlignment="Center"
-						Command="{Binding Command_AddFile}"/>
+			</ScrollViewer>
+			
+			<Border Grid.Column="1" 
+					Width="2"
+					Margin="0,10,0,10"
+					Background="{DynamicResource GridSplitter_Color_Background}"/>
 
+			<StackPanel Orientation="Vertical" Grid.Column="2"
+						Spacing="10"
+						Margin="10">
+
+				<StackPanel Orientation="Horizontal" Spacing="50">
+
+					<Button Content="Добавить файл"
+							FontSize="14"
+							Command="{Binding Command_AddFile}"/>
+
+					<Button Content="Удалить все"
+							FontSize="14"
+							Command="{Binding Command_RemoveAllFiles}"/>
+					
+				</StackPanel>
+								
 			</StackPanel>
 
-		</ScrollViewer>
+		</Grid>
 		
 	</Border>
 	

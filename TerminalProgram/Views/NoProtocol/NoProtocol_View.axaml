@@ -60,6 +60,7 @@
 			</StackPanel>
 
 			<StackPanel Orientation="Horizontal" Spacing="10"
+						IsVisible="{Binding EncodingIsVisible, Mode=OneWay}"
 						Margin="290,0,0,0"
 						HorizontalAlignment="Left" VerticalAlignment="Center">
 
@@ -82,7 +83,7 @@
                            Foreground="{DynamicResource App_Color_Text}"
 						   VerticalAlignment="Center"/>
 				
-				<ComboBox Height="32" Width="160"
+				<ComboBox Height="32" Width="125"
 						  ItemsSource="{Binding AllSendModes, Mode=OneWay}"
 					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}"/>
 				
