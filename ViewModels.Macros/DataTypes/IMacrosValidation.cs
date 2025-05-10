@@ -1,7 +1,6 @@
-﻿namespace ViewModels.Macros.DataTypes
+﻿namespace ViewModels.Macros.DataTypes;
+
+internal interface IMacrosValidation
 {
-    public interface IMacrosValidation
-    {
-        string? GetValidationMessage();
-    }
+    string? GetValidationMessage();
 }

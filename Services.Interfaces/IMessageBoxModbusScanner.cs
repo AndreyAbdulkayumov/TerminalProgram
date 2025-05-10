@@ -1,8 +1,7 @@
 ﻿using MessageBox_Core;
 
-namespace Services.Interfaces
+namespace Services.Interfaces;
+
+public interface IMessageBoxModbusScanner : IMessageBox
 {
-    public interface IMessageBoxModbusScanner : IMessageBox
-    {
-    }
 }

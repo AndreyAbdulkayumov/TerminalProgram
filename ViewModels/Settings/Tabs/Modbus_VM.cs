@@ -3,75 +3,74 @@ using System.Globalization;
 using ViewModels.Helpers.FloatNumber;
 using ViewModels.Validation;
 
-namespace ViewModels.Settings.Tabs
+namespace ViewModels.Settings.Tabs;
+
+public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
 {
-    public class Modbus_VM : ValidatedDateInput, IValidationFieldInfo
+    private string _writeTimeout = string.Empty;
+
+    public string WriteTimeout
     {
-        private string _writeTimeout = string.Empty;
-
-        public string WriteTimeout
+        get => _writeTimeout;
+        set
         {
-            get => _writeTimeout;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _writeTimeout, value);
-                ValidateInput(nameof(WriteTimeout), value);
-            }
+            this.RaiseAndSetIfChanged(ref _writeTimeout, value);
+            ValidateInput(nameof(WriteTimeout), value);
         }
+    }
 
-        private string _readTimeout = string.Empty;
+    private string _readTimeout = string.Empty;
 
-        public string ReadTimeout
+    public string ReadTimeout
+    {
+        get => _readTimeout;
+        set
         {
-            get => _readTimeout;
-            set 
-            {
-                this.RaiseAndSetIfChanged(ref _readTimeout, value);
-                ValidateInput(nameof(ReadTimeout), value);
-            }
+            this.RaiseAndSetIfChanged(ref _readTimeout, value);
+            ValidateInput(nameof(ReadTimeout), value);
         }
+    }
 
-        private FloatNumberFormat _floatFormat;
+    private FloatNumberFormat _floatFormat;
 
-        public FloatNumberFormat FloatFormat
+    public FloatNumberFormat FloatFormat
+    {
+        get => _floatFormat;
+        set => this.RaiseAndSetIfChanged(ref _floatFormat, value);
+    }
+
+    public Modbus_VM()
+    {
+
+    }
+
+    public string GetFieldViewName(string fieldName)
+    {
+        switch (fieldName)
         {
-            get => _floatFormat;
-            set => this.RaiseAndSetIfChanged(ref _floatFormat, value);
+            case nameof(WriteTimeout):
+                return "Таймаут записи";
+
+            case nameof(ReadTimeout):
+                return "Таймаут чтения";
+
+            default:
+                return fieldName;
         }
+    }
 
-        public Modbus_VM()
+    protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
+    {
+        if (string.IsNullOrEmpty(value))
         {
-            
-        }
-
-        public string GetFieldViewName(string fieldName)
-        {
-            switch (fieldName)
-            {
-                case nameof(WriteTimeout):
-                    return "Таймаут записи";
-
-                case nameof(ReadTimeout):
-                    return "Таймаут чтения";
-
-                default:
-                    return fieldName;
-            }
-        }
-
-        protected override ValidateMessage? GetErrorMessage(string fieldName, string? value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return null;
-            }
-
-            if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
-            {
-                return AllErrorMessages[DecError_uint];
-            }
-
             return null;
         }
+
+        if (!StringValue.IsValidNumber(value, NumberStyles.Number, out uint _))
+        {
+            return AllErrorMessages[DecError_uint];
+        }
+
+        return null;
     }
 }

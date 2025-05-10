@@ -2,279 +2,278 @@
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;
 
-namespace Core.Models.Modbus
+namespace Core.Models.Modbus;
+
+public class Model_Modbus
 {
-    public class Model_Modbus
+    public double CycleMode_Period
     {
-        public double CycleMode_Period
+        get => CycleModeTimer.Interval;
+        set => CycleModeTimer.Interval = value;
+    }
+
+    public event EventHandler<Exception>? Model_ErrorInCycleMode;
+
+    private static bool IsBusy = false;
+
+    private IConnection? _device;
+
+    private readonly System.Timers.Timer CycleModeTimer;
+    private const double IntervalDefault = 100;
+
+    private Action? _readRegisterInCycleMode;
+
+    public Model_Modbus()
+    {
+        CycleModeTimer = new System.Timers.Timer(IntervalDefault);
+        CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
+    }
+
+    public void Host_DeviceIsConnect(object? sender, IConnection? e)
+    {
+        if (e != null && e.IsConnected)
         {
-            get => CycleModeTimer.Interval;
-            set => CycleModeTimer.Interval = value;
+            _device = e;
         }
+    }
 
-        public event EventHandler<Exception>? Model_ErrorInCycleMode;
+    public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
+    {
+        _device = null;
+    }
 
-        private static bool IsBusy = false;       
+    public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
+    {
+        while (IsBusy) ;
 
-        private IConnection? _device;
+        IsBusy = true;
 
-        private readonly System.Timers.Timer CycleModeTimer;
-        private const double IntervalDefault = 100;
+        byte[] TX = Array.Empty<byte>();
+        byte[] RX = Array.Empty<byte>();
 
-        private Action? _readRegisterInCycleMode;
+        var Result = new ModbusOperationResult();
 
-        public Model_Modbus()
+        ModbusOperationInfo? TX_Info = null, RX_Info = null;
+
+        try
         {
-            CycleModeTimer = new System.Timers.Timer(IntervalDefault);
-            CycleModeTimer.Elapsed += CycleModeTimer_Elapsed;
-        }
-
-        public void Host_DeviceIsConnect(object? sender, IConnection? e)
-        {
-            if (e != null && e.IsConnected)
+            if (_device == null)
             {
-                _device = e;
+                throw new Exception("Хост не инициализирован.");
+            }
+
+            TX = message.CreateMessage(writeFunction, dataForWrite);
+
+            TX_Info = await _device.Send(TX, TX.Length);
+
+            RX_Info = await _device.Receive();
+
+            if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
+            {
+                RX = RX_Info.ResponseBytes;
+
+                ModbusResponse Data = message.DecodingMessage(writeFunction, RX);
+            }
+
+            else
+            {
+                throw new TimeoutException();
             }
         }
 
-        public void Host_DeviceIsDisconnected(object? sender, IConnection? e)
+        catch (ModbusException error)
         {
-            _device = null;
+            throw new ModbusException(
+                errorObject: error,
+                requestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
+                responseBytes: GetOutputRX(RX, RX.Length),
+                request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                );
         }
 
-        public async Task<ModbusOperationResult> WriteRegister(ModbusWriteFunction writeFunction, MessageData dataForWrite, ModbusMessage message)
+        catch (TimeoutException)
         {
-            while (IsBusy) ;
+            string errorMessage = "Хост не ответил.";
 
-            IsBusy = true;
-
-            byte[] TX = Array.Empty<byte>();
-            byte[] RX = Array.Empty<byte>();
-
-            var Result = new ModbusOperationResult();
-
-            ModbusOperationInfo? TX_Info = null, RX_Info = null;
-
-            try
+            if (_device != null)
             {
-                if (_device == null)
-                {
-                    throw new Exception("Хост не инициализирован.");
-                }
-
-                TX = message.CreateMessage(writeFunction, dataForWrite);
-
-                TX_Info = await _device.Send(TX, TX.Length);
-
-                RX_Info = await _device.Receive();
-
-                if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
-                {
-                    RX = RX_Info.ResponseBytes;
-
-                    ModbusResponse Data = message.DecodingMessage(writeFunction, RX);
-                }
-
-                else
-                {
-                    throw new TimeoutException();
-                }
+                errorMessage += "\n\nТаймаут записи: " + _device.WriteTimeout + " мс." + "\n" +
+                    "Таймаут чтения: " + _device.ReadTimeout + " мс.";
             }
 
-            catch (ModbusException error)
-            {
-                throw new ModbusException(
-                    errorObject: error,
-                    requestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
-                    responseBytes: GetOutputRX(RX, RX.Length),
-                    request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                    response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                    );
-            }
+            throw new TimeoutException(errorMessage);
+        }
 
-            catch (TimeoutException)
-            {
-                string errorMessage = "Хост не ответил.";
-
-                if (_device != null)
+        catch (Exception error)
+        {
+            throw new Exception(error.Message,
+                new ModbusExceptionInfo()
                 {
-                    errorMessage += "\n\nТаймаут записи: " + _device.WriteTimeout + " мс." + "\n" +
-                        "Таймаут чтения: " + _device.ReadTimeout + " мс.";
-                }
-
-                throw new TimeoutException(errorMessage);
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception(error.Message,
-                    new ModbusExceptionInfo()
+                    Details = new ModbusActionDetails()
                     {
-                        Details = new ModbusActionDetails()
-                        {
-                            RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                            ResponseBytes = GetOutputRX(RX, RX.Length),
+                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                            Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                            Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                        }
-                    });
-            }
-
-            finally
-            {
-                Result.Details = new ModbusActionDetails()
-                {
-                    RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                    ResponseBytes = GetOutputRX(RX, RX.Length),
-
-                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                };
-
-                IsBusy = false;
-            }
-
-            return Result;
+                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                    }
+                });
         }
 
-        private byte[] GetOutputRX(byte[] RX, int length)
+        finally
         {
-            var outputArray = new byte[length];
+            Result.Details = new ModbusActionDetails()
+            {
+                RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                ResponseBytes = GetOutputRX(RX, RX.Length),
 
-            Array.Copy(RX, 0, outputArray, 0, outputArray.Length);
+                Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+            };
 
-            return outputArray;
+            IsBusy = false;
         }
 
-        public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
+        return Result;
+    }
+
+    private byte[] GetOutputRX(byte[] RX, int length)
+    {
+        var outputArray = new byte[length];
+
+        Array.Copy(RX, 0, outputArray, 0, outputArray.Length);
+
+        return outputArray;
+    }
+
+    public async Task<ModbusOperationResult> ReadRegister(ModbusReadFunction readFunction, MessageData dataForRead, ModbusMessage message)
+    {
+        while (IsBusy) ;
+
+        IsBusy = true;
+
+        byte[] TX = Array.Empty<byte>();
+        byte[] RX = Array.Empty<byte>();
+
+        var Result = new ModbusOperationResult();
+
+        ModbusOperationInfo? TX_Info = null, RX_Info = null;
+
+        try
         {
-            while (IsBusy) ;
-
-            IsBusy = true;
-
-            byte[] TX = Array.Empty<byte>();
-            byte[] RX = Array.Empty<byte>();
-
-            var Result = new ModbusOperationResult();
-
-            ModbusOperationInfo? TX_Info = null, RX_Info = null;
-
-            try
+            if (_device == null)
             {
-                if (_device == null)
-                {
-                    throw new Exception("Хост не инициализирован.");
-                }
-                
-                TX = message.CreateMessage(readFunction, dataForRead);
-
-                TX_Info = await _device.Send(TX, TX.Length);
-
-                RX_Info = await _device.Receive();
-
-                if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
-                {
-                    RX = RX_Info.ResponseBytes;
-
-                    ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX);
-
-                    Result.ReadedData = DeviceResponse.Data;
-                }
-                
-                else
-                {
-                    throw new TimeoutException();
-                }
+                throw new Exception("Хост не инициализирован.");
             }
 
-            catch (ModbusException error)
+            TX = message.CreateMessage(readFunction, dataForRead);
+
+            TX_Info = await _device.Send(TX, TX.Length);
+
+            RX_Info = await _device.Receive();
+
+            if (RX_Info.ResponseBytes != null && RX_Info.ResponseBytes.Length > 0)
             {
-                throw new ModbusException(
-                    errorObject:   error,
-                    requestBytes:  TX.Length > 0 ? TX : Array.Empty<byte>(),
-                    responseBytes: GetOutputRX(RX, RX.Length),
-                    request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                    response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()                    
-                    );
+                RX = RX_Info.ResponseBytes;
+
+                ModbusResponse DeviceResponse = message.DecodingMessage(readFunction, RX);
+
+                Result.ReadedData = DeviceResponse.Data;
             }
 
-            catch (TimeoutException)
+            else
             {
-                string errorMessage = "Хост не ответил.";
+                throw new TimeoutException();
+            }
+        }
 
-                if (_device != null)
+        catch (ModbusException error)
+        {
+            throw new ModbusException(
+                errorObject: error,
+                requestBytes: TX.Length > 0 ? TX : Array.Empty<byte>(),
+                responseBytes: GetOutputRX(RX, RX.Length),
+                request_ExecutionTime: TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                response_ExecutionTime: RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                );
+        }
+
+        catch (TimeoutException)
+        {
+            string errorMessage = "Хост не ответил.";
+
+            if (_device != null)
+            {
+                errorMessage += "\n\nТаймаут записи: " + _device.WriteTimeout + " мс." + "\n" +
+                    "Таймаут чтения: " + _device.ReadTimeout + " мс.";
+            }
+
+            throw new TimeoutException(errorMessage);
+        }
+
+        catch (Exception error)
+        {
+            throw new Exception(error.Message,
+                new ModbusExceptionInfo()
                 {
-                    errorMessage += "\n\nТаймаут записи: " + _device.WriteTimeout + " мс." + "\n" +
-                        "Таймаут чтения: " + _device.ReadTimeout + " мс.";
-                }
-
-                throw new TimeoutException(errorMessage);
-            }
-
-            catch (Exception error)
-            {
-                throw new Exception(error.Message, 
-                    new ModbusExceptionInfo()
+                    Details = new ModbusActionDetails()
                     {
-                        Details = new ModbusActionDetails()
-                        {
-                            RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                            ResponseBytes = GetOutputRX(RX, RX.Length),
+                        RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                        ResponseBytes = GetOutputRX(RX, RX.Length),
 
-                            Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                            Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                        }
-                    });
-            }
-
-            finally
-            {
-                Result.Details = new ModbusActionDetails()
-                {
-                    RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
-                    ResponseBytes = GetOutputRX(RX, RX.Length),
-
-                    Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
-                    Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
-                };
-
-                IsBusy = false;
-            }
-
-            return Result;
+                        Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                        Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+                    }
+                });
         }
 
-        public void CycleMode_Start(Action readRegister_Handler)
+        finally
         {
-            _readRegisterInCycleMode = readRegister_Handler;
+            Result.Details = new ModbusActionDetails()
+            {
+                RequestBytes = TX.Length > 0 ? TX : Array.Empty<byte>(),
+                ResponseBytes = GetOutputRX(RX, RX.Length),
 
-            _readRegisterInCycleMode.Invoke();
+                Request_ExecutionTime = TX_Info != null ? TX_Info.ExecutionTime : new DateTime(),
+                Response_ExecutionTime = RX_Info != null ? RX_Info.ExecutionTime : new DateTime()
+            };
 
-            CycleModeTimer.Start();
+            IsBusy = false;
         }
 
-        public void CycleMode_Stop()
+        return Result;
+    }
+
+    public void CycleMode_Start(Action readRegister_Handler)
+    {
+        _readRegisterInCycleMode = readRegister_Handler;
+
+        _readRegisterInCycleMode.Invoke();
+
+        CycleModeTimer.Start();
+    }
+
+    public void CycleMode_Stop()
+    {
+        CycleModeTimer.Stop();
+    }
+
+    private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        try
         {
-            CycleModeTimer.Stop();
+            if (_readRegisterInCycleMode != null)
+            {
+                _readRegisterInCycleMode.Invoke();
+            }
         }
 
-        private void CycleModeTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+        catch (Exception error)
         {
-            try
-            {
-                if (_readRegisterInCycleMode != null)
-                {
-                    _readRegisterInCycleMode.Invoke(); 
-                }                
-            }
+            CycleMode_Stop();
 
-            catch (Exception error)
-            {
-                CycleMode_Stop();
-
-                Model_ErrorInCycleMode?.Invoke(this, error);
-            }
+            Model_ErrorInCycleMode?.Invoke(this, error);
         }
     }
 }

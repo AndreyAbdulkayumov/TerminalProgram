@@ -2,59 +2,58 @@
 using System.Reactive;
 using MessageBox_Core;
 
-namespace ViewModels.Macros
+namespace ViewModels.Macros;
+
+public class MacrosViewItem_VM : ReactiveObject
 {
-    public class MacrosViewItem_VM : ReactiveObject
+    private string _title = string.Empty;
+
+    public string Title
     {
-        private string _title = string.Empty;
+        get => _title;
+        set => this.RaiseAndSetIfChanged(ref _title, value);
+    }
 
-        public string Title
+    public Action ClickAction;
+
+    public ReactiveCommand<Unit, Unit> Command_EditMacros { get; }
+    public ReactiveCommand<Unit, Unit> Command_MacrosDelete { get; }
+
+    private readonly IMessageBox _messageBox;
+
+    public MacrosViewItem_VM(string title, Action clickAction, Func<string, Task> editMacros, Action<string> deleteMacrosAction, IMessageBox messageBox)
+    {
+        Title = title;
+
+        ClickAction = clickAction;
+
+        _messageBox = messageBox;
+
+        Command_EditMacros = ReactiveCommand.CreateFromTask(() => editMacros(Title));
+        Command_EditMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования макроса \"{Title}\".\n\n{error.Message}", MessageType.Error, error));
+
+        Command_MacrosDelete = ReactiveCommand.CreateFromTask(() => DeleteMacros(deleteMacrosAction));
+        Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления макроса \"{Title}\".\n\n{error.Message}", MessageType.Error, error));
+    }
+
+    public void MacrosAction()
+    {
+        try
         {
-            get => _title;
-            set => this.RaiseAndSetIfChanged(ref _title, value);
+            ClickAction();
         }
 
-        public Action ClickAction;
-
-        public ReactiveCommand<Unit, Unit> Command_EditMacros { get; }
-        public ReactiveCommand<Unit, Unit> Command_MacrosDelete { get; }
-
-        private readonly IMessageBox _messageBox;
-
-        public MacrosViewItem_VM(string title, Action clickAction, Func<string, Task> editMacros, Action<string> deleteMacrosAction, IMessageBox messageBox)
+        catch (Exception error)
         {
-            Title = title;
-
-            ClickAction = clickAction;
-
-            _messageBox = messageBox;
-
-            Command_EditMacros = ReactiveCommand.CreateFromTask(() => editMacros(Title));
-            Command_EditMacros.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка редактирования макроса \"{Title}\".\n\n{error.Message}", MessageType.Error, error));
-
-            Command_MacrosDelete = ReactiveCommand.CreateFromTask(() => DeleteMacros(deleteMacrosAction));
-            Command_MacrosDelete.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка удаления макроса \"{Title}\".\n\n{error.Message}", MessageType.Error, error));
+            _messageBox.Show(error.Message, MessageType.Error, error);
         }
+    }
 
-        public void MacrosAction()
+    private async Task DeleteMacros(Action<string> deleteMacrosAction)
+    {
+        if (await _messageBox.ShowYesNoDialog($"Вы действительно хотите удалить макрос \"{Title}\"?", MessageType.Information) == MessageBoxResult.Yes)
         {
-            try
-            {
-                ClickAction();
-            }
-
-            catch (Exception error)
-            {
-                _messageBox.Show(error.Message, MessageType.Error, error);
-            }
-        }
-
-        private async Task DeleteMacros(Action<string> deleteMacrosAction)
-        {
-            if (await _messageBox.ShowYesNoDialog($"Вы действительно хотите удалить макрос \"{Title}\"?", MessageType.Information) == MessageBoxResult.Yes)
-            {
-                deleteMacrosAction(Title);
-            }
+            deleteMacrosAction(Title);
         }
     }
 }

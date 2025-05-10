@@ -1,7 +1,6 @@
-﻿namespace ViewModels.Macros.DataTypes
+﻿namespace ViewModels.Macros.DataTypes;
+
+internal interface IMacrosContext
 {
-    internal interface IMacrosContext
-    {
-        MacrosViewItemData CreateContext();
-    }
+    MacrosViewItemData CreateContext();
 }

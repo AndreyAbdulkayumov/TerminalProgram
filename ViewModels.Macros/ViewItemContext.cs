@@ -2,30 +2,29 @@
 using ReactiveUI;
 using ViewModels.Macros.DataTypes;
 
-namespace ViewModels.Macros
+namespace ViewModels.Macros;
+
+public class ViewItemContext<T> : IMacrosContext
 {
-    public class ViewItemContext<T> : IMacrosContext
+    private readonly MacrosContent<T> _content;
+
+    public ViewItemContext(MacrosContent<T> content)
     {
-        private readonly MacrosContent<T> _content;
+        _content = content;
+    }
 
-        public ViewItemContext(MacrosContent<T> content)
+    public MacrosViewItemData CreateContext()
+    {
+        Action action = () =>
         {
-            _content = content;
-        }
-
-        public MacrosViewItemData CreateContext()
-        {
-            Action action = () =>
+            if (_content.Commands == null)
             {
-                if (_content.Commands == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                MessageBus.Current.SendMessage(_content);
-            };
+            MessageBus.Current.SendMessage(_content);
+        };
 
-            return new MacrosViewItemData(_content.MacrosName ?? string.Empty, action);
-        }
+        return new MacrosViewItemData(_content.MacrosName ?? string.Empty, action);
     }
 }

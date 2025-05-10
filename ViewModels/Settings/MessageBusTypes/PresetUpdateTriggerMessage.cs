@@ -1,6 +1,5 @@
-﻿namespace ViewModels.Settings.MessageBusTypes
+﻿namespace ViewModels.Settings.MessageBusTypes;
+
+public class PresetUpdateTriggerMessage
 {
-    public class PresetUpdateTriggerMessage
-    {
-    }
 }

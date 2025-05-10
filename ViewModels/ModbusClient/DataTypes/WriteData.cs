@@ -1,14 +1,13 @@
-﻿namespace ViewModels.ModbusClient.DataTypes
-{
-    public class WriteData
-    {
-        public readonly byte[] Data;
-        public readonly int NumberOfRegisters;
+﻿namespace ViewModels.ModbusClient.DataTypes;
 
-        public WriteData(byte[] data, int numberOfRegisters)
-        {
-            Data = data;
-            NumberOfRegisters = numberOfRegisters;
-        }
+public class WriteData
+{
+    public readonly byte[] Data;
+    public readonly int NumberOfRegisters;
+
+    public WriteData(byte[] data, int numberOfRegisters)
+    {
+        Data = data;
+        NumberOfRegisters = numberOfRegisters;
     }
 }

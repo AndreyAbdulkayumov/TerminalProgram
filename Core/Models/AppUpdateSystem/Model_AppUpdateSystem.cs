@@ -2,95 +2,94 @@
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace Core.Models.AppUpdateSystem
+namespace Core.Models.AppUpdateSystem;
+
+public class Model_AppUpdateSystem
 {
-    public class Model_AppUpdateSystem
+    private const string UrlLastestVersion = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/lastestVersion.json";
+
+    private const string UrlDonate = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html";
+
+    public Model_AppUpdateSystem()
     {
-        private const string UrlLastestVersion = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/lastestVersion.json";
 
-        private const string UrlDonate = "https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html";
+    }
 
-        public Model_AppUpdateSystem()
+    /// <summary>
+    /// Проверяет наличие новой версии приложения. Если используется актуальная версия приложения, то возвращается null.
+    /// </summary>
+    /// <param name="currentVersion"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<LastestVersionInfo?> IsUpdateAvailable(Version currentVersion)
+    {
+        HttpClient client = new HttpClient();
+
+        var response = await client.GetStringAsync(UrlLastestVersion);
+
+        var info = JsonSerializer.Deserialize<LastestVersionInfo>(response);
+
+        if (info != null && !string.IsNullOrEmpty(info.Version))
         {
+            var lastestVersion = new Version(info.Version);
 
-        }
-
-        /// <summary>
-        /// Проверяет наличие новой версии приложения. Если используется актуальная версия приложения, то возвращается null.
-        /// </summary>
-        /// <param name="currentVersion"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<LastestVersionInfo?> IsUpdateAvailable(Version currentVersion)
-        {
-            HttpClient client = new HttpClient();
-
-            var response = await client.GetStringAsync(UrlLastestVersion);
-
-            var info = JsonSerializer.Deserialize<LastestVersionInfo>(response);
-
-            if (info != null && !string.IsNullOrEmpty(info.Version))
+            if (lastestVersion > currentVersion)
             {
-                var lastestVersion = new Version(info.Version);
-
-                if (lastestVersion > currentVersion)
-                {
-                    return info;
-                }
-
-                return null;
+                return info;
             }
 
-            throw new Exception("Нарушена целостность файла с информацией о последней версии приложения.");
+            return null;
         }
 
-        /// <summary>
-        /// Переход на страницу пожертвований
-        /// </summary>
-        public void GoToDonatePage()
+        throw new Exception("Нарушена целостность файла с информацией о последней версии приложения.");
+    }
+
+    /// <summary>
+    /// Переход на страницу пожертвований
+    /// </summary>
+    public void GoToDonatePage()
+    {
+        GoToWebPage(UrlDonate);
+    }
+
+    /// <summary>
+    /// Переход на страницу по заданному URL.
+    /// </summary>
+    /// <param name="url"></param>
+    public void GoToWebPage(string? url)
+    {
+        Process.Start(new ProcessStartInfo
         {
-            GoToWebPage(UrlDonate);
-        }
+            FileName = url,
+            UseShellExecute = true // Позволяет открыть URL в стандартном браузере
+        });
+    }
 
-        /// <summary>
-        /// Переход на страницу по заданному URL.
-        /// </summary>
-        /// <param name="url"></param>
-        public void GoToWebPage(string? url)
+    public string GetDownloadLink(LastestVersionInfo info)
+    {
+        string? downloadLink = null;
+
+        if (OperatingSystem.IsWindows())
         {
-            Process.Start(new ProcessStartInfo
+            if (!string.IsNullOrEmpty(info.DownloadLink_Windows))
             {
-                FileName = url,
-                UseShellExecute = true // Позволяет открыть URL в стандартном браузере
-            });
+                downloadLink = info.DownloadLink_Windows;
+            }
         }
 
-        public string GetDownloadLink(LastestVersionInfo info)
+        else if (OperatingSystem.IsLinux())
         {
-            string? downloadLink = null;
-
-            if (OperatingSystem.IsWindows())
+            if (!string.IsNullOrEmpty(info.DownloadLink_Linux))
             {
-                if (!string.IsNullOrEmpty(info.DownloadLink_Windows))
-                {
-                    downloadLink = info.DownloadLink_Windows;
-                }
+                downloadLink = info.DownloadLink_Linux;
             }
-
-            else if (OperatingSystem.IsLinux())
-            {
-                if (!string.IsNullOrEmpty(info.DownloadLink_Linux))
-                {
-                    downloadLink = info.DownloadLink_Linux;
-                }
-            }
-
-            if (string.IsNullOrEmpty(downloadLink))
-            {
-                throw new Exception("Не удалось получить ссылку на скачивание новой версии приложения.");
-            }
-
-            return downloadLink;
         }
+
+        if (string.IsNullOrEmpty(downloadLink))
+        {
+            throw new Exception("Не удалось получить ссылку на скачивание новой версии приложения.");
+        }
+
+        return downloadLink;
     }
 }

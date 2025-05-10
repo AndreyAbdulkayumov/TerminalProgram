@@ -1,23 +1,22 @@
 using Avalonia.Controls;
 
-namespace TerminalProgram.Views.ModbusClient.ModbusRepresentations
+namespace TerminalProgram.Views.ModbusClient.ModbusRepresentations;
+
+public partial class Log : UserControl
 {
-    public partial class Log : UserControl
+    public Log()
     {
-        public Log()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
-        {
-            var logText = sender as TextBox;
+    private void TextBox_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        var logText = sender as TextBox;
 
-            if (logText != null)
-            {
-                logText.CaretIndex = 0;
-                logText.CaretIndex = logText.Text == null ? 0 : logText.Text.Length;
-            }
+        if (logText != null)
+        {
+            logText.CaretIndex = 0;
+            logText.CaretIndex = logText.Text == null ? 0 : logText.Text.Length;
         }
     }
 }

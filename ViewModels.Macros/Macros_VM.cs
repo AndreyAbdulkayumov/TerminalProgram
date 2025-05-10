@@ -9,460 +9,459 @@ using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
 using Services.Interfaces;
 
-namespace ViewModels.Macros
+namespace ViewModels.Macros;
+
+public class Macros_VM : ReactiveObject
 {
-    public class Macros_VM : ReactiveObject
+    private const string ModeName_NoProtocol = "Без протокола";
+    private const string ModeName_ModbusClient = "Modbus";
+
+    private string? _modeName;
+
+    public string? ModeName
     {
-        private const string ModeName_NoProtocol = "Без протокола";
-        private const string ModeName_ModbusClient = "Modbus";
+        get => _modeName;
+        set => this.RaiseAndSetIfChanged(ref _modeName, value);
+    }
 
-        private string? _modeName;
+    private ObservableCollection<MacrosViewItem_VM> _items = new ObservableCollection<MacrosViewItem_VM>();
 
-        public string? ModeName
+    public ObservableCollection<MacrosViewItem_VM> Items
+    {
+        get => _items;
+        set => this.RaiseAndSetIfChanged(ref _items, value);
+    }
+
+    public ReactiveCommand<Unit, Unit> Command_Import { get; set; }
+    public ReactiveCommand<Unit, Unit> Command_Export { get; set; }
+    public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; set; }
+
+    private MacrosNoProtocol? _noProtocolMacros;
+    private MacrosModbus? _modbusMacros;
+
+    private List<string> _allMacrosNames = new List<string>();
+
+    private readonly IOpenChildWindowService _openChildWindowService;
+    private readonly IFileSystemService _fileSystemService;
+    private readonly IMessageBox _messageBox;
+    private readonly Model_Settings _settingsModel;
+
+    public Macros_VM(IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMacros messageBox,
+        Model_Settings settingsModel)
+    {
+        _openChildWindowService = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
+        _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
+        _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
+        _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+
+        Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
+        Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error, error));
+
+        Command_Export = ReactiveCommand.CreateFromTask(ExportMacros);
+        Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error, error));
+
+        Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
+        Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error, error));
+
+        MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
+
+        InitUI();
+    }
+
+    private void InitUI()
+    {
+        ModeName = GetModeName(MainWindow_VM.CurrentApplicationWorkMode);
+        UpdateWorkspace(MainWindow_VM.CurrentApplicationWorkMode);
+    }
+
+    private string GetValidMacrosFileName()
+    {
+        if (_noProtocolMacros != null)
         {
-            get => _modeName;
-            set => this.RaiseAndSetIfChanged(ref _modeName, value);
+            return _settingsModel.FilePath_Macros_NoProtocol;
         }
 
-        private ObservableCollection<MacrosViewItem_VM> _items = new ObservableCollection<MacrosViewItem_VM>();
-
-        public ObservableCollection<MacrosViewItem_VM> Items
+        else if (_modbusMacros != null)
         {
-            get => _items;
-            set => this.RaiseAndSetIfChanged(ref _items, value);
+            return _settingsModel.FilePath_Macros_Modbus;
         }
 
-        public ReactiveCommand<Unit, Unit> Command_Import { get; set; }
-        public ReactiveCommand<Unit, Unit> Command_Export { get; set; }
-        public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; set; }
+        throw new Exception("Не выбран режим.");
+    }
 
-        private MacrosNoProtocol? _noProtocolMacros;
-        private MacrosModbus? _modbusMacros;
-
-        private List<string> _allMacrosNames = new List<string>();
-
-        private readonly IOpenChildWindowService _openChildWindowService;
-        private readonly IFileSystemService _fileSystemService;
-        private readonly IMessageBox _messageBox;
-        private readonly Model_Settings _settingsModel;
-
-        public Macros_VM(IOpenChildWindowService openChildWindow, IFileSystemService fileSystemService, IMessageBoxMacros messageBox,
-            Model_Settings settingsModel)
+    private string GetModeName(ApplicationWorkMode mode)
+    {
+        switch (mode)
         {
-            _openChildWindowService = openChildWindow ?? throw new ArgumentNullException(nameof(openChildWindow));
-            _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
-            _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
-            _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+            case ApplicationWorkMode.NoProtocol:
+                return ModeName_NoProtocol;
 
-            Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
-            Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error, error));
+            case ApplicationWorkMode.ModbusClient:
+                return ModeName = ModeName_ModbusClient;
 
-            Command_Export = ReactiveCommand.CreateFromTask(ExportMacros);
-            Command_Export.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при экспорте макроса.\n\n{error.Message}", MessageType.Error, error));
-
-            Command_CreateMacros = ReactiveCommand.CreateFromTask(CreateMacros);
-            Command_CreateMacros.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при создании макроса.\n\n{error.Message}", MessageType.Error, error));
-
-            MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
-
-            InitUI();
-        }
-
-        private void InitUI()
-        {
-            ModeName = GetModeName(MainWindow_VM.CurrentApplicationWorkMode);
-            UpdateWorkspace(MainWindow_VM.CurrentApplicationWorkMode);
-        }
-
-        private string GetValidMacrosFileName()
-        {
-            if (_noProtocolMacros != null)
-            {
-                return _settingsModel.FilePath_Macros_NoProtocol;
-            }
-
-            else if (_modbusMacros != null)
-            {
-                return _settingsModel.FilePath_Macros_Modbus;
-            }
-
-            throw new Exception("Не выбран режим.");
-        }
-
-        private string GetModeName(ApplicationWorkMode mode)
-        {
-            switch (mode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    return ModeName_NoProtocol;
-
-                case ApplicationWorkMode.ModbusClient:
-                    return ModeName = ModeName_ModbusClient;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private void CommonUI_VM_ApplicationWorkModeChanged(object? sender, ApplicationWorkMode e)
-        {
-            ModeName = GetModeName(e);
-
-            UpdateWorkspace(e);
-        }
-
-        private void UpdateWorkspace(ApplicationWorkMode mode)
-        {
-            Items.Clear();
-
-            _noProtocolMacros = null;
-            _modbusMacros = null;
-
-            _allMacrosNames.Clear();
-
-            switch (mode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    _noProtocolMacros = BuildNoProtocolMacros();
-                    break;
-
-                case ApplicationWorkMode.ModbusClient:
-                    _modbusMacros = BuildModbusMacros();
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private MacrosNoProtocol BuildNoProtocolMacros()
-        {
-            MacrosNoProtocol macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
-
-            if (macros.Items == null)
-            {
-                return new MacrosNoProtocol()
-                {
-                    Items = new List<MacrosContent<MacrosCommandNoProtocol>>()
-                };
-            }
-
-            foreach (var element in macros.Items)
-            {
-                IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandNoProtocol>(element);
-
-                BuildMacrosItem(_macrosContext.CreateContext());
-            }
-
-            return macros;
-        }
-
-        private MacrosModbus BuildModbusMacros()
-        {
-            MacrosModbus macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosModbus>();
-
-            if (macros.Items == null)
-            {
-                return new MacrosModbus()
-                {
-                    Items = new List<MacrosContent<MacrosCommandModbus>>()
-                };
-            }
-
-            foreach (var element in macros.Items)
-            {
-                IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandModbus>(element);
-
-                BuildMacrosItem(_macrosContext.CreateContext());
-            }
-
-            return macros;
-        }
-
-        private async Task CreateMacros()
-        {
-            var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
-
-            var content = await _openChildWindowService.EditMacros(null);
-
-            if (content == null)
-            {
-                return;
-            }
-
-            AddMacrosItem(content);
-
-            SaveMacros(currentMode);
-
-            // На случай если режим будет изменен во время создания нового макроса
-            if (currentMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
-            {
-                BuildMacrosItem(GetMacrosContextFrom(content).CreateContext());
-            }
-        }
-
-        private async Task EditMacros(string name)
-        {
-            var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
-
-            object? initData;
-
-            switch (currentMode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    initData = _noProtocolMacros?.Items?.Find(e => e.MacrosName == name);
-                    break;
-
-                case ApplicationWorkMode.ModbusClient:
-                    initData = _modbusMacros?.Items?.Find(e => e.MacrosName == name);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-
-            object? content = await _openChildWindowService.EditMacros(initData);
-
-            if (content == null)
-            {
-                return;
-            }
-
-            ChangeMacrosItem(name, content);
-
-            SaveMacros(currentMode);
-
-            // На случай если режим будет изменен во время создания нового макроса
-            if (currentMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
-            {
-                ChangeMacrosViewItem(name, GetMacrosContextFrom(content).CreateContext());
-            }
-        }
-
-        private void DeleteMacros(string name)
-        {
-            var viewItemToRemove = Items.First(item => item.Title == name);
-
-            if (viewItemToRemove != null)
-            {
-                Items.Remove(viewItemToRemove);
-            }
-
-            _allMacrosNames.Remove(name);
-
-            DeleteMacrosItem(name);
-
-            SaveMacros(MainWindow_VM.CurrentApplicationWorkMode);
-        }
-
-        private void BuildMacrosItem(MacrosViewItemData itemData)
-        {
-            Items.Add(new MacrosViewItem_VM(itemData.Name, itemData.MacrosAction, EditMacros, DeleteMacros, _messageBox));
-            _allMacrosNames.Add(itemData.Name);
-        }
-
-        private async Task ImportMacros()
-        {
-            ApplicationWorkMode workMode = MainWindow_VM.CurrentApplicationWorkMode;
-
-            string modeName = GetModeName(workMode);
-
-            if (await _messageBox.ShowYesNoDialog(
-                $"Внимание!!!\n\n" +
-                $"При импорте файла макросов для режима \"{modeName}\" старые макросы будут удалены без возможности восстановления. Продолжить?",
-                MessageType.Warning) != MessageBoxResult.Yes)
-            {
-                return;
-            }
-
-            string? macrosFilePath = await _fileSystemService.GetFilePath($"Выбор файла для импорта макросов режима \"{modeName}\".", "Файл макросов", ["*.json"]);
-
-            if (macrosFilePath != null)
-            {
-                string fileName = Path.GetFileName(macrosFilePath);
-
-                string macrosValidFilePath = GetValidMacrosFileName();
-                string validFileName = Path.GetFileName(macrosValidFilePath);
-
-                if (fileName != validFileName)
-                {
-                    throw new Exception($"Некорректное имя файла макроса.\nОжидается имя \"{validFileName}\".");
-                }
-
-                try
-                {
-                    switch (workMode)
-                    {
-                        case ApplicationWorkMode.NoProtocol:
-                            var macrosNoProtocol = _settingsModel.ReadMacros<MacrosNoProtocol>(macrosFilePath);
-                            break;
-
-                        case ApplicationWorkMode.ModbusClient:
-                            var macrosModbus = _settingsModel.ReadMacros<MacrosModbus>(macrosFilePath);
-                            break;
-
-                        default:
-                            throw new NotImplementedException();
-                    }
-                }
-
-                catch (Exception error)
-                {
-                    throw new Exception($"Ошибка чтения файла.\n\n{error.Message}");
-                }
-
-                _settingsModel.DeleteFile(macrosValidFilePath);
-
-                _settingsModel.CopyFile(macrosFilePath, macrosValidFilePath);
-
-                // На случай если режим будет изменен во время импорта
-                if (workMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
-                {
-                    UpdateWorkspace(workMode);
-                }
-
-                _messageBox.Show($"Файл с макросами для режима \"{modeName}\" успешно импортирован!", MessageType.Information);
-            }
-        }
-
-        private async Task ExportMacros()
-        {
-            string? outputFilePath = await _fileSystemService.GetFolderPath("Выбор папки для экспорта файла макросов.");
-
-            if (outputFilePath != null)
-            {
-                string macrosFileName = GetValidMacrosFileName();
-
-                string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
-
-                _settingsModel.CopyFile(macrosFileName, outputFileName);
-
-                _messageBox.Show($"Экспорт прошел успешно!\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
-            }
-        }
-
-        private IMacrosContext GetMacrosContextFrom(object? content)
-        {
-            if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
-            {
-                return new ViewItemContext<MacrosCommandNoProtocol>(noProtocolContent);
-            }
-
-            else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
-            {
-                return new ViewItemContext<MacrosCommandModbus>(modbusContent);
-            }
-
-            throw new NotImplementedException($"Поддержка режима не реализована.");
-        }
-
-        private void SaveMacros(ApplicationWorkMode mode)
-        {
-            switch (mode)
-            {
-                case ApplicationWorkMode.NoProtocol:
-                    _settingsModel.SaveMacros(_noProtocolMacros);
-                    break;
-
-                case ApplicationWorkMode.ModbusClient:
-                    _settingsModel.SaveMacros(_modbusMacros);
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private void AddMacrosItem(object content)
-        {
-            if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
-            {
-                _noProtocolMacros?.Items?.Add(noProtocolContent);
-            }
-
-            else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
-            {
-                _modbusMacros?.Items?.Add(modbusContent);
-            }
-
-            else
-            {
+            default:
                 throw new NotImplementedException();
-            }
         }
+    }
 
-        private void DeleteMacrosItem(string name)
+    private void CommonUI_VM_ApplicationWorkModeChanged(object? sender, ApplicationWorkMode e)
+    {
+        ModeName = GetModeName(e);
+
+        UpdateWorkspace(e);
+    }
+
+    private void UpdateWorkspace(ApplicationWorkMode mode)
+    {
+        Items.Clear();
+
+        _noProtocolMacros = null;
+        _modbusMacros = null;
+
+        _allMacrosNames.Clear();
+
+        switch (mode)
         {
-            switch (MainWindow_VM.CurrentApplicationWorkMode)
-            {
-                case ApplicationWorkMode.NoProtocol:
+            case ApplicationWorkMode.NoProtocol:
+                _noProtocolMacros = BuildNoProtocolMacros();
+                break;
 
-                    var noProtocolItem = _noProtocolMacros?.Items?.First(macros => macros.MacrosName == name);
+            case ApplicationWorkMode.ModbusClient:
+                _modbusMacros = BuildModbusMacros();
+                break;
 
-                    if (noProtocolItem != null)
-                    {
-                        _noProtocolMacros?.Items?.Remove(noProtocolItem);
-                    }
-
-                    break;
-
-                case ApplicationWorkMode.ModbusClient:
-
-                    var modbusItem = _modbusMacros?.Items?.First(macros => macros.MacrosName == name);
-
-                    if (modbusItem != null)
-                    {
-                        _modbusMacros?.Items?.Remove(modbusItem);
-                    }
-
-                    break;
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private void ChangeMacrosItem(string oldName, object newContent)
-        {
-            if (newContent is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
-            {
-                var item = _noProtocolMacros?.Items?.First(item => item.MacrosName == oldName);
-
-                if (item != null)
-                {
-                    item.MacrosName = noProtocolContent.MacrosName;
-                    item.Commands = noProtocolContent.Commands;
-                }
-            }
-
-            else if (newContent is MacrosContent<MacrosCommandModbus> modbusContent)
-            {
-                var item = _modbusMacros?.Items?.First(item => item.MacrosName == oldName);
-
-                if (item != null)
-                {
-                    item.MacrosName = modbusContent.MacrosName;
-                    item.Commands = modbusContent.Commands;
-                }
-            }
-
-            else
-            {
+            default:
                 throw new NotImplementedException();
+        }
+    }
+
+    private MacrosNoProtocol BuildNoProtocolMacros()
+    {
+        MacrosNoProtocol macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosNoProtocol>();
+
+        if (macros.Items == null)
+        {
+            return new MacrosNoProtocol()
+            {
+                Items = new List<MacrosContent<MacrosCommandNoProtocol>>()
+            };
+        }
+
+        foreach (var element in macros.Items)
+        {
+            IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandNoProtocol>(element);
+
+            BuildMacrosItem(_macrosContext.CreateContext());
+        }
+
+        return macros;
+    }
+
+    private MacrosModbus BuildModbusMacros()
+    {
+        MacrosModbus macros = _settingsModel.ReadOrCreateDefaultMacros<MacrosModbus>();
+
+        if (macros.Items == null)
+        {
+            return new MacrosModbus()
+            {
+                Items = new List<MacrosContent<MacrosCommandModbus>>()
+            };
+        }
+
+        foreach (var element in macros.Items)
+        {
+            IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandModbus>(element);
+
+            BuildMacrosItem(_macrosContext.CreateContext());
+        }
+
+        return macros;
+    }
+
+    private async Task CreateMacros()
+    {
+        var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
+
+        var content = await _openChildWindowService.EditMacros(null);
+
+        if (content == null)
+        {
+            return;
+        }
+
+        AddMacrosItem(content);
+
+        SaveMacros(currentMode);
+
+        // На случай если режим будет изменен во время создания нового макроса
+        if (currentMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
+        {
+            BuildMacrosItem(GetMacrosContextFrom(content).CreateContext());
+        }
+    }
+
+    private async Task EditMacros(string name)
+    {
+        var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
+
+        object? initData;
+
+        switch (currentMode)
+        {
+            case ApplicationWorkMode.NoProtocol:
+                initData = _noProtocolMacros?.Items?.Find(e => e.MacrosName == name);
+                break;
+
+            case ApplicationWorkMode.ModbusClient:
+                initData = _modbusMacros?.Items?.Find(e => e.MacrosName == name);
+                break;
+
+            default:
+                throw new NotImplementedException();
+        }
+
+        object? content = await _openChildWindowService.EditMacros(initData);
+
+        if (content == null)
+        {
+            return;
+        }
+
+        ChangeMacrosItem(name, content);
+
+        SaveMacros(currentMode);
+
+        // На случай если режим будет изменен во время создания нового макроса
+        if (currentMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
+        {
+            ChangeMacrosViewItem(name, GetMacrosContextFrom(content).CreateContext());
+        }
+    }
+
+    private void DeleteMacros(string name)
+    {
+        var viewItemToRemove = Items.First(item => item.Title == name);
+
+        if (viewItemToRemove != null)
+        {
+            Items.Remove(viewItemToRemove);
+        }
+
+        _allMacrosNames.Remove(name);
+
+        DeleteMacrosItem(name);
+
+        SaveMacros(MainWindow_VM.CurrentApplicationWorkMode);
+    }
+
+    private void BuildMacrosItem(MacrosViewItemData itemData)
+    {
+        Items.Add(new MacrosViewItem_VM(itemData.Name, itemData.MacrosAction, EditMacros, DeleteMacros, _messageBox));
+        _allMacrosNames.Add(itemData.Name);
+    }
+
+    private async Task ImportMacros()
+    {
+        ApplicationWorkMode workMode = MainWindow_VM.CurrentApplicationWorkMode;
+
+        string modeName = GetModeName(workMode);
+
+        if (await _messageBox.ShowYesNoDialog(
+            $"Внимание!!!\n\n" +
+            $"При импорте файла макросов для режима \"{modeName}\" старые макросы будут удалены без возможности восстановления. Продолжить?",
+            MessageType.Warning) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        string? macrosFilePath = await _fileSystemService.GetFilePath($"Выбор файла для импорта макросов режима \"{modeName}\".", "Файл макросов", ["*.json"]);
+
+        if (macrosFilePath != null)
+        {
+            string fileName = Path.GetFileName(macrosFilePath);
+
+            string macrosValidFilePath = GetValidMacrosFileName();
+            string validFileName = Path.GetFileName(macrosValidFilePath);
+
+            if (fileName != validFileName)
+            {
+                throw new Exception($"Некорректное имя файла макроса.\nОжидается имя \"{validFileName}\".");
+            }
+
+            try
+            {
+                switch (workMode)
+                {
+                    case ApplicationWorkMode.NoProtocol:
+                        var macrosNoProtocol = _settingsModel.ReadMacros<MacrosNoProtocol>(macrosFilePath);
+                        break;
+
+                    case ApplicationWorkMode.ModbusClient:
+                        var macrosModbus = _settingsModel.ReadMacros<MacrosModbus>(macrosFilePath);
+                        break;
+
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            catch (Exception error)
+            {
+                throw new Exception($"Ошибка чтения файла.\n\n{error.Message}");
+            }
+
+            _settingsModel.DeleteFile(macrosValidFilePath);
+
+            _settingsModel.CopyFile(macrosFilePath, macrosValidFilePath);
+
+            // На случай если режим будет изменен во время импорта
+            if (workMode.Equals(MainWindow_VM.CurrentApplicationWorkMode))
+            {
+                UpdateWorkspace(workMode);
+            }
+
+            _messageBox.Show($"Файл с макросами для режима \"{modeName}\" успешно импортирован!", MessageType.Information);
+        }
+    }
+
+    private async Task ExportMacros()
+    {
+        string? outputFilePath = await _fileSystemService.GetFolderPath("Выбор папки для экспорта файла макросов.");
+
+        if (outputFilePath != null)
+        {
+            string macrosFileName = GetValidMacrosFileName();
+
+            string outputFileName = Path.Combine(outputFilePath, Path.GetFileName(macrosFileName));
+
+            _settingsModel.CopyFile(macrosFileName, outputFileName);
+
+            _messageBox.Show($"Экспорт прошел успешно!\n\nПуть к файлу:\n{outputFileName}", MessageType.Information);
+        }
+    }
+
+    private IMacrosContext GetMacrosContextFrom(object? content)
+    {
+        if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+        {
+            return new ViewItemContext<MacrosCommandNoProtocol>(noProtocolContent);
+        }
+
+        else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
+        {
+            return new ViewItemContext<MacrosCommandModbus>(modbusContent);
+        }
+
+        throw new NotImplementedException($"Поддержка режима не реализована.");
+    }
+
+    private void SaveMacros(ApplicationWorkMode mode)
+    {
+        switch (mode)
+        {
+            case ApplicationWorkMode.NoProtocol:
+                _settingsModel.SaveMacros(_noProtocolMacros);
+                break;
+
+            case ApplicationWorkMode.ModbusClient:
+                _settingsModel.SaveMacros(_modbusMacros);
+                break;
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    private void AddMacrosItem(object content)
+    {
+        if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+        {
+            _noProtocolMacros?.Items?.Add(noProtocolContent);
+        }
+
+        else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
+        {
+            _modbusMacros?.Items?.Add(modbusContent);
+        }
+
+        else
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    private void DeleteMacrosItem(string name)
+    {
+        switch (MainWindow_VM.CurrentApplicationWorkMode)
+        {
+            case ApplicationWorkMode.NoProtocol:
+
+                var noProtocolItem = _noProtocolMacros?.Items?.First(macros => macros.MacrosName == name);
+
+                if (noProtocolItem != null)
+                {
+                    _noProtocolMacros?.Items?.Remove(noProtocolItem);
+                }
+
+                break;
+
+            case ApplicationWorkMode.ModbusClient:
+
+                var modbusItem = _modbusMacros?.Items?.First(macros => macros.MacrosName == name);
+
+                if (modbusItem != null)
+                {
+                    _modbusMacros?.Items?.Remove(modbusItem);
+                }
+
+                break;
+
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    private void ChangeMacrosItem(string oldName, object newContent)
+    {
+        if (newContent is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+        {
+            var item = _noProtocolMacros?.Items?.First(item => item.MacrosName == oldName);
+
+            if (item != null)
+            {
+                item.MacrosName = noProtocolContent.MacrosName;
+                item.Commands = noProtocolContent.Commands;
             }
         }
 
-        private void ChangeMacrosViewItem(string oldName, MacrosViewItemData newData)
+        else if (newContent is MacrosContent<MacrosCommandModbus> modbusContent)
         {
-            var viewItem = Items.First(macros => macros.Title == oldName);
+            var item = _modbusMacros?.Items?.First(item => item.MacrosName == oldName);
 
-            if (viewItem != null)
+            if (item != null)
             {
-                viewItem.Title = newData.Name;
-                viewItem.ClickAction = newData.MacrosAction;
-
-                _allMacrosNames = Items.Select(item => item.Title).ToList();
+                item.MacrosName = modbusContent.MacrosName;
+                item.Commands = modbusContent.Commands;
             }
+        }
+
+        else
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    private void ChangeMacrosViewItem(string oldName, MacrosViewItemData newData)
+    {
+        var viewItem = Items.First(macros => macros.Title == oldName);
+
+        if (viewItem != null)
+        {
+            viewItem.Title = newData.Name;
+            viewItem.ClickAction = newData.MacrosAction;
+
+            _allMacrosNames = Items.Select(item => item.Title).ToList();
         }
     }
 }

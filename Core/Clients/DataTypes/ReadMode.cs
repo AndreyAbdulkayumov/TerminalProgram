@@ -1,8 +1,7 @@
-﻿namespace Core.Clients.DataTypes
+﻿namespace Core.Clients.DataTypes;
+
+public enum ReadMode
 {
-    public enum ReadMode
-    {
-        Async,
-        Sync
-    }
+    Async,
+    Sync
 }

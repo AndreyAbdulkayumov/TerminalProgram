@@ -5,33 +5,32 @@ using MessageBox_Core;
 using Services.Interfaces;
 using TerminalProgramBase.Views.Macros.EditMacros;
 
-namespace TerminalProgramBase.Services
+namespace TerminalProgramBase.Services;
+
+public class MessageBoxEditMacros : IMessageBoxEditMacros
 {
-    public class MessageBoxEditMacros : IMessageBoxEditMacros
+    private readonly IUIService _uiService;
+
+    private string? _appVersion;
+
+    public MessageBoxEditMacros(IUIService uiService)
     {
-        private readonly IUIService _uiService;
+        _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
 
-        private string? _appVersion;
+        _appVersion = _uiService.GetAppVersion()?.ToString();
+    }
 
-        public MessageBoxEditMacros(IUIService uiService)
-        {
-            _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
+    public void Show(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBox(EditMacrosWindow.Instance, _appVersion);
 
-            _appVersion = _uiService.GetAppVersion()?.ToString();
-        }
+        messageBox.Show(message, type, error);
+    }
 
-        public void Show(string message, MessageType type, Exception? error = null)
-        {
-            var messageBox = new MessageBox(EditMacrosWindow.Instance, _appVersion);
+    public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBox(EditMacrosWindow.Instance, _appVersion);
 
-            messageBox.Show(message, type, error);
-        }
-
-        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
-        {
-            var messageBox = new MessageBox(EditMacrosWindow.Instance, _appVersion);
-
-            return await messageBox.ShowYesNoDialog(message, type, error);
-        }
+        return await messageBox.ShowYesNoDialog(message, type, error);
     }
 }

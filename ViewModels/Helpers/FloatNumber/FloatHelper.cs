@@ -1,63 +1,62 @@
 ﻿using Core.Models.Settings.FileTypes;
 
-namespace ViewModels.Helpers.FloatNumber
+namespace ViewModels.Helpers.FloatNumber;
+
+public static class FloatHelper
 {
-    public static class FloatHelper
+    public static byte[] GetBytesFromFloatNumber(float floatNumber, FloatNumberFormat floatFormat)
     {
-        public static byte[] GetBytesFromFloatNumber(float floatNumber, FloatNumberFormat floatFormat)
+        byte[] bytes = BitConverter.GetBytes(floatNumber);
+
+        Array.Reverse(bytes); // т.к. в протоколе Modbus используется передача данных старшим байтом вперед.
+
+        return GetFormattedBytes(bytes, floatFormat);
+    }
+
+    public static float GetFloatNumberFromBytes(byte[] bytes, FloatNumberFormat floatFormat)
+    {
+        return BitConverter.ToSingle(GetFormattedBytes(bytes, floatFormat), 0);
+    }
+
+    public static FloatNumberFormat GetFloatNumberFormatOrDefault(string? formatName)
+    {
+        switch (formatName)
         {
-            byte[] bytes = BitConverter.GetBytes(floatNumber);
+            case DeviceData.FloatWriteFormat_AB_CD:
+                return FloatNumberFormat.AB_CD;
 
-            Array.Reverse(bytes); // т.к. в протоколе Modbus используется передача данных старшим байтом вперед.
+            case DeviceData.FloatWriteFormat_BA_DC:
+                return FloatNumberFormat.BA_DC;
 
-            return GetFormattedBytes(bytes, floatFormat);
+            case DeviceData.FloatWriteFormat_CD_AB:
+                return FloatNumberFormat.CD_AB;
+
+            case DeviceData.FloatWriteFormat_DC_BA:
+                return FloatNumberFormat.DC_BA;
+
+            default:
+                return FloatNumberFormat.BA_DC;
         }
+    }
 
-        public static float GetFloatNumberFromBytes(byte[] bytes, FloatNumberFormat floatFormat)
+    private static byte[] GetFormattedBytes(byte[] bytes, FloatNumberFormat floatFormat)
+    {
+        switch (floatFormat)
         {
-            return BitConverter.ToSingle(GetFormattedBytes(bytes, floatFormat), 0);
-        }
+            case FloatNumberFormat.AB_CD:
+                return [bytes[1], bytes[0], bytes[3], bytes[2]];
 
-        public static FloatNumberFormat GetFloatNumberFormatOrDefault(string? formatName)
-        {
-            switch (formatName)
-            {
-                case DeviceData.FloatWriteFormat_AB_CD:
-                    return FloatNumberFormat.AB_CD;
+            case FloatNumberFormat.BA_DC:
+                return [bytes[0], bytes[1], bytes[2], bytes[3]];
 
-                case DeviceData.FloatWriteFormat_BA_DC:
-                    return FloatNumberFormat.BA_DC;
+            case FloatNumberFormat.CD_AB:
+                return [bytes[3], bytes[2], bytes[1], bytes[0]];
 
-                case DeviceData.FloatWriteFormat_CD_AB:
-                    return FloatNumberFormat.CD_AB;
+            case FloatNumberFormat.DC_BA:
+                return [bytes[2], bytes[3], bytes[0], bytes[1]];
 
-                case DeviceData.FloatWriteFormat_DC_BA:
-                    return FloatNumberFormat.DC_BA;
-
-                default:
-                    return FloatNumberFormat.BA_DC;
-            }
-        }
-
-        private static byte[] GetFormattedBytes(byte[] bytes, FloatNumberFormat floatFormat)
-        {
-            switch (floatFormat)
-            {
-                case FloatNumberFormat.AB_CD:
-                    return [bytes[1], bytes[0], bytes[3], bytes[2]];
-
-                case FloatNumberFormat.BA_DC:
-                    return [bytes[0], bytes[1], bytes[2], bytes[3]];
-
-                case FloatNumberFormat.CD_AB:
-                    return [bytes[3], bytes[2], bytes[1], bytes[0]];
-
-                case FloatNumberFormat.DC_BA:
-                    return [bytes[2], bytes[3], bytes[0], bytes[1]];
-
-                default:
-                    throw new Exception("Неизвестный тип формата записи числа типа float.");
-            }
+            default:
+                throw new Exception("Неизвестный тип формата записи числа типа float.");
         }
     }
 }

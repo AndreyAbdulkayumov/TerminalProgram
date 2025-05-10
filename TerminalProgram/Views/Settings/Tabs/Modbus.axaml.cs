@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace TerminalProgramBase.Views.Settings.Tabs
+namespace TerminalProgramBase.Views.Settings.Tabs;
+
+public partial class Modbus : UserControl
 {
-    public partial class Modbus : UserControl
+    public Modbus()
     {
-        public Modbus()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

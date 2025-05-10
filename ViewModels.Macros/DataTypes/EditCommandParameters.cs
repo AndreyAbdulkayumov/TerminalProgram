@@ -1,14 +1,13 @@
-﻿namespace ViewModels.Macros.DataTypes
-{
-    public class EditCommandParameters
-    {
-        public readonly string? CommandName;
-        public readonly object? InitData;
+﻿namespace ViewModels.Macros.DataTypes;
 
-        public EditCommandParameters(string? commandName, object? initData)
-        {
-            CommandName = commandName;
-            InitData = initData;
-        }
+public class EditCommandParameters
+{
+    public readonly string? CommandName;
+    public readonly object? InitData;
+
+    public EditCommandParameters(string? commandName, object? initData)
+    {
+        CommandName = commandName;
+        InitData = initData;
     }
 }

@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace TerminalProgramBase.Views.Settings.Tabs
+namespace TerminalProgramBase.Views.Settings.Tabs;
+
+public partial class Connection : UserControl
 {
-    public partial class Connection : UserControl
+    public Connection()
     {
-        public Connection()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

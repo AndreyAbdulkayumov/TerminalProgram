@@ -1,9 +1,8 @@
-﻿namespace ViewModels.Macros.DataTypes
+﻿namespace ViewModels.Macros.DataTypes;
+
+internal interface ICommandContent
 {
-    public interface ICommandContent
-    {
-        string? Name { get; set; }
-        Guid Id { get; }
-        object GetContent();
-    }
+    string? Name { get; set; }
+    Guid Id { get; }
+    object GetContent();
 }

@@ -1,8 +1,7 @@
 ﻿using MessageBox_Core;
 
-namespace Services.Interfaces
+namespace Services.Interfaces;
+
+public interface IMessageBoxAboutApp : IMessageBox
 {
-    public interface IMessageBoxAboutApp : IMessageBox
-    {
-    }
 }
