@@ -108,12 +108,7 @@ public class Model_Settings
     /// <param name="fileName"></param>
     public void DeleteFile(string fileName)
     {
-        if (!File.Exists(fileName))
-        {
-            throw new Exception($"Файла \"{fileName}\" не существует.");
-        }
-
-        File.Delete(fileName);
+        FileIO.Delete(fileName);
     }
 
     /// <summary>
@@ -128,7 +123,7 @@ public class Model_Settings
 
         if (arrayOfFiles.Contains(selectedFile_FullPath))
         {
-            File.Delete(Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName) + FileExtension);
+            FileIO.Delete(Path.Combine(DirectoryManager.SettingsFiles_Directory, fileName) + FileExtension);
         }
 
         else
@@ -144,14 +139,7 @@ public class Model_Settings
     /// <param name="destFileName"></param>
     public void CopyFile(string sourceFileName, string destFileName)
     {
-        if (File.Exists(destFileName))
-        {
-            throw new Exception($"Файл с именем \"{Path.GetFileName(destFileName)}\" уже существует в директории \"{Path.GetDirectoryName(destFileName)}\".");
-        }
-
-        var correctSourceFileName = Uri.UnescapeDataString(sourceFileName);
-
-        File.Copy(correctSourceFileName, destFileName);
+        FileIO.Copy(sourceFileName, destFileName);
     }
 
     /// <summary>
@@ -165,7 +153,7 @@ public class Model_Settings
 
         string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-        File.Copy(filePath, destFilePath);
+        FileIO.Copy(filePath, destFilePath);
 
         return fileName;
     }
