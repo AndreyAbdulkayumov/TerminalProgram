@@ -6,6 +6,14 @@ namespace ViewModels.NoProtocol;
 
 public class SendFileItem_VM : ReactiveObject
 {
+    private bool _sendIsEnable;
+
+    public bool SendIsEnable
+    {
+        get => _sendIsEnable;
+        set => this.RaiseAndSetIfChanged(ref _sendIsEnable, value);
+    }
+
     private string? _fileName;
 
     private string? FileName
@@ -36,7 +44,7 @@ public class SendFileItem_VM : ReactiveObject
     public readonly Guid Id;
     public readonly string FilePath;
 
-    public SendFileItem_VM(Guid id, string filePath, Action<Guid> sendFileHandler, Action<Guid> removeFileHandler, IMessageBox messageBox)
+    public SendFileItem_VM(Guid id, string filePath, Func<Guid, Task> sendFileHandler, Action<Guid> removeFileHandler, IMessageBox messageBox)
     {
         Id = id;
         FilePath = filePath;
@@ -45,7 +53,7 @@ public class SendFileItem_VM : ReactiveObject
         FileExtension = Path.GetExtension(filePath);
         FileSize = GetFileSize();
 
-        Command_SendFile = ReactiveCommand.Create(() => sendFileHandler(id));
+        Command_SendFile = ReactiveCommand.CreateFromTask(async () => await sendFileHandler(id));
         Command_SendFile.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка отправки файла \"{FileName}\".\n\n{error.Message}", MessageType.Error, error));
 
         Command_RemoveFile = ReactiveCommand.CreateFromTask(async () =>

@@ -312,17 +312,9 @@ public class NoProtocol_VM : ReactiveObject
 
     private void NoProtocol_Model_DataReceived(object? sender, NoProtocolDataReceivedEventArgs e)
     {
-        string stringData;
-
-        if (RX_IsByteView)
-        {
-            stringData = BitConverter.ToString(e.RawData).Replace("-", BytesSeparator) + BytesSeparator;
-        }
-
-        else
-        {
-            stringData = ConnectedHost.GlobalEncoding.GetString(e.RawData);
-        }
+        string stringData = RX_IsByteView ?
+            BitConverter.ToString(e.RawData).Replace("-", BytesSeparator) + BytesSeparator :
+            ConnectedHost.GlobalEncoding.GetString(e.RawData);
 
         if (e.DataWithDebugInfo != null)
         {
@@ -335,9 +327,22 @@ public class NoProtocol_VM : ReactiveObject
             stringData += Environment.NewLine;
         }
 
-        if (RX.Length + stringData.Length > RX.MaxCapacity)
+        // Если входные данные слишком длинные, то оставляем только хвост
+        if (stringData.Length > RX.MaxCapacity)
+        {            
+            stringData = stringData.Substring(stringData.Length - RX.MaxCapacity);
+            RX.Clear();
+        }
+
+        else
         {
-            RX.Remove(0, RX.Length + stringData.Length - RX.MaxCapacity);
+            int totalLength = RX.Length + stringData.Length;
+
+            if (totalLength > RX.MaxCapacity)
+            {
+                int removeCount = totalLength - RX.MaxCapacity;
+                RX.Remove(0, Math.Min(removeCount, RX.Length));
+            }
         }
 
         RX.Append(stringData);

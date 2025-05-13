@@ -54,6 +54,7 @@
 									<Button Grid.Column="0"
 											Classes="MenuToolButton"
 											ToolTip.Tip="Отправить файл"
+											IsEnabled="{Binding SendIsEnable, Mode=OneWay}"
 											Command="{Binding Command_SendFile}"
 											HorizontalAlignment="Center" VerticalAlignment="Center">
 
@@ -126,7 +127,7 @@
 					Background="{DynamicResource GridSplitter_Color_Background}"/>
 
 			<StackPanel Orientation="Vertical" Grid.Column="2"
-						Spacing="10"
+						Spacing="30"
 						Margin="25">
 
 				<StackPanel Orientation="Horizontal" Spacing="50">
@@ -140,6 +141,11 @@
 							Command="{Binding Command_RemoveAllFiles}"/>
 					
 				</StackPanel>
+				
+				<TextBlock Text="Идет отправка файла..."
+						   IsVisible="{Binding IsSending, Mode=OneWay}"
+						   FontSize="16"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
 								
 			</StackPanel>
 
