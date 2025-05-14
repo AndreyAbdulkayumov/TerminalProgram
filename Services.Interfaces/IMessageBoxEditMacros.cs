@@ -1,8 +1,7 @@
 ﻿using MessageBox_Core;
 
-namespace Services.Interfaces
+namespace Services.Interfaces;
+
+public interface IMessageBoxEditMacros : IMessageBox
 {
-    public interface IMessageBoxEditMacros : IMessageBox
-    {
-    }
 }

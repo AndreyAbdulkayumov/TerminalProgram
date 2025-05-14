@@ -5,33 +5,32 @@ using TerminalProgramBase.Views.Macros;
 using Services.Interfaces;
 using System;
 
-namespace TerminalProgramBase.Services
+namespace TerminalProgramBase.Services;
+
+public class MessageBoxMacros : IMessageBoxMacros
 {
-    public class MessageBoxMacros : IMessageBoxMacros
+    private readonly IUIService _uiService;
+
+    private string? _appVersion;
+
+    public MessageBoxMacros(IUIService uiService)
     {
-        private readonly IUIService _uiService;
+        _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
 
-        private string? _appVersion;
+        _appVersion = _uiService.GetAppVersion()?.ToString();
+    }
 
-        public MessageBoxMacros(IUIService uiService)
-        {
-            _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
+    public void Show(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBox(MacrosWindow.Instance, _appVersion);
 
-            _appVersion = _uiService.GetAppVersion()?.ToString();
-        }
+        messageBox.Show(message, type, error);
+    }
 
-        public void Show(string message, MessageType type, Exception? error = null)
-        {
-            var messageBox = new MessageBox(MacrosWindow.Instance, _appVersion);
+    public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBox(MacrosWindow.Instance, _appVersion);
 
-            messageBox.Show(message, type, error);
-        }
-
-        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
-        {
-            var messageBox = new MessageBox(MacrosWindow.Instance, _appVersion);
-
-            return await messageBox.ShowYesNoDialog(message, type, error);
-        }
+        return await messageBox.ShowYesNoDialog(message, type, error);
     }
 }

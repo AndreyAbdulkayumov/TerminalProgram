@@ -5,33 +5,32 @@ using TerminalProgramBase.Views;
 using Services.Interfaces;
 using System;
 
-namespace TerminalProgramBase.Services
+namespace TerminalProgramBase.Services;
+
+public class MessageBoxMainWindow : IMessageBoxMainWindow
 {
-    public class MessageBoxMainWindow : IMessageBoxMainWindow
+    private readonly IUIService _uiService;
+
+    private string? _appVersion;
+
+    public MessageBoxMainWindow(IUIService uiService)
     {
-        private readonly IUIService _uiService;
+        _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
 
-        private string? _appVersion;
+        _appVersion = _uiService.GetAppVersion()?.ToString();
+    }
 
-        public MessageBoxMainWindow(IUIService uiService)
-        {
-            _uiService = uiService ?? throw new ArgumentNullException(nameof(uiService));
+    public void Show(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBox(MainWindow.Instance, _appVersion);
 
-            _appVersion = _uiService.GetAppVersion()?.ToString();
-        }
+        messageBox.Show(message, type, error);
+    }
 
-        public void Show(string message, MessageType type, Exception? error = null)
-        {
-            var messageBox = new MessageBox(MainWindow.Instance, _appVersion);
+    public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
+    {
+        var messageBox = new MessageBox(MainWindow.Instance, _appVersion);
 
-            messageBox.Show(message, type, error);
-        }
-
-        public async Task<MessageBoxResult> ShowYesNoDialog(string message, MessageType type, Exception? error = null)
-        {
-            var messageBox = new MessageBox(MainWindow.Instance, _appVersion);
-
-            return await messageBox.ShowYesNoDialog(message, type, error);
-        }
+        return await messageBox.ShowYesNoDialog(message, type, error);
     }
 }

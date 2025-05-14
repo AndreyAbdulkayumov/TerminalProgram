@@ -1,43 +1,42 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ViewModels.Helpers
+namespace ViewModels.Helpers;
+
+public static class StringByteConverter
 {
-    public static class StringByteConverter
+    public static string GetMessageString(string message, bool isBytesString, Encoding encoding)
     {
-        public static string GetMessageString(string message, bool isBytesString, Encoding encoding)
+        if (isBytesString)
         {
-            if (isBytesString)
-            {
-                return string.Join(" ", encoding.GetBytes(message).Select(x => x.ToString("X2"))); ;
-            }
-
-            return encoding.GetString(ByteStringToByteArray(message));
+            return string.Join(" ", encoding.GetBytes(message).Select(x => x.ToString("X2"))); ;
         }
 
-        public static byte[] ByteStringToByteArray(string message)
+        return encoding.GetString(ByteStringToByteArray(message));
+    }
+
+    public static byte[] ByteStringToByteArray(string message)
+    {
+        message = message.Replace(" ", string.Empty);
+
+        byte[] bytesToSend = new byte[message.Length / 2 + message.Length % 2];
+
+        string byteString;
+
+        for (int i = 0; i < bytesToSend.Length; i++)
         {
-            message = message.Replace(" ", string.Empty);
+            if (i * 2 + 2 > message.Length)
+                byteString = "0" + message.Last();
+            else
+                byteString = message.Substring(i * 2, 2);
 
-            byte[] bytesToSend = new byte[message.Length / 2 + message.Length % 2];
-
-            string byteString;
-
-            for (int i = 0; i < bytesToSend.Length; i++)
-            {
-                if (i * 2 + 2 > message.Length)
-                    byteString = "0" + message.Last();
-                else
-                    byteString = message.Substring(i * 2, 2);
-
-                bytesToSend[i] = Convert.ToByte(byteString, 16);
-            }
-            return bytesToSend;
+            bytesToSend[i] = Convert.ToByte(byteString, 16);
         }
+        return bytesToSend;
+    }
 
-        public static string GetValidatedByteString(string bytesString)
-        {
-            return Regex.Replace(bytesString, @"[^0-9a-fA-F\s]", string.Empty).ToUpper();
-        }
+    public static string GetValidatedByteString(string bytesString)
+    {
+        return Regex.Replace(bytesString, @"[^0-9a-fA-F\s]", string.Empty).ToUpper();
     }
 }

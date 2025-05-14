@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace TerminalProgramBase.Views.Settings.Tabs
+namespace TerminalProgramBase.Views.Settings.Tabs;
+
+public partial class NoProtocol : UserControl
 {
-    public partial class NoProtocol : UserControl
+    public NoProtocol()
     {
-        public NoProtocol()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -9,89 +9,88 @@ using TerminalProgramBase.Views;
 using Services.Interfaces;
 using System.Reflection;
 
-namespace TerminalProgramBase.Services
+namespace TerminalProgramBase.Services;
+
+public class UIService : IUIService
 {
-    public class UIService : IUIService
+    public async Task RunInUIThread(Action runnedAction)
     {
-        public async Task RunInUIThread(Action runnedAction)
+        await Dispatcher.UIThread.InvokeAsync(runnedAction);
+    }
+
+    public async Task CopyToClipboard(string data)
+    {
+        var clipboard = TopLevel.GetTopLevel(MainWindow.Instance)?.Clipboard;
+        var dataObject = new DataObject();
+
+        dataObject.Set(DataFormats.Text, data);
+
+        if (clipboard != null)
         {
-            await Dispatcher.UIThread.InvokeAsync(runnedAction);
+            await clipboard.SetDataObjectAsync(dataObject);
         }
+    }
 
-        public async Task CopyToClipboard(string data)
+    public void Set_Dark_Theme()
+    {
+        if (Application.Current != null)
         {
-            var clipboard = TopLevel.GetTopLevel(MainWindow.Instance)?.Clipboard;
-            var dataObject = new DataObject();
+            Application.Current.Resources.MergedDictionaries.Clear();
 
-            dataObject.Set(DataFormats.Text, data);
-
-            if (clipboard != null)
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
+                new Uri("avares://AppDesign/Themes/Dark.axaml"))
             {
-                await clipboard.SetDataObjectAsync(dataObject);
-            }
-        }
+                Source = new Uri("avares://AppDesign/Themes/Dark.axaml")
+            });
 
-        public void Set_Dark_Theme()
+            Application.Current.RequestedThemeVariant =
+                new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
+        }
+    }
+
+    public void Set_Light_Theme()
+    {
+        if (Application.Current != null)
         {
-            if (Application.Current != null)
+            Application.Current.Resources.MergedDictionaries.Clear();
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
+                new Uri("avares://AppDesign/Themes/Light.axaml"))
             {
-                Application.Current.Resources.MergedDictionaries.Clear();
+                Source = new Uri("avares://AppDesign/Themes/Light.axaml")
+            });
 
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
-                    new Uri("avares://AppDesign/Themes/Dark.axaml"))
-                {
-                    Source = new Uri("avares://AppDesign/Themes/Dark.axaml")
-                });
-
-                Application.Current.RequestedThemeVariant =
-                    new Avalonia.Styling.ThemeVariant("Dark", Application.Current.ActualThemeVariant);
-            }
+            Application.Current.RequestedThemeVariant =
+                new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
         }
+    }
 
-        public void Set_Light_Theme()
+    public Version? GetAppVersion()
+    {
+        char[] appVersion_Chars = new char[20];
+
+        if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(appVersion_Chars, 3, out int numberOfChars) == true)
         {
-            if (Application.Current != null)
-            {
-                Application.Current.Resources.MergedDictionaries.Clear();
-
-                Application.Current.Resources.MergedDictionaries.Add(new ResourceInclude(
-                    new Uri("avares://AppDesign/Themes/Light.axaml"))
-                {
-                    Source = new Uri("avares://AppDesign/Themes/Light.axaml")
-                });
-
-                Application.Current.RequestedThemeVariant =
-                    new Avalonia.Styling.ThemeVariant("Light", Application.Current.ActualThemeVariant);
-            }
+            return new Version(new string(appVersion_Chars, 0, numberOfChars));
         }
 
-        public Version? GetAppVersion()
+        return null;
+    }
+
+    public string? GetAvaloniaVersionString()
+    {
+        char[] GUIVersion_Chars = new char[20];
+
+        if (typeof(AvaloniaObject).Assembly.GetName().Version?.TryFormat(GUIVersion_Chars, 3, out int numberOfChars) == true)
         {
-            char[] appVersion_Chars = new char[20];
-
-            if (Assembly.GetExecutingAssembly().GetName().Version?.TryFormat(appVersion_Chars, 3, out int numberOfChars) == true)
-            {
-                return new Version(new string(appVersion_Chars, 0, numberOfChars));
-            }
-
-            return null;
+            return new string(GUIVersion_Chars, 0, numberOfChars);
         }
 
-        public string? GetAvaloniaVersionString()
-        {
-            char[] GUIVersion_Chars = new char[20];
+        return null;
+    }
 
-            if (typeof(AvaloniaObject).Assembly.GetName().Version?.TryFormat(GUIVersion_Chars, 3, out int numberOfChars) == true)
-            {
-                return new string(GUIVersion_Chars, 0, numberOfChars);
-            }
-
-            return null;
-        }
-
-        public Version GetRuntimeVersion()
-        {
-            return Environment.Version;
-        }
+    public Version GetRuntimeVersion()
+    {
+        return Environment.Version;
     }
 }

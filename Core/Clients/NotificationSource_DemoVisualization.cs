@@ -1,82 +1,81 @@
-﻿namespace Core.Clients
+﻿namespace Core.Clients;
+
+public partial class NotificationSource
 {
-    public partial class NotificationSource
+    public async Task DemoVisualization()
     {
-        public async Task DemoVisualization()
+        while (true)
         {
-            while (true)
-            {
-                await TX_RX_View();
+            await TX_RX_View();
 
-                await Task.Delay(500);
+            await Task.Delay(500);
 
-                await TX_RX_View();
+            await TX_RX_View();
 
-                await Task.Delay(600);
+            await Task.Delay(600);
 
-                await Only_TX_View(1);
+            await Only_TX_View(1);
 
-                await Task.Delay(300);
+            await Task.Delay(300);
 
-                await Only_RX_View(5);
+            await Only_RX_View(5);
 
-                await Task.Delay(1000);
-            }
+            await Task.Delay(1000);
         }
+    }
 
-        private async Task TX_RX_View()
+    private async Task TX_RX_View()
+    {
+        Task TxView, RxView;
+
+        TxView = Task.Run(async () =>
         {
-            Task TxView, RxView;
+            TX_Notification?.Invoke(null, true);
 
-            TxView = Task.Run(async () =>
-            {
-                TX_Notification?.Invoke(null, true);
+            await Task.Delay(TX_ViewLatency_ms);
 
-                await Task.Delay(TX_ViewLatency_ms);
+            TX_Notification?.Invoke(null, false);
+        });
 
-                TX_Notification?.Invoke(null, false);
-            });
+        await Task.Delay(5);
 
-            await Task.Delay(5);
+        RxView = Task.Run(async () =>
+        {
+            RX_Notification?.Invoke(null, true);
 
-            RxView = Task.Run(async () =>
-            {
-                RX_Notification?.Invoke(null, true);
+            await Task.Delay(RX_ViewLatency_ms);
 
-                await Task.Delay(RX_ViewLatency_ms);
+            RX_Notification?.Invoke(null, false);
+        });
 
-                RX_Notification?.Invoke(null, false);
-            });
+        await Task.WhenAll(TxView, RxView);
+    }
 
-            await Task.WhenAll(TxView, RxView);
+    private async Task Only_TX_View(int TX_Count)
+    {
+        while (--TX_Count >= 0)
+        {
+            TX_Notification?.Invoke(null, true);
+
+            await Task.Delay(TX_ViewLatency_ms);
+
+            TX_Notification?.Invoke(null, false);
+
+            await Task.Delay(300);
         }
+    }
 
-        private async Task Only_TX_View(int TX_Count)
+    private async Task Only_RX_View(int RX_Count)
+    {
+        while (--RX_Count >= 0)
         {
-            while (--TX_Count >= 0)
-            {
-                TX_Notification?.Invoke(null, true);
+            RX_Notification?.Invoke(null, true);
 
-                await Task.Delay(TX_ViewLatency_ms);
+            await Task.Delay(RX_ViewLatency_ms);
 
-                TX_Notification?.Invoke(null, false);
+            RX_Notification?.Invoke(null, false);
 
-                await Task.Delay(300);
-            }
-        }
-
-        private async Task Only_RX_View(int RX_Count)
-        {
-            while (--RX_Count >= 0)
-            {
-                RX_Notification?.Invoke(null, true);
-
-                await Task.Delay(RX_ViewLatency_ms);
-
-                RX_Notification?.Invoke(null, false);
-
-                await Task.Delay(300);
-            }
+            await Task.Delay(300);
         }
     }
 }

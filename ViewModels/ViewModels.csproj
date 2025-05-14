@@ -3,12 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>enable</Nullable>	  
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.7" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.4" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.0" />
   </ItemGroup>
 
   <ItemGroup>

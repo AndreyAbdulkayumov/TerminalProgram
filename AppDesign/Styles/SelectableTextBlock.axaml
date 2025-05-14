@@ -5,6 +5,16 @@
 
 		<Setter Property="Foreground" Value="{DynamicResource App_Color_Text}"/>
 		<Setter Property="SelectionBrush" Value="#91C1E6"/> <!-- Для всех тем -->
+
+		<Style Selector="^ ToolTip">
+
+			<Setter Property="Background" Value="WhiteSmoke"/> <!-- Для всех тем -->
+
+			<Style Selector="^ TextBlock">
+				<Setter Property="Foreground" Value="Black"/> <!-- Для всех тем -->
+			</Style>
+
+		</Style>
 		
 	</Style>
 	

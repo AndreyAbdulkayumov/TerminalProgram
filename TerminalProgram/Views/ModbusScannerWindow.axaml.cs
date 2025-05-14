@@ -2,27 +2,26 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 
-namespace TerminalProgramBase.Views
+namespace TerminalProgramBase.Views;
+
+public partial class ModbusScannerWindow : Window
 {
-    public partial class ModbusScannerWindow : Window
+    public static ModbusScannerWindow? Instance { get; private set; }
+
+    public ModbusScannerWindow()
     {
-        public static ModbusScannerWindow? Instance { get; private set; }
+        InitializeComponent();
 
-        public ModbusScannerWindow()
-        {
-            InitializeComponent();
+        Instance = this;
+    }
 
-            Instance = this;
-        }
+    private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        BeginMoveDrag(e);
+    }
 
-        private void Chrome_PointerPressed(object? sender, PointerPressedEventArgs e)
-        {
-            BeginMoveDrag(e);
-        }
-
-        private void Button_Close_Click(object? sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+    private void Button_Close_Click(object? sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }

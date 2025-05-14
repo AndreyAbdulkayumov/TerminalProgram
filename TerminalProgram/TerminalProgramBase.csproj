@@ -15,15 +15,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.7" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.7" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.7" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.7" />
+    <PackageReference Include="Avalonia" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.0" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.2.7" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.3.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
-    <PackageReference Include="System.IO.Ports" Version="9.0.4" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.0" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +30,7 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\MessageBox_AvaloniaUI\MessageBox_AvaloniaUI.csproj" />
     <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
+    <ProjectReference Include="..\ViewModels.Macros\ViewModels.Macros.csproj" />
     <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 

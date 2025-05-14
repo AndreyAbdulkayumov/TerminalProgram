@@ -2,49 +2,48 @@
 using ReactiveUI;
 using System.Reactive;
 
-namespace ViewModels.ModbusClient.DataTypes
+namespace ViewModels.ModbusClient.DataTypes;
+
+public class BinaryRepresentation_ItemData : ReactiveObject
 {
-    public class BinaryRepresentation_ItemData : ReactiveObject
+    public string Address { get; private set; }
+    public BinaryDataItemGroup[] BinaryData { get; private set; }
+
+    public ReactiveCommand<Unit, Unit> Command_Copy_BinaryWord { get; }
+
+    public BinaryRepresentation_ItemData(string address, BinaryDataItemGroup[] binaryData,
+        IMessageBox messageBox, Func<string, Task> copyToClipboard)
     {
-        public string Address { get; private set; }
-        public BinaryDataItemGroup[] BinaryData { get; private set; }
-        
-        public ReactiveCommand<Unit, Unit> Command_Copy_BinaryWord { get; }
+        Address = address;
+        BinaryData = binaryData;
 
-        public BinaryRepresentation_ItemData(string address, BinaryDataItemGroup[] binaryData,
-            IMessageBox messageBox, Func<string, Task> copyToClipboard)
+        Command_Copy_BinaryWord = ReactiveCommand.CreateFromTask(async () =>
         {
-            Address = address;
-            BinaryData = binaryData;
+            string Data = string.Empty;
 
-            Command_Copy_BinaryWord = ReactiveCommand.CreateFromTask(async () =>
+            foreach (var group in BinaryData)
             {
-                string Data = string.Empty;
+                Data += string.Concat(group.GroupData.Select(element => element.Bit));
+            }
 
-                foreach (var group in BinaryData)
-                {
-                    Data += string.Concat(group.GroupData.Select(element => element.Bit));
-                }
-
-                await copyToClipboard(Data);
-            });
-            Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
-        }
+            await copyToClipboard(Data);
+        });
+        Command_Copy_BinaryWord.ThrownExceptions.Subscribe(error => messageBox.Show($"Ошибка копирования данных из регистра с адресом {Address} в буфер обмена.\n\n{error.Message}", MessageType.Error, error));
     }
+}
 
-    public class BinaryDataItemGroup
+public class BinaryDataItemGroup
+{
+    public BinaryDataItem[] GroupData { get; private set; }
+
+    public BinaryDataItemGroup(BinaryDataItem[] groupData)
     {
-        public BinaryDataItem[] GroupData { get; private set; }
-
-        public BinaryDataItemGroup(BinaryDataItem[] groupData)
-        {
-            GroupData = groupData;
-        }
+        GroupData = groupData;
     }
+}
 
-    public class BinaryDataItem
-    {
-        public string Bit { get; set; } = "0";
-        public bool IsZeroBit { get; set; } = true;
-    }
+public class BinaryDataItem
+{
+    public string Bit { get; set; } = "0";
+    public bool IsZeroBit { get; set; } = true;
 }

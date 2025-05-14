@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace TerminalProgram.Views.ModbusClient.ModbusRepresentations
+namespace TerminalProgram.Views.ModbusClient.ModbusRepresentations;
+
+public partial class LastRequest : UserControl
 {
-    public partial class LastRequest : UserControl
+    public LastRequest()
     {
-        public LastRequest()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

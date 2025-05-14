@@ -1,9 +1,8 @@
-﻿namespace Core.Models.Modbus.DataTypes
-{
-    public class ModbusOperationResult
-    {
-        public byte[]? ReadedData;
+﻿namespace Core.Models.Modbus.DataTypes;
 
-        public ModbusActionDetails? Details;
-    }
+public class ModbusOperationResult
+{
+    public byte[]? ReadedData;
+
+    public ModbusActionDetails? Details;
 }

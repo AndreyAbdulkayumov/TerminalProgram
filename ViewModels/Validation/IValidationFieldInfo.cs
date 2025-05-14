@@ -1,7 +1,6 @@
-﻿namespace ViewModels.Validation
+﻿namespace ViewModels.Validation;
+
+public interface IValidationFieldInfo
 {
-    public interface IValidationFieldInfo
-    {
-        string GetFieldViewName(string fieldName);
-    }
+    string GetFieldViewName(string fieldName);
 }

@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 
-namespace TerminalProgramBase.Views.Settings.Tabs
+namespace TerminalProgramBase.Views.Settings.Tabs;
+
+public partial class AppSettings : UserControl
 {
-    public partial class AppSettings : UserControl
+    public AppSettings()
     {
-        public AppSettings()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

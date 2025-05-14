@@ -1,14 +1,13 @@
 ﻿using Core.Models.Settings.DataTypes;
 using ViewModels.ModbusClient.DataTypes;
 
-namespace ViewModels.ModbusClient.WriteFields.DataTypes
+namespace ViewModels.ModbusClient.WriteFields.DataTypes;
+
+public interface IWriteField_VM
 {
-    public interface IWriteField_VM
-    {
-        WriteData GetData();
-        void SetDataFromMacros(ModbusMacrosWriteInfo data);
-        ModbusMacrosWriteInfo GetMacrosData();
-        bool HasValidationErrors { get; }
-        string? ValidationMessage { get; }
-    }
+    WriteData GetData();
+    void SetDataFromMacros(ModbusMacrosWriteInfo data);
+    ModbusMacrosWriteInfo GetMacrosData();
+    bool HasValidationErrors { get; }
+    string? ValidationMessage { get; }
 }
