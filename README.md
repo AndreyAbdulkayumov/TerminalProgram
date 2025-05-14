@@ -54,12 +54,17 @@
 	- UART
 	- TCP
 
+	Есть три режима отправки: 
+	- Одиночная
+	- Цикличная
+	- Файлы
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1cecbd44-6c89-463d-bbc1-ffeedf281db6"/>
+  <img src="https://github.com/user-attachments/assets/34302437-9034-4f2c-ae20-b06246cd77be"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e25536d1-977e-42a3-a864-cd6b452dbd71"/>
+  <img src="https://github.com/user-attachments/assets/f52a3515-ac61-4c47-91d9-f89b7ce9bd11"/>
 </p>
 
 ## *"Modbus"*
