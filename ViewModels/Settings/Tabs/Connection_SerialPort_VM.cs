@@ -1,12 +1,12 @@
 ﻿using ReactiveUI;
 using MessageBox_Core;
 using System.Collections.ObjectModel;
-using System.IO.Ports;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Globalization;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
+using Core.Clients;
 using ViewModels.Validation;
 using Services.Interfaces;
 
@@ -255,7 +255,7 @@ public class Connection_SerialPort_VM : ValidatedDateInput, IValidationFieldInfo
 
     public void ReScan_SerialPorts(SerialPort_Info? info)
     {
-        string[] portsList = SerialPort.GetPortNames();
+        string[] portsList = SerialPortClient.GetPortNames();
 
         SerialPorts.Clear();
 

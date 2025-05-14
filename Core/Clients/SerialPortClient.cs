@@ -81,6 +81,11 @@ public class SerialPortClient : IConnection
             );
     }
 
+    public static string[] GetPortNames()
+    {
+        return SerialPort.GetPortNames();
+    }
+
     public void SetReadMode(ReadMode mode)
     {
         switch (mode)
@@ -92,7 +97,7 @@ public class SerialPortClient : IConnection
                     _readCancelSource = new CancellationTokenSource();
 
                     _deviceSerialPort.BaseStream.WriteTimeout = 500;
-                    _deviceSerialPort.BaseStream.ReadTimeout = -1;   // Бесконечно
+                    _deviceSerialPort.BaseStream.ReadTimeout = Timeout.Infinite;
 
                     _readThread = Task.Run(() => AsyncThread_Read(_deviceSerialPort.BaseStream, _readCancelSource.Token));
                 }
