@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros;assembly=TerminalProgramBase"
+		xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
 		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
 		xmlns:EditCommandViews="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;assembly=TerminalProgramBase"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -36,6 +37,10 @@
 
 		<DataTemplate DataType="{x:Type ViewModels:ModbusCommand_VM}">
 			<EditCommandViews:ModbusCommand/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModelsLocal:CommonSlaveIDField_VM}">
+			<local:CommonSlaveIDField/>
 		</DataTemplate>
 
 	</Window.DataTemplates>
@@ -135,42 +140,54 @@
 							<ColumnDefinition Width="1*"/>
 						</Grid.ColumnDefinitions>
 
-						<Border Grid.Column="0" Classes="AppField">
+						<Grid Grid.Column="0">
 
-							<ScrollViewer>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
 
-								<StackPanel Orientation="Vertical" Spacing="20"
-											Margin="10">
+							<ContentControl Grid.Row="0" Content="{Binding CommonSlaveIDFieldViewModel}"/>
+							
+							<Border Grid.Row="1" Classes="AppField">
 
-									<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
-												  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+								<ScrollViewer>
 
-										<ItemsControl.ItemsPanel>
-											<ItemsPanelTemplate>
-												<StackPanel Orientation="Vertical" Spacing="5"/>
-											</ItemsPanelTemplate>
-										</ItemsControl.ItemsPanel>
+									<StackPanel Orientation="Vertical" Spacing="20"
+												Margin="10">
 
-										<ItemsControl.ItemTemplate>
+										<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
+													  HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
-											<DataTemplate>
-												<local:CommandItem/>
-											</DataTemplate>
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Vertical" Spacing="5"/>
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
 
-										</ItemsControl.ItemTemplate>
+											<ItemsControl.ItemTemplate>
 
-									</ItemsControl>
+												<DataTemplate>
+													<local:CommandItem/>
+												</DataTemplate>
 
-									<Button Content="Добавить команду"
-											FontSize="14"
-											HorizontalAlignment="Center"
-											Command="{Binding Command_AddCommand}"/>
+											</ItemsControl.ItemTemplate>
 
-								</StackPanel>
+										</ItemsControl>
 
-							</ScrollViewer>
+										<Button Content="Добавить команду"
+												FontSize="14"
+												HorizontalAlignment="Center"
+												Command="{Binding Command_AddCommand}"/>
 
-						</Border>						
+									</StackPanel>
+
+								</ScrollViewer>
+
+							</Border>
+							
+						</Grid>
+												
 
 						<Border Grid.Column="1" Classes="AppField">
 
