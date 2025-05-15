@@ -41,6 +41,14 @@ public class EditMacros_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isEdit, value);
     }
 
+    private CommonSlaveIDField_VM? _commonSlaveIDFieldViewModel;
+
+    public CommonSlaveIDField_VM? CommonSlaveIDFieldViewModel
+    {
+        get => _commonSlaveIDFieldViewModel;
+        set => this.RaiseAndSetIfChanged(ref _commonSlaveIDFieldViewModel, value);
+    }
+
     private object? _editCommandViewModel;
 
     public object? EditCommandViewModel
@@ -113,6 +121,21 @@ public class EditMacros_VM : ReactiveObject
             {
                 IsEdit = x != null ? true : false;
             });
+
+        if (MainWindow_VM.CurrentApplicationWorkMode == ApplicationWorkMode.ModbusClient)
+        {
+            CommonSlaveIDFieldViewModel = new CommonSlaveIDField_VM(messageBox);
+
+            CommonSlaveIDFieldViewModel.UseCommonSlaveIdChanged += CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged;
+        }
+    }
+
+    private void CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged(object? sender, bool e)
+    {
+        foreach (var commandVM in _allEditCommandVM.OfType<ModbusCommand_VM>())
+        {
+            commandVM.UseCommonSlaveId = e;
+        }
     }
 
     public void SetParameters(object? macrosParameters)
@@ -165,9 +188,7 @@ public class EditMacros_VM : ReactiveObject
 
     private ICommandContent CreateCommandVM(Guid id, EditCommandParameters parameters)
     {
-        var currentMode = MainWindow_VM.CurrentApplicationWorkMode;
-
-        switch (currentMode)
+        switch (MainWindow_VM.CurrentApplicationWorkMode)
         {
             case ApplicationWorkMode.NoProtocol:
                 return new NoProtocolCommand_VM(id, parameters);

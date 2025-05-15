@@ -105,24 +105,34 @@
 
 					<Grid>
 
-						<TextBlock Text="Slave ID"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text}"
-								   Margin="40,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+						<Grid IsVisible="{Binding !UseCommonSlaveId, Mode=OneWay}">
+							
+							<TextBlock Text="Slave ID"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text}"
+									   Margin="40,6,0,0"
+									   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-						<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
-								   FontSize="16"
-								   Foreground="{DynamicResource App_Color_Text_Bright}"
-								   Margin="110,6,0,0"
-								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+							<TextBlock Text="{Binding NumberFormat, Mode=OneWay}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"
+									   Margin="110,6,0,0"
+									   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
-						<TextBox Classes="InputField"
-								 Width="60"
-								 Text="{Binding SlaveID, Mode=TwoWay}"
-								 Margin="160,0,0,0"
-								 HorizontalAlignment="Left" VerticalAlignment="Top"
-								 TextChanged="UppercaseTextBox_TextChanged"/>
+							<TextBox Classes="InputField"
+									 Width="60"
+									 Text="{Binding SlaveID, Mode=TwoWay}"
+									 Margin="160,0,0,0"
+									 HorizontalAlignment="Left" VerticalAlignment="Top"
+									 TextChanged="UppercaseTextBox_TextChanged"/>
+							
+						</Grid>
+						
+						<TextBlock Text="Используется единый Slave ID"
+								   IsVisible="{Binding UseCommonSlaveId, Mode=OneWay}"
+								   FontSize="14"
+								   Margin="10,9,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Top"/>
 
 						<CheckBox IsChecked="{Binding CheckSum_IsEnable, Mode=TwoWay}"
 								  Content="Контрольная сумма"
