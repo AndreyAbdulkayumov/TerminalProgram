@@ -1,11 +1,13 @@
-﻿using MessageBox_Core;
+﻿using Core.Models.Settings.FileTypes;
+using MessageBox_Core;
 using ReactiveUI;
 using System.Globalization;
+using System.Text;
 using ViewModels.Validation;
 
 namespace ViewModels.Macros.MacrosEdit
 {
-    public class CommonSlaveIDField_VM : ValidatedDateInput
+    public class CommonSlaveIDField_VM : ValidatedDateInput, IValidationFieldInfo
     {
         public event EventHandler<bool>? UseCommonSlaveIdChanged;
 
@@ -46,7 +48,7 @@ namespace ViewModels.Macros.MacrosEdit
         }
 
         private NumberStyles _numberViewStyle;
-        private UInt16 _selectedSlaveID;
+        private byte _selectedSlaveID;
 
         public CommonSlaveIDField_VM(IMessageBox messageBox)
         {
@@ -83,6 +85,55 @@ namespace ViewModels.Macros.MacrosEdit
                         messageBox.Show($"Ошибка смены формата.\n\n{error.Message}", MessageType.Error, error);
                     }
                 });
+        }
+
+        public void SetSlaveId(byte value)
+        {
+            _selectedSlaveID = value;
+
+            CommonSlaveId = NumberFormat_Hex ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
+        }
+
+        public ModbusAdditionalData GetAdditionalData()
+        {
+            return new ModbusAdditionalData()
+            {
+                UseCommonSlaveId = UseCommonSlaveId,
+                CommonSlaveId = _selectedSlaveID,
+            };
+        }
+
+        public string? GetErrorMessage()
+        {
+            if (!UseCommonSlaveId) 
+                return null;
+
+            string errorSource = "Ошибки в дополнительных настройках:\n\n";
+
+            if (string.IsNullOrWhiteSpace(CommonSlaveId))
+            {
+                return $"{errorSource}Не задан единый Slave ID.";
+            }
+
+            StringBuilder message = new StringBuilder();
+
+            if (!HasErrors)
+            {
+                return null;
+            }
+
+            foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
+            {
+                message.AppendLine($"[{GetFieldViewName(element.Key)}]\n{GetFullErrorMessage(element.Key)}\n");
+            }
+
+            if (message.Length > 0)
+            {
+                message.Insert(0, $"{errorSource}Ошибки валидации:\n\n");
+                return message.ToString().TrimEnd('\r', '\n');
+            }
+
+            return null;
         }
 
         private void SelectNumberFormat_Hex()
@@ -154,6 +205,18 @@ namespace ViewModels.Macros.MacrosEdit
             }
 
             return null;
+        }
+
+        public string GetFieldViewName(string fieldName)
+        {
+            switch (fieldName)
+            {
+                case nameof(CommonSlaveId):
+                    return "Slave ID";
+
+                default:
+                    return fieldName;
+            }
         }
     }
 }

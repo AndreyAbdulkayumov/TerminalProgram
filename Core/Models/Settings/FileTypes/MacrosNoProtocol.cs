@@ -19,5 +19,5 @@ public class MacrosCommandNoProtocol : IMacrosCommand
 
 public class MacrosNoProtocol
 {
-    public List<MacrosContent<MacrosCommandNoProtocol>>? Items { get; set; }
+    public List<MacrosContent<object, MacrosCommandNoProtocol>>? Items { get; set; }
 }

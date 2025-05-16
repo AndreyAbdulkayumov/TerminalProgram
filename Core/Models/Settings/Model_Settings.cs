@@ -262,7 +262,7 @@ public class Model_Settings
             fileName = FileName_Macros_Modbus;
             defaultMacrosValue = new MacrosModbus()
             {
-                Items = new List<MacrosContent<MacrosCommandModbus>>()
+                Items = new List<MacrosContent<ModbusAdditionalData, MacrosCommandModbus>>()
             };
         }
 
@@ -271,7 +271,7 @@ public class Model_Settings
             fileName = FileName_Macros_NoProtocol;
             defaultMacrosValue = new MacrosNoProtocol()
             {
-                Items = new List<MacrosContent<MacrosCommandNoProtocol>>()
+                Items = new List<MacrosContent<object, MacrosCommandNoProtocol>>()
             };
         }
 

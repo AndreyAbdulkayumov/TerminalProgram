@@ -1,21 +1,21 @@
-﻿using System.Collections.ObjectModel;
+﻿using Core.Clients;
+using Core.Clients.DataTypes;
+using Core.Models;
+using Core.Models.Modbus;
+using Core.Models.Modbus.DataTypes;
+using Core.Models.Modbus.Message;
+using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
+using DynamicData;
+using MessageBox_Core;
+using ReactiveUI;
+using Services.Interfaces;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using ReactiveUI;
-using Core.Clients;
-using Core.Models;
-using Core.Models.Modbus.Message;
-using Core.Models.Settings.FileTypes;
-using Core.Models.Modbus.DataTypes;
-using Core.Clients.DataTypes;
-using MessageBox_Core;
-using DynamicData;
 using ViewModels.ModbusClient.DataTypes;
-using ViewModels.ModbusClient.ModbusRepresentations;
 using ViewModels.ModbusClient.MessageBusTypes;
-using Services.Interfaces;
-using Core.Models.Modbus;
-using Core.Models.Settings.DataTypes;
+using ViewModels.ModbusClient.ModbusRepresentations;
 
 namespace ViewModels.ModbusClient;
 
@@ -202,7 +202,7 @@ public class ModbusClient_VM : ReactiveObject
                 await Receive_WriteMessage_Handler(message);
             });
 
-        MessageBus.Current.Listen<MacrosContent<MacrosCommandModbus>>()
+        MessageBus.Current.Listen<MacrosContent<ModbusAdditionalData, MacrosCommandModbus>>()
             .Subscribe(async macros =>
             {
                 await Receive_ListMessage_Handler(macros);
@@ -327,7 +327,7 @@ public class ModbusClient_VM : ReactiveObject
         }
     }
 
-    private async Task Receive_ListMessage_Handler(MacrosContent<MacrosCommandModbus> macros)
+    private async Task Receive_ListMessage_Handler(MacrosContent<ModbusAdditionalData, MacrosCommandModbus> macros)
     {
         if (!_connectedHostModel.HostIsConnect)
         {

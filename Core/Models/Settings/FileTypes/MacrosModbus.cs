@@ -19,7 +19,13 @@ public class MacrosCommandModbus : IMacrosCommand
     public ModbusCommandInfo? Content { get; set; }
 }
 
+public class ModbusAdditionalData
+{
+    public bool UseCommonSlaveId { get; set; }
+    public byte CommonSlaveId { get; set; }
+}
+
 public class MacrosModbus
 {
-    public List<MacrosContent<MacrosCommandModbus>>? Items { get; set; }
+    public List<MacrosContent<ModbusAdditionalData, MacrosCommandModbus>>? Items { get; set; }
 }

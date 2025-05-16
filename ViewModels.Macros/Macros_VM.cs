@@ -143,13 +143,13 @@ public class Macros_VM : ReactiveObject
         {
             return new MacrosNoProtocol()
             {
-                Items = new List<MacrosContent<MacrosCommandNoProtocol>>()
+                Items = new List<MacrosContent<object, MacrosCommandNoProtocol>>()
             };
         }
 
         foreach (var element in macros.Items)
         {
-            IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandNoProtocol>(element);
+            IMacrosContext _macrosContext = new ViewItemContext<object, MacrosCommandNoProtocol>(element);
 
             BuildMacrosItem(_macrosContext.CreateContext());
         }
@@ -165,13 +165,13 @@ public class Macros_VM : ReactiveObject
         {
             return new MacrosModbus()
             {
-                Items = new List<MacrosContent<MacrosCommandModbus>>()
+                Items = new List<MacrosContent<ModbusAdditionalData, MacrosCommandModbus>>()
             };
         }
 
         foreach (var element in macros.Items)
         {
-            IMacrosContext _macrosContext = new ViewItemContext<MacrosCommandModbus>(element);
+            IMacrosContext _macrosContext = new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(element);
 
             BuildMacrosItem(_macrosContext.CreateContext());
         }
@@ -343,14 +343,14 @@ public class Macros_VM : ReactiveObject
 
     private IMacrosContext GetMacrosContextFrom(object? content)
     {
-        if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+        if (content is MacrosContent<object, MacrosCommandNoProtocol> noProtocolContent)
         {
-            return new ViewItemContext<MacrosCommandNoProtocol>(noProtocolContent);
+            return new ViewItemContext<object, MacrosCommandNoProtocol>(noProtocolContent);
         }
 
-        else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
+        else if (content is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
         {
-            return new ViewItemContext<MacrosCommandModbus>(modbusContent);
+            return new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(modbusContent);
         }
 
         throw new NotImplementedException($"Поддержка режима не реализована.");
@@ -375,12 +375,12 @@ public class Macros_VM : ReactiveObject
 
     private void AddMacrosItem(object content)
     {
-        if (content is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+        if (content is MacrosContent<object, MacrosCommandNoProtocol> noProtocolContent)
         {
             _noProtocolMacros?.Items?.Add(noProtocolContent);
         }
 
-        else if (content is MacrosContent<MacrosCommandModbus> modbusContent)
+        else if (content is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
         {
             _modbusMacros?.Items?.Add(modbusContent);
         }
@@ -424,7 +424,7 @@ public class Macros_VM : ReactiveObject
 
     private void ChangeMacrosItem(string oldName, object newContent)
     {
-        if (newContent is MacrosContent<MacrosCommandNoProtocol> noProtocolContent)
+        if (newContent is MacrosContent<object, MacrosCommandNoProtocol> noProtocolContent)
         {
             var item = _noProtocolMacros?.Items?.First(item => item.MacrosName == oldName);
 
@@ -435,13 +435,14 @@ public class Macros_VM : ReactiveObject
             }
         }
 
-        else if (newContent is MacrosContent<MacrosCommandModbus> modbusContent)
+        else if (newContent is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
         {
             var item = _modbusMacros?.Items?.First(item => item.MacrosName == oldName);
 
             if (item != null)
             {
                 item.MacrosName = modbusContent.MacrosName;
+                item.AdditionalData = modbusContent.AdditionalData;
                 item.Commands = modbusContent.Commands;
             }
         }
