@@ -4,27 +4,29 @@ using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros;
 
-public class ViewItemContext<T> : IMacrosContext
+public class ViewItemContext<T1, T2> : IMacrosContext
 {
-    private readonly MacrosContent<T> _content;
+    private readonly MacrosContent<T1, T2> _content;
 
-    public ViewItemContext(MacrosContent<T> content)
+    public ViewItemContext(MacrosContent<T1, T2> content)
     {
         _content = content;
     }
 
     public MacrosViewItemData CreateContext()
     {
+        var contentForSend = MacrosHelper.GetWithAdditionalData(_content);
+
         Action action = () =>
         {
-            if (_content.Commands == null)
+            if (contentForSend.Commands == null)
             {
                 return;
             }
 
-            MessageBus.Current.SendMessage(_content);
+            MessageBus.Current.SendMessage(contentForSend);
         };
 
-        return new MacrosViewItemData(_content.MacrosName ?? string.Empty, action);
+        return new MacrosViewItemData(contentForSend.MacrosName ?? string.Empty, action);
     }
 }

@@ -167,7 +167,7 @@ public class OpenChildWindowService : IOpenChildWindowService
                 _macrosWindowIsOpen = false;
             };
 
-            window.Show(MainWindow.Instance);
+            window.Show();
         }
 
         catch (Exception error)

@@ -152,7 +152,7 @@ public class NoProtocol_VM : ReactiveObject
                 await Receive_SendMessage_Handler(message);
             });
 
-        MessageBus.Current.Listen<MacrosContent<MacrosCommandNoProtocol>>()
+        MessageBus.Current.Listen<MacrosContent<object, MacrosCommandNoProtocol>>()
             .Subscribe(async macros =>
             {
                 await Receive_ListMessage_Handler(macros);
@@ -202,7 +202,7 @@ public class NoProtocol_VM : ReactiveObject
         }
     }
 
-    private async Task Receive_ListMessage_Handler(MacrosContent<MacrosCommandNoProtocol> macros)
+    private async Task Receive_ListMessage_Handler(MacrosContent<object, MacrosCommandNoProtocol> macros)
     {
         if (!_connectedHostModel.HostIsConnect)
         {
