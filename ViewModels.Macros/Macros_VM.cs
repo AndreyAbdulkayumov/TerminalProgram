@@ -32,9 +32,9 @@ public class Macros_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _items, value);
     }
 
-    public ReactiveCommand<Unit, Unit> Command_Import { get; set; }
-    public ReactiveCommand<Unit, Unit> Command_Export { get; set; }
-    public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; set; }
+    public ReactiveCommand<Unit, Unit> Command_Import { get; }
+    public ReactiveCommand<Unit, Unit> Command_Export { get; }
+    public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; }
 
     private MacrosNoProtocol? _noProtocolMacros;
     private MacrosModbus? _modbusMacros;
@@ -77,14 +77,10 @@ public class Macros_VM : ReactiveObject
     private string GetValidMacrosFileName()
     {
         if (_noProtocolMacros != null)
-        {
             return _settingsModel.FilePath_Macros_NoProtocol;
-        }
 
-        else if (_modbusMacros != null)
-        {
+        if (_modbusMacros != null)
             return _settingsModel.FilePath_Macros_Modbus;
-        }
 
         throw new Exception("Не выбран режим.");
     }
@@ -344,14 +340,10 @@ public class Macros_VM : ReactiveObject
     private IMacrosContext GetMacrosContextFrom(object? content)
     {
         if (content is MacrosContent<object, MacrosCommandNoProtocol> noProtocolContent)
-        {
             return new ViewItemContext<object, MacrosCommandNoProtocol>(noProtocolContent);
-        }
 
-        else if (content is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
-        {
+        if (content is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
             return new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(modbusContent);
-        }
 
         throw new NotImplementedException($"Поддержка режима не реализована.");
     }

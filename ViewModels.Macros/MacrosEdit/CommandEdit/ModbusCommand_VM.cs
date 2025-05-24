@@ -325,7 +325,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         return new MacrosCommandModbus()
         {
             Name = Name,
-            Content = new ModbusCommandInfo()
+            Content = new ModbusCommandContent()
             {
                 SlaveID = _selectedSlaveID,
                 Address = _selectedAddress,

@@ -39,20 +39,15 @@
 			<EditCommandViews:ModbusCommand/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModelsLocal:CommonSlaveIDField_VM}">
-			<local:CommonSlaveIDField/>
+		<DataTemplate DataType="{x:Type ViewModelsLocal:CommonSlaveIdField_VM}">
+			<local:CommonSlaveIdField/>
 		</DataTemplate>
 
 	</Window.DataTemplates>
 	
 	<Border Background="{DynamicResource App_Back_Color_Background}">
 
-		<Grid>
-
-			<Grid.RowDefinitions>
-				<RowDefinition Height="25"/>
-				<RowDefinition Height="1*"/>
-			</Grid.RowDefinitions>
+		<Grid RowDefinitions="25,1*">
 
 			<Grid Grid.Row="0">
 
@@ -77,20 +72,11 @@
 
 			<Border x:Name="Border_Workspace" Grid.Row="1">
 
-				<Grid>
-
-					<Grid.RowDefinitions>
-						<RowDefinition Height="80"/>
-						<RowDefinition Height="1*"/>
-					</Grid.RowDefinitions>
-
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="120"/>
-						<ColumnDefinition Width="1*"/>
-					</Grid.ColumnDefinitions>
+				<Grid RowDefinitions="80,1*" 
+				      ColumnDefinitions="120,1*">
 
 					<Border Grid.Row="0" Grid.Column="0"
-							Classes="AppField">
+					        Classes="AppField">
 
 						<StackPanel Orientation="Horizontal" Spacing="10"
 									Margin="10">
@@ -133,21 +119,13 @@
 
 					</Border>
 
-					<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+					<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+					      ColumnDefinitions="1*,1*">
 
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
+						<Grid Grid.Column="0" 
+						      RowDefinitions="Auto,*">
 
-						<Grid Grid.Column="0">
-
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto"/>
-								<RowDefinition Height="*"/>
-							</Grid.RowDefinitions>
-
-							<ContentControl Grid.Row="0" Content="{Binding CommonSlaveIDFieldViewModel}"/>
+							<ContentControl Grid.Row="0" Content="{Binding CommonSlaveIdFieldViewModel}"/>
 							
 							<Border Grid.Row="1" Classes="AppField">
 

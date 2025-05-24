@@ -41,12 +41,12 @@ public class EditMacros_VM : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _isEdit, value);
     }
 
-    private CommonSlaveIDField_VM? _commonSlaveIDFieldViewModel;
+    private CommonSlaveIdField_VM? _commonSlaveIdFieldViewModel;
 
-    public CommonSlaveIDField_VM? CommonSlaveIDFieldViewModel
+    public CommonSlaveIdField_VM? CommonSlaveIdFieldViewModel
     {
-        get => _commonSlaveIDFieldViewModel;
-        set => this.RaiseAndSetIfChanged(ref _commonSlaveIDFieldViewModel, value);
+        get => _commonSlaveIdFieldViewModel;
+        set => this.RaiseAndSetIfChanged(ref _commonSlaveIdFieldViewModel, value);
     }
 
     private object? _editCommandViewModel;
@@ -124,9 +124,9 @@ public class EditMacros_VM : ReactiveObject
 
         if (MainWindow_VM.CurrentApplicationWorkMode == ApplicationWorkMode.ModbusClient)
         {
-            CommonSlaveIDFieldViewModel = new CommonSlaveIDField_VM(messageBox);
+            CommonSlaveIdFieldViewModel = new CommonSlaveIdField_VM(messageBox);
 
-            CommonSlaveIDFieldViewModel.UseCommonSlaveIdChanged += CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged;
+            CommonSlaveIdFieldViewModel.UseCommonSlaveIdChanged += CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged;
         }
     }
 
@@ -160,10 +160,10 @@ public class EditMacros_VM : ReactiveObject
             MacrosName = modbusContent.MacrosName;
             commands = modbusContent.Commands?.Select(e => new EditCommandParameters(e.Name, e));
 
-            if (CommonSlaveIDFieldViewModel != null && modbusContent.AdditionalData != null)
+            if (CommonSlaveIdFieldViewModel != null && modbusContent.AdditionalData != null)
             {
-                CommonSlaveIDFieldViewModel.UseCommonSlaveId = modbusContent.AdditionalData.UseCommonSlaveId;
-                CommonSlaveIDFieldViewModel.SetSlaveId(modbusContent.AdditionalData.CommonSlaveId);
+                CommonSlaveIdFieldViewModel.UseCommonSlaveId = modbusContent.AdditionalData.UseCommonSlaveId;
+                CommonSlaveIdFieldViewModel.SetSlaveId(modbusContent.AdditionalData.CommonSlaveId);
 
                 isCommonSlaveId = modbusContent.AdditionalData.UseCommonSlaveId;
             }
@@ -253,20 +253,9 @@ public class EditMacros_VM : ReactiveObject
     {
         var modbusContent = GetModbusMacrosContent();
 
-        if (modbusContent != null &&
-            modbusContent.Commands != null &&
-            modbusContent.AdditionalData != null && modbusContent.AdditionalData.UseCommonSlaveId)
-        {
-            foreach (var command in modbusContent.Commands)
-            {
-                if (command.Content == null)
-                    continue;
+        var contentForSend = MacrosHelper.GetWithAdditionalData(modbusContent);
 
-                command.Content.SlaveID = modbusContent.AdditionalData.CommonSlaveId;
-            }
-        }
-
-        MessageBus.Current.SendMessage(modbusContent);
+        MessageBus.Current.SendMessage(contentForSend);
     }
 
     private MacrosContent<object, MacrosCommandNoProtocol> GetNoProtocolMacrosContent()
@@ -301,7 +290,7 @@ public class EditMacros_VM : ReactiveObject
     {
         var content = new MacrosContent<ModbusAdditionalData, MacrosCommandModbus>();
 
-        ModbusAdditionalData? additionalData = CommonSlaveIDFieldViewModel?.GetAdditionalData();
+        ModbusAdditionalData? additionalData = CommonSlaveIdFieldViewModel?.GetAdditionalData();
 
         content.MacrosName = MacrosName;
         content.AdditionalData = additionalData;
@@ -398,21 +387,27 @@ public class EditMacros_VM : ReactiveObject
         }
     }
 
-    private void RunNoProtocolCommand(NoProtocolCommandInfo content)
+    private void RunNoProtocolCommand(NoProtocolCommandContent content)
     {
         MessageBus.Current.SendMessage(
             new NoProtocolSendMessage(content.IsByteString, content.Message, content.EnableCR, content.EnableLF, AppEncoding.GetEncoding(content.MacrosEncoding))
             );
     }
 
-    private void RunModbusCommand(ModbusCommandInfo content)
+    private void RunModbusCommand(ModbusCommandContent commandContent)
     {
-        var additionalData = CommonSlaveIDFieldViewModel?.GetAdditionalData();
-
-        if (additionalData != null && additionalData.UseCommonSlaveId)
+        var simpleMacros = new MacrosContent<ModbusAdditionalData, ModbusCommandContent>()
         {
-            content.SlaveID = additionalData.CommonSlaveId;
-        }
+            AdditionalData = CommonSlaveIdFieldViewModel?.GetAdditionalData(),
+            Commands = new List<ModbusCommandContent> { commandContent }
+        };
+
+        var contentForSend = MacrosHelper.GetWithAdditionalData(simpleMacros);
+
+        var content = contentForSend.Commands?.First();
+
+        if (content == null)
+            return;
 
         var selectedFunction = Function.AllFunctions.First(func => func.Number == content.FunctionNumber);
 
@@ -425,7 +420,7 @@ public class EditMacros_VM : ReactiveObject
             return;
         }
 
-        else if (selectedFunction is ModbusWriteFunction writeFunction)
+        if (selectedFunction is ModbusWriteFunction writeFunction)
         {
             MessageBus.Current.SendMessage(
                 new ModbusWriteMessage(content.SlaveID, content.Address, writeFunction, content.WriteInfo?.WriteBuffer, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
@@ -439,11 +434,11 @@ public class EditMacros_VM : ReactiveObject
 
     private string? GetMacrosValidationMessage()
     {
-        List<string> validationMessages = new List<string>();
+        var validationMessages = new List<string>();
 
-        if (CommonSlaveIDFieldViewModel != null)
+        if (CommonSlaveIdFieldViewModel != null)
         {
-            string? message = CommonSlaveIDFieldViewModel.GetErrorMessage();
+            string? message = CommonSlaveIdFieldViewModel.GetErrorMessage();
 
             if (!string.IsNullOrEmpty(message))
             {

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="150"
-             x:Class="TerminalProgramBase.Views.Macros.EditMacros.CommonSlaveIDField">
+             x:Class="TerminalProgramBase.Views.Macros.EditMacros.CommonSlaveIdField">
 
 	<UserControl.Styles>
 

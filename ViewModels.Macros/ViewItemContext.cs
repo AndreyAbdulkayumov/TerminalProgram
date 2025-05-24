@@ -1,5 +1,4 @@
 ﻿using Core.Models.Settings.DataTypes;
-using Core.Models.Settings.FileTypes;
 using ReactiveUI;
 using ViewModels.Macros.DataTypes;
 
@@ -16,31 +15,18 @@ public class ViewItemContext<T1, T2> : IMacrosContext
 
     public MacrosViewItemData CreateContext()
     {
-        if (_content.AdditionalData is ModbusAdditionalData modbusAdditions &&
-            _content.Commands is List<MacrosCommandModbus> macrosCommands)
-        {
-            if (macrosCommands != null && modbusAdditions.UseCommonSlaveId)
-            {
-                foreach (var command in macrosCommands)
-                {
-                    if (command.Content == null)
-                        continue;
-
-                    command.Content.SlaveID = modbusAdditions.CommonSlaveId;
-                }
-            }
-        }
+        var contentForSend = MacrosHelper.GetWithAdditionalData(_content);
 
         Action action = () =>
         {
-            if (_content.Commands == null)
+            if (contentForSend.Commands == null)
             {
                 return;
             }
 
-            MessageBus.Current.SendMessage(_content);
+            MessageBus.Current.SendMessage(contentForSend);
         };
 
-        return new MacrosViewItemData(_content.MacrosName ?? string.Empty, action);
+        return new MacrosViewItemData(contentForSend.MacrosName ?? string.Empty, action);
     }
 }

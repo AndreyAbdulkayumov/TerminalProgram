@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace TerminalProgramBase.Views.Macros.EditMacros;
 
-public partial class CommonSlaveIDField : UserControl
+public partial class CommonSlaveIdField : UserControl
 {
-    public CommonSlaveIDField()
+    public CommonSlaveIdField()
     {
         InitializeComponent();
     }

@@ -7,7 +7,7 @@ using ViewModels.Validation;
 
 namespace ViewModels.Macros.MacrosEdit
 {
-    public class CommonSlaveIDField_VM : ValidatedDateInput, IValidationFieldInfo
+    public class CommonSlaveIdField_VM : ValidatedDateInput, IValidationFieldInfo
     {
         public event EventHandler<bool>? UseCommonSlaveIdChanged;
 
@@ -48,9 +48,9 @@ namespace ViewModels.Macros.MacrosEdit
         }
 
         private NumberStyles _numberViewStyle;
-        private byte _selectedSlaveID;
+        private byte _selectedSlaveId;
 
-        public CommonSlaveIDField_VM(IMessageBox messageBox)
+        public CommonSlaveIdField_VM(IMessageBox messageBox)
         {
             NumberFormat_Hex = true;
 
@@ -89,9 +89,9 @@ namespace ViewModels.Macros.MacrosEdit
 
         public void SetSlaveId(byte value)
         {
-            _selectedSlaveID = value;
+            _selectedSlaveId = value;
 
-            CommonSlaveId = NumberFormat_Hex ? _selectedSlaveID.ToString("X") : _selectedSlaveID.ToString();
+            CommonSlaveId = NumberFormat_Hex ? _selectedSlaveId.ToString("X") : _selectedSlaveId.ToString();
         }
 
         public ModbusAdditionalData GetAdditionalData()
@@ -99,7 +99,7 @@ namespace ViewModels.Macros.MacrosEdit
             return new ModbusAdditionalData()
             {
                 UseCommonSlaveId = UseCommonSlaveId,
-                CommonSlaveId = _selectedSlaveID,
+                CommonSlaveId = _selectedSlaveId,
             };
         }
 
@@ -117,10 +117,8 @@ namespace ViewModels.Macros.MacrosEdit
 
             StringBuilder message = new StringBuilder();
 
-            if (!HasErrors)
-            {
+            if (!HasErrors) 
                 return null;
-            }
 
             foreach (KeyValuePair<string, ValidateMessage> element in ActualErrors)
             {
@@ -142,12 +140,12 @@ namespace ViewModels.Macros.MacrosEdit
 
             if (!string.IsNullOrWhiteSpace(CommonSlaveId) && string.IsNullOrEmpty(GetFullErrorMessage(nameof(CommonSlaveId))))
             {
-                CommonSlaveId = _selectedSlaveID.ToString("X");
+                CommonSlaveId = _selectedSlaveId.ToString("X");
             }
 
             else
             {
-                _selectedSlaveID = 0;
+                _selectedSlaveId = 0;
             }
 
             ValidateInput(nameof(CommonSlaveId), CommonSlaveId);
@@ -166,7 +164,7 @@ namespace ViewModels.Macros.MacrosEdit
 
             else
             {
-                _selectedSlaveID = 0;
+                _selectedSlaveId = 0;
             }
 
             ValidateInput(nameof(CommonSlaveId), CommonSlaveId);
@@ -192,7 +190,7 @@ namespace ViewModels.Macros.MacrosEdit
 
         private ValidateMessage? Check_SlaveID(string value)
         {
-            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveID))
+            if (!StringValue.IsValidNumber(value, _numberViewStyle, out _selectedSlaveId))
             {
                 switch (_numberViewStyle)
                 {
