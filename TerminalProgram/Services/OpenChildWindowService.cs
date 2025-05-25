@@ -162,10 +162,18 @@ public class OpenChildWindowService : IOpenChildWindowService
                 DataContext = _macrosVM
             };
 
+            void MainWindowClosedHandler(object? sender, EventArgs e)
+            {
+                window?.Close();
+            }
+
             window.Closed += (object? sender, EventArgs e) =>
             {
+                MainWindow.Instance.Closed -= MainWindowClosedHandler;
                 _macrosWindowIsOpen = false;
             };
+
+            MainWindow.Instance.Closed += MainWindowClosedHandler;
 
             window.Show();
         }
