@@ -115,12 +115,15 @@
 В режиме редактирования есть возможность отправки отдельных команд или всего макроса полностью. 
 Для этого предусмотрены соответствующие кнопки в шапке макроса и у каждой команды в списочной форме.
 
+
+В макросах Modbus есть возможность использовать единый Slave ID во всем макросе.
+
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/530fcbd9-60be-4f2b-8f55-e476bbc1824e"/>
+  <img src="https://github.com/user-attachments/assets/55327425-509c-45fc-b15e-aefa56a86972"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/89f161c9-2d86-40c6-99a9-7a2792d1e193"/>
+  <img src="https://github.com/user-attachments/assets/aa69326d-b260-44d7-8617-58ef4b9c54c7"/>
 </p>
 
 # *Вспомогательный софт*
