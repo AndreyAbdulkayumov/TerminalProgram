@@ -2,7 +2,7 @@
 
 namespace Core.Models.Settings.FileTypes;
 
-public class NoProtocolCommandInfo
+public class NoProtocolCommandContent
 {
     public string? MacrosEncoding { get; set; }
     public string? Message { get; set; }
@@ -14,10 +14,10 @@ public class NoProtocolCommandInfo
 public class MacrosCommandNoProtocol : IMacrosCommand
 {
     public string? Name { get; set; }
-    public NoProtocolCommandInfo? Content { get; set; }
+    public NoProtocolCommandContent? Content { get; set; }
 }
 
 public class MacrosNoProtocol
 {
-    public List<MacrosContent<MacrosCommandNoProtocol>>? Items { get; set; }
+    public List<MacrosContent<object, MacrosCommandNoProtocol>>? Items { get; set; }
 }

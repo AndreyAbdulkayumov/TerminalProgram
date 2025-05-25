@@ -106,7 +106,7 @@ public class NoProtocolCommand_VM : ReactiveObject, ICommandContent, IMacrosVali
         return new MacrosCommandNoProtocol()
         {
             Name = Name,
-            Content = new NoProtocolCommandInfo()
+            Content = new NoProtocolCommandContent()
             {
                 MacrosEncoding = SelectedEncoding,
                 Message = MessageString,

@@ -29,6 +29,14 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         set => this.RaiseAndSetIfChanged(ref _name, value);
     }
 
+    private bool _useCommonSlaveId;
+
+    public bool UseCommonSlaveId
+    {
+        get => _useCommonSlaveId;
+        set => this.RaiseAndSetIfChanged(ref _useCommonSlaveId, value);
+    }
+
     private string? _slaveID;
 
     public string? SlaveID
@@ -317,7 +325,7 @@ public class ModbusCommand_VM : ValidatedDateInput, IValidationFieldInfo, IComma
         return new MacrosCommandModbus()
         {
             Name = Name,
-            Content = new ModbusCommandInfo()
+            Content = new ModbusCommandContent()
             {
                 SlaveID = _selectedSlaveID,
                 Address = _selectedAddress,

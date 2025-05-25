@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros;assembly=TerminalProgramBase"
+		xmlns:ViewModelsLocal="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
 		xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit.CommandEdit;assembly=ViewModels.Macros"
 		xmlns:EditCommandViews="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;assembly=TerminalProgramBase"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -38,16 +39,15 @@
 			<EditCommandViews:ModbusCommand/>
 		</DataTemplate>
 
+		<DataTemplate DataType="{x:Type ViewModelsLocal:CommonSlaveIdField_VM}">
+			<local:CommonSlaveIdField/>
+		</DataTemplate>
+
 	</Window.DataTemplates>
 	
 	<Border Background="{DynamicResource App_Back_Color_Background}">
 
-		<Grid>
-
-			<Grid.RowDefinitions>
-				<RowDefinition Height="25"/>
-				<RowDefinition Height="1*"/>
-			</Grid.RowDefinitions>
+		<Grid RowDefinitions="25,1*">
 
 			<Grid Grid.Row="0">
 
@@ -72,20 +72,11 @@
 
 			<Border x:Name="Border_Workspace" Grid.Row="1">
 
-				<Grid>
-
-					<Grid.RowDefinitions>
-						<RowDefinition Height="80"/>
-						<RowDefinition Height="1*"/>
-					</Grid.RowDefinitions>
-
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="120"/>
-						<ColumnDefinition Width="1*"/>
-					</Grid.ColumnDefinitions>
+				<Grid RowDefinitions="80,1*" 
+				      ColumnDefinitions="120,1*">
 
 					<Border Grid.Row="0" Grid.Column="0"
-							Classes="AppField">
+					        Classes="AppField">
 
 						<StackPanel Orientation="Horizontal" Spacing="10"
 									Margin="10">
@@ -128,49 +119,53 @@
 
 					</Border>
 
-					<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+					<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+					      ColumnDefinitions="1*,1*">
 
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="1*"/>
-						</Grid.ColumnDefinitions>
+						<Grid Grid.Column="0" 
+						      RowDefinitions="Auto,*">
 
-						<Border Grid.Column="0" Classes="AppField">
+							<ContentControl Grid.Row="0" Content="{Binding CommonSlaveIdFieldViewModel}"/>
+							
+							<Border Grid.Row="1" Classes="AppField">
 
-							<ScrollViewer>
+								<ScrollViewer>
 
-								<StackPanel Orientation="Vertical" Spacing="20"
-											Margin="10">
+									<StackPanel Orientation="Vertical" Spacing="20"
+												Margin="10">
 
-									<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
-												  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+										<ItemsControl ItemsSource="{Binding CommandItems, Mode=TwoWay}"
+													  HorizontalAlignment="Stretch" VerticalAlignment="Top">
 
-										<ItemsControl.ItemsPanel>
-											<ItemsPanelTemplate>
-												<StackPanel Orientation="Vertical" Spacing="5"/>
-											</ItemsPanelTemplate>
-										</ItemsControl.ItemsPanel>
+											<ItemsControl.ItemsPanel>
+												<ItemsPanelTemplate>
+													<StackPanel Orientation="Vertical" Spacing="5"/>
+												</ItemsPanelTemplate>
+											</ItemsControl.ItemsPanel>
 
-										<ItemsControl.ItemTemplate>
+											<ItemsControl.ItemTemplate>
 
-											<DataTemplate>
-												<local:CommandItem/>
-											</DataTemplate>
+												<DataTemplate>
+													<local:CommandItem/>
+												</DataTemplate>
 
-										</ItemsControl.ItemTemplate>
+											</ItemsControl.ItemTemplate>
 
-									</ItemsControl>
+										</ItemsControl>
 
-									<Button Content="Добавить команду"
-											FontSize="14"
-											HorizontalAlignment="Center"
-											Command="{Binding Command_AddCommand}"/>
+										<Button Content="Добавить команду"
+												FontSize="14"
+												HorizontalAlignment="Center"
+												Command="{Binding Command_AddCommand}"/>
 
-								</StackPanel>
+									</StackPanel>
 
-							</ScrollViewer>
+								</ScrollViewer>
 
-						</Border>						
+							</Border>
+							
+						</Grid>
+												
 
 						<Border Grid.Column="1" Classes="AppField">
 

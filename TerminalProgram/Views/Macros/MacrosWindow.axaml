@@ -9,7 +9,7 @@
         x:Class="TerminalProgramBase.Views.Macros.MacrosWindow"
 		Title="Макросы"
 		Background="Transparent"
-		WindowStartupLocation="CenterOwner"
+		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
 		SystemDecorations="BorderOnly">
