@@ -93,13 +93,13 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
     // Минимальное значение адреса устройства Modbus.
     // Не берем в учет широковещательный адрес (SlaveId = 0).
-    public int ProgressBar_Minimun
+    public int ProgressBar_Minimum
     {
         get => 1;
     }
 
     // Максимальное значение адреса устройства Modbus.
-    public int ProgressBar_Maximun
+    public int ProgressBar_Maximum
     {
         get => 255;
     }
@@ -240,7 +240,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
         ActionButtonContent = ButtonContent_Start;
         SearchInProcess = false;
 
-        ProgressBar_Value = ProgressBar_Minimun;
+        ProgressBar_Value = ProgressBar_Minimum;
     }
 
     private async Task SearchDevices(CancellationToken taskCancel)
@@ -264,7 +264,7 @@ public class ModbusScanner_VM : ValidatedDateInput, IValidationFieldInfo
 
             ModbusOperationResult result;
 
-            for (int i = ProgressBar_Minimun; i <= ProgressBar_Maximun; i++)
+            for (int i = ProgressBar_Minimum; i <= ProgressBar_Maximum; i++)
             {
                 try
                 {

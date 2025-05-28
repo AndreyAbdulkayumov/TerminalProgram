@@ -16,7 +16,7 @@ public class SendFileItem_VM : ReactiveObject
 
     private string? _fileName;
 
-    private string? FileName
+    public string? FileName
     {
         get => _fileName;
         set => this.RaiseAndSetIfChanged(ref _fileName, value);
@@ -24,7 +24,7 @@ public class SendFileItem_VM : ReactiveObject
 
     private string? _fileExtension;
 
-    private string? FileExtension
+    public string? FileExtension
     {
         get => _fileExtension;
         set => this.RaiseAndSetIfChanged(ref _fileExtension, value);
