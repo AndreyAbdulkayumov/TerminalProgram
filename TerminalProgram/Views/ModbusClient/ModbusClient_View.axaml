@@ -2,12 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:local="clr-namespace:TerminalProgram.Views.ModbusClient;assembly=TerminalProgramBase"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
 			 xmlns:ModeViews="clr-namespace:TerminalProgram.Views.ModbusClient.TransmitMode;assembly=TerminalProgramBase"
              xmlns:ModbusRepresentations="clr-namespace:TerminalProgram.Views.ModbusClient.ModbusRepresentations;assembly=TerminalProgramBase"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="1000" d:DesignHeight="590"
-             x:Class="TerminalProgram.Views.ModbusClient.ModbusClient_View">
+             x:Class="TerminalProgram.Views.ModbusClient.ModbusClient_View"
+			 x:DataType="ViewModels:ModbusClient_VM">
 	
 	<UserControl.Styles>
 

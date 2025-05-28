@@ -8,6 +8,7 @@
 		xmlns:EditCommandViews="clr-namespace:TerminalProgramBase.Views.Macros.EditMacros.EditCommandViews;assembly=TerminalProgramBase"
         xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         x:Class="TerminalProgramBase.Views.Macros.EditMacros.EditMacrosWindow"
+		x:DataType="ViewModelsLocal:EditMacros_VM"
         Title="Редактирование макроса"
 		Width="960" Height="550"
 		Background="Transparent"

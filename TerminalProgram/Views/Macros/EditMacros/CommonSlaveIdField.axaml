@@ -2,9 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="150"
-             x:Class="TerminalProgramBase.Views.Macros.EditMacros.CommonSlaveIdField">
+             x:Class="TerminalProgramBase.Views.Macros.EditMacros.CommonSlaveIdField"
+			 x:DataType="ViewModels:CommonSlaveIdField_VM">
 
 	<UserControl.Styles>
 

@@ -3,6 +3,15 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+	<!-- NativeAOT properties -->
+	<PublishReadyToRun>true</PublishReadyToRun>
+	<PublishAot>true</PublishAot>
+	<EventSourceSupport>true</EventSourceSupport>
+	<IsAotCompatible>true</IsAotCompatible>
+	<TrimMode>partial</TrimMode>
+	<StripSymbols>false</StripSymbols>
+	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

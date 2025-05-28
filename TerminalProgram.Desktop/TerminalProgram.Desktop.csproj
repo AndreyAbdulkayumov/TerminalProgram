@@ -11,7 +11,17 @@
 	<ApplicationIcon>MainLogo.ico</ApplicationIcon>
     <Company>Абдулкаюмов Андрей</Company>
 	<Authors>Abdulkayumov Andrey</Authors>
+	<!-- NativeAOT properties -->
+	<PublishReadyToRun>true</PublishReadyToRun>
+	<PublishAot>true</PublishAot>
+	<EventSourceSupport>true</EventSourceSupport>
+	<IsAotCompatible>true</IsAotCompatible>
+	<TrimMode>partial</TrimMode>
+	<StripSymbols>false</StripSymbols>
+	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
+	
   <ItemGroup>
     <Content Include="MainLogo.ico" />
   </ItemGroup>
