@@ -79,12 +79,16 @@ public class SendFileItem_VM : ReactiveObject
 
         if (byteSize < KB)
             return $"{byteSize} B";
+
         else if (byteSize < MB)
             return $"{(byteSize / (double)KB):F2} KB";
+
         else if (byteSize < GB)
             return $"{(byteSize / (double)MB):F2} MB";
+
         else if (byteSize < TB)
             return $"{(byteSize / (double)GB):F2} GB";
+
         else
             return $"{(byteSize / (double)TB):F2} TB";
     }

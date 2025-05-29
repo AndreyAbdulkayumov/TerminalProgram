@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
 			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
+			 xmlns:DataTypes="clr-namespace:ViewModels.ModbusClient.DataTypes;assembly=ViewModels"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="200"
              x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.Binary"
@@ -28,7 +29,7 @@
 
 				<ItemsControl.ItemTemplate>
 
-					<DataTemplate>
+					<DataTemplate x:DataType="DataTypes:BinaryRepresentation_ItemData">
 
 						<Grid>
 
@@ -70,7 +71,9 @@
 								</ItemsControl.ItemsPanel>
 
 								<ItemsControl.ItemTemplate>
-									<DataTemplate>
+									
+									<DataTemplate x:DataType="DataTypes:BinaryDataItemGroup">
+										
 										<ItemsControl ItemsSource="{Binding GroupData, Mode=OneWay}"
 													  Margin="0,0,10,0">
 
@@ -81,8 +84,11 @@
 											</ItemsControl.ItemsPanel>
 
 											<ItemsControl.ItemTemplate>
-												<DataTemplate>
+												
+												<DataTemplate x:DataType="DataTypes:BinaryDataItem">
+													
 													<Grid>
+														
 														<Border Background="{DynamicResource BinaryRepresentationd_Color_BitBackground_Zero}"
 																IsVisible="{Binding IsZeroBit, Mode=OneWay}"
 																BorderBrush="Black"
@@ -104,9 +110,11 @@
 													</Grid>
 
 												</DataTemplate>
+												
 											</ItemsControl.ItemTemplate>
 											
 										</ItemsControl>
+										
 									</DataTemplate>
 
 								</ItemsControl.ItemTemplate>

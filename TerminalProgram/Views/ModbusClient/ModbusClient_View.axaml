@@ -147,7 +147,7 @@
 
 								<ItemsControl.ItemTemplate>
 
-									<DataTemplate>
+									<DataTemplate x:DataType="local:ModbusDataDisplayedForTable">
 
 										<Border Background="{Binding RowBackground, Mode=OneWay}"
 												BorderThickness="2"
