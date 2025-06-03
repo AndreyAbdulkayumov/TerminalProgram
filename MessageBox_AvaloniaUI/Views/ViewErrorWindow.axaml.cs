@@ -6,10 +6,13 @@ namespace MessageBox_AvaloniaUI;
 
 public partial class ViewErrorWindow : Window
 {
-    public ViewErrorWindow(string errorReport)
+    public ViewErrorWindow()
     {
         InitializeComponent();
+    }
 
+    public void SetErrorReport(string errorReport)
+    {
         TextBlock_ErrorReport.Text = errorReport;
     }
 

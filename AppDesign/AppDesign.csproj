@@ -14,6 +14,11 @@
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
   </ItemGroup>
 
+    <ItemGroup>
+	    <AvaloniaResource Include="Themes\Dark.axaml" />
+		<AvaloniaResource Include="Themes\Light.axaml" />
+    </ItemGroup>
+
   <ItemGroup>
     <None Update="Styles\Button.axaml">
       <SubType>Designer</SubType>

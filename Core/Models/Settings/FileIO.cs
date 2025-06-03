@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using System.Text.Encodings.Web;
+﻿using System.Text.Encodings.Web;
+using System.Text.Json;
 
 namespace Core.Models.Settings;
 
@@ -20,11 +20,19 @@ internal static class FileIO
         {
             WriteIndented = true,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            TypeInfoResolver = SerializerContext.Default
         };
 
         using var stream = new FileStream(correctFilePath, FileMode.Open);
 
-        JsonSerializer.Serialize(stream, data, options);
+        var jsonTypeInfo = options.TypeInfoResolver.GetTypeInfo(typeof(T), options);
+
+        if (jsonTypeInfo == null)
+        {
+            throw new Exception($"Не удалось найти тип {typeof(T)} в объявлении контекста сериализации.");
+        }
+
+        JsonSerializer.Serialize(stream, data, jsonTypeInfo);
     }
 
     public static T? Read<T>(string filePath)
@@ -42,7 +50,7 @@ internal static class FileIO
         {
             using var stream = new FileStream(correctFilePath, FileMode.Open);
 
-            data = JsonSerializer.Deserialize<T>(stream);
+            data = (T?)JsonSerializer.Deserialize(stream, typeof(T), SerializerContext.Default);
         }
 
         // Если в файле некоректные данные.
