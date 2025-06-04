@@ -9,8 +9,8 @@ using MessageBox_Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
 using ViewModels.Helpers.FloatNumber;
-using ViewModels.Settings.MessageBusTypes;
 using Services.Interfaces;
+using MessageBusTypes.Settings;
 
 namespace ViewModels.Settings;
 

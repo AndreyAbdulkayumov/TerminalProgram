@@ -14,10 +14,13 @@ public partial class MessageBoxWindow : Window
 {
     public MessageBoxResult Result { get; private set; } = MessageBoxResult.Default;
 
-    public MessageBoxWindow(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+    public MessageBoxWindow()
     {
         InitializeComponent();
+    }
 
+    public void SetDataContext(string message, string title, MessageType messageType, MessageBoxToolType toolType, string? appVersion, Exception? error = null)
+    {
         DataContext = new MessageBox_VM(
             OpenErrorReport, CopyToClipboard, GetFolderPath,
             message, title, messageType, toolType, appVersion, error);
@@ -25,7 +28,9 @@ public partial class MessageBoxWindow : Window
 
     private void OpenErrorReport(string errorReport)
     {
-        var window = new ViewErrorWindow(errorReport);
+        var window = new ViewErrorWindow();
+
+        window.SetErrorReport(errorReport);
 
         window.Show(this);
     }

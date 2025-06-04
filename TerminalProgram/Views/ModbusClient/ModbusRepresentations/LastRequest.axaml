@@ -3,9 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" Height="160"
-             x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.LastRequest">
+             x:Class="TerminalProgram.Views.ModbusClient.ModbusRepresentations.LastRequest"
+			 x:DataType="ViewModels:ModbusClient_VM">
 	
 	
 	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"

@@ -6,12 +6,12 @@ using System.Globalization;
 using System.Reactive.Linq;
 using MessageBox_Core;
 using ViewModels.Validation;
-using ViewModels.ModbusClient.MessageBusTypes;
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Clients.DataTypes;
 using Services.Interfaces;
 using Core.Models.Modbus;
+using MessageBusTypes.ModbusClient;
 
 namespace ViewModels.ModbusClient;
 

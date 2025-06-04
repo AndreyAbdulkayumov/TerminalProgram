@@ -6,7 +6,11 @@
 	<Version>3.2.1</Version>
     <Company>Абдулкаюмов Андрей</Company>
     <Authors>Abdulkayumov Andrey</Authors>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>	  
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+	<!-- NativeAOT properties -->
+	<PublishAot>true</PublishAot>
+	<TrimMode>link</TrimMode>
+	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
   

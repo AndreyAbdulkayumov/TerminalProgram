@@ -16,7 +16,7 @@ public class SendFileItem_VM : ReactiveObject
 
     private string? _fileName;
 
-    private string? FileName
+    public string? FileName
     {
         get => _fileName;
         set => this.RaiseAndSetIfChanged(ref _fileName, value);
@@ -24,7 +24,7 @@ public class SendFileItem_VM : ReactiveObject
 
     private string? _fileExtension;
 
-    private string? FileExtension
+    public string? FileExtension
     {
         get => _fileExtension;
         set => this.RaiseAndSetIfChanged(ref _fileExtension, value);
@@ -79,12 +79,16 @@ public class SendFileItem_VM : ReactiveObject
 
         if (byteSize < KB)
             return $"{byteSize} B";
+
         else if (byteSize < MB)
             return $"{(byteSize / (double)KB):F2} KB";
+
         else if (byteSize < GB)
             return $"{(byteSize / (double)MB):F2} MB";
+
         else if (byteSize < TB)
             return $"{(byteSize / (double)GB):F2} GB";
+
         else
             return $"{(byteSize / (double)TB):F2} TB";
     }

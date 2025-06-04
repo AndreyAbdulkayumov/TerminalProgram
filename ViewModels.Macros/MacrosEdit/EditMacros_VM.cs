@@ -9,9 +9,9 @@ using Services.Interfaces;
 using ViewModels.Macros.MacrosEdit.CommandEdit;
 using Core.Models.Modbus.DataTypes;
 using ViewModels.Helpers;
-using ViewModels.ModbusClient.MessageBusTypes;
-using ViewModels.NoProtocol.DataTypes;
 using Core.Models.Settings;
+using MessageBusTypes.NoProtocol;
+using MessageBusTypes.ModbusClient;
 
 namespace ViewModels.Macros.MacrosEdit;
 

@@ -7,12 +7,12 @@ using Core.Models;
 using Core.Models.NoProtocol.DataTypes;
 using Core.Models.Settings.FileTypes;
 using Core.Clients.DataTypes;
-using ViewModels.NoProtocol.DataTypes;
 using ViewModels.Helpers;
 using Services.Interfaces;
 using Core.Models.NoProtocol;
 using Core.Models.Settings.DataTypes;
 using System.Collections.ObjectModel;
+using MessageBusTypes.NoProtocol;
 
 namespace ViewModels.NoProtocol;
 

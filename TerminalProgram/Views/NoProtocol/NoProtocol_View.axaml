@@ -6,7 +6,8 @@
 			 xmlns:ModeViews="clr-namespace:TerminalProgram.Views.NoProtocol.TransmitMode;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
 			 d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="TerminalProgram.Views.NoProtocol.NoProtocol_View">
+             x:Class="TerminalProgram.Views.NoProtocol.NoProtocol_View"
+			 x:DataType="ViewModels:NoProtocol_VM">
 
 	<UserControl.Styles>
 		

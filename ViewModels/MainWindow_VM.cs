@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using ViewModels.NoProtocol;
 using ViewModels.ModbusClient;
 using ViewModels.Helpers;
-using ViewModels.Settings.MessageBusTypes;
 using Core.Models;
 using Core.Models.Settings;
 using Core.Models.AppUpdateSystem;
@@ -14,6 +13,7 @@ using Core.Models.Settings.FileTypes;
 using Core.Models.AppUpdateSystem.DataTypes;
 using Core.Clients.DataTypes;
 using Services.Interfaces;
+using MessageBusTypes.Settings;
 
 namespace ViewModels;
 

@@ -168,14 +168,6 @@ internal class AppDirectoryManager
 
         File.Create(defaultFile_FullPath).Close();
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-
-        using (var stream = new FileStream(defaultFile_FullPath, FileMode.Open))
-        {
-            JsonSerializer.Serialize(stream, defaultData, options);
-        }
+        FileIO.Save(defaultFile_FullPath, defaultData);
     }
 }

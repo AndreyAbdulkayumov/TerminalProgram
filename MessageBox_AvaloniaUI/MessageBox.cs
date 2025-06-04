@@ -10,13 +10,13 @@ namespace MessageBox_AvaloniaUI;
 
 public class MessageBox : IMessageBox
 {
-    private readonly Window Owner;
+    private readonly Window? Owner;
 
     private const string Title = "Терминальная программа";
 
     private readonly string? _appVersion;
 
-    public MessageBox(Window owner, string? appVersion)
+    public MessageBox(Window? owner, string? appVersion)
     {
         Owner = owner;
         _appVersion = appVersion;
@@ -26,7 +26,9 @@ public class MessageBox : IMessageBox
     {
         Dispatcher.UIThread.Invoke(async () =>
         {
-            var window = new MessageBoxWindow(message, Title, messageType, MessageBoxToolType.Default, _appVersion, error);
+            var window = new MessageBoxWindow();
+
+            window.SetDataContext(message, Title, messageType, MessageBoxToolType.Default, _appVersion, error);
 
             await CallMessageBox(window);
         });
@@ -36,7 +38,9 @@ public class MessageBox : IMessageBox
     {
         return await Dispatcher.UIThread.Invoke(async () =>
         {
-            var window = new MessageBoxWindow(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, error);
+            var window = new MessageBoxWindow();
+
+            window.SetDataContext(message, Title, messageType, MessageBoxToolType.YesNo, _appVersion, error);
 
             await CallMessageBox(window);
 
@@ -46,7 +50,7 @@ public class MessageBox : IMessageBox
 
     private async Task CallMessageBox(Window window)
     {
-        if (Owner.IsVisible)
+        if (Owner != null && Owner.IsVisible)
         {
             await window.ShowDialog(Owner);
         }

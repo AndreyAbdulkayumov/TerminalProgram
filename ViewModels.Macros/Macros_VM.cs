@@ -1,13 +1,14 @@
-﻿using ReactiveUI;
+﻿using Core.Models.Settings;
+using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
+using MessageBox_Core;
+using MessageBusTypes.Macros;
+using ReactiveUI;
+using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
-using MessageBox_Core;
-using Core.Models.Settings;
-using Core.Models.Settings.DataTypes;
-using Core.Models.Settings.FileTypes;
 using ViewModels.Macros.DataTypes;
-using Services.Interfaces;
 
 namespace ViewModels.Macros;
 
@@ -53,6 +54,27 @@ public class Macros_VM : ReactiveObject
         _fileSystemService = fileSystemService ?? throw new ArgumentNullException(nameof(fileSystemService));
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+
+        /****************************************************/
+        //
+        // Настройка прослушивания MessageBus
+        //
+        /****************************************************/
+
+        MessageBus.Current.Listen<MacrosActionResponse>()
+            .Subscribe(response =>
+            {
+                if (!response.ActionSuccess)
+                {
+                    _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
+                }
+            });
+
+        /****************************************************/
+        //
+        // Настройка свойств и команд модели отображения
+        //
+        /****************************************************/
 
         Command_Import = ReactiveCommand.CreateFromTask(ImportMacros);
         Command_Import.ThrownExceptions.Subscribe(error => _messageBox.Show($"Ошибка при импорте макросов.\n\n{error.Message}", MessageType.Error, error));
