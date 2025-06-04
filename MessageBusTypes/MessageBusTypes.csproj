@@ -4,17 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<!-- NativeAOT properties -->
-	<PublishAot>true</PublishAot>
-	<TrimMode>link</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\MessageBox_Core\MessageBox_Core.csproj" />
-    <ProjectReference Include="..\MessageBusTypes\MessageBusTypes.csproj" />
-    <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
-    <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ViewModels.NoProtocol.DataTypes;
+namespace MessageBusTypes.NoProtocol;
 
 public class NoProtocolSendMessage
 {
