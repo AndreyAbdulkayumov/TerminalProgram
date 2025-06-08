@@ -12,7 +12,7 @@ public class MacrosActionResponse
     public readonly Exception? Error;
 
 
-    public MacrosActionResponse(string name, bool actionSuccess, string message, MessageType messageType, Exception? error)
+    public MacrosActionResponse(string? name, bool actionSuccess, string message, MessageType messageType, Exception? error)
     {
         Name = name;
         ActionSuccess = actionSuccess;
