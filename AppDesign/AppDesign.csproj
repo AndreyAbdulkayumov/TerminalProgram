@@ -5,8 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<!-- NativeAOT properties -->
-	<!--<PublishAot>true</PublishAot>
-	<TrimMode>link</TrimMode>-->
+	<PublishAot>true</PublishAot>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+	<TrimMode>link</TrimMode>
+	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
   <ItemGroup>

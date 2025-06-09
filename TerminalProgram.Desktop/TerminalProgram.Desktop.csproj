@@ -12,23 +12,17 @@
     <Company>Абдулкаюмов Андрей</Company>
 	<Authors>Abdulkayumov Andrey</Authors>
 	<!-- NativeAOT properties -->
-	<PublishReadyToRun>true</PublishReadyToRun>
 	<PublishAot>true</PublishAot>
-	<EventSourceSupport>true</EventSourceSupport>
-	<IsAotCompatible>true</IsAotCompatible>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
 	<TrimMode>partial</TrimMode>
-	<StripSymbols>false</StripSymbols>
-	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 	
   <ItemGroup>
     <Content Include="MainLogo.ico" />
   </ItemGroup>
-
+	
   <ItemGroup>
     <PackageReference Include="Avalonia.Desktop" Version="11.3.1" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,6 +9,7 @@
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 	<!-- NativeAOT properties -->
 	<PublishAot>true</PublishAot>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
 	<TrimMode>link</TrimMode>
 	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
@@ -16,6 +17,11 @@
   
   <ItemGroup>
     <None Remove="Resources\MainLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<!-- Preserve Avalonia types for reflection -->
+	<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
   </ItemGroup>
 
   <ItemGroup>

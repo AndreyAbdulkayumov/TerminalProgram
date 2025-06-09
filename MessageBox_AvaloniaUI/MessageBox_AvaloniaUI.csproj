@@ -4,16 +4,17 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
 	<!-- NativeAOT properties -->
-	<PublishReadyToRun>true</PublishReadyToRun>
 	<PublishAot>true</PublishAot>
-	<EventSourceSupport>true</EventSourceSupport>
-	<IsAotCompatible>true</IsAotCompatible>
-	<TrimMode>partial</TrimMode>
-	<StripSymbols>false</StripSymbols>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+	<TrimMode>link</TrimMode>
 	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
+  <ItemGroup>
+	<!-- Preserve Avalonia types for reflection -->
+	<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
+	
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.1" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.1" />

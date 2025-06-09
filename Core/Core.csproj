@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
 	<!-- NativeAOT properties -->
 	<PublishAot>true</PublishAot>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
 	<TrimMode>link</TrimMode>
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
