@@ -16,6 +16,11 @@
 	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
 	<TrimMode>partial</TrimMode>
   </PropertyGroup>
+
+  <ItemGroup>
+	<!-- Preserve Avalonia types for reflection -->
+	<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
 	
   <ItemGroup>
     <Content Include="MainLogo.ico" />

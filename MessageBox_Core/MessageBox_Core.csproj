@@ -1,13 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<!-- NativeAOT properties -->
-	<PublishAot>true</PublishAot>
-	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
-	<TrimMode>link</TrimMode>
   </PropertyGroup>
 
 </Project>
