@@ -170,7 +170,7 @@
 							<ProgressBar Height="40"
 										 Value="{Binding ProgressBar_Value, Mode=OneWay}"
 										 Minimum="{Binding ProgressBar_Minimum, Mode=OneTime}"
-										 Maximum="{Binding ProgressBar_Maximun, Mode=OneTime}"
+										 Maximum="{Binding ProgressBar_Maximum, Mode=OneTime}"
 										 Foreground="Green"
 										 Background="Silver"
 										 ShowProgressText="True"

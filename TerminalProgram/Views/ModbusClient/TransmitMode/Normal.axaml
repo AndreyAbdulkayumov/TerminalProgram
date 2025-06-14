@@ -2,11 +2,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient.WriteFields;assembly=ViewModels"
+			 xmlns:ViewModels="clr-namespace:ViewModels.ModbusClient;assembly=ViewModels"
+			 xmlns:ViewModelsFields="clr-namespace:ViewModels.ModbusClient.WriteFields;assembly=ViewModels"
 			 xmlns:Fields="clr-namespace:TerminalProgram.Views.ModbusClient.WriteFields;assembly=TerminalProgramBase"
              mc:Ignorable="d" 
 			 d:DesignWidth="500" d:DesignHeight="400"
-             x:Class="TerminalProgram.Views.ModbusClient.TransmitMode.Normal">
+             x:Class="TerminalProgram.Views.ModbusClient.TransmitMode.Normal"
+			 x:DataType="ViewModels:ModbusClient_Mode_Normal_VM">
 
 	<UserControl.Styles>
 
@@ -36,19 +38,19 @@
 
 	<UserControl.DataTemplates>
 
-		<DataTemplate DataType="{x:Type ViewModels:MultipleCoils_VM}">
+		<DataTemplate DataType="{x:Type ViewModelsFields:MultipleCoils_VM}">
 			<Fields:MultipleCoils/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModels:MultipleRegisters_VM}">
+		<DataTemplate DataType="{x:Type ViewModelsFields:MultipleRegisters_VM}">
 			<Fields:MultipleRegisters/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModels:SingleCoil_VM}">
+		<DataTemplate DataType="{x:Type ViewModelsFields:SingleCoil_VM}">
 			<Fields:SingleCoil/>
 		</DataTemplate>
 
-		<DataTemplate DataType="{x:Type ViewModels:SingleRegister_VM}">
+		<DataTemplate DataType="{x:Type ViewModelsFields:SingleRegister_VM}">
 			<Fields:SingleRegister/>
 		</DataTemplate>
 

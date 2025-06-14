@@ -8,13 +8,14 @@ using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using DynamicData;
 using MessageBox_Core;
+using MessageBusTypes.Macros;
+using MessageBusTypes.ModbusClient;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using ViewModels.ModbusClient.DataTypes;
-using ViewModels.ModbusClient.MessageBusTypes;
 using ViewModels.ModbusClient.ModbusRepresentations;
 
 namespace ViewModels.ModbusClient;
@@ -301,6 +302,11 @@ public class ModbusClient_VM : ReactiveObject
             });
     }
 
+    private void SendMacrosActionResponse(string? macrosName, bool actionSuccess, string message, MessageType type, Exception? error = null)
+    {
+        MessageBus.Current.SendMessage(new MacrosActionResponse(macrosName, actionSuccess, message, type, error));
+    }
+
     private async Task Receive_ReadMessage_Handler(ModbusReadMessage message)
     {
         try
@@ -331,13 +337,13 @@ public class ModbusClient_VM : ReactiveObject
     {
         if (!_connectedHostModel.HostIsConnect)
         {
-            _messageBox.Show("Клиент отключен.", MessageType.Error);
+            SendMacrosActionResponse(macros.MacrosName, false, "Клиент отключен.", MessageType.Error);
             return;
         }
 
         if (macros.Commands == null || macros.Commands.Count == 0)
         {
-            _messageBox.Show($"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+            SendMacrosActionResponse(macros.MacrosName, false, $"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
             return;
         }
 
@@ -404,7 +410,7 @@ public class ModbusClient_VM : ReactiveObject
         {
             errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
 
-            _messageBox.Show(string.Join(messageSeparator, errorMessages), MessageType.Error);
+            SendMacrosActionResponse(macros.MacrosName, false, string.Join(messageSeparator, errorMessages), MessageType.Error);
         }
     }
 
@@ -455,7 +461,7 @@ public class ModbusClient_VM : ReactiveObject
         _packageNumber = 0;
     }
 
-    public async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
+    private async Task Modbus_Read(byte slaveID, ushort address, ModbusReadFunction readFunction, int numberOfRegisters, bool checkSum_Enable)
     {
         try
         {
@@ -482,7 +488,7 @@ public class ModbusClient_VM : ReactiveObject
         }
     }
 
-    public async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[]? modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
+    private async Task Modbus_Write(byte slaveID, ushort address, ModbusWriteFunction writeFunction, byte[]? modbusWriteData, int numberOfRegisters, bool checkSum_Enable)
     {
         try
         {

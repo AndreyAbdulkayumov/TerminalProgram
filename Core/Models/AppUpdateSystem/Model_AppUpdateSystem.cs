@@ -1,4 +1,5 @@
 ﻿using Core.Models.AppUpdateSystem.DataTypes;
+using Core.Models.Settings;
 using System.Diagnostics;
 using System.Text.Json;
 
@@ -27,7 +28,7 @@ public class Model_AppUpdateSystem
 
         var response = await client.GetStringAsync(UrlLastestVersion);
 
-        var info = JsonSerializer.Deserialize<LastestVersionInfo>(response);
+        var info = JsonSerializer.Deserialize<LastestVersionInfo>(response, SerializerContext.Default.LastestVersionInfo);
 
         if (info != null && !string.IsNullOrEmpty(info.Version))
         {

@@ -3,9 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Macros;assembly=ViewModels.Macros"
              mc:Ignorable="d" 
 			 d:DesignWidth="100" d:DesignHeight="100"
-             x:Class="TerminalProgramBase.Views.Macros.MacrosItem">
+             x:Class="TerminalProgramBase.Views.Macros.MacrosItem"
+			 x:DataType="ViewModels:MacrosViewItem_VM">
 
 	<Border Background="{DynamicResource Button_Color_Enabled_Background}"
 			CornerRadius="6"

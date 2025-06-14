@@ -1,6 +1,6 @@
 ﻿using Core.Models.Modbus.DataTypes;
 
-namespace ViewModels.ModbusClient.MessageBusTypes;
+namespace MessageBusTypes.ModbusClient;
 
 public class ModbusWriteMessage
 {

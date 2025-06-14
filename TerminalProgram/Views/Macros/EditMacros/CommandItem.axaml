@@ -3,7 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-             x:Class="TerminalProgramBase.Views.Macros.EditMacros.CommandItem">
+			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
+             x:Class="TerminalProgramBase.Views.Macros.EditMacros.CommandItem"
+			 x:DataType="ViewModels:MacrosCommandItem_VM">
 	
 	<Grid>
 

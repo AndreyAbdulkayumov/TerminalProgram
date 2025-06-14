@@ -4,12 +4,18 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.0" />
+    <PackageReference Include="Avalonia" Version="11.3.1" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
   </ItemGroup>
+
+    <ItemGroup>
+	    <AvaloniaResource Include="Themes\Dark.axaml" />
+		<AvaloniaResource Include="Themes\Light.axaml" />
+    </ItemGroup>
 
   <ItemGroup>
     <None Update="Styles\Button.axaml">

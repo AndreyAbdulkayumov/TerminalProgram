@@ -3,9 +3,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
              mc:Ignorable="d"
 			 d:DesignWidth="500" d:DesignHeight="400"
-             x:Class="TerminalProgramBase.Views.Settings.Tabs.Connection_SerialPort">
+             x:Class="TerminalProgramBase.Views.Settings.Tabs.Connection_SerialPort"
+			 x:DataType="ViewModels:Connection_SerialPort_VM">
 
 	<UserControl.Styles>
 

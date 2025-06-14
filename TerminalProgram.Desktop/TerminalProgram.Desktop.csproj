@@ -11,14 +11,23 @@
 	<ApplicationIcon>MainLogo.ico</ApplicationIcon>
     <Company>Абдулкаюмов Андрей</Company>
 	<Authors>Abdulkayumov Andrey</Authors>
+	<!-- NativeAOT properties -->
+	<PublishAot>true</PublishAot>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+	<TrimMode>partial</TrimMode>
   </PropertyGroup>
+
+  <ItemGroup>
+	<!-- Preserve Avalonia types for reflection -->
+	<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
+	
   <ItemGroup>
     <Content Include="MainLogo.ico" />
   </ItemGroup>
-
+	
   <ItemGroup>
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
-    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.1" />
   </ItemGroup>
 
   <ItemGroup>
