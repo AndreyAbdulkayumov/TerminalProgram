@@ -1,9 +1,9 @@
-# Терминальная программа
-Терминальная программа – это многофункциональный кроссплатформенный инструмент инженера, который позволяет взаимодействовать с внешним устройством или сервером. 
-Приложение поддерживает различные вариации протокола Modbus, а также дает возможность работы с данными в строковом или байтовом формате.
+# CoreBus
+CoreBus — кроссплатформенный терминал для работы с COM-портами и TCP-сокетами с поддержкой протокола Modbus.
 
+Поддерживаются различные вариации протокола Modbus, а также есть возможность работы с данными в строковом или байтовом формате.
 
-Приложение тестировалось на Windows 10/11, Ubuntu и Astra Linux.
+Приложение тестировалось на Windows 10/11, Ubuntu и Astra Linux Common Edition.
 
 ## *Помощь проекту*
 Автор будет благодарен за любую поддержку. Реквизиты указаны по [ссылке](https://andreyabdulkayumov.github.io/TerminalProgram_Website/donate.html).
@@ -60,11 +60,11 @@
 	- Файлы
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/34302437-9034-4f2c-ae20-b06246cd77be"/>
+  <img src="https://github.com/user-attachments/assets/c9ddfaa7-ddba-48db-8819-dcd7a2bcc9c7"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/f52a3515-ac61-4c47-91d9-f89b7ce9bd11"/>
+  <img src="https://github.com/user-attachments/assets/d6cf386a-efe6-47ea-b405-32be7eddaec0"/>
 </p>
 
 ## *"Modbus"*
@@ -78,11 +78,11 @@
  	- Modbus ASCII over TCP
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/9548b19c-19fb-4be5-8915-d344a4eea920"/>
+  <img src="https://github.com/user-attachments/assets/654d4dbf-a9ec-4e22-9042-22d528e6cc77"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e8045c3e-f4b4-4001-952e-8fd2ba04dc94"/>
+  <img src="https://github.com/user-attachments/assets/0708033f-b14a-421e-a542-0f35e90a3c70"/>
 </p>
 
 Также в этом режиме реализован Modbus сканер. Он служит для поиска подчиненных устройств на линии связи и доступен только при подключении по последовательному порту.
