@@ -1,0 +1,175 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:Tabs="clr-namespace:CoreBus.Base.Views.Settings.Tabs;assembly=CoreBus.Base"
+		xmlns:ViewModels="clr-namespace:ViewModels.Settings;assembly=ViewModels"
+        mc:Ignorable="d"
+        x:Class="CoreBus.Base.Views.Settings.SettingsWindow"
+		x:DataType="ViewModels:Settings_VM"
+        Title="Настройки"
+		Width="540" Height="530"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TabItem.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
+	</Window.Styles>
+	
+	
+	<Border Background="{DynamicResource App_Back_Color_Background}">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+				
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+					
+					<Icons:MaterialIcon Kind="WindowClose"/>
+					
+				</Button>
+
+			</Grid>
+
+			<Border x:Name="Border_Workspace" Grid.Row="1">
+
+				<Grid>
+
+					<Grid.RowDefinitions>
+						<RowDefinition Height="80"/>
+						<RowDefinition Height="1*"/>
+					</Grid.RowDefinitions>
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="200"/>
+						<ColumnDefinition Width="1*"/>
+					</Grid.ColumnDefinitions>
+
+					<Border Grid.Row="0" Grid.Column="0"
+							Classes="AppField">
+
+						<StackPanel Orientation="Horizontal"
+									Spacing="10"
+									Margin="10">
+
+							<Button Classes="MenuToolButton" 
+									ToolTip.Tip="Создать новый файл"
+									Command="{Binding Command_File_AddNew}">
+								
+								<Icons:MaterialIcon Kind="FilePlusOutline"/>
+								
+							</Button>
+
+
+							<Button Classes="MenuToolButton" 
+									ToolTip.Tip="Добавить существующий файл"
+									Command="{Binding Command_File_AddExisting}">
+
+								<Icons:MaterialIcon Kind="FolderOpenOutline"/>
+								
+							</Button>
+
+							<Button Classes="MenuToolButton" 
+									ToolTip.Tip="Удалить выбранный файл"
+									Command="{Binding Command_File_Delete}">
+
+								<Icons:MaterialIcon Kind="FileRemoveOutline"/>
+								
+							</Button>
+
+							<Button Classes="MenuToolButton" 
+									ToolTip.Tip="Сохранить выбранный файл"
+									Command="{Binding Command_File_Save}">
+
+								<Icons:MaterialIcon Kind="ContentSave"/>
+								
+							</Button>
+
+						</StackPanel>
+
+					</Border>
+
+					<Border Grid.Row="0" Grid.Column="1"
+							Classes="AppField">
+
+						<StackPanel Orientation="Horizontal"
+									Spacing="15"
+									Margin="10">
+
+							<TextBlock Text="Пресет:"
+									   FontSize="16"
+									   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+							<ComboBox Height="30" Width="160"
+									  ItemsSource="{Binding Presets}"
+									  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+									  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						</StackPanel>
+
+					</Border>
+
+					<Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+							Classes="AppField">
+
+						<TabControl>
+
+							<TabItem Header="Подключение">
+								<Tabs:Connection DataContext="{Binding Tab_Connection_VM}"/>
+							</TabItem>
+
+							<TabItem Header="Без протокола">
+								<Tabs:NoProtocol DataContext="{Binding Tab_NoProtocol_VM}"/>
+							</TabItem>
+
+							<TabItem Header="Modbus">
+								<Tabs:Modbus DataContext="{Binding Tab_Modbus_VM}"/>
+							</TabItem>
+
+							<TabItem Header="Приложение">
+								<Tabs:AppSettings DataContext="{Binding Tab_AppSettings_VM}"/>
+							</TabItem>
+
+						</TabControl>
+
+					</Border>
+
+				</Grid>
+
+			</Border>			
+			
+		</Grid>		
+		
+	</Border>
+	
+</Window>

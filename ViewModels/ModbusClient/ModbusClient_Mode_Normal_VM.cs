@@ -2,7 +2,7 @@
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings;
-using MessageBox_Core;
+using MessageBox.Core;
 using MessageBusTypes.ModbusClient;
 using ReactiveUI;
 using Services.Interfaces;

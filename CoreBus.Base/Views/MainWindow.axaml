@@ -1,0 +1,367 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:ModbusClientView="clr-namespace:CoreBus.Base.Views.ModbusClient;assembly=CoreBus.Base"
+		xmlns:NoProtocolView="clr-namespace:CoreBus.Base.Views.NoProtocol;assembly=CoreBus.Base"
+		xmlns:ViewModels="clr-namespace:ViewModels;assembly=ViewModels"
+		mc:Ignorable="d"
+		Width="1300" Height="830"
+        x:Class="CoreBus.Base.Views.MainWindow"
+		x:DataType="ViewModels:MainWindow_VM"
+        Icon="/Resources/MainLogo.ico"
+        Title="CoreBus"
+		Background="Transparent"
+		WindowStartupLocation="CenterScreen"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="BorderOnly">
+	
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
+		<Style Selector="Button.LeftMenuButton">			
+			<Setter Property="Height" Value="40"/>
+			<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		</Style>
+		
+	</Window.Styles>
+	
+	
+	<Window.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol.NoProtocol_VM}">
+			<NoProtocolView:NoProtocol_View/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:ModbusClient.ModbusClient_VM}">
+			<ModbusClientView:ModbusClient_View/>
+		</DataTemplate>
+
+	</Window.DataTemplates>
+	
+
+	<Border Background="{DynamicResource App_Back_Color_Background}">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+				
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+				
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Свернуть"
+						Classes="WindowChromeButton_All"
+						Margin="0,0,50,0"
+						Click="Button_Minimize_Click">
+
+					<Icons:MaterialIcon Kind="WindowMinimize"/>
+
+				</Button>
+
+				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
+						Classes="WindowChromeButton_All"
+						Margin="0,0,25,0"
+						Click="Button_Maximize_Click">
+					
+					<Icons:MaterialIcon Kind="WindowMaximize"/>
+
+				</Button>
+				
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+					
+				</Button>
+				
+			</Grid>
+
+			<Grid x:Name="Grid_Workspace" Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="80"/>
+					<RowDefinition Height="1*"/>
+					<RowDefinition Height="80"/>
+				</Grid.RowDefinitions>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="200"/>
+					<ColumnDefinition Width="4*"/>
+				</Grid.ColumnDefinitions>
+
+				<Border Grid.Row="0" Grid.Column="0"
+						Classes="AppField">
+
+					<StackPanel Orientation="Horizontal"
+								Spacing="10"
+								Margin="10,0,0,0">
+
+						<Button Classes="MenuToolButton" 
+								ToolTip.Tip="Настройки"				
+								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_OpenSettingsWindow}">
+							
+							<Icons:MaterialIcon Kind="Cog"
+												Foreground="{DynamicResource ToolBar_Icon_Settings}"/>
+						
+						</Button>
+
+						<Button Classes="MenuToolButton" 
+								ToolTip.Tip="О программе"
+								Command="{Binding Command_OpenAboutWindow}">
+							
+							<Icons:MaterialIcon Kind="Info"
+												Foreground="{DynamicResource ToolBar_Icon_About}"/>
+							
+						</Button>
+
+						<Button Classes="MenuToolButton"
+								ToolTip.Tip="Руководство пользователя"
+								Command="{Binding Command_OpenUserManual}">
+
+							<Icons:MaterialIcon Kind="HelpCircle"
+												Foreground="{DynamicResource ToolBar_Icon_UserManual}"/>
+
+						</Button>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="0"
+						Classes="AppField">
+
+					<Grid>
+						
+						<StackPanel Orientation="Vertical" Spacing="10"
+									Margin="10"
+									VerticalAlignment="Top">
+
+							<Button Content="Без протокола"
+									Classes="LeftMenuButton"
+									Command="{Binding Command_ProtocolMode_NoProtocol}"/>
+
+							<Button Content="Modbus"
+									Classes="LeftMenuButton"
+									Command="{Binding Command_ProtocolMode_Modbus}"/>
+							
+							<Separator Background="{DynamicResource Group_Color_BorderBrush}"
+									   Margin="0,10,0,10"/>
+
+							<Button Content="Макросы"
+									Classes="LeftMenuButton"
+									Command="{Binding Command_OpenMacrosWindow}"/>
+
+						</StackPanel>
+
+						<Border Margin="0,0,0,10"
+								Background="{DynamicResource TX_RX_Field_Background}"
+								BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+								BorderThickness="1"
+								CornerRadius="10"
+								IsVisible="{Binding UpdateMessageIsVisible, Mode=OneWay}"
+								HorizontalAlignment="Center" VerticalAlignment="Bottom">
+
+							<Grid>
+
+								<Button ToolTip.Tip="Пропустить эту версию"
+										Classes="WindowChromeButton_CloseApp"
+										BorderThickness="0"
+										Height="20" Width="20"
+										CornerRadius="0,9,0,0"
+										HorizontalAlignment="Right" VerticalAlignment="Top"
+										Command="{Binding Command_SkipNewAppVersion}">
+									
+									<Icons:MaterialIcon Kind="WindowClose"
+														Height="16" Width="16"/>
+								</Button>
+								
+								<StackPanel Spacing="15" Margin="10">
+
+									<TextBlock Text="Доступна новая версия приложения!"
+											   TextWrapping="Wrap"
+											   TextAlignment="Center"
+											   Width="145"
+											   Margin="0,14,0,0"/>
+
+									<TextBlock Text="{Binding NewAppVersion, Mode=OneWay}"
+											   TextWrapping="Wrap"
+											   TextAlignment="Center"/>
+
+									<Button Content="Обновить"
+											HorizontalAlignment="Center"
+											Command="{Binding Command_UpdateApp}"/>
+
+								</StackPanel>
+								
+							</Grid>							
+							
+						</Border>
+						
+					</Grid>
+					
+
+				</Border>
+
+				<Border Grid.Row="0" Grid.Column="1"
+						Classes="AppField">
+
+					<Grid>
+
+						<TextBlock Text="Выбранный пресет:"
+								   Margin="10,0,0,0"
+								   FontSize="16"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<ComboBox Height="30" Width="160"
+								  IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								  ItemsSource="{Binding Presets, Mode=OneWay}"
+								  SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+								  Margin="180,0,0,0"
+								  HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+						<Button Margin="380,0,0,0"
+								Content="Подключить"
+								Width="105" Height="32"
+								IsEnabled="{Binding !UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_Connect}"/>
+
+						<Button Margin="500,0,0,0"
+								Content="Отключить"
+								Width="105" Height="32"
+								IsEnabled="{Binding UI_IsConnectedState, Mode=OneWay}"
+								Command="{Binding Command_Disconnect}"/>
+
+					</Grid>
+
+				</Border>
+
+				<Border Grid.Row="1" Grid.Column="1"
+						Classes="AppField">
+
+					<ContentControl Content="{Binding CurrentViewModel}"/>
+
+				</Border>
+
+				<Border Grid.Row="2" Grid.Column="1"
+						Classes="AppField">
+
+					<Grid>
+						
+						<Grid.RowDefinitions>
+							<RowDefinition Height="1*"/>
+							<RowDefinition Height="1*"/>
+						</Grid.RowDefinitions>
+						
+						<TextBlock Grid.Row="0"
+								   Text="{Binding ConnectionString, Mode=OneWay}"
+								   FontSize="16"
+								   Margin="20,0,0,0"
+								   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+						
+						<StackPanel Grid.Row="1" 
+									Orientation="Horizontal"
+									Spacing="10"
+									Margin="20,0,0,0" 
+									VerticalAlignment="Center">							
+
+							<TextBlock Text="{Binding ConnectionStatus, Mode=OneWay}"
+								       FontSize="16"/>
+							
+							<TextBlock IsVisible="{Binding ConnectionTimer_IsVisible, Mode=OneWay}"
+									   Text="{Binding ConnectionTimer_View, Mode=OneWay}"
+									   FontSize="16"/>
+														
+						</StackPanel>
+											
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
+								 Margin="0,0,190,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+								 IsVisible="{Binding Led_RX_IsActive, Mode=OneWay}"
+								 Margin="0,0,190,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" Grid.RowSpan="2"
+								   Text="Прием"
+								   FontSize="16"
+								   Margin="0,0,130,0"
+								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Deactive}"
+								 Margin="0,0,95,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<Ellipse Grid.Row="0" Grid.RowSpan="2"
+								 Width="20" Height="20"
+								 Fill="{DynamicResource ConnectionString_LedBrush_Active}"
+								 IsVisible="{Binding Led_TX_IsActive, Mode=OneWay}"
+								 Margin="0,0,95,0"
+								 HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+						<TextBlock Grid.Row="0" Grid.RowSpan="2"
+								   Text="Передача"
+								   FontSize="16"
+								   Margin="0,0,10,0"
+								   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+
+					</Grid>
+
+				</Border>
+
+				<Border Grid.Row="2" Grid.Column="1"
+						Background="Transparent"
+						Width="20" Height="20"
+						HorizontalAlignment="Right" VerticalAlignment="Bottom"
+						PointerPressed="ResizeIcon_PointerPressed">
+
+					<Border.Styles>
+						<Style Selector="Border">
+							<Style Selector="^:pointerover">
+								<Setter Property="Cursor" Value="BottomRightCorner"/>
+							</Style>
+						</Style>
+					</Border.Styles>
+
+					<Icons:MaterialIcon Kind="ResizeBottomRight"
+										Foreground="{DynamicResource ResizeGrip_Color_Foreground}"
+										Margin="0,0,10,10"
+										Width="30" Height="30"/>
+
+				</Border>
+				
+			</Grid>
+			
+		</Grid>		
+		
+	</Border>        
+	
+</Window>

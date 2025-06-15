@@ -1,7 +1,7 @@
 ﻿using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
+using MessageBox.Core;
 using MessageBusTypes.Macros;
 using ReactiveUI;
 using Services.Interfaces;

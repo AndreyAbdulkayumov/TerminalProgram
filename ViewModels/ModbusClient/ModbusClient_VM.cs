@@ -7,7 +7,7 @@ using Core.Models.Modbus.Message;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
 using DynamicData;
-using MessageBox_Core;
+using MessageBox.Core;
 using MessageBusTypes.Macros;
 using MessageBusTypes.ModbusClient;
 using ReactiveUI;

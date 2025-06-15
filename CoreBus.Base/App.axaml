@@ -1,0 +1,19 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:MaterialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia" 
+             x:Class="CoreBus.Base.App"
+             RequestedThemeVariant="Light">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme />
+		<MaterialIcons:MaterialIconStyles />
+	</Application.Styles>
+
+	<Application.Resources>
+		<!-- Для стрелки на всех ComboBox во всем приложении. 
+			 Через стиль задать цвет не получилось (Avalonia UI v. 11.2.0-rc1). -->
+		<SolidColorBrush x:Key="ComboBoxDropDownGlyphForeground" Color="Black"/> <!-- Для всех тем -->
+	</Application.Resources>
+	
+</Application>

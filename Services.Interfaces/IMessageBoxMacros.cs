@@ -1,4 +1,4 @@
-﻿using MessageBox_Core;
+﻿using MessageBox.Core;
 
 namespace Services.Interfaces;
 

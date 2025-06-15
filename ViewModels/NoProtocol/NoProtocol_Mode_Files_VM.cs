@@ -1,7 +1,7 @@
 ﻿using Core.Models.NoProtocol;
 using Core.Models;
 using Core.Models.Settings;
-using MessageBox_Core;
+using MessageBox.Core;
 using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;

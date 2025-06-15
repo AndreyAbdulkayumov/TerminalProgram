@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="CoreBus.Base.Views.Settings.Tabs.Connection_Ethernet"
+			 x:DataType="ViewModels:Connection_Ethernet_VM">
+
+	<UserControl.Styles>
+		
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,8,235,0"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+		</Style>
+
+		<Style Selector="TextBox.InputField.Settings">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Padding" Value="10,0,10,0"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>			
+		</Style>
+
+	</UserControl.Styles>
+
+
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="10"
+				Width="450"
+				HorizontalAlignment="Center">
+
+		<!-- IP address -->
+		
+		<Grid>
+			
+			<TextBlock Text="IP-адрес" Classes="Parameters"/>
+
+			<TextBox Classes="InputField Settings"
+					 Width="140"
+					 Text="{Binding IP_Address, Mode=TwoWay}"/>
+					 
+		</Grid>
+
+		<!-- Port -->
+		
+		<Grid>
+
+			<TextBlock Text="Порт" Classes="Parameters"/>
+
+			<TextBox Classes="InputField Settings"
+					 Width="70"
+					 Text="{Binding Port, Mode=TwoWay}"/>
+			
+		</Grid>		
+		
+	</StackPanel>
+	
+</UserControl>

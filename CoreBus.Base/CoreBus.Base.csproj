@@ -1,0 +1,111 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+	<Version>3.2.1</Version>
+    <Company>Абдулкаюмов Андрей</Company>
+    <Authors>Abdulkayumov Andrey</Authors>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+	<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Resources\MainLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.1" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.1" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.1" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.1" />
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.1" />
+    <PackageReference Include="Material.Icons.Avalonia" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AppDesign\AppDesign.csproj" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\MessageBox.AvaloniaUI\MessageBox.AvaloniaUI.csproj" />
+    <ProjectReference Include="..\Services.Interfaces\Services.Interfaces.csproj" />
+    <ProjectReference Include="..\ViewModels.Macros\ViewModels.Macros.csproj" />
+    <ProjectReference Include="..\ViewModels\ViewModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\MainLogo.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditCommandViews\ModbusCommand.axaml.cs">
+      <DependentUpon>ModbusCommand.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditCommandViews\NoProtocolCommand.axaml.cs">
+      <DependentUpon>NoProtocolCommand.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Macros\EditMacros\EditMacrosWindow.axaml.cs">
+      <DependentUpon>EditMacrosWindow.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\ModbusRepresentations\LastRequest.axaml.cs">
+      <DependentUpon>LastRequest.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\ModbusClient_View.axaml.cs">
+      <DependentUpon>ModbusClient_View.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\TransmitMode\Normal.axaml.cs">
+      <DependentUpon>Normal.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\TransmitMode\Cycle.axaml.cs">
+      <DependentUpon>Cycle.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\WriteFields\MultipleRegisters.axaml.cs">
+      <DependentUpon>MultipleRegisters.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ModbusClient\WriteFields\SingleRegister.axaml.cs">
+      <DependentUpon>SingleRegister.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NoProtocol\TransmitMode\Cycle.axaml.cs">
+      <DependentUpon>Cycle.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NoProtocol\TransmitMode\Normal.axaml.cs">
+      <DependentUpon>Normal.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\NoProtocol\NoProtocol_View.axaml.cs">
+      <DependentUpon>NoProtocol_View.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\Settings\Tabs\AppSettings.axaml.cs">
+      <DependentUpon>AppSettings.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\NoProtocol\Modbus_Client_Mode_Normal.axaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Documentation\UserManual.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

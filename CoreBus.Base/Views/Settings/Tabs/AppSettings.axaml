@@ -1,0 +1,63 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="CoreBus.Base.Views.Settings.Tabs.AppSettings"
+			 x:DataType="ViewModels:AppSettings_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,6,340,0"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+		</Style>
+
+	</UserControl.Styles>
+	
+	<StackPanel Orientation="Vertical"
+				Spacing="30"
+				Margin="20"
+				Width="450"
+				HorizontalAlignment="Center">
+
+		<Grid>
+
+			<TextBlock Text="Тема" 
+					   Margin="90,6,0,0"
+					   HorizontalAlignment="Left" VerticalAlignment="Top"/>
+
+			<Button Content="Темная"
+					Width="90"
+					Margin="150,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
+					Command="{Binding Select_Dark_Theme}"/>
+
+			<Button Content="Светлая"
+					Width="90"
+					Margin="260,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Top"
+					HorizontalContentAlignment="Center"
+					Command="{Binding Select_Light_Theme}"/>
+
+		</Grid>
+
+		<CheckBox Content="Проверять обновления при запуске программы"
+				  Foreground="{DynamicResource App_Color_Text}"
+				  FontSize="14"
+				  Width="220"
+				  Margin="90,0,0,0"
+				  HorizontalAlignment="Left" VerticalAlignment="Top"
+				  IsChecked="{Binding CheckAppUpdateAfterStart, Mode=TwoWay}"/>
+		
+	</StackPanel>
+
+</UserControl>

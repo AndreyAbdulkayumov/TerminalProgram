@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Linq;
-using MessageBox_Core;
+using MessageBox.Core;
 using Core.Clients.DataTypes;
 using Core.Models;
 using ViewModels.Helpers;

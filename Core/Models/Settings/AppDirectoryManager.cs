@@ -1,13 +1,11 @@
-﻿using System.Text.Json;
-
-namespace Core.Models.Settings;
+﻿namespace Core.Models.Settings;
 
 internal class AppDirectoryManager
 {
     /// <summary>
     /// Имя папки приложения
     /// </summary>
-    private const string ProgramFolderName = "TerminalProgram";
+    private const string ProgramFolderName = "CoreBus";
 
     /*******************************************************/
     //

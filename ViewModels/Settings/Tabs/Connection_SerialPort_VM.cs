@@ -1,5 +1,5 @@
 ﻿using ReactiveUI;
-using MessageBox_Core;
+using MessageBox.Core;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;

@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using ReactiveUI;
 using Core.Models.Settings;
 using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
+using MessageBox.Core;
 using ViewModels.Settings.Tabs;
 using ViewModels.Validation;
 using ViewModels.Helpers.FloatNumber;

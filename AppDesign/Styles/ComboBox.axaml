@@ -15,7 +15,7 @@
 			<Setter Property="Foreground" Value="Black"/> <!-- Для всех тем -->
 		</Style>
 
-		<!-- Цвет стрелки у ComboBox задан в ресурсах приложения. Файл App.xaml в проекте TerminalProgram -->
+		<!-- Цвет стрелки у ComboBox задан в ресурсах приложения. Файл App.xaml в проекте CoreBus.Base -->
 		
 		<Style Selector="^:pointerover /template/ Border#Background">
 			<Setter Property="Background" Value="{DynamicResource ComboBox_Color_MouseOver_Background}"/>

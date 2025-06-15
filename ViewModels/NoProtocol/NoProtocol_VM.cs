@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
 using System.Reactive;
 using System.Text;
-using MessageBox_Core;
+using MessageBox.Core;
 using Core.Clients;
 using Core.Models;
 using Core.Models.NoProtocol.DataTypes;

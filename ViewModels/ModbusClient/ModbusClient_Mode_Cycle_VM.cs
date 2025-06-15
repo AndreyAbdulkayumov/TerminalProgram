@@ -4,7 +4,7 @@ using System.Reactive;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive.Linq;
-using MessageBox_Core;
+using MessageBox.Core;
 using ViewModels.Validation;
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
