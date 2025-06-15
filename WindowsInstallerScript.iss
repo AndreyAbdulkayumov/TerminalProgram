@@ -31,7 +31,7 @@
 #define LicenseFileDirectory 'LICENSE.md'
 
 ; Относительный путь
-#define SetupIconFileDirectory 'CoreBus\Resources\MainLogo.ico'
+#define SetupIconFileDirectory 'CoreBus.Base\Resources\MainLogo.ico'
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
