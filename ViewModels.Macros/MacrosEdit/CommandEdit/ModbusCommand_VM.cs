@@ -5,7 +5,7 @@ using System.Text;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
+using MessageBox.Core;
 using ViewModels.Macros.DataTypes;
 using ViewModels.ModbusClient;
 using ViewModels.ModbusClient.WriteFields;

@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Macros.MacrosEdit;assembly=ViewModels.Macros"
+             x:Class="CoreBus.Base.Views.Macros.EditMacros.CommandItem"
+			 x:DataType="ViewModels:MacrosCommandItem_VM">
+	
+	<Grid>
+
+		<Border Background="{DynamicResource Macros_Edit_CommandItem_Selected}"
+				CornerRadius="6"
+				IsVisible="{Binding IsEdit, Mode=OneWay}"/>
+
+		<StackPanel Orientation="Horizontal" Spacing="15"
+					Margin="10"
+					HorizontalAlignment="Center">
+
+			<Button Classes="MenuToolButton"
+					ToolTip.Tip="Запустить команду"
+					Command="{Binding Command_RunCommand}">
+
+				<Icons:MaterialIcon Kind="Play"/>
+
+			</Button>
+
+			<TextBox Classes="InputField"
+					 Width="270"
+					 IsReadOnly="True"
+					 Text="{Binding CommandName, Mode=TwoWay}"/>
+
+			<Button Classes="MenuToolButton"
+					ToolTip.Tip="Редактировать команду"
+					Command="{Binding Command_EditCommand}">
+
+				<Icons:MaterialIcon Kind="Cog"/>
+
+			</Button>
+
+			<Button Classes="MenuToolButton"
+					ToolTip.Tip="Удалить команду"
+					Command="{Binding Command_RemoveCommand}">
+
+				<Icons:MaterialIcon Kind="CloseBold"/>
+
+			</Button>
+
+		</StackPanel>
+
+	</Grid>
+	
+</UserControl>

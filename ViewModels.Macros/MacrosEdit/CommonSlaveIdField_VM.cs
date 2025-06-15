@@ -1,5 +1,5 @@
 ﻿using Core.Models.Settings.FileTypes;
-using MessageBox_Core;
+using MessageBox.Core;
 using ReactiveUI;
 using System.Globalization;
 using System.Text;

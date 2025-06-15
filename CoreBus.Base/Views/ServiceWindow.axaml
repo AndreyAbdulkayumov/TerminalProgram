@@ -1,0 +1,88 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        mc:Ignorable="d"
+        x:Class="CoreBus.Base.Views.ServiceWindow"
+		Title="Сервис"
+		Height="190" Width="300"
+		Background="Transparent"
+		CanResize="False"
+		ShowInTaskbar="False"
+		WindowStartupLocation="CenterOwner"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="None">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+
+	</Window.Styles>
+	
+	<Border>
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+					
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Border Grid.Row="1"
+					Background="{DynamicResource App_Field_Color_Background}">
+
+				<Grid>
+					
+					<TextBlock x:Name="TextBlock_Description" Text="Default Text"
+							   Margin="0,25,0,0"
+							   FontSize="14"
+		   					   Foreground="{DynamicResource App_Color_Text}"
+							   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+
+					<TextBox x:Name="TextBox_SelectFileName" Classes="InputField"
+							 Margin="0,60,0,0"
+							 Width="180"
+							 HorizontalAlignment="Center" VerticalAlignment="Top"/>
+					
+					<Button x:Name="Button_Select" Content="Выбрать"
+							Margin="0,110,0,0"
+							Width="80"
+							FontSize="14"
+							HorizontalAlignment="Center" VerticalAlignment="Top"
+							Click="Button_Select_Click"/>
+					
+				</Grid>
+				
+			</Border>
+
+		</Grid>
+	
+	</Border>
+	
+</Window>

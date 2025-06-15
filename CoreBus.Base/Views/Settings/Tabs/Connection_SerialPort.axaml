@@ -1,0 +1,159 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+             mc:Ignorable="d"
+			 d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="CoreBus.Base.Views.Settings.Tabs.Connection_SerialPort"
+			 x:DataType="ViewModels:Connection_SerialPort_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ComboBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/InputField.axaml"/>
+
+		<Style Selector="TextBlock.Parameters">
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="0,0,235,0"/>
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="TextBox.InputField.Settings">
+			<Setter Property="Width" Value="140"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Padding" Value="10,0,10,0"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Top"/>
+			<Setter Property="HorizontalContentAlignment" Value="Left"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+
+		<Style Selector="ComboBox">
+			<Setter Property="Width" Value="140"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="FontSize" Value="14"/>
+			<Setter Property="Margin" Value="235,0,0,0"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="VerticalAlignment" Value="Center"/>
+		</Style>
+
+	</UserControl.Styles>
+
+
+	<StackPanel Orientation="Vertical"
+				Spacing="10"
+				Margin="10"
+				Width="450"
+				HorizontalAlignment="Center">
+
+		<!--Port-->
+
+		<Grid>
+
+			<Border IsVisible="{Binding Message_PortNotFound_IsVisible, Mode=OneWay}"
+					Background="{DynamicResource Settings_Color_PortNotFound_Background}"
+					BorderBrush="{DynamicResource Settings_Color_PortNotFound_BorderBrush}"
+					BorderThickness="1"
+					Width="190" Height="28"
+					Margin="-20,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Center">
+
+				<TextBlock Text="{Binding Message_PortNotFound, Mode=OneWay}"
+						   FontSize="14"
+						   Foreground="#FFFAFAF0"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+			</Border>
+
+			<TextBlock Text="Port" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding SerialPorts}"
+					  SelectedItem="{Binding Selected_SerialPort, Mode=TwoWay}"/>
+
+			<!--Re-scan Serial Ports-->
+
+			<Button FontSize="14"
+					ToolTip.Tip="Искать порты заново"
+					Width="32" Height="32"
+					Margin="390,0,0,0"
+					HorizontalAlignment="Left" VerticalAlignment="Center"
+					Command="{Binding Command_ReScan_SerialPorts}">
+
+				<Icons:MaterialIcon Kind="Sync"
+									Height="27" Width="27"/>
+
+			</Button>
+
+		</Grid>
+
+		<!--Baud Rate-->
+
+		<Grid>
+
+			<TextBlock Text="BaudRate" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding BaudRate}"
+					  SelectedItem="{Binding Selected_BaudRate, Mode=TwoWay}"
+					  IsEnabled="{Binding !BaudRate_IsCustom}"/>
+
+		</Grid>
+
+		<!--Baud Rate Custom-->
+
+		<Grid>
+
+			<CheckBox x:Name="CheckBox_Custom_BaudRate"
+					  Content="Custom BaudRate"
+					  Foreground="{DynamicResource App_Color_Text}"
+					  Margin="0,0,235,0" FontSize="14"
+					  HorizontalAlignment="Right" VerticalAlignment="Top"
+					  IsChecked="{Binding BaudRate_IsCustom, Mode=TwoWay}"/>
+
+			<TextBox Classes="InputField Settings"
+					 Text="{Binding Custom_BaudRate_Value, Mode=TwoWay}"
+					 IsEnabled="{Binding BaudRate_IsCustom}"/>
+
+		</Grid>
+
+		<!--Parity-->
+
+		<Grid>
+
+			<TextBlock Text="Parity" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding Parity}"
+					  SelectedItem="{Binding Selected_Parity, Mode=TwoWay}"/>
+
+		</Grid>
+
+		<!--Data Bits-->
+
+		<Grid>
+
+			<TextBlock Text="DataBits" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding DataBits}"
+					  SelectedItem="{Binding Selected_DataBits, Mode=TwoWay}"/>
+
+		</Grid>
+
+		<!--Stop Bits-->
+
+		<Grid>
+
+			<TextBlock Text="StopBits" Classes="Parameters"/>
+
+			<ComboBox ItemsSource="{Binding StopBits}"
+					  SelectedItem="{Binding Selected_StopBits, Mode=TwoWay}"/>
+
+		</Grid>
+
+	</StackPanel>
+
+</UserControl>
