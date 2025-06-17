@@ -36,7 +36,7 @@ public class FileSystemService : IFileSystemService
 
             if (files.Count >= 1)
             {
-                return files.First().Path.AbsolutePath;
+                return files.First().TryGetLocalPath();
             }
         }
 
