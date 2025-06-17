@@ -102,11 +102,11 @@ CoreBus — кроссплатформенный терминал для раб�
 При наведении курсора на любой из макросов появляются кнопки редактирования и удаления.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/89928b5b-eb8f-4073-9c18-98aa3dd82811"/>
+  <img src="https://github.com/user-attachments/assets/d34c1a7b-54cd-48df-ad16-2075fcc95ea3"/>
 </p>
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d0b2bd02-2010-4d63-b7d0-102ccb982f58"/>
+  <img src="https://github.com/user-attachments/assets/862a01b2-9d02-407b-9669-eca8a637f90e"/>
 </p>
 
 Макрос разделен на команды. Каждая команда – это отправка одного сообщения.
