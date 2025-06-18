@@ -416,7 +416,7 @@ public class SerialPortClient : IConnection
                 if (completedTask == waitCancel)
                     throw new OperationCanceledException();
 
-                numberOfReceiveBytes = readResult.Result;
+                numberOfReceiveBytes = await readResult;
 
                 DataReceived?.Invoke(this, bufferRX.Take(numberOfReceiveBytes).ToArray());
 

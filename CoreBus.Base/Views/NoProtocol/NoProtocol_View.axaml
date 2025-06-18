@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.NoProtocol;assembly=ViewModels"
+			 xmlns:ModeViews="clr-namespace:CoreBus.Base.Views.NoProtocol.TransmitMode;assembly=CoreBus.Base"
+             mc:Ignorable="d" 
+			 d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CoreBus.Base.Views.NoProtocol.NoProtocol_View"
+			 x:DataType="ViewModels:NoProtocol_VM">
+
+	<UserControl.Styles>
+		
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/TX_RX_Field.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/GridSplitter.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/ToggleSwitch.axaml"/>
+		
+	</UserControl.Styles>
+
+	<UserControl.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol_Mode_Normal_VM}">
+			<ModeViews:Normal/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol_Mode_Cycle_VM}">
+			<ModeViews:Cycle/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:NoProtocol_Mode_Files_VM}">
+			<ModeViews:Files/>
+		</DataTemplate>
+
+	</UserControl.DataTemplates>
+	
+	<Grid>
+		
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition Height="170"/>
+			<RowDefinition Height="3"/>
+			<RowDefinition Height="1*"/>
+		</Grid.RowDefinitions>
+
+		<Grid Grid.Row="0">
+
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Left" VerticalAlignment="Center">
+
+				<TextBlock Text="Тип интерфейса:"
+						   FontSize="16"
+                           Foreground="{DynamicResource App_Color_Text}"/>
+
+				<TextBlock Text="{Binding InterfaceType, Mode=OneWay}"
+						   FontSize="16"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+				
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						IsVisible="{Binding EncodingIsVisible, Mode=OneWay}"
+						Margin="290,0,0,0"
+						HorizontalAlignment="Left" VerticalAlignment="Center">
+
+				<TextBlock Text="Кодировка:"
+						   FontSize="16"
+                           Foreground="{DynamicResource App_Color_Text}"/>
+
+				<TextBlock Text="{Binding SelectedEncoding, Mode=OneWay}"
+						   FontSize="16"
+						   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+			</StackPanel>
+
+			<StackPanel Orientation="Horizontal" Spacing="10"
+						Margin="0,0,20,0"
+					    HorizontalAlignment="Right" VerticalAlignment="Center">
+
+				<TextBlock Text="Тип отправки:"
+						   FontSize="16"
+                           Foreground="{DynamicResource App_Color_Text}"
+						   VerticalAlignment="Center"/>
+				
+				<ComboBox Height="32" Width="125"
+						  ItemsSource="{Binding AllSendModes, Mode=OneWay}"
+					      SelectedItem="{Binding SelectedSendMode, Mode=TwoWay}"/>
+				
+			</StackPanel>
+
+		</Grid>
+
+		<ContentControl Grid.Row="1"
+						Content="{Binding CurrentModeViewModel}"/>
+
+		<GridSplitter Grid.Row="2"
+				      ResizeDirection="Rows"/>
+
+		<Grid Grid.Row="3">
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="1*"/>
+				<RowDefinition Height="60"/>
+			</Grid.RowDefinitions>
+
+			<TextBox Grid.Row="0"
+					 Classes="TX_RX_Field"
+					 Text="{Binding RX_String, Mode=OneWay}"
+					 IsReadOnly="True"
+                     IsUndoEnabled="False"
+					 TextAlignment="Left"
+					 Margin="10,10,10,0"
+					 TextChanged="TextBox_TextChanged"/>
+
+			<Grid Grid.Row="1">
+
+				<CheckBox Content="Каждое сообщение на новой строке"
+						  Foreground="{DynamicResource App_Color_Text}"
+						  FontSize="14"
+						  IsChecked="{Binding RX_NextLine, Mode=TwoWay}"
+						  Margin="20,0,0,0"
+						  HorizontalAlignment="Left"/>
+
+				<StackPanel Orientation="Horizontal" Spacing="15"
+							Margin="0,0,20,0"
+							HorizontalAlignment="Right">
+
+					<ToggleSwitch OffContent="Строка"
+								  OnContent="Байты"
+								  IsChecked="{Binding RX_IsByteView, Mode=TwoWay}"/>
+
+					<Button Content="Очистить поле"
+							Width="120"
+							Command="{Binding Command_ClearRX}"/>
+					
+				</StackPanel>
+				
+			</Grid>
+
+		</Grid>
+
+	</Grid>
+	
+</UserControl>

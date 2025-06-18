@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.Settings.Tabs;assembly=ViewModels"
+			 xmlns:ConnectionViews="clr-namespace:CoreBus.Base.Views.Settings.Tabs;assembly=CoreBus.Base"
+             mc:Ignorable="d" 
+			 d:DesignWidth="500" d:DesignHeight="400"
+             x:Class="CoreBus.Base.Views.Settings.Tabs.Connection"
+			 x:DataType="ViewModels:Connection_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/RadioButton.axaml"/>
+
+	</UserControl.Styles>
+	
+	
+	<UserControl.DataTemplates>
+
+		<DataTemplate DataType="{x:Type ViewModels:Connection_SerialPort_VM}">
+			<ConnectionViews:Connection_SerialPort/>
+		</DataTemplate>
+
+		<DataTemplate DataType="{x:Type ViewModels:Connection_Ethernet_VM}">
+			<ConnectionViews:Connection_Ethernet/>
+		</DataTemplate>
+
+	</UserControl.DataTemplates>
+	
+	
+	<Grid>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="1*"/>
+			<RowDefinition Height="5*"/>
+		</Grid.RowDefinitions>
+		
+		<RadioButton Grid.Row="0"
+					 Content="Serial Port"
+					 IsChecked="{Binding Selected_SerialPort, Mode=TwoWay}"
+					 Foreground="{DynamicResource App_Color_Text}"
+					 Margin="0,0,150,0"
+					 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+		<RadioButton Grid.Row="0"
+					 Content="Ethernet"
+					 IsChecked="{Binding Selected_Ethernet, Mode=TwoWay}"
+					 Foreground="{DynamicResource App_Color_Text}"
+					 Margin="150,0,0,0"
+					 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+		<ContentControl Grid.Row="1" 
+						Content="{Binding CurrentConnectionViewModel}"/>
+
+	</Grid>
+	
+</UserControl>

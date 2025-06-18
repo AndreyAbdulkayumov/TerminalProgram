@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using MessageBox_Core;
+using MessageBox.Core;
 using Core.Models;
 using Core.Models.Modbus.DataTypes;
 using Core.Models.Modbus.Message;

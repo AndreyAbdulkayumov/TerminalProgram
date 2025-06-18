@@ -1,0 +1,189 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:CoreBus.Base.Views.Macros;assembly=CoreBus.Base"
+		xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:ViewModels="clr-namespace:ViewModels.Macros;assembly=ViewModels.Macros"
+		Width="1000" Height="620"
+        x:Class="CoreBus.Base.Views.Macros.MacrosWindow"
+		x:DataType="ViewModels:Macros_VM"
+		Title="Макросы"
+		Background="Transparent"
+		WindowStartupLocation="CenterScreen"
+		ExtendClientAreaToDecorationsHint="True"
+		ExtendClientAreaChromeHints="NoChrome"
+		SystemDecorations="BorderOnly" 
+		Topmost="{Binding WindowIsTopmost, Mode=OneWay}">
+
+	<Window.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/AppField.axaml"/>
+
+	</Window.Styles>
+	
+	<Border Background="{DynamicResource App_Back_Color_Background}">
+
+		<Grid>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="25"/>
+				<RowDefinition Height="1*"/>
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0">
+
+				<Border Background="{DynamicResource WindowChrome_Color}"
+						PointerPressed="Chrome_PointerPressed"/>
+
+				<TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+						   Foreground="{DynamicResource WindowChrome_Color_Title}"
+						   FontSize="12"
+						   HorizontalAlignment="Center" VerticalAlignment="Center"
+						   PointerPressed="Chrome_PointerPressed"/>
+
+				<Button ToolTip.Tip="Свернуть"
+						Classes="WindowChromeButton_All"
+						Margin="0,0,50,0"
+						Click="Button_Minimize_Click">
+
+					<Icons:MaterialIcon Kind="WindowMinimize"/>
+
+				</Button>
+
+				<Button ToolTip.Tip="Развернуть / Свернуть в окно"
+						Classes="WindowChromeButton_All"
+						Margin="0,0,25,0"
+						Click="Button_Maximize_Click">
+
+					<Icons:MaterialIcon Kind="WindowMaximize"/>
+
+				</Button>
+				
+				<Button ToolTip.Tip="Закрыть"
+						Classes="WindowChromeButton_CloseApp"
+						Click="Button_Close_Click">
+
+					<Icons:MaterialIcon Kind="WindowClose"/>
+
+				</Button>
+
+			</Grid>
+
+			<Grid x:Name="Grid_Workspace" Grid.Row="1">
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="80"/>
+					<RowDefinition Height="1*"/>
+				</Grid.RowDefinitions>
+				
+				<Border Grid.Row="0"
+						Classes="AppField">
+
+					<Grid>
+
+						<StackPanel Orientation="Horizontal" Spacing="15"
+									Margin="10,0,0,0"
+									HorizontalAlignment="Left" VerticalAlignment="Center">
+
+							<TextBlock Text="Выбранный режим:"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text}"/>
+									   
+							<TextBlock Text="{Binding ModeName, Mode=OneWay}"
+									   FontSize="16"
+									   Foreground="{DynamicResource App_Color_Text_Bright}"/>
+
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal" Spacing="15"
+									Margin="0,0,10,0"
+									HorizontalAlignment="Right" VerticalAlignment="Center">
+
+							<CheckBox Content="Поверх всех окон"
+									  IsChecked="{Binding WindowIsTopmost, Mode=TwoWay}"
+									  FontSize="14"
+									  Foreground="{DynamicResource App_Color_Text}"
+									  Margin="0,0,15,0"/>
+							
+							<Button Content="Импорт"
+									Command="{Binding Command_Import}"/>
+
+							<Button Content="Экспорт"
+									Command="{Binding Command_Export}"/>
+							
+							<Button Content="Создать макрос"
+									Command="{Binding Command_CreateMacros}"/>
+							
+						</StackPanel>
+						
+					</Grid>					
+					
+				</Border>
+
+				<Border Grid.Row="1"
+						Classes="AppField">
+
+					<ScrollViewer x:Name="ScrollViewer_Macros"
+								  VerticalScrollBarVisibility="Auto">
+
+						<ItemsControl ItemsSource="{Binding Items, Mode=TwoWay}"
+									  Margin="10"
+									  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+							
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<WrapPanel />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+
+							<ItemsControl.ItemTemplate>
+
+								<DataTemplate>
+
+									<local:MacrosItem Height="80" MinWidth="70"
+													  Margin="10"/>
+									
+								</DataTemplate>
+								
+							</ItemsControl.ItemTemplate>
+							
+						</ItemsControl>
+						
+					</ScrollViewer>
+					
+				</Border>
+
+			</Grid>
+
+			<Border Grid.Row="1"
+					Background="Transparent"
+					Width="20" Height="20"
+					HorizontalAlignment="Right" VerticalAlignment="Bottom"
+					PointerPressed="ResizeIcon_PointerPressed">
+
+				<Border.Styles>
+					<Style Selector="Border">
+						<Style Selector="^:pointerover">
+							<Setter Property="Cursor" Value="BottomRightCorner"/>
+						</Style>
+					</Style>
+				</Border.Styles>
+
+				<Icons:MaterialIcon Kind="ResizeBottomRight"
+									Foreground="{DynamicResource ResizeGrip_Color_Foreground}"
+									Margin="0,0,10,10"
+									Width="30" Height="30"/>
+
+			</Border>
+
+		</Grid>
+		
+	</Border>
+	
+</Window>

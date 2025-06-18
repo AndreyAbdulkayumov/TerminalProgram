@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 using System.Reactive;
-using MessageBox_Core;
+using MessageBox.Core;
 
 namespace ViewModels.Macros;
 

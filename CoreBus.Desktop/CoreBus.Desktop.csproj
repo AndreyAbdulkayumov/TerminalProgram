@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!--If you are willing to use Windows/MacOS native APIs you will need to create 3 projects.
+    One for Windows with net7.0-windows TFM, one for MacOS with net7.0-macos and one with net7.0 TFM for Linux.-->
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+	<AssemblyName>CoreBus</AssemblyName>
+	<ApplicationIcon>MainLogo.ico</ApplicationIcon>
+    <Company>Абдулкаюмов Андрей</Company>
+	<Authors>Abdulkayumov Andrey</Authors>
+	<!-- NativeAOT properties -->
+	<PublishAot>true</PublishAot>
+	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
+	<TrimMode>partial</TrimMode>
+  </PropertyGroup>
+
+  <ItemGroup>
+	<!-- Preserve Avalonia types for reflection -->
+	<TrimmerRootAssembly Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Content Include="MainLogo.ico" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CoreBus.Base\CoreBus.Base.csproj" />
+  </ItemGroup>
+</Project>

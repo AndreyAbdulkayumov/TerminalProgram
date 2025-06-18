@@ -1,0 +1,158 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ViewModels="clr-namespace:ViewModels.NoProtocol;assembly=ViewModels"
+             mc:Ignorable="d" 
+			 d:DesignWidth="1000" d:DesignHeight="200"
+			 xmlns:Icons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             x:Class="CoreBus.Base.Views.NoProtocol.TransmitMode.Files"
+			 x:DataType="ViewModels:NoProtocol_Mode_Files_VM">
+
+	<UserControl.Styles>
+
+		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/SelectableTextBlock.axaml"/>
+		<StyleInclude Source="avares://AppDesign/Styles/MenuToolButton.axaml"/>
+
+	</UserControl.Styles>
+
+	<Border BorderBrush="{DynamicResource Group_Color_BorderBrush}"
+			BorderThickness="2"
+			CornerRadius="4"
+			Margin="10">
+
+		<Grid>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="1*"/>
+				<ColumnDefinition Width="20"/>
+				<ColumnDefinition Width="360"/>
+			</Grid.ColumnDefinitions>
+
+			<ScrollViewer Grid.Column="0">
+
+				<ItemsControl ItemsSource="{Binding Files, Mode=TwoWay}"
+							  Margin="10,10,20,10"
+							  HorizontalAlignment="Stretch" VerticalAlignment="Top">
+
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Orientation="Vertical" Spacing="5"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.ItemTemplate>
+
+						<DataTemplate>
+
+							<Border BorderThickness="2"
+									CornerRadius="4"
+									Background="Transparent">
+
+								<Grid ColumnDefinitions="2*,12*,4*,6*,2*"
+									  Margin="10">
+
+									<Button Grid.Column="0"
+											Classes="MenuToolButton"
+											ToolTip.Tip="Отправить файл"
+											IsEnabled="{Binding SendIsEnable, Mode=OneWay}"
+											Command="{Binding Command_SendFile}"
+											HorizontalAlignment="Center" VerticalAlignment="Center">
+
+										<Icons:MaterialIcon Kind="FileSendOutline"/>
+
+									</Button>
+
+									<SelectableTextBlock Grid.Column="1"
+														 Text="{Binding FileName, Mode=OneWay}"
+														 ToolTip.Tip="{Binding FileName, Mode=OneWay}"
+														 Foreground="{DynamicResource WindowChrome_Color_Title}"
+														 SelectionBrush="#0099BC"
+														 TextTrimming="CharacterEllipsis"
+														 FontSize="17"
+														 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+									<SelectableTextBlock Grid.Column="2"
+														 Text="{Binding FileExtension, Mode=OneWay}"
+														 ToolTip.Tip="{Binding FileExtension, Mode=OneWay}"
+														 Foreground="{DynamicResource WindowChrome_Color_Title}"
+														 SelectionBrush="#0099BC"
+														 TextTrimming="CharacterEllipsis"
+														 FontSize="17"
+														 TextAlignment="Center"
+														 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+									<SelectableTextBlock Grid.Column="3"
+														 Text="{Binding FileSize, Mode=OneWay}"
+														 ToolTip.Tip="{Binding FileSize, Mode=OneWay}"
+														 Foreground="{DynamicResource WindowChrome_Color_Title}"
+														 SelectionBrush="#0099BC"
+														 TextTrimming="CharacterEllipsis"
+														 FontSize="17"
+														 TextAlignment="Center"
+														 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+									<Button Grid.Column="4"
+											Classes="MenuToolButton"
+											ToolTip.Tip="Удалить файл"
+											Command="{Binding Command_RemoveFile}"
+											HorizontalAlignment="Center" VerticalAlignment="Center">
+
+										<Icons:MaterialIcon Kind="TrashCanOutline"/>
+
+									</Button>
+
+								</Grid>
+
+								<Border.Styles>
+
+									<Style Selector="Border:pointerover">
+										<Setter Property="BorderBrush" Value="{DynamicResource MenuButton_Color_Foreground}"/>
+									</Style>
+									
+								</Border.Styles>
+								
+							</Border>							
+
+						</DataTemplate>
+
+					</ItemsControl.ItemTemplate>
+
+				</ItemsControl>
+
+			</ScrollViewer>
+			
+			<Border Grid.Column="1" 
+					Width="1"
+					Margin="0,10,0,10"
+					Background="{DynamicResource GridSplitter_Color_Background}"/>
+
+			<StackPanel Orientation="Vertical" Grid.Column="2"
+						Spacing="30"
+						Margin="25">
+
+				<StackPanel Orientation="Horizontal" Spacing="50">
+
+					<Button Content="Добавить файл"
+							FontSize="14"
+							Command="{Binding Command_AddFile}"/>
+
+					<Button Content="Удалить все"
+							FontSize="14"
+							Command="{Binding Command_RemoveAllFiles}"/>
+					
+				</StackPanel>
+				
+				<TextBlock Text="Идет отправка файла..."
+						   IsVisible="{Binding IsSending, Mode=OneWay}"
+						   FontSize="16"
+						   HorizontalAlignment="Left" VerticalAlignment="Center"/>
+								
+			</StackPanel>
+
+		</Grid>
+		
+	</Border>
+	
+</UserControl>
