@@ -13,13 +13,11 @@
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="True"
 		ExtendClientAreaChromeHints="NoChrome"
-		SystemDecorations="BorderOnly" 
-		Topmost="{Binding WindowIsTopmost, Mode=OneWay}">
+		SystemDecorations="BorderOnly">
 
 	<Window.Styles>
 
 		<StyleInclude Source="avares://AppDesign/Styles/TextBlock.axaml"/>
-		<StyleInclude Source="avares://AppDesign/Styles/CheckBox.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/Button.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_All.axaml"/>
 		<StyleInclude Source="avares://AppDesign/Styles/WindowChromeButton_CloseApp.axaml"/>
@@ -104,12 +102,6 @@
 						<StackPanel Orientation="Horizontal" Spacing="15"
 									Margin="0,0,10,0"
 									HorizontalAlignment="Right" VerticalAlignment="Center">
-
-							<CheckBox Content="Поверх всех окон"
-									  IsChecked="{Binding WindowIsTopmost, Mode=TwoWay}"
-									  FontSize="14"
-									  Foreground="{DynamicResource App_Color_Text}"
-									  Margin="0,0,15,0"/>
 							
 							<Button Content="Импорт"
 									Command="{Binding Command_Import}"/>

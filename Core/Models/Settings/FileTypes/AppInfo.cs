@@ -19,7 +19,6 @@ public class AppInfo
     public AppMode SelectedMode { get; set; }
     public bool CheckUpdateAfterStart { get; set; }
     public string? SkippedAppVersion { get; set; }
-    public bool MacrosWindowIsTopmost { get; set; }
 
 
     public static AppInfo GetDefault(string defaultPresetName)
@@ -31,7 +30,6 @@ public class AppInfo
             SelectedMode = AppMode.ModbusClient,
             CheckUpdateAfterStart = true,
             SkippedAppVersion = null,
-            MacrosWindowIsTopmost = false
         };
     }
 }

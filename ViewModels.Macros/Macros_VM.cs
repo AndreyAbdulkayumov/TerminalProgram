@@ -37,14 +37,6 @@ public class Macros_VM : ReactiveObject, IDisposable
         set => this.RaiseAndSetIfChanged(ref _items, value);
     }
 
-    private bool _windowIsTopmost;
-
-    public bool WindowIsTopmost
-    {
-        get => _windowIsTopmost;
-        set => this.RaiseAndSetIfChanged(ref _windowIsTopmost, value);
-    }
-
     public ReactiveCommand<Unit, Unit> Command_Import { get; }
     public ReactiveCommand<Unit, Unit> Command_Export { get; }
     public ReactiveCommand<Unit, Unit> Command_CreateMacros { get; }
@@ -103,10 +95,8 @@ public class Macros_VM : ReactiveObject, IDisposable
         MainWindow_VM.ApplicationWorkModeChanged += CommonUI_VM_ApplicationWorkModeChanged;
 
         InitUI();
-
-        this.WhenAnyValue(x => x.WindowIsTopmost)
-            .Subscribe(x => _settingsModel.AppData.MacrosWindowIsTopmost = x);
     }
+
     public void Dispose()
     {
         _disposables.Dispose();
@@ -116,8 +106,6 @@ public class Macros_VM : ReactiveObject, IDisposable
     {
         ModeName = GetModeName(MainWindow_VM.CurrentApplicationWorkMode);
         UpdateWorkspace(MainWindow_VM.CurrentApplicationWorkMode);
-
-        WindowIsTopmost = _settingsModel.AppData.MacrosWindowIsTopmost;
     }
 
     private string GetValidMacrosFileName()
