@@ -302,9 +302,14 @@ public class ModbusClient_VM : ReactiveObject
             });
     }
 
-    private void SendMacrosActionResponse(string? macrosName, bool actionSuccess, string message, MessageType type, Exception? error = null)
+    private void SendMacrosActionResponse(MacrosContent<ModbusAdditionalData, MacrosCommandModbus> macros, bool actionSuccess, string message, MessageType type, Exception? error = null)
     {
-        MessageBus.Current.SendMessage(new MacrosActionResponse(macrosName, actionSuccess, message, type, error));
+        MessageBus.Current.SendMessage(new MacrosActionResponse(macros.MacrosName, macros.Sender, actionSuccess, message, type, error));
+    }
+
+    private void SendCommandActionResponse(string? sender, bool actionSuccess, string message, MessageType type, Exception? error = null)
+    {
+        MessageBus.Current.SendMessage(new MacrosActionResponse(null, sender, actionSuccess, message, type, error));
     }
 
     private async Task Receive_ReadMessage_Handler(ModbusReadMessage message)
@@ -316,7 +321,13 @@ public class ModbusClient_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(error.Message, MessageType.Error, error);
+            if (message.Sender == MainWindow_VM.SenderName)
+            {
+                _messageBox.Show(error.Message, MessageType.Error, error);
+                return;
+            }
+
+            SendCommandActionResponse(message.Sender, false, error.Message, MessageType.Error, error);
         }
     }
 
@@ -329,7 +340,13 @@ public class ModbusClient_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(error.Message, MessageType.Error, error);
+            if (message.Sender == MainWindow_VM.SenderName)
+            {
+                _messageBox.Show(error.Message, MessageType.Error, error);
+                return;
+            }
+
+            SendCommandActionResponse(message.Sender, false, error.Message, MessageType.Error, error);
         }
     }
 
@@ -337,13 +354,13 @@ public class ModbusClient_VM : ReactiveObject
     {
         if (!_connectedHostModel.HostIsConnect)
         {
-            SendMacrosActionResponse(macros.MacrosName, false, "Клиент отключен.", MessageType.Error);
+            SendMacrosActionResponse(macros, false, "Клиент отключен.", MessageType.Error);
             return;
         }
 
         if (macros.Commands == null || macros.Commands.Count == 0)
         {
-            SendMacrosActionResponse(macros.MacrosName, false, $"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+            SendMacrosActionResponse(macros, false, $"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
             return;
         }
 
@@ -410,7 +427,7 @@ public class ModbusClient_VM : ReactiveObject
         {
             errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
 
-            SendMacrosActionResponse(macros.MacrosName, false, string.Join(messageSeparator, errorMessages), MessageType.Error);
+            SendMacrosActionResponse(macros, false, string.Join(messageSeparator, errorMessages), MessageType.Error);
         }
     }
 
@@ -472,7 +489,7 @@ public class ModbusClient_VM : ReactiveObject
         {
             var message = await ModbusErrorHandler(address, error);
 
-            _messageBox.Show(message, MessageType.Error);
+            throw new Exception(message);
         }
 
         catch (Exception error)
@@ -499,7 +516,7 @@ public class ModbusClient_VM : ReactiveObject
         {
             var message = await ModbusErrorHandler(address, error);
 
-            _messageBox.Show(message, MessageType.Error);
+            throw new Exception(message);
         }
 
         catch (Exception error)

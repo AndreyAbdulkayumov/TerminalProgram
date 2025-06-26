@@ -1,18 +1,19 @@
-﻿using ReactiveUI;
+﻿using Core.Clients;
+using Core.Clients.DataTypes;
+using Core.Models;
+using Core.Models.NoProtocol;
+using Core.Models.NoProtocol.DataTypes;
+using Core.Models.Settings.DataTypes;
+using Core.Models.Settings.FileTypes;
+using MessageBox.Core;
+using MessageBusTypes.Macros;
+using MessageBusTypes.NoProtocol;
+using ReactiveUI;
+using Services.Interfaces;
+using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Text;
-using MessageBox.Core;
-using Core.Clients;
-using Core.Models;
-using Core.Models.NoProtocol.DataTypes;
-using Core.Models.Settings.FileTypes;
-using Core.Clients.DataTypes;
 using ViewModels.Helpers;
-using Services.Interfaces;
-using Core.Models.NoProtocol;
-using Core.Models.Settings.DataTypes;
-using System.Collections.ObjectModel;
-using MessageBusTypes.NoProtocol;
 
 namespace ViewModels.NoProtocol;
 
@@ -187,6 +188,16 @@ public class NoProtocol_VM : ReactiveObject
             });
     }
 
+    private void SendMacrosActionResponse(MacrosContent<object, MacrosCommandNoProtocol> macros, bool actionSuccess, string message, MessageType type, Exception? error = null)
+    {
+        MessageBus.Current.SendMessage(new MacrosActionResponse(macros.MacrosName, macros.Sender, actionSuccess, message, type, error));
+    }
+
+    private void SendCommandActionResponse(string? sender, bool actionSuccess, string message, MessageType type, Exception? error = null)
+    {
+        MessageBus.Current.SendMessage(new MacrosActionResponse(null, sender, actionSuccess, message, type, error));
+    }
+
     private async Task Receive_SendMessage_Handler(NoProtocolSendMessage message)
     {
         try
@@ -198,7 +209,13 @@ public class NoProtocol_VM : ReactiveObject
 
         catch (Exception error)
         {
-            _messageBox.Show(error.Message, MessageType.Error, error);
+            if (message.Sender == MainWindow_VM.SenderName)
+            {
+                _messageBox.Show(error.Message, MessageType.Error, error);
+                return;
+            }
+
+            SendCommandActionResponse(message.Sender, false, error.Message, MessageType.Error, error);
         }
     }
 
@@ -206,13 +223,13 @@ public class NoProtocol_VM : ReactiveObject
     {
         if (!_connectedHostModel.HostIsConnect)
         {
-            _messageBox.Show("Клиент отключен.", MessageType.Error);
+            SendMacrosActionResponse(macros, false, "Клиент отключен.", MessageType.Error);
             return;
         }
 
         if (macros.Commands == null || macros.Commands.Count == 0)
         {
-            _messageBox.Show($"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
+            SendMacrosActionResponse(macros, false, $"Макрос {macros.MacrosName} не содержит команд.", MessageType.Warning);
             return;
         }
 
@@ -252,7 +269,7 @@ public class NoProtocol_VM : ReactiveObject
         {
             errorMessages.Insert(0, $"При выполнении макроса \"{macros.MacrosName}\" произошли ошибки.");
 
-            _messageBox.Show(string.Join(messageSeparator, errorMessages), MessageType.Error);
+            SendMacrosActionResponse(macros, false, string.Join(messageSeparator, errorMessages), MessageType.Error);
         }
     }
 

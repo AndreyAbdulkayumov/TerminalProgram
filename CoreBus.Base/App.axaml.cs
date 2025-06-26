@@ -35,12 +35,14 @@ public partial class App : Application
     /// 1. Все модели создаются как Singleton.
     /// 2. Главное окно и все его ViewModel создаются как Singleton.
     /// 3. Дочерние окна и все их элементы создаются как Transient. 
-    /// 4. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService через _serviceProvider.GetService<T>().
+    /// 4. Дочерние окна, которые используют MessageBus, должны создаваться как Scoped и реализовывать интерфейс IDisposable.
+    /// Это нужно для корректной отписки от события и вызова метода Dispose. В Transient метод Dispose не вызывается.
+    /// 5. Экземпляр ViewModel дочернего окна создается в OpenChildWindowService через _serviceProvider.GetService<T>().
     /// 
-    /// 3 и 4 правила нужны для того, чтобы экземпляры ViewModel дочерних окон уничтожались после закрытия окна.
+    /// 3, 4, 5 правила нужны для того, чтобы экземпляры ViewModel дочерних окон уничтожались после закрытия окна.
     /// При каждом открытии нового окна создаются новые экземпляры ViewModel.
     /// 
-    /// 5. Вспомогательные сервисы и сервисы MessageBox создаются как Singleton, чтобы не создавалось куча ненужных экземпляров.
+    /// 6. Вспомогательные сервисы и сервисы MessageBox создаются как Singleton, чтобы не создавалось куча ненужных экземпляров.
     /// 
     /// </summary>
     public App()
@@ -76,9 +78,9 @@ public partial class App : Application
             // Окно Modbus сканнера
             .AddTransient<ModbusScanner_VM>()
             // Окно макросов
-            .AddTransient<Macros_VM>()
-            // Компоненты окна макросов
-            .AddTransient<EditMacros_VM>()
+            .AddScoped<Macros_VM>()
+            // Окно редактирования макроса
+            .AddScoped<EditMacros_VM>()
             // MessageBox с разными владельцами
             .AddSingleton<IMessageBoxMainWindow, MessageBoxMainWindow>()
             .AddSingleton<IMessageBoxSettings, MessageBoxSettings>()

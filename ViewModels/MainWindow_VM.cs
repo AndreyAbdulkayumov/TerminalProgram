@@ -25,6 +25,8 @@ public enum ApplicationWorkMode
 
 public class MainWindow_VM : ReactiveObject
 {
+    public const string SenderName = "MainWindow";
+
     public static string? SettingsDocument;
 
     private static ApplicationWorkMode _currentApplicationWorkMode;

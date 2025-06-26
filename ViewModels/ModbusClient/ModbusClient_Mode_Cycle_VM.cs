@@ -388,7 +388,7 @@ public class ModbusClient_Mode_Cycle_VM : ValidatedDateInput, IValidationFieldIn
         _modbusModel.CycleMode_Start(() =>
         {
             MessageBus.Current.SendMessage(
-                new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+                new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
                 );
         });
 

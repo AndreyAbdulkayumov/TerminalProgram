@@ -240,7 +240,7 @@ public class ModbusClient_Mode_Normal_VM : ValidatedDateInput, IValidationFieldI
             ModbusReadFunction ReadFunction = Function.AllReadFunctions.Single(x => x.DisplayedName == SelectedReadFunction);
 
             MessageBus.Current.SendMessage(
-                new ModbusReadMessage(_selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
+                new ModbusReadMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, ReadFunction, _selectedNumberOfRegisters, CheckSum_IsEnable)
                 );
         });
         Command_Read.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке чтения: \n\n{error.Message}", MessageType.Error, error));
@@ -278,7 +278,7 @@ public class ModbusClient_Mode_Normal_VM : ValidatedDateInput, IValidationFieldI
             WriteData modbusWriteData = CurrentWriteFieldViewModel.GetData();
 
             MessageBus.Current.SendMessage(
-                new ModbusWriteMessage(_selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
+                new ModbusWriteMessage(MainWindow_VM.SenderName, _selectedSlaveID, _selectedAddress, writeFunction, modbusWriteData.Data, modbusWriteData.NumberOfRegisters, CheckSum_IsEnable)
                 );
         });
         Command_Write.ThrownExceptions.Subscribe(error => _messageBox.Show($"Возникла ошибка при попытке записи:\n\n{error.Message}", MessageType.Error, error));

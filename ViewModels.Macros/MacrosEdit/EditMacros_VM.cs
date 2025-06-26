@@ -1,22 +1,27 @@
-﻿using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Reactive;
-using MessageBox.Core;
+﻿using Core.Models.Modbus.DataTypes;
+using Core.Models.Settings;
 using Core.Models.Settings.DataTypes;
 using Core.Models.Settings.FileTypes;
-using ViewModels.Macros.DataTypes;
-using Services.Interfaces;
-using ViewModels.Macros.MacrosEdit.CommandEdit;
-using Core.Models.Modbus.DataTypes;
-using ViewModels.Helpers;
-using Core.Models.Settings;
-using MessageBusTypes.NoProtocol;
+using MessageBox.Core;
+using MessageBusTypes.Macros;
 using MessageBusTypes.ModbusClient;
+using MessageBusTypes.NoProtocol;
+using ReactiveUI;
+using Services.Interfaces;
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Disposables;
+using ViewModels.Helpers;
+using ViewModels.Macros.DataTypes;
+using ViewModels.Macros.MacrosEdit.CommandEdit;
 
 namespace ViewModels.Macros.MacrosEdit;
 
-public class EditMacros_VM : ReactiveObject
+// Объект создается как временный, поэтому нужно отписываться от событий MessageBus.
+public class EditMacros_VM : ReactiveObject, IDisposable
 {
+    private const string SenderName = "EditMacros";
+
     private string? _macrosName = string.Empty;
 
     public string? MacrosName
@@ -69,6 +74,8 @@ public class EditMacros_VM : ReactiveObject
 
     private readonly List<ICommandContent> _allEditCommandVM = new List<ICommandContent>();
 
+    private readonly CompositeDisposable _disposables = new CompositeDisposable();
+
     private readonly IMessageBox _messageBox;
     private readonly Model_Settings _settingsModel;
 
@@ -77,6 +84,28 @@ public class EditMacros_VM : ReactiveObject
     {
         _messageBox = messageBox ?? throw new ArgumentNullException(nameof(messageBox));
         _settingsModel = settingsModel ?? throw new ArgumentNullException(nameof(settingsModel));
+
+        /****************************************************/
+        //
+        // Настройка прослушивания MessageBus
+        //
+        /****************************************************/
+
+        MessageBus.Current.Listen<MacrosActionResponse>()
+            .Subscribe(response =>
+            {
+                if (!response.ActionSuccess && response.Sender == SenderName)
+                {
+                    _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
+                }
+            })
+            .DisposeWith(_disposables);
+
+        /****************************************************/
+        //
+        // Настройка свойств и команд модели отображения
+        //
+        /****************************************************/
 
         Command_SaveMacros = ReactiveCommand.Create(() =>
         {
@@ -128,6 +157,11 @@ public class EditMacros_VM : ReactiveObject
 
             CommonSlaveIdFieldViewModel.UseCommonSlaveIdChanged += CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged;
         }
+    }
+
+    public void Dispose()
+    {
+        _disposables.Dispose();
     }
 
     private void CommonSlaveIDFieldViewModel_UseCommonSlaveIdChanged(object? sender, bool e)
@@ -246,6 +280,9 @@ public class EditMacros_VM : ReactiveObject
     private void SendNoProtocolMacros()
     {
         var noProtocolContent = GetNoProtocolMacrosContent();
+
+        noProtocolContent.Sender = SenderName;
+
         MessageBus.Current.SendMessage(noProtocolContent);
     }
 
@@ -254,6 +291,8 @@ public class EditMacros_VM : ReactiveObject
         var modbusContent = GetModbusMacrosContent();
 
         var contentForSend = MacrosHelper.GetWithAdditionalData(modbusContent);
+
+        contentForSend.Sender = SenderName;
 
         MessageBus.Current.SendMessage(contentForSend);
     }
@@ -390,7 +429,7 @@ public class EditMacros_VM : ReactiveObject
     private void RunNoProtocolCommand(NoProtocolCommandContent content)
     {
         MessageBus.Current.SendMessage(
-            new NoProtocolSendMessage(content.IsByteString, content.Message, content.EnableCR, content.EnableLF, AppEncoding.GetEncoding(content.MacrosEncoding))
+            new NoProtocolSendMessage(SenderName, content.IsByteString, content.Message, content.EnableCR, content.EnableLF, AppEncoding.GetEncoding(content.MacrosEncoding))
             );
     }
 
@@ -414,7 +453,7 @@ public class EditMacros_VM : ReactiveObject
         if (selectedFunction is ModbusReadFunction readFunction)
         {
             MessageBus.Current.SendMessage(
-                new ModbusReadMessage(content.SlaveID, content.Address, readFunction, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
+                new ModbusReadMessage(SenderName, content.SlaveID, content.Address, readFunction, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
                 );
 
             return;
@@ -423,7 +462,7 @@ public class EditMacros_VM : ReactiveObject
         if (selectedFunction is ModbusWriteFunction writeFunction)
         {
             MessageBus.Current.SendMessage(
-                new ModbusWriteMessage(content.SlaveID, content.Address, writeFunction, content.WriteInfo?.WriteBuffer, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
+                new ModbusWriteMessage(SenderName, content.SlaveID, content.Address, writeFunction, content.WriteInfo?.WriteBuffer, content.NumberOfReadRegisters, content.CheckSum_IsEnable)
                 );
 
             return;

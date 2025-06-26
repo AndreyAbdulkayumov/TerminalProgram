@@ -7,13 +7,17 @@ using ReactiveUI;
 using Services.Interfaces;
 using System.Collections.ObjectModel;
 using System.Reactive;
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using ViewModels.Macros.DataTypes;
 
 namespace ViewModels.Macros;
 
-public class Macros_VM : ReactiveObject
+// Объект создается как временный, поэтому нужно отписываться от событий MessageBus.
+public class Macros_VM : ReactiveObject, IDisposable
 {
+    private const string SenderName = "MacrosWorkspace";
+
     private const string ModeName_NoProtocol = "Без протокола";
     private const string ModeName_ModbusClient = "Modbus";
 
@@ -49,6 +53,8 @@ public class Macros_VM : ReactiveObject
     private MacrosModbus? _modbusMacros;
 
     private List<string> _allMacrosNames = new List<string>();
+        
+    private readonly CompositeDisposable _disposables = new CompositeDisposable();
 
     private readonly IOpenChildWindowService _openChildWindowService;
     private readonly IFileSystemService _fileSystemService;
@@ -72,11 +78,12 @@ public class Macros_VM : ReactiveObject
         MessageBus.Current.Listen<MacrosActionResponse>()
             .Subscribe(response =>
             {
-                if (!response.ActionSuccess)
+                if (!response.ActionSuccess && response.Sender == SenderName)
                 {
                     _messageBox.Show(response.Message ?? string.Empty, response.Type, response.Error);
                 }
-            });
+            })
+            .DisposeWith(_disposables);
 
         /****************************************************/
         //
@@ -99,6 +106,10 @@ public class Macros_VM : ReactiveObject
 
         this.WhenAnyValue(x => x.WindowIsTopmost)
             .Subscribe(x => _settingsModel.AppData.MacrosWindowIsTopmost = x);
+    }
+    public void Dispose()
+    {
+        _disposables.Dispose();
     }
 
     private void InitUI()
@@ -180,7 +191,7 @@ public class Macros_VM : ReactiveObject
 
         foreach (var element in macros.Items)
         {
-            IMacrosContext _macrosContext = new ViewItemContext<object, MacrosCommandNoProtocol>(element);
+            IMacrosContext _macrosContext = new ViewItemContext<object, MacrosCommandNoProtocol>(element, SenderName);
 
             BuildMacrosItem(_macrosContext.CreateContext());
         }
@@ -202,7 +213,7 @@ public class Macros_VM : ReactiveObject
 
         foreach (var element in macros.Items)
         {
-            IMacrosContext _macrosContext = new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(element);
+            IMacrosContext _macrosContext = new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(element, SenderName);
 
             BuildMacrosItem(_macrosContext.CreateContext());
         }
@@ -375,10 +386,10 @@ public class Macros_VM : ReactiveObject
     private IMacrosContext GetMacrosContextFrom(object? content)
     {
         if (content is MacrosContent<object, MacrosCommandNoProtocol> noProtocolContent)
-            return new ViewItemContext<object, MacrosCommandNoProtocol>(noProtocolContent);
+            return new ViewItemContext<object, MacrosCommandNoProtocol>(noProtocolContent, SenderName);
 
         if (content is MacrosContent<ModbusAdditionalData, MacrosCommandModbus> modbusContent)
-            return new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(modbusContent);
+            return new ViewItemContext<ModbusAdditionalData, MacrosCommandModbus>(modbusContent, SenderName);
 
         throw new NotImplementedException($"Поддержка режима не реализована.");
     }
