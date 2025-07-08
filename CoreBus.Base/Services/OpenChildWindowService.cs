@@ -188,7 +188,9 @@ public class OpenChildWindowService : IOpenChildWindowService
 
     public async Task<object?> EditMacros(object? parameters)
     {
-        _editMacrosVM = _serviceProvider.GetService<EditMacros_VM>();
+        await using var scope = _serviceProvider.CreateAsyncScope();
+
+        _editMacrosVM = scope.ServiceProvider.GetRequiredService<EditMacros_VM>();
 
         if (_editMacrosVM == null)
         {
