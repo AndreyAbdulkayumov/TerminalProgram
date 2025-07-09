@@ -12,9 +12,10 @@
     <Company>Абдулкаюмов Андрей</Company>
 	<Authors>Abdulkayumov Andrey</Authors>
 	<!-- NativeAOT properties -->
-	<PublishAot>true</PublishAot>
+	<!-- Проект не публикуется как Native AOT. Раскомментировать, когда всё будет хорошо. -->
+	<!--<PublishAot>true</PublishAot>	
+	<TrimMode>partial</TrimMode>-->
 	<BuiltInComInteropSupport>false</BuiltInComInteropSupport>
-	<TrimMode>partial</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
